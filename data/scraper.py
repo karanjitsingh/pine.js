@@ -9,7 +9,7 @@ minute = second * 60
 hour = minute * 60
 day = hour * 24
 
-endpoint  = "https://www.binance.com/api/v1/klines?symbol=BTCUSDT&interval=1m&startTime={0}&endTime={1}"
+endpoint  = "https://www.binance.com/api/v1/klines?symbol=BTCUSDT&interval=1m&startTime={0}&endTime={1}&limit=2000"
 
 # Thu Aug 03 2019 00:00:00 GMT+0530 (India Standard Time)
 startDate = datetime(2019, 8, 3, 0, 0, 0, 0)
@@ -34,32 +34,50 @@ def getDayPairs(start, length):
 
     return pairs
 
+def requestAndDump(url, filename):
+    success = True
+
+    request = requests.get(url)
+    data = request.content
+
+    if request.status_code is 200:
+        with open(filename, "w") as file:
+            file.write(data.__str__()[2:-1])                
+    else:
+        print("Non 200 status code")
+        print("Status Code:", request.status_code)
+        print(request.headers)
+        print(request.content)
+        success = False
+
+    return success
 
 def scrape(start, length, dumpfolder):
     pairs = getDayPairs(start, length)
     
     for i in range(len(pairs)):
-
-        url = endpoint.format(pairs[i][0],pairs[i][1])
-        print(url)
+        # max number of records returned by the api is 1000 so we will have to request twice for each day
         
-        request = requests.get(url)
-        data = request.content
+        print(pairs[i][2])
+        url = endpoint.format(pairs[i][0], pairs[i][1]-int(day/2))
+        
+        print(url)
 
-        if request.status_code is 200:
-            with open(os.path.join(dumpfolder, pairs[i][2] + ".json"), "w") as file:
-                file.write(data.__str__()[2:-1])                
-        else:
+        if requestAndDump(url, os.path.join(dumpfolder, pairs[i][2] + ".1.json")) == True:
+            url = endpoint.format(pairs[i][1]-int(day/2), pairs[i][1])
+            print(url,"\n")
+
+            if requestAndDump(url, os.path.join(dumpfolder, pairs[i][2] + ".2.json")) == False:
+                print("Breaking on " + pairs[i][2])
+                break  
+        else:      
             print("Breaking on " + pairs[i][2])
-            print("Non 200 status code")
-            print("Status Code:" + request.status_code)
-            print(request.headers)
             break
 
-        time.sleep(5)
+        time.sleep(3)
 
-start = int(sys.argv[1])
-length = int(sys.argv[2])
+start = 0 if len(sys.argv) == 1 else int(sys.argv[1])
+length = 1 if len(sys.argv) == 1 else int(sys.argv[2])
 
 print("Start: {0}, End: {1} [start excluded]\n".format(getDayDiff(start), getDayDiff(start + length)))
 
