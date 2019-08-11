@@ -1,9 +1,9 @@
 import { Series, SeriesData } from "../Series";
 
-export const Expression = (expression: (...args: SeriesData[]) => number, ...args: Series[]): Series => {
+export const Expression = (expression: (...args: SeriesData[]) => number, ...args: Series<any>[]): Series<number> => {
     const minlength = Math.min(...args.map(x => x.data.length));
 
-    var data = new Array(minlength);
+    var data: number[] = new Array(minlength);
 
     for(let i =0; i < minlength; i++) {
         data.push(expression(...args.map(x => x.lookBack(minlength - 1 - i))));
@@ -12,7 +12,7 @@ export const Expression = (expression: (...args: SeriesData[]) => number, ...arg
     return Series.Create(data);
 }
 
-export const Min = (s: Series | SeriesData, length: number) => {
+export const Min = (s: Series<any> | SeriesData, length: number) => {
     if(s instanceof Series) {
         s = s.lookBack(0);
     }
@@ -28,7 +28,7 @@ export const Min = (s: Series | SeriesData, length: number) => {
     return min;
 }
 
-export const Max = (s: Series | SeriesData, length: number) => {
+export const Max = (s: Series<any> | SeriesData, length: number) => {
     if(s instanceof Series) {
         s = s.lookBack(0);
     }
@@ -43,7 +43,7 @@ export const Max = (s: Series | SeriesData, length: number) => {
 
     return max;
 }
-export const Stoch =  (close: Series, high: Series, low: Series, length: number) => {
+export const Stoch =  (close: Series<any>, high: Series<any>, low: Series<any>, length: number) => {
     return Expression((close, high, low) => {
         const min = Min(low, length);
         // return (close(0)  - min)/(Max(high, length) - min)

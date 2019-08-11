@@ -1,16 +1,24 @@
 export type SeriesData = (lookback: number) => number | number;
 
-export class Series {
-    public data: number[];
+export class Series<T> {
+    public data: T[];
 
-    private seriesOffset: number;
+    public static Create<T>(data: T[], resolver?: (data: T) => number): Series<T> {
+        const clone = data.slice(0);
+        return new Series<T>(clone, resolver);
+    }
 
-    public prepend(array: number[]) {
+    private constructor(data: T[], private resolver: (data: T) => number, private seriesOffset?: number) {
+        this.seriesOffset = this.seriesOffset ? this.seriesOffset : 0;
+        this.data = data;
+    }
+
+    public prepend(array: T[]) {
         const clone = array.slice(0);
         this.data = clone.concat(this.data);
     }
 
-    public append(array: number[]) {
+    public append(array: T[]) {
         const clone = array.slice(0);
         this.data = this.data.concat(clone);
     }
@@ -19,7 +27,7 @@ export class Series {
         return (x: number) => {
             const index = this.data.length - 1 - x - this.seriesOffset - offset;
             if(index >= 0) {
-                return this.data[index]
+                return 
             }
             else {
                 return undefined;
@@ -27,22 +35,13 @@ export class Series {
         }
     }
 
-    public offset(offset: number): Series {
-        return new Series(this.data, offset);
+    public offset(offset: number): Series<T> {
+        return new Series(this.data, this.resolver, offset);
     }
 
-    private constructor(data: number[], offset?: number) {
-        this.seriesOffset = offset ? offset : 0;
-        this.data = data;
+    private resolve(data: T) {
+        if(!(data instanceof Number)) {
+            return this.resolver(data);
+        }
     }
-
-    public value(x: (x: number) => number) {
-
-    }
-
-    public static Create(data: number[]): Series {
-        const clone = data.slice(0);
-        return new Series(clone);
-    }
-
 }
