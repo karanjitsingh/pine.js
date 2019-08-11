@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "outDir": "./bin",
+        "sourceMap": true,
+        "removeComments": true,
+        "lib": ["es2016", "dom"]
+    },
+    "include": [
+        "**/*.ts"
+    ],
+    "compileOnSave": true
+}

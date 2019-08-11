@@ -1,0 +1,27 @@
+{
+  "name": "pine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "node ./scripts/node.js clean",
+    "build": "npm run clean && npm run tsc:build",
+    "tsc:build": "./node_modules/.bin/tsc --watch -p ./pine/tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karanjitsingh/pine.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/karanjitsingh/pine/issues"
+  },
+  "homepage": "https://github.com/karanjitsingh/pine#readme",
+  "dependencies": {
+    "@types/node": "^12.7.1",
+    "lightweight-charts": "^1.0.2",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  }
+}

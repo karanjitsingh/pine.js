@@ -18,7 +18,7 @@ dumpJsons = list(filter(lambda file: re.match("^\d{4}-\d{2}-\d{2}\.[12]\.json$",
 
 consolidatedData = []
 
-lastTime = None
+lastTime = []
 
 gaps = []
 
@@ -29,7 +29,7 @@ for i in range(len(dumpJsons)):
     data = json.loads(content)
 
     for j in range(len(data)):
-        if lastTime == None:
+        if lastTime == []:
             lastTime = [data[j][0], dumpJsons[i], j]
         else:
             if data[j][0] - lastTime[0] > minute:
