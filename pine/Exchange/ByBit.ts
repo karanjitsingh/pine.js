@@ -41,23 +41,26 @@ export class ByBitExchange implements IExchange {
             return Promise.reject("Unsupported resolution");
         }
 
-        const endpoint = `https://api2.bybit.com/kline/list?symbol=BTCUSD&resolution=${res}&from=${startTime}to=${endTime}`;
+        const endpoint = `https://api2.bybit.com/kline/list?symbol=BTCUSD&resolution=${res[0]}&from=${Math.floor((startTime - Tick.Day)/1000)}&to=${Math.floor(startTime/1000)}`;
 
-        const data = await this.network.get(endpoint) as SymbolResponse;
+        const response = await this.network.get(endpoint);
+        const data = JSON.parse(response.response) as SymbolResponse;
 
-        Promise.resolve(data.result.map((result: CandleResult): Candle => {
+        const candelData = data.result.map((result: CandleResult): Candle => {
             const startTick = result.start_at;
 
             return {
-                startTick,
-                endTick: startTick + res[1],
+                startTick: startTick * 1000,
+                endTick: (startTick + res[1]) * 1000,
                 high: result.high,
                 open: result.open,
                 close: result.close,
                 low: result.low,
                 volume: result.volume
             } as Candle;
-        }));
+        });
+
+        return Promise.resolve(candelData);
     }
 
     public subscribe(handle: (candle: Candle) => void) {

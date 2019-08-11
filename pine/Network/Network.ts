@@ -3,7 +3,11 @@ export interface INetwork {
 }
 
 export interface NetworkResponse {
-
+    requestId: number,
+    status: number,
+    headers: string,
+    response: string,
+    error: any
 }
 
 function isNode(): boolean {

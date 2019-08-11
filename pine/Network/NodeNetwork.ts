@@ -1,5 +1,5 @@
 import { INetwork, NetworkResponse } from "./Network";
-import * as http from 'http';
+import * as https from 'https';
 import { URL } from 'url';
 
 export class NodeNetwork implements INetwork {
@@ -14,26 +14,39 @@ export class NodeNetwork implements INetwork {
             let status;
             let headers;
             let data = "";
-            
-            var options = {
-                host: urlObj.origin,
-                port: 80,
-                path: urlObj.pathname,
-                method: 'GET',
-                headers: {
-                    "content-type": "application/json",
-                }
-            };
                         
-            var req = http.request(options, function(res) {
-                status = res.statusCode;
-                headers = res.headers;
+            var req = https.get(new URL(url), resp => {
+                status = resp.statusCode;
+                headers = resp.headers;
 
                 console.log(requestId, "STATUS", status);
 
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
+                resp.setEncoding('utf8');
+                resp.on('data', function (chunk) {
                     data += chunk;
+                });
+
+                resp.on('end', function() {
+                    if(status != 200) {
+                        console.log(requestId, "HEADERS", headers)
+                        console.log(requestId, "RESPONSE", data);
+                        reject({
+                            requestId,
+                            status,
+                            headers,
+                            response: data,
+                            error: null
+                        } as NetworkResponse);
+                    }
+                    else {
+                        resolve({
+                            requestId,
+                            status,
+                            headers,
+                            response: data,
+                            error: null
+                        } as NetworkResponse);
+                    }
                 });
             });
             
@@ -47,29 +60,7 @@ export class NodeNetwork implements INetwork {
                     error: e
                 });
             });
-            
-            req.end();
 
-            if(status != 200) {
-                console.log(requestId, "HEADERS", headers)
-                console.log(requestId, "RESPONSE", data);
-                resolve({
-                    requestId,
-                    status,
-                    headers,
-                    response: data,
-                    error: null
-                });
-            }
-            else {
-                reject({
-                    requestId,
-                    status,
-                    headers,
-                    response: data,
-                    error: null
-                });
-            }
         });
     }
 }

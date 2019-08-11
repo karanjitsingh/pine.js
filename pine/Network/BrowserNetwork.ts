@@ -22,9 +22,9 @@ export class BrowserNetwork implements INetwork {
                                 requestId,
                                 status: this.status,
                                 headers: this.getAllResponseHeaders(),
-                                reponse: JSON.parse(this.responseText),
+                                response: this.responseText,
                                 error: null
-                            });
+                            } as NetworkResponse);
                             break;
                         default:
                             console.log(requestId, "HEADERS", this.getAllResponseHeaders())
@@ -33,9 +33,9 @@ export class BrowserNetwork implements INetwork {
                                 requestId,
                                 status: this.status,
                                 headers: this.getAllResponseHeaders(),
-                                reponse: this.responseText,
+                                response: this.responseText,
                                 error: null
-                            })
+                            } as NetworkResponse)
                             break;
                     }
                 }
