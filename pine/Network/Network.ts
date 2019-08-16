@@ -1,14 +1,5 @@
-export interface INetwork {
-    get(url: string): Promise<NetworkResponse>;
-}
+import { INetwork } from "../Model/Platform/Network";
 
-export interface NetworkResponse {
-    requestId: number,
-    status: number,
-    headers: string,
-    response: string,
-    error: any
-}
 
 function isNode(): boolean {
     return typeof process === 'object';

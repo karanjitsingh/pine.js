@@ -1,18 +1,18 @@
-import { Series, SeriesData } from "../Series";
+import { SeriesData, Series, EvaluatedSeries } from "../Data/Series";
 
-export const Expression = (expression: (...args: SeriesData[]) => number, ...args: Series<any>[]): Series<number> => {
-    const minlength = Math.min(...args.map(x => x.data.length));
+export const Expression = (expr: (...args: SeriesData<number>[]) => number, ...args: Series<any>[]): EvaluatedSeries<number> => {
+    const minlength = Math.min(...args.map(x => x.getLength()));
 
     var data: number[] = new Array(minlength);
 
     for(let i =0; i < minlength; i++) {
-        data.push(expression(...args.map(x => x.lookBack(minlength - 1 - i))));
+        data.push(expr(...args.map(x => x.lookBack(minlength - 1 - i))));
     }
 
-    return Series.Create(data);
+    return new EvaluatedSeries(data, expr, args);
 }
 
-export const Min = (s: Series<any> | SeriesData, length: number) => {
+export const Min = (s: Series<number> | SeriesData<number>, length: number) => {
     if(s instanceof Series) {
         s = s.lookBack(0);
     }
@@ -28,7 +28,7 @@ export const Min = (s: Series<any> | SeriesData, length: number) => {
     return min;
 }
 
-export const Max = (s: Series<any> | SeriesData, length: number) => {
+export const Max = (s: Series<number> | SeriesData<number>, length: number) => {
     if(s instanceof Series) {
         s = s.lookBack(0);
     }

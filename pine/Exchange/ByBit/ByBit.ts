@@ -1,6 +1,6 @@
-import { IExchange, Resolution, Candle } from "./IExchange";
-import { NetworkFactory, INetwork } from "../Network/Network";
-import { Tick } from "../Model/Tick";
+import { INetwork } from "../../Model/Platform/Network";
+import { IExchange } from "../../Model/Exchange/IExchange";
+import { Resolution, Candle, Tick } from "../../Model/Data/Data";
 
 interface CandleResult {
     id: number,
@@ -25,10 +25,10 @@ interface SymbolResponse {
 }
 
 export class ByBitExchange implements IExchange {
-    private network: INetwork;
 
-    constructor() {
-        this.network = NetworkFactory.getInstance();
+    public readonly Broker;
+
+    constructor(private network: INetwork) {
     }
 
     public async getData(startTime: number, endTime: number, resolution: Resolution): Promise<Candle[]> {

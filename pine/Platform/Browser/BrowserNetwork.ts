@@ -1,4 +1,4 @@
-import { INetwork, NetworkResponse } from "./Network";
+import { INetwork, NetworkResponse } from "../../Model/Platform/Network";
 
 export class BrowserNetwork implements INetwork {
 
