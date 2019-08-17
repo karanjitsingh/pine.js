@@ -121,7 +121,7 @@ export class OffsettedSeries<T> extends Series<T> {
     }
 }
 
-export class ResolvableSeries extends Series<number> {
+export class SimpleSeries extends Series<number> {
 
     public constructor(private parentSeries: Series<any>, private resolver: (data) => number) {
         super(null);
