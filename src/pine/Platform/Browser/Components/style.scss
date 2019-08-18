@@ -1,4 +1,30 @@
 body {
     margin: 0;
     padding: 0;
+    background: #131722
+}
+
+.split-horizontal > div {
+    float: left;
+}
+
+
+.gutter {
+    background-color: #2a2e39;
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+    cursor: col-resize;
+}
+
+.gutter.gutter-vertical {
+    cursor: row-resize;
+}
+
+.split.split-horizontal,
+.gutter.gutter-horizontal {
+    height: 100%;
+    float: left;
 }
