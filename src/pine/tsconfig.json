@@ -1,12 +1,22 @@
 {
     "compilerOptions": {
         "outDir": "./bin",
+        "module": "amd",
         "sourceMap": true,
         "removeComments": true,
-        "lib": ["es2016", "dom"]
+        "lib": ["es2016", "dom"],
+        "baseUrl": "./",
+        "paths": {
+            "Model/*": [ "./Model/*" ],
+            "Network/*": [ "./Network/*" ],
+            "Exchange/*": [ "./Exchange/*" ],
+            "Platform/*": [ "./Platform/*" ]
+        },
+        "jsx": "react",
+        "moduleResolution": "node",
     },
     "include": [
-        "**/*.ts"
+        "**/*.ts", "**/*.tsx"
     ],
-    "compileOnSave": true
+    "compileOnSave": true,
 }

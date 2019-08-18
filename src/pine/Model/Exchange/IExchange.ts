@@ -1,6 +1,6 @@
-import { IBroker } from "./IBroker";
-import { Candle, Resolution } from "../Data/Data";
-import { DataStream } from "./DataStream";
+import { IBroker } from "Model/Exchange/IBroker";
+import { Resolution, Candle } from "Model/Data/Data";
+import { DataStream } from "Model/Exchange/DataStream";
 
 export interface IExchange {
     readonly Broker: IBroker;

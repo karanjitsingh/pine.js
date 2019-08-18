@@ -1,6 +1,6 @@
 import * as https from 'https';
 import { URL } from 'url';
-import { INetwork, NetworkResponse } from '../../Model/Platform/Network';
+import { INetwork, NetworkResponse } from 'Model/Platform/Network';
 
 export class NodeNetwork implements INetwork {
     private static requestId: number = 0;

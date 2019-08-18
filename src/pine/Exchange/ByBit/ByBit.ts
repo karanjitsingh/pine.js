@@ -3,6 +3,7 @@ import { IExchange } from "../../Model/Exchange/IExchange";
 import { Resolution, Candle, Tick } from "../../Model/Data/Data";
 import { DataStream } from "../../Model/Exchange/DataStream";
 import { IBroker } from "../../Model/Exchange/IBroker";
+import { ExchangeManager } from "Exchange/ExchangeManager";
 
 interface CandleResult {
     id: number,
@@ -95,3 +96,5 @@ export class ByBitExchange implements IExchange {
         }
     }
 }
+
+ExchangeManager.register("ByBit", ByBitExchange);

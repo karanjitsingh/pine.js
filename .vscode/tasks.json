@@ -1,0 +1,31 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run pine server",
+            "type": "shell",
+            "command": "node ./src/web/index.js",
+            "group": "build",
+            "problemMatcher": [],
+        },
+        {
+            "type": "typescript",
+            "tsconfig": "src/pine/tsconfig.json",
+            "option": "watch",
+            "problemMatcher": [
+                "$tsc-watch"
+            ],
+            "group": "build",
+        },
+        {
+            "type": "npm",
+            "script": "build:scss",
+            "problemMatcher": [
+                "$node-sass"
+            ],
+            "group": "build",
+        }
+    ]
+}

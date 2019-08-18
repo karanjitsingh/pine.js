@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const npm = require('npm');
 
 const projectDir = path.dirname(path.dirname(__filename));
 const command = process.argv[2].toLowerCase();
@@ -27,6 +28,29 @@ switch (command) {
         console.log("Deleting", bin);
         deleteFolder(bin);
         break;
+    case "watch":
+        npm.load(() => buildWatcher());
+        break;
+    case "build":
+        npm.load(() => build());
+        break;
     default:
         console.error("Unknown command:", command);
+}
+
+function buildWatcher() {
+    fs.watch("./src/pine", {
+        recursive: true
+    }, (e, file) => {
+        const b = file.endsWith("tsconfig.json") || file.endsWith(".ts") || file.endsWith(".tsx") || file.endsWith(".scss");
+        if(b) {
+            build();
+        }
+    });
+}
+
+function build() {
+    npm.commands["run-script"](["build"], (err) => {
+        console.error(err)
+    });
 }

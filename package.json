@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "clean": "node ./scripts/node.js clean",
-    "build": "npm run clean && npm run tsc:build",
-    "tsc:build": "./node_modules/.bin/tsc --watch -p ./pine/tsconfig.json"
+    "watch": "node ./scripts/node.js watch",
+    "build": "npm run clean && npm run build:tsc && npm run build:scss",
+    "build:tsc": "./node_modules/.bin/tsc -p ./src/pine/tsconfig.json",
+    "build:scss": "node ./node_modules/node-sass/bin/node-sass -rw ./src/pine -o ./src/pine/bin/"
   },
   "repository": {
     "type": "git",
@@ -20,8 +22,13 @@
   "homepage": "https://github.com/karanjitsingh/pine#readme",
   "dependencies": {
     "@types/node": "^12.7.1",
-    "lightweight-charts": "^1.0.2",
+    "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.8.5",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
+  },
+  "devDependencies": {
+    "node-sass": "^4.12.0",
+    "npm": "^6.10.3"
   }
 }
