@@ -4,7 +4,7 @@ import { BrowserNetwork } from "Platform/Browser/BrowserNetwork";
 import { Platform as PlatformBase } from "Platform/Platform";
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import { StrategyViewer } from "Platform/Browser/Components/StrategyViewer";
+import { StrategyViewer } from "Platform/Browser/Components/Strategy/StrategyViewer";
 
 export class Platform extends PlatformBase {
     public readonly PlatformType: PlatformType;

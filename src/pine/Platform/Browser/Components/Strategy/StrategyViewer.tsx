@@ -1,5 +1,5 @@
 import * as React from 'react';
-import SplitWrapper from '../lib/react-split';
+import SplitWrapper from '../../lib/react-split';
 import { TradeLog } from './TradeLog';
 import { Plot } from 'Model/Data/Trading';
 
