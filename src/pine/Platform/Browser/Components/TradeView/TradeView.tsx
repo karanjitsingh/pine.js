@@ -1,16 +1,15 @@
 import * as React from 'react';
 import SplitWrapper from '../../lib/react-split';
 import { TradeLog } from './TradeLog';
-import { Plot } from 'Model/Data/Trading';
+import { Plot, Trade } from 'Model/Data/Trading';
+import { Series } from 'Model/Data/Series';
 
 export interface StrategyViewerProps {
-    Plot : Plot[];
+    Plot: Plot[];
+    TradeBook: Series<Trade>;
 }
 
-export class StrategyViewer extends React.Component<StrategyViewerProps> {
-
-    
-
+export class TradeView extends React.Component<StrategyViewerProps> {
     render() {
         return (
             <div style={{height: "100%", width: "100%"}}>

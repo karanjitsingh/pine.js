@@ -11,20 +11,8 @@ function listener(request,response)
     let file = "";
 
     let promise;
-
-    if(url == "/pine/react.js") {
-        response.writeHead(301, {
-            "Location": "https://unpkg.com/react@16/umd/react.development.js"
-        });
-        response.end();
-    }
-    else if(url == "/pine/react-dom.js") {
-        response.writeHead(301, {
-            "Location": "https://unpkg.com/react-dom@16/umd/react-dom.development.js"
-        });
-        response.end();
-    }
-    else if(url == "/") {
+    
+    if(url == "/") {
         promise = serve(file = path.join(__dirname, "index.html"), response);
     }
     else if(url.startsWith("/pine")) {

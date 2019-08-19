@@ -4,7 +4,8 @@ import { BrowserNetwork } from "Platform/Browser/BrowserNetwork";
 import { Platform as PlatformBase } from "Platform/Platform";
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import { StrategyViewer } from "Platform/Browser/Components/Strategy/StrategyViewer";
+import { TradeView } from "Platform/Browser/Components/TradeView/TradeView";
+import { Page } from "./Components/Page";
 
 export class Platform extends PlatformBase {
     public readonly PlatformType: PlatformType;
@@ -17,6 +18,6 @@ export class Platform extends PlatformBase {
     }
 
     public init() {
-        ReactDOM.render(React.createElement(StrategyViewer), document.querySelector("#platform-content"));
+        ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
     }
 }

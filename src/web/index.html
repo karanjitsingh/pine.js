@@ -1,9 +1,31 @@
 <html>
 
 <head>
-    <script data-main="pine/Main.js" src="scripts/require.js" type="text/javascript"></script>
+    <script src="scripts/require.js" type="text/javascript"></script>
     <script src="scripts/lightweight-charts.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
     <link rel="stylesheet" type="text/css" href="pine/platform/browser/components/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400&display=swap" rel="stylesheet">
+
+    <script type="text/javascript">
+        if(requirejs) {
+            requirejs.config(
+                {
+                    paths: {
+                        "react": "//unpkg.com/react@16/umd/react.production.min",
+                        "react-dom": "//unpkg.com/react-dom@16/umd/react-dom.production.min",
+                        "react-bootstrap": "//unpkg.com/react-bootstrap@next/dist/react-bootstrap.min",
+                        "lightweight-charts": "//unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production"
+                    },
+                    waitSeconds: 0,
+                    baseUrl: './pine'
+                }
+            )
+        }
+        
+        require(['pine/Main.js'])
+    </script>
 </head>
 
 <body>
