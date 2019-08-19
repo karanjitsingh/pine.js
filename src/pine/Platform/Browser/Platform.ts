@@ -4,18 +4,19 @@ import { BrowserNetwork } from "Platform/Browser/BrowserNetwork";
 import { Platform as PlatformBase } from "Platform/Platform";
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import { Page } from "Platform/Browser/Components/Page";
+import { StrategyViewer } from "Platform/Browser/Components/StrategyViewer";
 
-export class Platform implements PlatformBase {
+export class Platform extends PlatformBase {
     public readonly PlatformType: PlatformType;
     public readonly Network: INetwork;
 
     constructor() {
+        super();
         this.Network = new BrowserNetwork();
         this.PlatformType = PlatformType.Node;
     }
 
     public init() {
-        ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
+        ReactDOM.render(React.createElement(StrategyViewer), document.querySelector("#platform-content"));
     }
 }

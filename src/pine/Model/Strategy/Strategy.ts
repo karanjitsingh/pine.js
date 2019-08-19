@@ -1,31 +1,18 @@
-import { Series, RawSeries } from "../Data/Series";
-import { IExchange } from "../Exchange/IExchange";
-import { Trade, OpenTrade, Plot } from "Model/Data/Trading";
-
-export class Trader {
-    public readonly openTrade: OpenTrade;
-    public  readonly TradeBook: Series<Trade>;
-
-    public long(leverage: number, qty: number) {
-
-    }
-    
-    public short(leverage: number, qty: number) {
-
-    }
-
-    public exit() {
-
-    }
-}
+import { IExchange } from "Model/Exchange/IExchange";
+import { Plot } from "Model/Data/Trading";
+import { Trader } from "./Trader";
+import { MessageLogger } from "Platform/MessageLogger";
 
 export abstract class Strategy {
     private static registeredStrategies: {[name: string]: new (exchange: IExchange) => Strategy}
 
-    protected abstract readonly Trader: Trader;
+    protected readonly Trader: Trader;
+    protected readonly MessageLogger: MessageLogger;
 
-    public constructor(exchange: IExchange) {
+    public constructor(exchange: IExchange, messageLogger: MessageLogger) {
         exchange.DataStream.subscribe(this.tick, this);
+        this.MessageLogger = messageLogger;
+        this.Trader = new Trader(exchange.Broker);
     }
 
     public abstract init(): Plot[];
