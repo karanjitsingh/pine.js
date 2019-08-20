@@ -63,7 +63,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
                 <div className="config-selector">
                     <Carousel onSlideEnd={() => this.setState({ activeIndex: this.state.activeIndex, isSliding: false })} activeIndex={this.state.activeIndex | 0} {...carouselProps} className="config-carousel">
                         <CarouselItem className="config-pane">
-                            <ConfigPane heading="Bot Strategy">
+                            <ConfigPane heading="Strategy">
                                 <ListSelector onSelect={(strategy) => this.setState({
                                     ...this.state,
                                     selectedStrategy: strategy
