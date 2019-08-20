@@ -1,4 +1,3 @@
-import { PlatformType } from "Model/Platform/PlatformType";
 import { INetwork } from "Model/Platform/Network";
 import { PlatformBase } from "Platform/PlatformBase";
 import { Reporter } from "Model/Platform/Reporter";

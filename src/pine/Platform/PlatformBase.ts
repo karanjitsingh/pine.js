@@ -1,5 +1,4 @@
 import { INetwork } from "Model/Platform/Network";
-import { PlatformType } from "Model/Platform/PlatformType";
 import { MessageLogger } from "./MessageLogger";
 import { Reporter } from "Model/Platform/Reporter";
 
