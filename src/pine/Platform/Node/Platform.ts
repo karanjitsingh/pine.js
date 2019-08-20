@@ -1,15 +1,15 @@
 import { PlatformType } from "Model/Platform/PlatformType";
 import { INetwork } from "Model/Platform/Network";
-import { Platform as PlatformBase } from "Platform/Platform";
+import { PlatformBase } from "Platform/PlatformBase";
+import { Reporter } from "Model/Platform/Reporter";
 
 export class Platform extends PlatformBase {
-    public readonly PlatformType: PlatformType;
-    public readonly Network: INetwork;
+    protected readonly Network: INetwork;
+    protected readonly Reporter: Reporter;
 
     constructor() {
         super();
         this.Network = new (require('./NodeNetwork').BrowserNetwork)();
-        this.PlatformType = PlatformType.Node;
     }
 
     public init() {

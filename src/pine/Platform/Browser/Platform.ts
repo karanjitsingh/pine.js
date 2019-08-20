@@ -1,23 +1,36 @@
 import { PlatformType } from "Model/Platform/PlatformType";
 import { INetwork } from "Model/Platform/Network";
 import { BrowserNetwork } from "Platform/Browser/BrowserNetwork";
-import { Platform as PlatformBase } from "Platform/Platform";
+import { PlatformBase } from "Platform/PlatformBase";
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import { TradeView } from "Platform/Browser/Components/TradeView/TradeView";
-import { Page } from "./Components/Page";
+import { Page, PageProps } from "./Components/Page";
+import { Reporter } from "Model/Platform/Reporter";
 
 export class Platform extends PlatformBase {
-    public readonly PlatformType: PlatformType;
-    public readonly Network: INetwork;
+    protected readonly Network: INetwork;
+    protected readonly Reporter: Reporter;
 
     constructor() {
         super();
         this.Network = new BrowserNetwork();
-        this.PlatformType = PlatformType.Node;
     }
 
     public init() {
-        ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
+        ReactDOM.render(React.createElement(Page, {
+            availableStrategies: [
+                'strategy 1',
+                'strategy 2',
+                'strategy 3',
+                'strategy 4',
+                'strategy 5',
+                'strategy 6',
+            ],
+            availableExchanges: [
+                'ByBit',
+                'Binance',
+                'Huobi'
+            ]
+        } as PageProps), document.querySelector("#platform-content"));
     }
 }

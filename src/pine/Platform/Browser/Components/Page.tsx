@@ -1,30 +1,61 @@
 import * as React from 'react';
 import { Strategy } from 'Model/Strategy/Strategy';
-import { ConfigSelector } from './ConfigSelector';
-import { TradeView } from './TradeView/TradeView';
+import { TradeView, TradeViewProps } from './TradeView/TradeView';
 import { BotConfiguration } from 'Model/BotConfiguration';
-import { Plot, Trade } from 'Model/Data/Trading';
-import { Series } from 'Model/Data/Series';
+import { PlatformEventEmitter } from 'Model/Events';
+import { StrategyConfigurationProps, StrategyConfiguration } from './StrategyConfiguration';
+import { ReporterData } from 'Model/Platform/Reporter';
 
 export interface PageProps {
     strategySelectedCallback: (config: BotConfiguration) => void;
     availableStrategies: string[];
     availableExchanges: string[];
-    selectedExchange: string;
-    selectedStrategy: string; 
-    plots: Plot[];
-    tradeBook: Series<Trade>;
 }
 
-export class Page extends React.Component<PageProps> {
+interface PageState {
+    Mode: string,
+    TradeViewProps?: TradeViewProps;
+}
+
+export enum PageActions {
+    RenderCharts = "render-charts"
+}
+
+export class Page extends React.Component<PageProps, PageState> {
     private selectedStrategy: Strategy;
 
-    public render() {
-        // if(this.selectedStrategy) {
-            return <ConfigSelector strategySelectedCallback={this.props.strategySelectedCallback}/>
-        // }
-        // else return <TradeView Plot={this.selectedStrategy.}></TradeView>
+    private static PageActionCreator: PlatformEventEmitter<PageActions> = new PlatformEventEmitter<PageActions>();
+
+    public constructor(props) {
+        super(props);
+
+        this.state = {
+            Mode: "Configuration"
+        };
+
+        Page.PageActionCreator.subscribe(PageActions.RenderCharts, this.RenderCharts, this);
+
     }
 
-    private strategySelected
+    public render() {
+        const configSelectorProps: StrategyConfigurationProps = {
+            availableExchanges: this.props.availableExchanges,
+            availableStrategies: this.props.availableStrategies,
+            submitCallback: this.props.strategySelectedCallback,
+        }
+
+        if (this.state.Mode === "Configuration") {
+            return <StrategyConfiguration {...configSelectorProps} />
+        } else {
+            return <TradeView {...this.state.TradeViewProps}></TradeView>
+        }
+    }
+
+    private RenderCharts(data: ReporterData) {
+        this.setState({
+            Mode: "View",
+            TradeViewProps: { data }
+        });
+    }
 }
+

@@ -1,11 +1,11 @@
-import { IPlatform } from "Model/Platform/IPlatform";
 import { INetwork } from "Model/Platform/Network";
 import { PlatformType } from "Model/Platform/PlatformType";
 import { MessageLogger } from "./MessageLogger";
+import { Reporter } from "Model/Platform/Reporter";
 
-export abstract class Platform implements IPlatform {
-    abstract readonly Network: INetwork;
-    abstract readonly PlatformType: PlatformType;
+export abstract class PlatformBase {
+    protected abstract readonly Network: INetwork;
+    protected abstract readonly Reporter: Reporter;
 
     protected readonly MessageLogger: MessageLogger;
 

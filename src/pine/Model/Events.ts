@@ -1,6 +1,6 @@
-type Delegate<TArgs> = (args:TArgs) => void;
+export type Delegate<TArgs> = (EventArgs: TArgs) => void;
 
-class EventEmitter<TEvent extends string> {    
+export class PlatformEventEmitter<TEvent extends string> {    
 
     private events: { [id: string]: Array<[Delegate<any>, Object]>; };
     private once: { [id: string]: Array<any>; };
@@ -65,10 +65,10 @@ class EventEmitter<TEvent extends string> {
 }
 
 export abstract class Subscribable<TArgs> {
-    private emitter: EventEmitter<string>;
+    private emitter: PlatformEventEmitter<string>;
 
     constructor() {
-        this.emitter = new EventEmitter();
+        this.emitter = new PlatformEventEmitter();
     }
 
     public subscribeOnce(): Promise<TArgs> {

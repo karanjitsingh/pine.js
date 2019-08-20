@@ -18,5 +18,8 @@
     "include": [
         "**/*.ts", "**/*.tsx", "Platform/Browser/lib/react-split.jsx"
     ],
+    "exclude": [
+        "./bin/*"
+    ],
     "compileOnSave": true,
 }

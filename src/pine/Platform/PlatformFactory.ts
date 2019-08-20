@@ -1,9 +1,9 @@
 import { Platform as NodePlatform } from "./Node/Platform";
 import { Platform as BrowserPlatform } from "Platform/Browser/Platform";
-import { Platform } from "./Platform";
+import { PlatformBase } from "./PlatformBase";
 
 export class PlatformFactory {
-    public static getPlatform(): Platform {
+    public static getPlatform(): PlatformBase {
         if(typeof(process) === 'object') {
             return new NodePlatform();
         } else {
