@@ -6,6 +6,7 @@ import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import { Page, PageProps } from "./Components/Page";
 import { Reporter } from "Model/Platform/Reporter";
+import { BotConfiguration } from "Model/BotConfiguration";
 
 export class Platform extends PlatformBase {
     protected readonly Network: INetwork;
@@ -16,21 +17,13 @@ export class Platform extends PlatformBase {
         this.Network = new BrowserNetwork();
     }
 
-    public init() {
+    protected _init(availableStrategies: string[],availableExchanges: string[]) {
         ReactDOM.render(React.createElement(Page, {
-            availableStrategies: [
-                'strategy 1',
-                'strategy 2',
-                'strategy 3',
-                'strategy 4',
-                'strategy 5',
-                'strategy 6',
-            ],
-            availableExchanges: [
-                'ByBit',
-                'Binance',
-                'Huobi'
-            ]
+            availableStrategies,
+            availableExchanges,
+            strategySelectCallback: (config: BotConfiguration) => {
+                this.startBot(config);
+            }
         } as PageProps), document.querySelector("#platform-content"));
     }
 }

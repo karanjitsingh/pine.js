@@ -11,7 +11,7 @@ export class Platform extends PlatformBase {
         this.Network = new (require('./NodeNetwork').BrowserNetwork)();
     }
 
-    public init() {
+    protected _init(availableStrategies: string[],availableExchanges: string[]) {
 
     }
 }

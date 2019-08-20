@@ -7,7 +7,7 @@ import { StrategyConfigurationProps, StrategyConfiguration } from './StrategyCon
 import { ReporterData } from 'Model/Platform/Reporter';
 
 export interface PageProps {
-    strategySelectedCallback: (config: BotConfiguration) => void;
+    strategySelectCallback: (config: BotConfiguration) => void;
     availableStrategies: string[];
     availableExchanges: string[];
 }
@@ -41,7 +41,7 @@ export class Page extends React.Component<PageProps, PageState> {
         const configSelectorProps: StrategyConfigurationProps = {
             availableExchanges: this.props.availableExchanges,
             availableStrategies: this.props.availableStrategies,
-            submitCallback: this.props.strategySelectedCallback,
+            submitCallback: this.props.strategySelectCallback,
         }
 
         if (this.state.Mode === "Configuration") {

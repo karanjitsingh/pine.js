@@ -1,5 +1,4 @@
 import { Candle, Resolution } from "Model/Data/Data";
-import { Trade } from "Model/Data/Trading";
 
 export enum PlotType {
     Area,

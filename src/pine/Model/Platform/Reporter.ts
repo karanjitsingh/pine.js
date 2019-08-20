@@ -9,10 +9,16 @@ export interface ReporterData {
 
 export abstract class Reporter {
     
-    public constructor(protected reporterData: ReporterData) {
+    private reporterData: ReporterData;
+
+    public constructor() {
     }
 
-    protected abstract PlotUpdate();
+    public abstract PlotUpdate();
 
-    protected abstract TradeBookUpdate();
+    public abstract TradeBookUpdate();
+
+    public init(reporterData: ReporterData) {
+        this.reporterData = reporterData;
+    }
 }

@@ -1,9 +1,8 @@
 import { INetwork } from "../../Model/Platform/Network";
-import { IExchange } from "../../Model/Exchange/IExchange";
 import { Resolution, Candle, Tick } from "../../Model/Data/Data";
 import { DataStream } from "../../Model/Exchange/DataStream";
 import { IBroker } from "../../Model/Exchange/IBroker";
-import { ExchangeManager } from "Exchange/ExchangeManager";
+import { Exchange } from "Model/Exchange/Exchange";
 
 interface CandleResult {
     id: number,
@@ -27,12 +26,13 @@ interface SymbolResponse {
     result: CandleResult[]
 }
 
-export class ByBitExchange implements IExchange {
+export class ByBitExchange extends Exchange {
 
     public readonly Broker: IBroker;
     public readonly DataStream: DataStream;
 
-    constructor(private network: INetwork, private broker: IBroker) {
+    constructor(protected network: INetwork, private broker: IBroker) {
+        super(network, broker);
     }
 
     public async getData(startTime: number, endTime: number, resolution: Resolution): Promise<Candle[]> {
@@ -96,5 +96,3 @@ export class ByBitExchange implements IExchange {
         }
     }
 }
-
-ExchangeManager.register("ByBit", ByBitExchange);

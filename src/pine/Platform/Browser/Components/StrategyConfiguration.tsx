@@ -123,7 +123,9 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
 
         console.log(config);
 
-        this.props.submitCallback(config);
+        if(this.props.submitCallback) {
+            this.props.submitCallback(config);
+        }
     }
 
     private configButton_OnClick(next: boolean) {
