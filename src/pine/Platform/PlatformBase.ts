@@ -34,7 +34,5 @@ export abstract class PlatformBase {
 
         this.dataController = new DataController(exchange, stratConfig.resolutionSet);
 
-        
-
     }
 }
