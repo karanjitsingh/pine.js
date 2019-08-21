@@ -2,24 +2,19 @@ import { Resolution, Candle } from "../Data/Data";
 import { SimpleSeries, RawSeries } from "../Data/Series";
 import { Subscribable } from "../Events";
 
-export interface MarketData {
-    Open: SimpleSeries,
-    Close: SimpleSeries,
-    High: SimpleSeries,
-    Low: SimpleSeries,
-    Volume: SimpleSeries
+
+export interface StreamData {
+    Candle: Candle;
+    Resolution: Resolution;
 }
 
-export class DataStream extends Subscribable<number> {
+export class DataStream extends Subscribable<StreamData> {
 
-    public constructor(private resolutionCandleMap: {[resolution: string]: RawSeries<Candle>}) {
+    public constructor() {
         super();
     }
 
-    public update(currentCandle: Candle, previousCandle: Candle) {
-        // update raw series
-        const tick = 0;
-
-        this.notifyAll(tick);
+    public update(data: StreamData) {
+        this.notifyAll(data);
     }
 }

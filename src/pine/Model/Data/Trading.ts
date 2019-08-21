@@ -1,5 +1,5 @@
 import { RawSeries, Series } from "./Series";
-import { Candle } from "./Data";
+import { Candle, Resolution } from "./Data";
 
 export interface Trade {
     EntryTick: number;
@@ -13,7 +13,7 @@ export interface Trade {
 }
 
 export interface Plot {
-    Data: RawSeries<Candle>;
+    Resolution: Resolution;
     Indicators: Series<number>[];
 }
 

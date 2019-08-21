@@ -1,14 +1,26 @@
 import { Plot } from "Model/Data/Trading";
 import { Trader } from "./Trader";
 import { MessageLogger } from "Platform/MessageLogger";
-import { DataController } from "Exchange/DataController";
+import { DataController } from "Model/Exchange/DataController";
 import { IBroker } from "Model/Exchange/IBroker";
+import { Resolution, Candle } from "Model/Data/Data";
+import { RawSeries } from "Model/Data/Series";
 
-export type StrategyCtor = new (dataController: DataController, broker: IBroker, messageLogger: MessageLogger) => Strategy;
+export type StrategyCtor = new (broker: IBroker, messageLogger: MessageLogger) => Strategy;
+
+export interface StrategyConfig {
+    resolutionSet: Resolution[];
+}
+
+export interface StrategyInput {
+    resolutionCandleMap: {[resolution: string]: RawSeries<Candle>}
+}
 
 export abstract class Strategy {
     protected readonly Trader: Trader;
     protected readonly MessageLogger: MessageLogger;
+    
+    protected readonly abstract StrategyConfig: StrategyConfig;
 
     private static registeredStrategies: {[name: string]: StrategyCtor} = {}
 
@@ -28,12 +40,14 @@ export abstract class Strategy {
         return this.registeredStrategies[strategy];
     }
 
-
-    public abstract init(): Plot[];
+    public abstract init(input: StrategyInput): Plot[];
     public abstract tick(currentTick);
 
-    public constructor(dataController: DataController, broker: IBroker, messageLogger: MessageLogger) {
-        dataController.subscribe(this.tick, this);
+    public getConfig() {
+        return this.StrategyConfig;
+    }
+
+    public constructor(broker: IBroker, messageLogger: MessageLogger) {
         this.MessageLogger = messageLogger;
         this.Trader = new Trader(broker);
     }

@@ -5,7 +5,7 @@ import { BotConfiguration } from "Model/BotConfiguration";
 import { Strategy, StrategyCtor } from "Model/Strategy/Strategy";
 import { BacktestBroker } from "Exchange/BacktestBroker";
 import { Exchange } from "Model/Exchange/Exchange";
-import { DataController } from "Exchange/DataController";
+import { DataController } from "Model/Exchange/DataController";
 
 export abstract class PlatformBase {
     protected abstract readonly Network: INetwork;
@@ -14,6 +14,7 @@ export abstract class PlatformBase {
     protected readonly MessageLogger: MessageLogger;
 
     private currentStrategy: Strategy;
+    private dataController: DataController;s
 
     public constructor() {
         this.MessageLogger = new MessageLogger();
@@ -27,6 +28,13 @@ export abstract class PlatformBase {
 
     protected startBot(config: BotConfiguration) {
         const exchange = new (Exchange.GetExchangeCtor(config.Exchange))(this.Network, config.BacktestSettings ? new BacktestBroker() : null);
-        this.currentStrategy = new (Strategy.GetStartegyCtor(config.Strategy))(new DataController(exchange), exchange.Broker, this.MessageLogger);
+        this.currentStrategy = new (Strategy.GetStartegyCtor(config.Strategy))(exchange.Broker, this.MessageLogger);
+
+        const stratConfig = this.currentStrategy.getConfig();
+
+        this.dataController = new DataController(exchange, stratConfig.resolutionSet);
+
+        
+
     }
 }
