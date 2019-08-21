@@ -17,6 +17,7 @@ export enum Resolution {
     _1h = "1h",
     _2h = "2h",
     _4h = "4h",
+    _12h = "12h",
     _d = "d"
 }
 

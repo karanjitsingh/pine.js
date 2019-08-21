@@ -89,10 +89,12 @@ export class ByBitExchange extends Exchange {
                 return ["120", Tick.Minute * 120];
             case Resolution._4h:
                 return ["240", Tick.Minute * 240];
+            case Resolution._12h:
+                return ["720", Tick.Minute * 720];
             case Resolution._d:
                 return ["D", Tick.Day];
             default:
-                return null;
+                throw new Error("Resolution not defined");
         }
     }
 }

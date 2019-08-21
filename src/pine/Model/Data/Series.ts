@@ -29,6 +29,11 @@ export abstract class Series<T> extends Subscribable<number> {
 }
 
 export class RawSeries<T> extends Series<T> {
+
+    public constructor(data: T[]) {
+        super(data);
+    }
+
     protected update(offset: number) {
         this.notifyAll(offset);
     }
