@@ -27,10 +27,11 @@ export abstract class Exchange {
         return Object.keys(this.registeredExchanges);
     }
 
-    public abstract getData(startTime: number, endTime: number, resolution: Resolution): Promise<Candle[]>;
+    public abstract getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]>;
     
     constructor(protected network: INetwork, broker: IBroker) {
         this.Broker = broker;
         this.network = network;
+        this.DataStream = new DataStream();
     }
 }

@@ -3,7 +3,7 @@ import * as LighweightCharts from '../../lib/lightweight-charts';
 import { Plot } from 'Model/Data/Trading';
 
 export class Chart extends React.Component<Plot> {
-    
+
     private chartContainerRef: React.RefObject<HTMLDivElement>;
 
 
@@ -20,6 +20,6 @@ export class Chart extends React.Component<Plot> {
     }
 
     public render() {
-        return <div ref={this.chartContainerRef}></div>
+        return <div ref={this.chartContainerRef}></div>;
     }
 }

@@ -14,25 +14,30 @@ export abstract class PlatformBase {
     protected readonly MessageLogger: MessageLogger;
 
     private currentStrategy: Strategy;
-    private dataController: DataController;s
+    private dataController: DataController;
 
     public constructor() {
         this.MessageLogger = new MessageLogger();
     }
 
-    public init() {
+    public init(): void {
         this._init(Strategy.GetRegisteredStrategies(), Exchange.GetRegisteredExchanges());
     }
 
-    protected abstract _init(availableStrategies: string[], availableExchanges: string[]);
+    protected abstract _init(availableStrategies: string[], availableExchanges: string[]): void;
 
-    protected startBot(config: BotConfiguration) {
-        const exchange = new (Exchange.GetExchangeCtor(config.Exchange))(this.Network, config.BacktestSettings ? new BacktestBroker() : null);
+    protected startBot(config: BotConfiguration): void {
+        const exchangeCtor = Exchange.GetExchangeCtor(config.Exchange);
+        const exchange = new exchangeCtor(this.Network, config.BacktestSettings ? new BacktestBroker() : null);
         this.currentStrategy = new (Strategy.GetStartegyCtor(config.Strategy))(exchange.Broker, this.MessageLogger);
 
         const stratConfig = this.currentStrategy.getConfig();
 
         this.dataController = new DataController(exchange, stratConfig.resolutionSet);
+
+
+
+        this.dataController.getBaseData().then((data) => console.log(data));
 
     }
 }

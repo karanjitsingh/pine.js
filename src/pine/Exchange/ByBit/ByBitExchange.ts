@@ -35,36 +35,51 @@ export class ByBitExchange extends Exchange {
         super(network, broker);
     }
 
-    public async getData(startTime: number, endTime: number, resolution: Resolution): Promise<Candle[]> {
-        console.log("ByBit", "getData", startTime, endTime, resolution);
+    public async getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]> {
+        console.log("ByBit", "getData", endTick, endTick - duration, resolution);
 
         const res = this.resolutionMap(resolution);
 
-        if(res == null) {
+        if (res == null) {
             console.error("Unsupported resolution:", res[0]);
             return Promise.reject("Unsupported resolution");
         }
 
-        const endpoint = `https://api2.bybit.com/kline/list?symbol=BTCUSD&resolution=${res[0]}&from=${Math.floor((startTime - Tick.Day)/1000)}&to=${Math.floor(startTime/1000)}`;
+        const from = Math.floor((endTick - duration) / 1000);
+        const to = Math.floor(endTick / 1000);
 
-        const response = await this.network.get(endpoint);
-        const data = JSON.parse(response.response) as SymbolResponse;
+        const endpoint = `https://api2.bybit.com/kline/list?symbol=BTCUSD&resolution=${res[0]}&from=${from}&to=${to}`;
 
-        const candelData = data.result.map((result: CandleResult): Candle => {
-            const startTick = result.start_at;
+        try {
+            const response = await this.network.get(endpoint);
 
-            return {
-                startTick: startTick * 1000,
-                endTick: (startTick + res[1]) * 1000,
-                high: result.high,
-                open: result.open,
-                close: result.close,
-                low: result.low,
-                volume: result.volume
-            } as Candle;
-        });
+            const data = JSON.parse(response.response) as SymbolResponse;
 
-        return Promise.resolve(candelData);
+            if (data.result) {
+                const candleData = data.result.map((result: CandleResult): Candle => {
+                    const startTick = result.start_at;
+
+                    return {
+                        startTick: startTick * 1000,
+                        endTick: (startTick + res[1]) * 1000,
+                        high: result.high,
+                        open: result.open,
+                        close: result.close,
+                        low: result.low,
+                        volume: result.volume
+                    } as Candle;
+                });
+
+                return Promise.resolve(candleData);
+            } else {
+                console.error(data);
+                return Promise.reject(data);
+            }
+        } catch (err) {
+            console.error(err);
+            return Promise.reject({})
+        }
+
     }
 
     public subscribe(handle: (candle: Candle) => void) {

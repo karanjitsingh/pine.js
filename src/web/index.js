@@ -1,6 +1,8 @@
 const http = require('http')
+const https = require('https')
 const fs = require('fs');
 const path = require('path');
+const url = require('url');
 
 const pineBin = path.join(path.dirname(__dirname), "pine", "bin");
 
@@ -17,6 +19,8 @@ function listener(request,response)
     }
     else if(url.startsWith("/pine")) {
         promise = serve(file = path.join(pineBin, url.replace("/pine", "")), response);
+    } else if(url.startsWith("/proxy")) {
+        proxy(request, response);
     } else {
         promise = serve(file = path.join(__dirname, url), response);
     }
@@ -71,6 +75,36 @@ function serve(file, response) {
     })
 
     return promise;
+}
+
+function proxy(request, response) {
+    if(request.method.toLowerCase() == "get") {
+        const url = request.headers["pine-url"];
+        const wrappedHeaders = request.headers["pine-wrapped-headers"];
+
+        const headers = JSON.parse(wrappedHeaders);
+
+        if(url.startsWith("https")) {
+            https.get(new URL(url), (res) => {
+
+                response.writeHead(res.statusCode, res.headers);
+
+                res.setEncoding('utf8');
+
+                let data = "";
+                res.on('data', function (chunk) {
+                    data += chunk;
+                });
+
+                res.on('end', function() {
+                    response.end(data);
+                });
+            })
+        }
+    } else {
+        response.writeHead(405);
+        response.end();
+    } 
 }
 
 var server=http.createServer(listener);

@@ -6,11 +6,11 @@ import { Resolution, Candle, Tick } from "Model/Data/Data";
 
 export interface MarketData {
     Candles: RawSeries<Candle>;
-    Open: SimpleSeries,
-    Close: SimpleSeries,
-    High: SimpleSeries,
-    Low: SimpleSeries,
-    Volume: SimpleSeries
+    Open: SimpleSeries;
+    Close: SimpleSeries;
+    High: SimpleSeries;
+    Low: SimpleSeries;
+    Volume: SimpleSeries;
 }
 
 export interface TickUpdate {
@@ -34,7 +34,7 @@ export class DataController extends Subscribable<number> {
         const promiseList: Promise<Candle[]>[] = [];
 
         this.resolutionSet.forEach(res => {
-            const promise = this.exchange.getData(currentTick - Tick.Day, currentTick, res);
+            const promise = this.exchange.getData(currentTick, Tick.Day, res);
             promise.then((data: Candle[]) => {
                 data[res] = this.getMarketData(data);
             })

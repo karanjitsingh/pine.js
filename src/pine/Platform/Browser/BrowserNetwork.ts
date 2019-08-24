@@ -1,4 +1,5 @@
 import { INetwork, NetworkResponse } from "Model/Platform/Network";
+import { promises } from "dns";
 
 export class BrowserNetwork implements INetwork {
 
@@ -7,41 +8,77 @@ export class BrowserNetwork implements INetwork {
     public async get(url: string): Promise<NetworkResponse> {
 
         const requestId = BrowserNetwork.requestId++;
-        
+
         console.log(requestId, url);
 
         return new Promise((resolve, reject) => {
-            const xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                console.log(requestId, "STATUS", this.status);
-                
-                if (this.readyState == 4) {
-                    switch(this.status) {
-                        case 200:
-                            resolve({
-                                requestId,
-                                status: this.status,
-                                headers: this.getAllResponseHeaders(),
-                                response: this.responseText,
-                                error: null
-                            } as NetworkResponse);
-                            break;
-                        default:
-                            console.log(requestId, "HEADERS", this.getAllResponseHeaders())
-                            console.log(requestId, "RESPONSE", this.responseText);
-                            reject({
-                                requestId,
-                                status: this.status,
-                                headers: this.getAllResponseHeaders(),
-                                response: this.responseText,
-                                error: null
-                            } as NetworkResponse)
-                            break;
-                    }
+            const request = new ProxyRequest();
+            request.send('GET', url, {}).then((req) => {
+                console.log(requestId, "STATUS", req.status);
+
+                switch (req.status) {
+                    case 200:
+                        resolve({
+                            requestId,
+                            status: req.status,
+                            headers: req.getAllResponseHeaders(),
+                            response: req.responseText,
+                            error: null
+                        } as NetworkResponse);
+                        break;
+                    default:
+                        console.log(requestId, "HEADERS", req.getAllResponseHeaders());
+                        console.log(requestId, "RESPONSE", req.responseText);
+                        reject({
+                            requestId,
+                            status: req.status,
+                            headers: req.getAllResponseHeaders(),
+                            response: req.responseText,
+                            error: null
+                        } as NetworkResponse);
+                        break;
                 }
-            };
-            xhttp.open("GET", url, true);
-            xhttp.send();
+            }, (type) => {
+                console.log(requestId, 'network error', 'type:' + type);
+            })
         });
+    }
+}
+
+class ProxyRequest {
+
+    public send(method: string, url: string, headers: { [key: string]: string }): Promise<XMLHttpRequest> {
+        const wrappedHeaders = JSON.stringify(headers);
+
+        const xhttp = new XMLHttpRequest();
+
+        return new Promise((resolve, reject) => {
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    resolve(this);
+                }
+            }
+
+            xhttp.onabort = () => {
+                reject('abort');
+            };
+
+            xhttp.ontimeout = () => {
+                reject('timeout');
+            };
+
+            xhttp.onerror = () => {
+                reject('error');
+            };
+
+            try {
+                xhttp.open(method, "/proxy", true);
+                xhttp.setRequestHeader("pine-wrapped-headers", wrappedHeaders);
+                xhttp.setRequestHeader("pine-url", url);
+                xhttp.send();
+            } catch (ex) {
+                reject(ex);
+            }
+        })
     }
 }
