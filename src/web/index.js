@@ -2,7 +2,6 @@ const http = require('http')
 const https = require('https')
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
 
 const pineBin = path.join(path.dirname(__dirname), "pine", "bin");
 
@@ -77,9 +76,9 @@ function serve(file, response) {
     return promise;
 }
 
-function proxy(request, response) {
+const proxy = (request, response) => {
     if(request.method.toLowerCase() == "get") {
-        const url = request.headers["pine-url"];
+        const url = decodeURIComponent(request.url.match(/.*url=(.*)/)[1]);
         const wrappedHeaders = request.headers["pine-wrapped-headers"];
 
         const headers = JSON.parse(wrappedHeaders);

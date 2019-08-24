@@ -72,9 +72,8 @@ class ProxyRequest {
             };
 
             try {
-                xhttp.open(method, "/proxy", true);
+                xhttp.open(method, "/proxy?url=" + encodeURIComponent(url), true);
                 xhttp.setRequestHeader("pine-wrapped-headers", wrappedHeaders);
-                xhttp.setRequestHeader("pine-url", url);
                 xhttp.send();
             } catch (ex) {
                 reject(ex);

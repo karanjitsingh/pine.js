@@ -28,7 +28,7 @@ export class DataController extends Subscribable<number> {
     }
 
     public getBaseData(): Promise<{ [resolution: string]: MarketData }> {
-        const data: { [resolution: string]: MarketData } = {};
+        const resolutionMarketMap: { [resolution: string]: MarketData } = {};
         const currentTick = new Date().getTime();
 
         const promiseList: Promise<Candle[]>[] = [];
@@ -36,14 +36,16 @@ export class DataController extends Subscribable<number> {
         this.resolutionSet.forEach(res => {
             const promise = this.exchange.getData(currentTick, Tick.Day, res);
             promise.then((data: Candle[]) => {
-                data[res] = this.getMarketData(data);
+                resolutionMarketMap[res] = this.getMarketData(data);
             })
 
             promiseList.push(promise);
         });
 
         return new Promise((resolve) => {
-            Promise.all(promiseList).then(() => { resolve(data); });
+            Promise.all(promiseList).then(() => {
+                resolve(resolutionMarketMap);
+            });
         });
     }
 
