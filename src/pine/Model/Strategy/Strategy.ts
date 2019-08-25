@@ -1,10 +1,11 @@
 import { Plot } from "Model/Data/Trading";
 import { Trader } from "./Trader";
 import { MessageLogger } from "Platform/MessageLogger";
-import { DataController, MarketData } from "Model/Exchange/DataController";
+import { DataController } from "Model/Exchange/DataController";
 import { IBroker } from "Model/Exchange/IBroker";
 import { Resolution, Candle } from "Model/Data/Data";
 import { RawSeries } from "Model/Data/Series";
+import { MarketDataMap } from "Model/Platform/Contracts";
 
 export type StrategyCtor = new (broker: IBroker, messageLogger: MessageLogger) => Strategy;
 
@@ -36,7 +37,7 @@ export abstract class Strategy {
         return this.registeredStrategies[strategy];
     }
 
-    public abstract init(input: {[res: string]: MarketData}): Plot[];
+    public abstract init(input: MarketDataMap): Plot[];
     
     public abstract tick(currentTick);
 

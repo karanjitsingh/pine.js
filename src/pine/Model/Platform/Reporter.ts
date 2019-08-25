@@ -1,4 +1,4 @@
-import { ChartData } from "Platform/Browser/Components/Contracts";
+import { ChartData } from "Model/Platform/Contracts";
 import { Trade, Plot } from "Model/Data/Trading";
 import { Series } from "Model/Data/Series";
 
@@ -7,18 +7,8 @@ export interface ReporterData {
     TradeData: Trade[]
 }
 
-export abstract class Reporter {
-    
-    private reporterData: ReporterData;
-
-    public constructor() {
-    }
-
-    public abstract PlotUpdate();
-
-    public abstract TradeBookUpdate();
-
-    public init(reporterData: ReporterData) {
-        this.reporterData = reporterData;
-    }
+export interface IReporter {
+    plotUpdate();
+    tradeBookUpdate();
+    init(reporterData: ReporterData);
 }

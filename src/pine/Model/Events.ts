@@ -2,12 +2,8 @@ export type Delegate<TArgs> = (EventArgs: TArgs) => void;
 
 export class PlatformEventEmitter<TEvent extends string> {    
 
-    private events: { [id: string]: Array<[Delegate<any>, Object]>; };
-    private once: { [id: string]: Array<any>; };
-
-    constructor() {
-        this.events = {};
-    }
+    private events: { [id: string]: Array<[Delegate<any>, Object]>; } = {};
+    private once: { [id: string]: Array<any>; } = {};
 
     public subsribeOnce(event: TEvent): Promise<any> {
         let resolution;
@@ -29,7 +25,7 @@ export class PlatformEventEmitter<TEvent extends string> {
 
         const eventExists = this.events[event].filter((value) => {
             value[0] == listener && value[1] == scope;
-        }).length == 0;
+        }).length > 0;
 
         if(!eventExists) {
             this.events[event].push([listener, scope]);

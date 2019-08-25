@@ -3,15 +3,7 @@ import { Exchange } from "Model/Exchange/Exchange";
 import { SimpleSeries, RawSeries, Series } from "Model/Data/Series";
 import { StreamData } from "./DataStream";
 import { Resolution, Candle, Tick } from "Model/Data/Data";
-
-export interface MarketData {
-    Candles: RawSeries<Candle>;
-    Open: SimpleSeries;
-    Close: SimpleSeries;
-    High: SimpleSeries;
-    Low: SimpleSeries;
-    Volume: SimpleSeries;
-}
+import { MarketData } from "Model/Platform/Contracts";
 
 export interface TickUpdate {
     updatedResolutions: Resolution[],

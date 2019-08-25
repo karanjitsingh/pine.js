@@ -4,21 +4,40 @@ import { TradeLog } from './TradeLog';
 import { ReporterData } from 'Model/Platform/Reporter';
 
 export interface TradeViewProps {
-    data: ReporterData
+    data: ReporterData,
+    // update:
 }
 
 export class TradeView extends React.Component<TradeViewProps> {
-    render() {
+
+    public shouldComponentUpdate() {
+        return false;
+    }
+
+    public render() {
         return (
-            <div style={{height: "100%", width: "100%"}}>
-                <SplitWrapper sizes={[70,30]} minSize={100} dragInterval={1} gutterSize={5} direction={"horizontal"}>
-                    <SplitWrapper minSize={100} dragInterval={1} gutterSize={5} direction={"vertical"}>
-                        <div>a</div>
-                        <div>a</div>
-                    </SplitWrapper>
+            <div style={{ height: "100%", width: "100%" }}>
+                <SplitWrapper sizes={[70, 30]} minSize={100} dragInterval={1} gutterSize={5} direction={"horizontal"}>
+                    {this.getChartSplit(this.props.data)}
                     <TradeLog></TradeLog>
                 </SplitWrapper>
             </div>
         )
+    }
+
+    private getChartSplit(reporterData: ReporterData): JSX.Element {
+        const chartCount = reporterData.Charts.length;
+        
+        const sizes = new Array(chartCount).fill(Math.floor(100/chartCount));
+        const sum = sizes.reduce((total, value) => (total + value));
+
+        sizes[0] += 100 - sum;
+
+        return (
+            <SplitWrapper minSize={100} dragInterval={1} gutterSize={5} direction={"vertical"}>
+                <div>a</div>
+                <div>a</div>
+            </SplitWrapper>
+        );
     }
 }

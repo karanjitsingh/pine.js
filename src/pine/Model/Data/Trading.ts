@@ -1,5 +1,6 @@
 import { RawSeries, Series } from "./Series";
 import { Candle, Resolution } from "./Data";
+import { PlotType } from "Model/Platform/Contracts";
 
 export interface Trade {
     EntryTick: number;
@@ -14,7 +15,7 @@ export interface Trade {
 
 export interface Plot {
     Resolution: Resolution;
-    Indicators: Series<number>[];
+    Indicators: [PlotType, Series<number>][];
 }
 
 export enum Position {

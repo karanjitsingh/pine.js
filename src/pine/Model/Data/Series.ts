@@ -26,6 +26,14 @@ export abstract class Series<T> extends Subscribable<number> {
     public getLength(): number {
         return this.data.length;
     }
+
+    public getData(offset?:number) {
+        if(!offset) {
+            return this.data;
+        } else {
+            this.data.slice(this.data.length - offset, this.data.length);
+        }
+    }
 }
 
 export class RawSeries<T> extends Series<T> {
@@ -104,6 +112,8 @@ export class EvaluatedSeries<T> extends Series<T> {
 
         this.notifyAll(offset);
     }
+
+    public 
 }
 
 export class OffsettedSeries<T> extends Series<T> {
@@ -123,6 +133,17 @@ export class OffsettedSeries<T> extends Series<T> {
 
     protected update(offset: number) {
         console.warn("Can't update series of type OffsettedSeries<T>");
+    }
+
+    public getData(offset?: number) {
+        const data = this.parentSeries.getData();
+        const length = data.length - this.seriesOffset; 
+        if(!offset) {
+            return data.slice(0, length);
+        }
+        else {
+            return this.data.slice(length - offset, length);   
+        }
     }
 }
 
@@ -151,4 +172,11 @@ export class SimpleSeries extends Series<number> {
     protected update(offset: number) {
         console.warn("Can't update series of type ResolvableSeries");
     }
+
+    public getData(offset?: number) {
+
+        // todo: optimize multiple non-offsetted calls
+        return this.parentSeries.getData(offset).map(value => this.resolver(value));
+    }
+
 }

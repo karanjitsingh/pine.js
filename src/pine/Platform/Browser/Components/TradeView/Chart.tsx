@@ -19,6 +19,10 @@ export class Chart extends React.Component<Plot> {
         // charts.createChart(this.)
     }
 
+    public shouldComponentUpdate() {
+        return false;
+    }
+
     public render() {
         return <div ref={this.chartContainerRef}></div>;
     }
