@@ -6,6 +6,6 @@
 
 ### To Do
 
-[ ] Move all execution to nodejs
-[ ] Only reporter implementation on browser
-[ ] Get data optimization
+- [ ] Move all execution to nodejs
+- [ ] Only reporter implementation on browser
+- [ ] Get data optimization
