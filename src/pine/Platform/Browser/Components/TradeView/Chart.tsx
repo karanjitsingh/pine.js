@@ -32,6 +32,7 @@ export class Chart extends React.Component<ChartProps> {
             container.onresize = this.chartResize.bind(this);
 
 
+            // https://jsfiddle.net/noq980ds/6/
             
             this.chart = LightweightCharts.createChart(container, {
                 width: container.offsetWidth,

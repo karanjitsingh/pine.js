@@ -4,4 +4,10664 @@
  * Copyright (c) 2019 TradingView, Inc.
  * Licensed under Apache License 2.0 https://www.apache.org/licenses/LICENSE-2.0
  */
-!function(){"use strict";var t,e;function i(t,e,i,n,o,s){isFinite(e)&&isFinite(n)&&isFinite(i)&&isFinite(o)&&(t.save(),r(t,s),t.beginPath(),t.moveTo(e,i),t.lineTo(n,o),t.stroke(),t.restore())}function r(t,e){var i,r=((i={})[0]=[],i[1]=[t.lineWidth,2*t.lineWidth],i[2]=[5*t.lineWidth,6*t.lineWidth],i[3]=[6*t.lineWidth,6*t.lineWidth],i[4]=[t.lineWidth,4*t.lineWidth],i)[e];t.setLineDash(r)}!function(t){t[t.Simple=0]="Simple",t[t.WithSteps=1]="WithSteps"}(t||(t={})),function(t){t[t.Solid=0]="Solid",t[t.Dotted=1]="Dotted",t[t.Dashed=2]="Dashed",t[t.LargeDashed=3]="LargeDashed",t[t.SparseDotted=4]="SparseDotted"}(e||(e={}));var n=function(t,e){return(n=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var i in e)e.hasOwnProperty(i)&&(t[i]=e[i])})(t,e)};function o(t,e){function i(){this.constructor=t}n(t,e),t.prototype=null===e?Object.create(e):(i.prototype=e.prototype,new i)}var s=function(){return(s=Object.assign||function(t){for(var e,i=1,r=arguments.length;i<r;i++)for(var n in e=arguments[i])Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t}).apply(this,arguments)};function a(t,e){if(!t)throw new Error("Assertion failed"+(e?": "+e:""))}function h(t){if(void 0===t)throw new Error("Value is undefined");return t}function l(t){if(null===t)throw new Error("Value is null");return t}function c(t){return l(h(t))}function u(t){for(var e=[],i=1;i<arguments.length;i++)e[i-1]=arguments[i];for(var r=0,n=e;r<n.length;r++){var o=n[r];for(var s in o)void 0!==o[s]&&("object"!=typeof o[s]||void 0===t[s]?t[s]=o[s]:u(t[s],o[s]))}return t}function p(t){return"number"==typeof t&&isFinite(t)}function d(t){return"number"==typeof t&&t%1==0}function _(t){return"string"==typeof t}function f(t){return!(t<=0||t>0)}function m(t){var e,i,r,n=t;if(!n||"object"!=typeof n)return n;for(i in e=Array.isArray(n)?[]:{},n)n.hasOwnProperty(i)&&(r=n[i],e[i]=r&&"object"==typeof r?m(r):r);return e}function v(t){return null!==t}function g(t){return null===t?void 0:t}var y=function(){function t(){this._renderers=[]}return t.prototype.setRenderers=function(t){this._renderers=t},t.prototype.draw=function(t,e){this._renderers.forEach(function(i){t.save(),i.draw(t,e),t.restore()})},t}(),b=function(){function t(){this._data=null}return t.prototype.setData=function(t){this._data=t},t.prototype.draw=function(t){if(null!==this._data&&null!==this._data.visibleRange){var e=this._data.visibleRange,i=this._data,r=function(r){t.beginPath();for(var n=e.to-1;n>=e.from;--n){var o=i.items[n];t.moveTo(o.x,o.y),t.arc(o.x,o.y,r,0,2*Math.PI)}t.fill()};t.fillStyle=i.backColor,r(i.radius+2),t.fillStyle=i.lineColor,r(i.radius)}},t}();var S,x,w,C,T={from:0,to:1},M=function(){function t(t,e){this._compositeRenderer=new y,this._markersRenderers=[],this._markersData=[],this._invalidated=!0,this._chartModel=t,this._crosshair=e,this._compositeRenderer.setRenderers(this._markersRenderers)}return t.prototype.update=function(t){var e=this,i=this._chartModel.serieses();i.length!==this._markersRenderers.length&&(this._markersData=i.map(function(){return{items:[{x:0,y:0,time:0,price:0}],lineColor:"",backColor:e._chartModel.options().layout.backgroundColor,radius:0,visibleRange:null}}),this._markersRenderers=this._markersData.map(function(t){var e=new b;return e.setData(t),e}),this._compositeRenderer.setRenderers(this._markersRenderers)),this._invalidated=!0},t.prototype.renderer=function(t,e,i){return this._invalidated&&(this._updateImpl(),this._invalidated=!1),this._compositeRenderer},t.prototype._updateImpl=function(){var t=this,e=this._chartModel.serieses(),i=this._crosshair.appliedIndex(),r=this._chartModel.timeScale();e.forEach(function(e,n){var o=t._markersData[n],s=e.markerDataAtIndex(i);if(null===s)o.visibleRange=null;else{var a=l(e.firstValue());o.lineColor=e.barColorer().barStyle(i).barColor,o.backColor=t._chartModel.options().layout.backgroundColor,o.radius=s.radius,o.items[0].price=s.price,o.items[0].y=e.priceScale().priceToCoordinate(s.price,a),o.items[0].time=i,o.items[0].x=r.indexToCoordinate(i),o.visibleRange=T}})},t}(),k=function(){function t(t){this._data=t}return t.prototype.draw=function(t){if(null!==this._data){var e=this._data.vertLine.visible,r=this._data.horzLine.visible;if(e||r){var n=this._data.vertLine.lineWidth%2==0?.5:0,o=this._data.horzLine.lineWidth%2==0?.5:0,s=this._data.x+1+o,a=this._data.y+n,h=this._data.w,l=this._data.h;e&&s>=0&&(t.lineWidth=this._data.vertLine.lineWidth,t.strokeStyle=this._data.vertLine.color,t.fillStyle=this._data.vertLine.color,i(t,s,0,s,l,this._data.vertLine.lineStyle)),r&&a>=0&&(t.lineWidth=this._data.horzLine.lineWidth,t.strokeStyle=this._data.horzLine.color,t.fillStyle=this._data.horzLine.color,i(t,0,a,h,a,this._data.horzLine.lineStyle))}}},t}(),P=function(){function t(t){this._invalidated=!0,this._rendererData={vertLine:{lineWidth:1,lineStyle:0,color:"",visible:!1},horzLine:{lineWidth:1,lineStyle:0,color:"",visible:!1},w:0,h:0,x:0,y:0},this._renderer=new k(this._rendererData),this._source=t}return t.prototype.update=function(){this._invalidated=!0},t.prototype.renderer=function(t,e){return this._invalidated&&this._updateImpl(),this._renderer},t.prototype._updateImpl=function(){var t=this._source.visible(),e=l(this._source.pane()),i=e.model().options().crosshair,r=this._rendererData;r.horzLine.visible=t&&this._source.horzLineVisible(e),r.vertLine.visible=t&&this._source.vertLineVisible(),r.horzLine.lineWidth=i.horzLine.width,r.horzLine.lineStyle=i.horzLine.style,r.horzLine.color=i.horzLine.color,r.vertLine.lineWidth=i.vertLine.width,r.vertLine.lineStyle=i.vertLine.style,r.vertLine.color=i.vertLine.color,r.w=e.width(),r.h=e.height(),r.x=this._source.appliedX(),r.y=this._source.appliedY()},t}(),D={aliceblue:"#f0f8ff",antiquewhite:"#faebd7",aqua:"#00ffff",aquamarine:"#7fffd4",azure:"#f0ffff",beige:"#f5f5dc",bisque:"#ffe4c4",black:"#000000",blanchedalmond:"#ffebcd",blue:"#0000ff",blueviolet:"#8a2be2",brown:"#a52a2a",burlywood:"#deb887",cadetblue:"#5f9ea0",chartreuse:"#7fff00",chocolate:"#d2691e",coral:"#ff7f50",cornflowerblue:"#6495ed",cornsilk:"#fff8dc",crimson:"#dc143c",cyan:"#00ffff",darkblue:"#00008b",darkcyan:"#008b8b",darkgoldenrod:"#b8860b",darkgray:"#a9a9a9",darkgreen:"#006400",darkkhaki:"#bdb76b",darkmagenta:"#8b008b",darkolivegreen:"#556b2f",darkorange:"#ff8c00",darkorchid:"#9932cc",darkred:"#8b0000",darksalmon:"#e9967a",darkseagreen:"#8fbc8f",darkslateblue:"#483d8b",darkslategray:"#2f4f4f",darkturquoise:"#00ced1",darkviolet:"#9400d3",deeppink:"#ff1493",deepskyblue:"#00bfff",dimgray:"#696969",dodgerblue:"#1e90ff",feldspar:"#d19275",firebrick:"#b22222",floralwhite:"#fffaf0",forestgreen:"#228b22",fuchsia:"#ff00ff",gainsboro:"#dcdcdc",ghostwhite:"#f8f8ff",gold:"#ffd700",goldenrod:"#daa520",gray:"#808080",green:"#008000",greenyellow:"#adff2f",honeydew:"#f0fff0",hotpink:"#ff69b4",indianred:"#cd5c5c",indigo:"#4b0082",ivory:"#fffff0",khaki:"#f0e68c",lavender:"#e6e6fa",lavenderblush:"#fff0f5",lawngreen:"#7cfc00",lemonchiffon:"#fffacd",lightblue:"#add8e6",lightcoral:"#f08080",lightcyan:"#e0ffff",lightgoldenrodyellow:"#fafad2",lightgreen:"#90ee90",lightgrey:"#d3d3d3",lightpink:"#ffb6c1",lightsalmon:"#ffa07a",lightseagreen:"#20b2aa",lightskyblue:"#87cefa",lightslateblue:"#8470ff",lightslategray:"#778899",lightsteelblue:"#b0c4de",lightyellow:"#ffffe0",lime:"#00ff00",limegreen:"#32cd32",linen:"#faf0e6",magenta:"#ff00ff",maroon:"#800000",mediumaquamarine:"#66cdaa",mediumblue:"#0000cd",mediumorchid:"#ba55d3",mediumpurple:"#9370d8",mediumseagreen:"#3cb371",mediumslateblue:"#7b68ee",mediumspringgreen:"#00fa9a",mediumturquoise:"#48d1cc",mediumvioletred:"#c71585",midnightblue:"#191970",mintcream:"#f5fffa",mistyrose:"#ffe4e1",moccasin:"#ffe4b5",navajowhite:"#ffdead",navy:"#000080",oldlace:"#fdf5e6",olive:"#808000",olivedrab:"#6b8e23",orange:"#ffa500",orangered:"#ff4500",orchid:"#da70d6",palegoldenrod:"#eee8aa",palegreen:"#98fb98",paleturquoise:"#afeeee",palevioletred:"#d87093",papayawhip:"#ffefd5",peachpuff:"#ffdab9",peru:"#cd853f",pink:"#ffc0cb",plum:"#dda0dd",powderblue:"#b0e0e6",purple:"#800080",red:"#ff0000",rosybrown:"#bc8f8f",royalblue:"#4169e1",saddlebrown:"#8b4513",salmon:"#fa8072",sandybrown:"#f4a460",seagreen:"#2e8b57",seashell:"#fff5ee",sienna:"#a0522d",silver:"#c0c0c0",skyblue:"#87ceeb",slateblue:"#6a5acd",slategray:"#708090",snow:"#fffafa",springgreen:"#00ff7f",steelblue:"#4682b4",tan:"#d2b48c",teal:"#008080",thistle:"#d8bfd8",tomato:"#ff6347",turquoise:"#40e0d0",violet:"#ee82ee",violetred:"#d02090",wheat:"#f5deb3",white:"#ffffff",whitesmoke:"#f5f5f5",yellow:"#ffff00",yellowgreen:"#9acd32"};function E(t){return function(t,e,i){return f(e)?t:e<t?t:e>i?i:Math.round(e)}(0,t,255)}function R(t){return function(t,e,i){return f(e)?t:e<t?t:e>i?i:Math.round(1e4*e)/1e4}(0,t,1)}function I(t){(t=t.toLowerCase())in D&&(t=D[t]);var e,i,r=(e=t,null!==(i=w.re.exec(e))?w.parse(i):null);if(null!==r)return r;var n=function(t){var e=x.re.exec(t);return null!==e?x.parse(e):null}(t);if(null!==n)return n;var o=function(t){var e=S.re.exec(t);return null!==e?S.parse(e):null}(t);if(null!==o)return o;var s=function(t){var e=C.re.exec(t);return null!==e?C.parse(e):null}(t);return null!==s?[s[0],s[1],s[2]]:null}function V(t){var e=I(t);if(null!==e)return e;throw new Error("Passed color string "+t+" does not match any of the known color representations")}function A(t,e){if(e<0||e>255)throw new Error("invalid threshold value, valid values are [0, 255]");return function(t){return.199*t[0]+.687*t[1]+.114*t[2]}(t)>=e?"white":"black"}function L(t){return function(t){return 0===t.indexOf("#")}(t)?t:(i=V(t),r=1,"rgba("+(e=[i[0],i[1],i[2],R(r)])[0]+", "+e[1]+", "+e[2]+", "+e[3]+")");var e,i,r}function O(t){return"black"===A(V(t),160)?"white":"black"}!function(t){t.re=/^#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])$/,t.parse=function(t){return[E(parseInt(t[1]+t[1],16)),E(parseInt(t[2]+t[2],16)),E(parseInt(t[3]+t[3],16))]}}(S||(S={})),function(t){t.re=/^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,t.parse=function(t){return[E(parseInt(t[1],16)),E(parseInt(t[2],16)),E(parseInt(t[3],16))]}}(x||(x={})),function(t){t.re=/^rgb\(\s*(-?\d{1,10})\s*,\s*(-?\d{1,10})\s*,\s*(-?\d{1,10})\s*\)$/,t.parse=function(t){return[E(parseInt(t[1],10)),E(parseInt(t[2],10)),E(parseInt(t[3],10))]}}(w||(w={})),function(t){t.re=/^rgba\(\s*(-?\d{1,10})\s*,\s*(-?\d{1,10})\s*,\s*(-?\d{1,10})\s*,\s*(-?[\d]{0,10}(?:\.\d+)?)\s*\)$/,t.parse=function(t){return[E(parseInt(t[1],10)),E(parseInt(t[2],10)),E(parseInt(t[3],10)),R(parseFloat(t[4]))]}}(C||(C={}));var z=function(){function t(t,e){this.setData(t,e)}return t.prototype.setData=function(t,e){this._data=t,this._commonData=e},t.prototype.draw=function(t,e,i,r,n){if(this._data.visible){var o=e.fontSize;t.font=e.font;var s=this._data.tickVisible?e.tickLength:0,a=this._data.borderVisible?e.borderSize:0,h=e.paddingTop,l=e.paddingBottom,c=e.paddingInner,u=e.paddingOuter,p=this._data.text,d=Math.ceil(i.measureText(t,p)),_=e.baselineOffset,f=e.fontSize+h+l,m=a+d+c+u+s,v=this._commonData.coordinate;this._commonData.fixedCoordinate&&(v=this._commonData.fixedCoordinate);var g,y,b=v-Math.floor(o/2)-h-.5,S=b+f,x="right"===n,w=x?r-a-.5:.5,C=w;t.fillStyle=L(this._commonData.background),t.lineWidth=1,t.lineCap="butt",p&&(x?(g=w-s,y=(C=w-m)+u):(C=w+m,g=w+s,y=w+a+s+c),t.beginPath(),t.moveTo(w,b),t.lineTo(C,b),t.lineTo(C,S),t.lineTo(w,S),t.fill(),this._data.tickVisible&&(t.beginPath(),t.strokeStyle=this._commonData.color,t.moveTo(w,v),t.lineTo(g,v),t.stroke()),t.textAlign="left",t.fillStyle=this._commonData.color,t.fillText(p,y,S-l-_))}},t.prototype.height=function(t,e){return this._data.visible?t.fontSize+t.paddingTop+t.paddingBottom:0},t}(),B=function(){function t(t){this._commonRendererData={coordinate:0,color:"#FFF",background:"#000"},this._axisRendererData={text:"",visible:!1,tickVisible:!0,borderVisible:!0,lineStyle:1},this._paneRendererData={text:"",visible:!1,tickVisible:!1,borderVisible:!1,lineStyle:1},this._invalidated=!0,this._axisRenderer=new(t||z)(this._axisRendererData,this._commonRendererData),this._paneRenderer=new(t||z)(this._paneRendererData,this._commonRendererData)}return t.prototype.text=function(){return this._axisRendererData.text},t.prototype.background=function(){return this._commonRendererData.background},t.prototype.color=function(){return O(this.background())},t.prototype.coordinate=function(){return this._updateRendererDataIfNeeded(),this._commonRendererData.coordinate},t.prototype.floatCoordinate=function(){return this._updateRendererDataIfNeeded(),this._commonRendererData.floatCoordinate||this._commonRendererData.coordinate},t.prototype.update=function(){this._invalidated=!0},t.prototype.height=function(t,e){return void 0===e&&(e=!1),Math.max(this._axisRenderer.height(t,e),this._paneRenderer.height(t,e))},t.prototype.getFixedCoordinate=function(){return this._commonRendererData.fixedCoordinate||0},t.prototype.setFixedCoordinate=function(t){this._commonRendererData.fixedCoordinate=t},t.prototype.isVisible=function(){return this._updateRendererDataIfNeeded(),this._axisRendererData.visible||this._paneRendererData.visible},t.prototype.isAxisLabelVisible=function(){return this._updateRendererDataIfNeeded(),this._axisRendererData.visible},t.prototype.isPaneLabelVisible=function(){return this._updateRendererDataIfNeeded(),this._paneRendererData.visible},t.prototype.renderer=function(){return this._updateRendererDataIfNeeded(),this._axisRenderer.setData(this._axisRendererData,this._commonRendererData),this._paneRenderer.setData(this._paneRendererData,this._commonRendererData),this._axisRenderer},t.prototype.paneRenderer=function(){return this._updateRendererDataIfNeeded(),this._axisRenderer.setData(this._axisRendererData,this._commonRendererData),this._paneRenderer.setData(this._paneRendererData,this._commonRendererData),this._paneRenderer},t.prototype._updateRendererDataIfNeeded=function(){this._invalidated&&(this._updateRendererData(this._axisRendererData,this._paneRendererData,this._commonRendererData),this._invalidated=!1)},t}(),W=function(t){function e(e,i,r){var n=t.call(this)||this;return n._source=e,n._priceScale=i,n._valueProvider=r,n}return o(e,t),e.prototype._updateRendererData=function(t,e,i){t.visible=!1;var r=this._source.options().horzLine;if(r.labelVisible){var n=this._priceScale.mainSource(),o=null!==n?n.firstValue():null;if(this._source.visible()&&!this._priceScale.isEmpty()&&null!==o){i.background=r.labelBackgroundColor,i.color=O(r.labelBackgroundColor);var s=this._valueProvider(this._priceScale);i.coordinate=s.coordinate,t.text=this._priceScale.formatPrice(s.price,o),t.visible=!0}}},e}(B),F=/[1-9]/g,N=function(){function t(){this._data=null}return t.prototype.setData=function(t){this._data=t},t.prototype.draw=function(t,e){if(null!==this._data&&!1!==this._data.visible&&0!==this._data.text.length){t.font=e.font;var i=Math.round(e.widthCache.measureText(t,this._data.text,F));if(!(i<=0)){var r=e.paddingHorizontal,n=i+2*r,o=n/2,s=this._data.width,a=this._data.coordinate,h=Math.floor(a-o)+.5;h<0?(a+=Math.abs(0-h),h=Math.floor(a-o)+.5):h+n>s&&(a-=Math.abs(s-(h+n)),h=Math.floor(a-o)+.5);var l=h+n,c=-.5+e.borderSize+e.paddingTop+e.fontSize+e.paddingBottom;t.fillStyle=this._data.background,t.lineWidth=1,function(t,e,i,r,n,o){t.beginPath(),t.moveTo(e+o,i),t.lineTo(e+r-o,i),t.arcTo(e+r,i,e+r,i+o,o),t.lineTo(e+r,i+n-o),t.arcTo(e+r,i+n,e+r-o,i+n,o),t.lineTo(e+o,i+n),t.arcTo(e,i+n,e,i+n-o,o),t.lineTo(e,i+o),t.arcTo(e,i,e+o,i,o)}(t,h,-.5,l-h,c- -.5,1),t.fill();var u=Math.round(this._data.coordinate+1),p=-.5+e.borderSize+e.tickLength;t.strokeStyle=this._data.color,t.beginPath(),t.moveTo(u,-.5),t.lineTo(u,p),t.stroke();var d=c-e.baselineOffset-e.paddingBottom;t.textAlign="left",t.fillStyle=this._data.color,t.fillText(this._data.text,h+r,d)}}},t}();var H,U=function(t){function e(e,i,r){var n=t.call(this)||this;return n._invalidated=!0,n._renderer=new N,n._rendererData={visible:!1,background:"#4c525e",color:"white",text:"",width:0,coordinate:NaN},n._crosshair=e,n._model=i,n._valueProvider=r,n}return o(e,t),e.prototype.update=function(){this._invalidated=!0},e.prototype.renderer=function(){return this._invalidated&&(this._updateImpl(),this._invalidated=!1),this._renderer.setData(this._rendererData),this._renderer},e.prototype._updateImpl=function(){var t=this._rendererData;t.visible=!1;var e=this._crosshair.options().vertLine;if(e.labelVisible){var i=this._model.timeScale();if(!i.isEmpty()){var r=i.indexToUserTime(this._crosshair.appliedIndex());t.width=i.width();var n=this._valueProvider();n.time&&(t.coordinate=n.coordinate,t.text=i.formatDateTime(l(r)),t.visible=!0,t.background=e.labelBackgroundColor,t.color=O(e.labelBackgroundColor))}}},e}(function(){function t(){this._text="",this._background="#585858",this._coordinate=0}return t.prototype.text=function(){return this._text},t.prototype.background=function(){return this._background},t.prototype.color=function(){return"black"===A(V(this._background),150)?"white":"black"},t.prototype.coordinate=function(){return this._coordinate},t}()),Y=function(){function t(){this._priceScale=null,this._zorder=0}return t.prototype.zorder=function(){return this._zorder},t.prototype.setZorder=function(t){this._zorder=t},t.prototype.priceScale=function(){return this._priceScale},t.prototype.setPriceScale=function(t){this._priceScale=t},t.prototype.priceAxisViews=function(t,e){return[]},t.prototype.paneViews=function(t){return[]},t.prototype.timeAxisViews=function(){return[]},t}();!function(t){t[t.Normal=0]="Normal",t[t.Magnet=1]="Magnet"}(H||(H={}));var X=function(t){function e(e,i){var r=t.call(this)||this;r._pane=null,r._price=NaN,r._index=0,r._visible=!0,r._priceAxisViews=new Map,r._subscribed=!1,r._x=NaN,r._y=NaN,r._originX=NaN,r._originY=NaN,r._model=e,r._options=i,r._markersPaneView=new M(e,r);var n,o;r._currentPosPriceProvider=(n=function(){return r._price},o=function(){return r._y},function(t){var e=o(),i=n();if(t===l(r._pane).defaultPriceScale())return{price:i,coordinate:e};var s=l(t.mainSource()),a=l(s.firstValue());return{price:t.coordinateToPrice(e,a),coordinate:e}});var s=function(t,e){return function(){return{time:r._model.timeScale().indexToUserTime(t()),coordinate:e()}}}(function(){return r._index},function(){return r.appliedX()});return r._timeAxisView=new U(r,e,s),r._paneView=new P(r),r}return o(e,t),e.prototype.index=function(){return this._index},e.prototype.options=function(){return this._options},e.prototype.saveOriginCoord=function(t,e){this._originX=t,this._originY=e},e.prototype.clearOriginCoord=function(){this._originX=NaN,this._originY=NaN},e.prototype.originCoordX=function(){return this._originX},e.prototype.originCoordY=function(){return this._originY},e.prototype.setPosition=function(t,e,i){this._subscribed||(this._subscribed=!0),this._visible=!0,this._tryToUpdateViews(t,e,i)},e.prototype.appliedIndex=function(){return this._index},e.prototype.appliedX=function(){return this._x},e.prototype.appliedY=function(){return this._y},e.prototype.visible=function(){return this._visible},e.prototype.clearPosition=function(){this._visible=!1,this._setIndexToLastSeriesBarIndex(),this._price=NaN,this._x=NaN,this._y=NaN,this._pane=null,this.clearOriginCoord()},e.prototype.paneViews=function(t){return null!==this._pane?[this._paneView,this._markersPaneView]:[]},e.prototype.horzLineVisible=function(t){return t===this._pane&&this._options.horzLine.visible},e.prototype.vertLineVisible=function(){return this._options.vertLine.visible},e.prototype.priceAxisViews=function(t,e){this._visible&&this._pane===t||this._priceAxisViews.clear();var i=[];return this._pane===t&&i.push(this._createPriceAxisViewOnDemand(this._priceAxisViews,e,this._currentPosPriceProvider)),i},e.prototype.timeAxisViews=function(){return this._visible?[this._timeAxisView]:[]},e.prototype.pane=function(){return this._pane},e.prototype.updateAllViews=function(){this._priceAxisViews.forEach(function(t){return t.update()}),this._timeAxisView.update(),this._markersPaneView.update()},e.prototype._priceScaleByPane=function(t){return t&&!t.defaultPriceScale().isEmpty()?t.defaultPriceScale():null},e.prototype._tryToUpdateViews=function(t,e,i){this._tryToUpdateData(t,e,i)&&this.updateAllViews()},e.prototype._tryToUpdateData=function(t,e,i){var r=this._x,n=this._y,o=this._price,s=this._index,a=this._pane,h=this._priceScaleByPane(i);this._index=t,this._x=isNaN(t)?NaN:this._model.timeScale().indexToCoordinate(t);var l=i.mainDataSource(),c=null!==l?l.firstValue():null;return null!==h&&null!==c?(this._pane=i,this._price=e,this._y=h.priceToCoordinate(e,c)):(this._pane=null,this._price=NaN,this._y=NaN),r!==this._x||n!==this._y||s!==this._index||o!==this._price||a!==this._pane},e.prototype._setIndexToLastSeriesBarIndex=function(){var t=this._model.serieses().map(function(t){return t.bars().lastIndex()}).filter(v),e=0===t.length?null:Math.max.apply(Math,t);this._index=null!==e?e:NaN},e.prototype._createPriceAxisViewOnDemand=function(t,e,i){var r=t.get(e);return void 0===r&&(r=new W(this,e,i),t.set(e,r)),r},e}(Y),j=".",q="'";function G(t,e){if(!p(t))return"n/a";if(!d(e))throw new TypeError("invalid length");if(e<0||e>16)throw new TypeError("invalid length");if(0===e)return t.toString();return("0000000000000000"+t.toString()).slice(-e)}var Z,K=function(){function t(t,e,i,r){if(e||(e=1),p(t)&&d(t)||(t=100),t<0)throw new TypeError("invalid base");this._priceScale=t,this._minMove=e,this._minMove2=r,i&&void 0!==r&&r>0&&2!==r&&4!==r&&8!==r||(this._fractional=i,this._calculateDecimal())}return t.prototype.format=function(t,e,i,r){void 0===r&&(r=!0);var n="";return t<0?(n=!0===e?"−":!1===r?"":"−",t=-t):t&&!0===e&&(n="+"),this._fractional?n+this._formatAsFractional(t,i):n+this._formatAsDecimal(t,i)},t.prototype._calculateDecimal=function(){if(this._fractionalLength=0,this._priceScale>0&&this._minMove>0){var t=this._priceScale;for(this._fractional&&this._minMove2&&(t/=this._minMove2);t>1;)t/=10,this._fractionalLength++}},t.prototype._formatAsDecimal=function(t,e){var i;e=e||0,i=this._fractional?Math.pow(10,this._fractionalLength||0):Math.pow(10,e)*this._priceScale/this._minMove;var r=Math.floor(t),n="",o=void 0!==this._fractionalLength?this._fractionalLength:NaN;if(i>1){var s=+(Math.round(t*i)-r*i).toFixed(this._fractionalLength);s>=i&&(s-=i,r+=1),n=j+G(+s.toFixed(this._fractionalLength)*this._minMove,o+e),n=this._removeEndingZeros(n,e)}else r=Math.round(r*i)/i,o>0&&(n=j+G(0,o+e));return r.toFixed(0)+n},t.prototype._formatAsFractional=function(t,e){var i=this._priceScale/this._minMove,r=Math.floor(t),n=e?Math.floor(t*i)-r*i:Math.round(t*i)-r*i;n===i&&(n=0,r+=1);var o="";if(e){var s=(t-r-n/i)*i;o=G(s=Math.round(s*Math.pow(10,e)),e),o=this._removeEndingZeros(o,e)}if(!this._fractionalLength)throw new Error("_fractionalLength is not calculated");var a="";if(this._minMove2){var h=n%this._minMove2,l=G(n=(n-h)/this._minMove2,this._fractionalLength),c=2===this._minMove2?["0","5"][h]:8===this._minMove2?["0","1","2","3","4","5","6","7"][h]:["0","2","5","7"][h];a=l+q+c}else a=G(n*this._minMove,this._fractionalLength);return r.toString()+q+a+o},t.prototype._removeEndingZeros=function(t,e){for(var i=0;i<e&&"0"===t[t.length-1];i++)t=t.substr(0,t.length-1);return t},t}(),J=function(t){function e(e){return void 0===e&&(e=100),t.call(this,e)||this}return o(e,t),e.prototype.format=function(e,i,r,n){return t.prototype.format.call(this,e,i,r,n)+"%"},e}(K),$=function(){function t(){this._listeners=[]}return t.prototype.subscribe=function(t,e,i){var r={callback:t,linkedObject:e,singleshot:!0===i};this._listeners.push(r)},t.prototype.unsubscribe=function(t){var e=this._listeners.findIndex(function(e){return t===e.callback});e>-1&&this._listeners.splice(e,1)},t.prototype.unsubscribeAll=function(t){this._listeners=this._listeners.filter(function(e){return e.linkedObject===t})},t.prototype.fire=function(t,e){var i=this._listeners.slice();this._listeners=this._listeners.filter(function(t){return!t.singleshot}),i.forEach(function(i){return i.callback(t,e)})},t.prototype.hasListeners=function(){return this._listeners.length>0},t.prototype.destroy=function(){this._listeners=[]},t}(),Q=function(t){function e(e){var i=t.call(this)||this;return i._model=e,i}return o(e,t),e.prototype.model=function(){return this._model},e.prototype.base=function(){return 0},e.prototype.priceRange=function(t,e){return null},e}(Y),tt=function(){function t(t,e){this._minValue=t,this._maxValue=e}return t.prototype.equals=function(t){return null!==t&&(this._minValue===t._minValue&&this._maxValue===t._maxValue)},t.prototype.clone=function(){return new t(this._minValue,this._maxValue)},t.prototype.minValue=function(){return this._minValue},t.prototype.setMinValue=function(t){this._minValue=t},t.prototype.maxValue=function(){return this._maxValue},t.prototype.setMaxValue=function(t){this._maxValue=t},t.prototype.length=function(){return this._maxValue-this._minValue},t.prototype.isEmpty=function(){return this._maxValue===this._minValue||Number.isNaN(this._maxValue)||Number.isNaN(this._minValue)},t.prototype.merge=function(e){return new t(Math.min(this.minValue(),e.minValue()),Math.max(this.maxValue(),e.maxValue()))},t.prototype.apply=function(t,e){this._minValue=Math.min(this._minValue,t),this._maxValue=Math.max(this._maxValue,e)},t.prototype.set=function(t,e){this._minValue=t,this._maxValue=e},t.prototype.scaleAroundCenter=function(t){if(p(t)&&0!==this._maxValue-this._minValue){var e=.5*(this._maxValue+this._minValue),i=this._maxValue-e,r=this._minValue-e;i*=t,r*=t,this._maxValue=e+i,this._minValue=e+r}},t.prototype.shift=function(t){p(t)&&(this._maxValue+=t,this._minValue+=t)},t.prototype.containsStrictly=function(t){return t.minValue()>this._minValue&&t.maxValue()<this._maxValue},t}();function et(t,e,i){return Math.min(Math.max(t,e),i)}function it(t,e,i){return e-t<=i}function rt(t){return t<=0?NaN:Math.log(t)/Math.log(10)}function nt(t,e){var i=100*(t-e)/e;return e<0?-i:i}function ot(t,e){var i=nt(t.minValue(),e),r=nt(t.maxValue(),e);return new tt(i,r)}function st(t,e){var i=100*(t-e)/e+100;return e<0?-i:i}function at(t,e){var i=st(t.minValue(),e),r=st(t.maxValue(),e);return new tt(i,r)}function ht(t){var e=Math.abs(t);if(e<1e-8)return 0;var i=rt(e+1e-4)+4;return t<0?-i:i}function lt(t){var e=Math.abs(t);if(e<1e-8)return 0;var i=Math.pow(10,e-4)-1e-4;return t<0?-i:i}function ct(t){if(null===t)return null;var e=ht(t.minValue()),i=ht(t.maxValue());return new tt(e,i)}!function(t){t[t.LogicalOffset=4]="LogicalOffset",t[t.CoordOffset=1e-4]="CoordOffset"}(Z||(Z={}));var ut=function(){function t(t,e){if(this._base=t,this._integralDividers=e,function(t){if(t<0)return!1;for(var e=t;e>1;e/=10)if(e%10!=0)return!1;return!0}(this._base))this._fractionalDividers=[2,2.5,2];else{this._fractionalDividers=[];for(var i=this._base;1!==i;){if(i%2==0)this._fractionalDividers.push(2),i/=2;else{if(i%5!=0)throw new Error("unexpected base");this._fractionalDividers.push(2),this._fractionalDividers.push(2.5),i/=5}if(this._fractionalDividers.length>100)throw new Error("something wrong with base")}}}return t.prototype.tickSpan=function(t,e,i){for(var r,n,o,s=0===this._base?0:1/this._base,a=Math.pow(10,Math.max(0,Math.ceil(rt(t-e)))),h=0,l=this._integralDividers[0];;){var c=it(a,s,1e-9)&&a>s+1e-9,u=it(a,i*l,1e-9),p=it(a,1,1e-9);if(!(c&&u&&p))break;a/=l,l=this._integralDividers[++h%this._integralDividers.length]}if(a<=s+1e-9&&(a=s),a=Math.max(1,a),this._fractionalDividers.length>0&&(r=a,n=1,o=1e-9,Math.abs(r-n)<o))for(h=0,l=this._fractionalDividers[0];it(a,i*l,1e-9)&&a>s+1e-9;)a/=l,l=this._fractionalDividers[++h%this._fractionalDividers.length];return a},t}(),pt=function(){function t(t,e,i,r){this._marks=[],this._priceScale=t,this._base=e,this._coordinateToLogicalFunc=i,this._logicalToCoordinateFunc=r}return t.prototype.base=function(){return this._base},t.prototype.setBase=function(t){if(t<0)throw new Error("base < 0");this._base=t},t.prototype.tickSpan=function(t,e){if(t<e)throw new Error("high < low");var i=this._priceScale.height(),r=(t-e)*this._tickMarkHeight()/i,n=new ut(this._base,[2,2.5,2]),o=new ut(this._base,[2,2,2.5]),s=new ut(this._base,[2.5,2,2]),a=[];return a.push(n.tickSpan(t,e,r)),a.push(o.tickSpan(t,e,r)),a.push(s.tickSpan(t,e,r)),function(t){if(t.length<1)throw Error("array is empty");for(var e=t[0],i=1;i<t.length;++i)t[i]<e&&(e=t[i]);return e}(a)},t.prototype.rebuildTickMarks=function(){var t=this._priceScale;if(t.isEmpty())this._marks=[];else{var e=t.mainSource();if(null!==e){var i=e.firstValue();if(null!==i){var r=t.height(),n=this._coordinateToLogicalFunc(r-1,i),o=this._coordinateToLogicalFunc(0,i),s=this._priceScale.options().entireTextOnly?this._fontHeight()/2:0,a=s,h=r-1-s,l=Math.max(n,o),c=Math.min(n,o);if(l!==c){for(var u=this.tickSpan(l,c),p=l%u,d=l>=c?1:-1,_=null,f=0,m=l-(p+=p<0?u:0);m>c;m-=u){var v=this._logicalToCoordinateFunc(m,i,!0);null!==_&&Math.abs(v-_)<this._tickMarkHeight()||(v<a||v>h||(f<this._marks.length?(this._marks[f].coord=Math.round(v),this._marks[f].label=t.formatLogical(m)):this._marks.push({coord:Math.round(v),label:t.formatLogical(m)}),f++,_=v,t.isLog()&&(u=this.tickSpan(m*d,c))))}this._marks.length=f}else this._marks=[]}else this._marks=[]}else this._marks=[]}},t.prototype.marks=function(){return this._marks},t.prototype._fontHeight=function(){return this._priceScale.fontSize()},t.prototype._tickMarkHeight=function(){return Math.ceil(2.5*this._fontHeight())},t}(),dt=function(){function t(t){this._precision=t}return t.prototype.format=function(t){var e="";return t<0&&(e="-",t=-t),t<995?e+this._formatNumber(t):t<999995?e+this._formatNumber(t/1e3)+"K":t<999999995?(t=1e3*Math.round(t/1e3),e+this._formatNumber(t/1e6)+"M"):(t=1e6*Math.round(t/1e6),e+this._formatNumber(t/1e9)+"B")},t.prototype._formatNumber=function(t){var e=Math.pow(10,this._precision);return((t=Math.round(t*e)/e)>=1e-15&&t<1?t.toFixed(this._precision).replace(/\.?0+$/,""):String(t)).replace(/(\.[1-9]*)0+$/,function(t,e){return e})},t}();function _t(t,e,i,r){if(0!==e.length){var n=e[r.from].x,o=e[r.from].y;t.moveTo(n,o);for(var s=r.from+1;s<r.to;++s){var a=e[s];if(1===i){var h=e[s-1].x,l=a.x;t.lineTo(h,l)}t.lineTo(a.x,a.y)}}}var ft=function(){function t(){this._data=null}return t.prototype.setData=function(t){this._data=t},t.prototype.draw=function(t){if(null!==this._data&&0!==this._data.items.length&&null!==this._data.visibleRange){t.save(),t.lineCap="square",t.strokeStyle=this._data.lineColor,t.lineWidth=this._data.lineWidth,r(t,this._data.lineStyle),t.lineWidth=1,t.beginPath(),t.moveTo(this._data.items[this._data.visibleRange.from].x,this._data.bottom),t.lineTo(this._data.items[this._data.visibleRange.from].x,this._data.items[this._data.visibleRange.from].y),_t(t,this._data.items,this._data.lineType,this._data.visibleRange),t.lineTo(this._data.items[this._data.visibleRange.to-1].x,this._data.bottom),t.lineTo(this._data.items[this._data.visibleRange.from].x,this._data.bottom),t.closePath();var e=t.createLinearGradient(0,0,0,this._data.bottom);e.addColorStop(0,this._data.topColor),e.addColorStop(1,this._data.bottomColor),t.fillStyle=e,t.fill(),t.restore()}},t}(),mt=function(){function t(){this._data=null}return t.prototype.setData=function(t){this._data=t},t.prototype.draw=function(t){null!==this._data&&0!==this._data.items.length&&null!==this._data.visibleRange&&(t.lineCap="square",t.lineWidth=this._data.lineWidth,r(t,this._data.lineStyle),t.strokeStyle=this._data.lineColor,t.lineJoin="miter",t.beginPath(),_t(t,this._data.items,this._data.lineType,this._data.visibleRange),t.stroke())},t}();function vt(t,e,i,r,n){void 0===r&&(r=0),void 0===n&&(n=t.length);for(var o=n-r;0<o;){var s=o>>1,a=r+s;i(t[a],e)?(r=a+1,o-=s+1):o=s}return r}function gt(t,e,i,r,n){void 0===r&&(r=0),void 0===n&&(n=t.length);for(var o=n-r;0<o;){var s=o>>1,a=r+s;i(e,t[a])?o=s:(r=a+1,o-=s+1)}return r}function yt(t,e){return t.time<e}function bt(t,e){return t<e.time}function St(t,e){return{from:vt(t,e.firstBar(),yt),to:gt(t,e.lastBar(),bt)}}var xt=function(){function t(t,e){this._invalidated=!0,this._dataInvalidated=!0,this._items=[],this._itemsVisibleRange=null,this._series=t,this._model=e}return t.prototype.update=function(t){this._invalidated=!0,"data"===t&&(this._dataInvalidated=!0)},t.prototype._makeValid=function(){this._dataInvalidated&&(this._fillRawPoints(),this._dataInvalidated=!1),this._invalidated&&(this._updatePoints(),this._invalidated=!1)},t.prototype._clearVisibleRange=function(){this._itemsVisibleRange=null},t.prototype._updatePoints=function(){var t=this._series.priceScale(),e=this._model.timeScale();if(this._clearVisibleRange(),!e.isEmpty()&&!t.isEmpty()){var i=e.visibleBars();if(null!==i&&0!==this._series.data().bars().size()){var r=this._series.firstValue();null!==r&&(this._itemsVisibleRange=St(this._items,i),this._convertToCoordinates(t,e,r))}}},t}(),wt=function(t){function e(e,i){return t.call(this,e,i)||this}return o(e,t),e.prototype._convertToCoordinates=function(t,e,i){e.indexesToCoordinates(this._items,g(this._itemsVisibleRange)),t.pointsArrayToCoordinates(this._items,i,g(this._itemsVisibleRange))},e.prototype._createRawItemBase=function(t,e){return{time:t,price:e,x:NaN,y:NaN}},e.prototype._fillRawPoints=function(){var t=this,e=this._series.barFunction(),i=[],r=this._series.barColorer();this._series.bars().each(function(n,o){var s=e(o.value),a=t._createRawItem(n,s,r);return i.push(a),!1}),this._items=i},e}(xt),Ct=function(t){function e(e,i){var r=t.call(this,e,i)||this;return r._renderer=new y,r._areaRenderer=new ft,r._lineRenderer=new mt,r._renderer.setRenderers([r._areaRenderer,r._lineRenderer]),r}return o(e,t),e.prototype.renderer=function(t,e){this._makeValid();var i=this._series.options(),r={lineType:0,items:this._items,lineColor:i.lineColor,lineStyle:i.lineStyle,lineWidth:i.lineWidth,topColor:i.topColor,bottomColor:i.bottomColor,bottom:t,visibleRange:this._itemsVisibleRange};return this._areaRenderer.setData(r),this._lineRenderer.setData(r),this._renderer},e.prototype._createRawItem=function(t,e){return this._createRawItemBase(t,e)},e}(wt);function Tt(t){return.3*t}var Mt,kt=function(){function t(){this._data=null,this._barWidth=0,this._barLineWidth=0}return t.prototype.setData=function(t){this._data=t,this._barWidth=Tt(t.barSpacing),this._barLineWidth=t.thinBars?1:Math.max(1,Math.round(this._barWidth))},t.prototype.draw=function(t){if(null!==this._data&&0!==this._data.bars.length&&null!==this._data.visibleRange){t.save(),t.translate(.5,.5);for(var e=this._data.thinBars?1:Math.round(this._barWidth),i=this._data.thinBars?1:e/2,r=null,n=this._data.visibleRange.from;n<this._data.visibleRange.to;++n){var o=this._data.bars[n];r!==o.color&&(t.fillStyle=o.color,r=o.color),t.fillRect(Math.round(o.x-this._barLineWidth/2),Math.round(o.highY-i),Math.round(this._barLineWidth),Math.round(o.lowY-o.highY+e)),this._barLineWidth<this._data.barSpacing-1&&(this._data.openVisible&&t.fillRect(Math.round(o.x-1.5*this._barWidth),Math.floor(o.openY-i),Math.round(1.5*this._barWidth),e),t.fillRect(Math.round(o.x),Math.floor(o.closeY-i),Math.round(1.5*this._barWidth),e))}t.restore()}},t}(),Pt=function(t){function e(e,i){return t.call(this,e,i)||this}return o(e,t),e.prototype._convertToCoordinates=function(t,e,i){e.indexesToCoordinates(this._items,g(this._itemsVisibleRange)),t.barPricesToCoordinates(this._items,i,g(this._itemsVisibleRange))},e.prototype._createDefaultItem=function(t,e,i){return{time:t,open:e.value[0],high:e.value[1],low:e.value[2],close:e.value[3],x:NaN,openY:NaN,highY:NaN,lowY:NaN,closeY:NaN}},e.prototype._fillRawPoints=function(){var t=this,e=[],i=this._series.barColorer();this._series.bars().each(function(r,n){var o=t._createRawItem(r,n,i);return e.push(o),!1}),this._items=e},e}(xt),Dt=function(t){function e(e,i){var r=t.call(this,e,i)||this;return r._renderer=new kt,r}return o(e,t),e.prototype.renderer=function(t,e){this._makeValid();var i=this._series.options(),r={bars:this._items,barSpacing:this._model.timeScale().barSpacing(),openVisible:i.openVisible,thinBars:i.thinBars,visibleRange:this._itemsVisibleRange};return this._renderer.setData(r),this._renderer},e.prototype._createRawItem=function(t,e,i){return s({},this._createDefaultItem(t,e,i),{color:i.barStyle(t).barColor})},e}(Pt);!function(t){t[t.BarBorderWidth=1]="BarBorderWidth"}(Mt||(Mt={}));var Et=function(){function t(){this._data=null,this._barWidth=0}return t.prototype.setData=function(t){this._data=t,this._barWidth=Tt(t.barSpacing)},t.prototype.draw=function(t){if(null!==this._data&&0!==this._data.bars.length&&null!==this._data.visibleRange)if(t.lineCap="square",this._data.barSpacing<1)this._drawThinCandles(t);else{var e=this._data.bars;t.translate(-.5,-.5),t.lineWidth=1,this._data.wickVisible&&this._drawWicks(t,e,this._data.visibleRange),this._data.borderVisible&&this._drawBorder(t,e,this._data.visibleRange),this._drawCandles(t,e,this._data.visibleRange)}},t.prototype._drawWicks=function(t,e,i){for(var r="",n=i.from;n<i.to;n++){var o=e[n];o.wickColor!==r&&(t.fillStyle=o.wickColor,r=o.wickColor),t.fillRect(o.x,o.highY,1,o.lowY-o.highY)}},t.prototype._drawBorder=function(t,e,i){for(var r="",n=i.from;n<i.to;n++){var o=e[n];o.borderColor!==r&&(t.fillStyle=o.borderColor,r=o.borderColor);var s=Math.round(o.x-this._barWidth),a=Math.round(o.x+this._barWidth),h=Math.min(o.openY,o.closeY),l=Math.max(o.openY,o.closeY);t.fillRect(s,h,a-s+1,l-h+1)}},t.prototype._drawCandles=function(t,e,i){if(null!==this._data)for(var r="",n=i.from;n<i.to;n++){var o=e[n],s=Math.min(o.openY,o.closeY),a=Math.max(o.openY,o.closeY),h=Math.round(o.x-this._barWidth),l=Math.round(o.x+this._barWidth);if(this._data.borderVisible&&(h+=1,s+=1,l-=1,a-=1),!(s>a)){if(o.color!==r){var c=o.color;t.fillStyle=c,r=c}t.fillRect(h,s,l-h+1,a-s+1)}}},t.prototype._drawThinCandles=function(t){if(null!==this._data&&null!==this._data.visibleRange){if(t.lineWidth=1,this._data.wickVisible){t.strokeStyle=this._data.wickColor,t.beginPath();for(var e=this._data.visibleRange.from;e<this._data.visibleRange.to;e++){var i=this._data.bars[e];t.moveTo(i.x,i.lowY),t.lineTo(i.x,i.highY)}t.stroke()}var r="",n=!1;t.beginPath();for(e=this._data.visibleRange.from;e<this._data.visibleRange.to;e++){r!==(i=this._data.bars[e]).color&&(n&&(t.stroke(),t.beginPath(),n=!1),t.strokeStyle=i.color,r=i.color),t.moveTo(i.x,i.openY),t.lineTo(i.x,i.closeY),n=!0}n&&t.stroke()}},t}(),Rt=function(t){function e(e,i){var r=t.call(this,e,i)||this;return r._renderer=new Et,r}return o(e,t),e.prototype.renderer=function(t,e){this._makeValid();var i=this._series.options(),r={bars:this._items,barSpacing:this._model.timeScale().barSpacing(),wickColor:i.wickColor,wickVisible:i.wickVisible,borderVisible:i.borderVisible,visibleRange:this._itemsVisibleRange};return this._renderer.setData(r),this._renderer},e.prototype._createRawItem=function(t,e,i){var r=i.barStyle(t);return s({},this._createDefaultItem(t,e,i),{color:r.barColor,wickColor:r.barWickColor,borderColor:r.barBorderColor})},e}(Pt),It=function(){function t(){this._data=null}return t.prototype.setData=function(t){this._data=t},t.prototype.draw=function(t){if(null!==this._data&&0!==this._data.items.length&&null!==this._data.visibleRange){var e=this._data.histogramBase;t.translate(.5,.5),t.fillStyle=this._data.color,t.lineWidth=1,t.beginPath();for(var i=this._data.visibleRange.from;i<this._data.visibleRange.to;i++){var r=this._data.items[i],n=r.y,o=r.left,s=r.right;t.rect(o,n,s-o,e-n)}t.fill()}},t}();var Vt,At=function(t){function e(e,i){var r=t.call(this,e,i)||this;return r._compositeRenderer=new y,r._paletteData=[],r._paletteRenderers=[],r._colorIndexes=new Int32Array(0),r._sourceIndexes=new Int32Array(0),r}return o(e,t),e.prototype.renderer=function(t,e){return this._makeValid(),this._compositeRenderer},e.prototype._fillRawPoints=function(){var t=this,e=this._model.timeScale().barSpacing(),i=this._series.palette();this._paletteRenderers.length=i.size(),this._paletteData.length=i.size();var r=new Int32Array(i.size()),n=this._series.options(),o=this._series.barFunction();this._colorIndexes=new Int32Array(this._series.bars().size());var s=0;this._items.length=this._series.bars().size();var a=0;this._series.bars().each(function(h,l){var c=o(l.value),u=l.value[4],p={time:h,price:c,x:NaN,y:NaN},d=i.colorByIndex(u),_=t._paletteData[u]||function(t,e,i){return{items:[],barSpacing:t,lineWidth:e,histogramBase:NaN,color:i,visibleRange:null}}(e,n.lineWidth,d),f=r[u]++;return f<_.items.length?_.items[f]=p:_.items.push(p),t._items[a++]={time:h,x:0},t._paletteData[u]=_,t._colorIndexes[s++]=u,!1}),this._paletteRenderers.length=this._paletteData.length,this._sourceIndexes.length!==this._paletteData.length&&(this._sourceIndexes=new Int32Array(this._paletteData.length)),this._paletteData.forEach(function(e,i){e.items.length=r[i];var n=t._paletteRenderers[i]||new It;n.setData(e),t._paletteRenderers[i]=n}),this._compositeRenderer.setRenderers(this._paletteRenderers)},e.prototype._clearVisibleRange=function(){t.prototype._clearVisibleRange.call(this),this._paletteData.forEach(function(t,e){t.visibleRange=null})},e.prototype._convertToCoordinates=function(t,e,i){var r=this;if(null!==this._itemsVisibleRange){var n=e.barSpacing(),o=l(e.visibleBars()),s=t.priceToCoordinate(this._series.options().base,i);this._paletteData.forEach(function(n,a){e.indexesToCoordinates(n.items),t.pointsArrayToCoordinates(n.items,i),n.histogramBase=s,n.visibleRange=St(n.items,o),r._sourceIndexes[a]=n.visibleRange.from});for(var a=null,h=this._itemsVisibleRange.from;h<this._itemsVisibleRange.to;++h){var c=this._colorIndexes[h],u=this._paletteData[c],p=this._sourceIndexes[c]++,d=u.items[p];if(d.left=Math.floor(d.x-.5*n),d.right=Math.ceil(d.left+n),null!==a){var _=d.right-d.left>5?1:0;a.right=d.left-_}a=d}}},e}(xt),Lt=function(t){function e(e,i){var r=t.call(this,e,i)||this;return r._lineRenderer=new mt,r}return o(e,t),e.prototype.renderer=function(t,e){this._makeValid();var i=this._series.options(),r={items:this._items,lineColor:i.color,lineStyle:i.lineStyle,lineType:0,lineWidth:i.lineWidth,visibleRange:this._itemsVisibleRange};return this._lineRenderer.setData(r),this._lineRenderer},e.prototype._createRawItem=function(t,e){return this._createRawItemBase(t,e)},e}(wt),Ot=/[2-9]/g,zt=function(){function t(t){void 0===t&&(t=50),this._actualSize=0,this._usageTick=1,this._oldestTick=1,this._tick2Labels={},this._cache={},this._maxSize=t}return t.prototype.reset=function(){this._actualSize=0,this._cache={},this._usageTick=1,this._oldestTick=1,this._tick2Labels={}},t.prototype.measureText=function(t,e,i){var r=i||Ot,n=String(e).replace(r,"0");if(this._cache[n])return this._cache[n].width;if(this._actualSize===this._maxSize){var o=this._tick2Labels[this._oldestTick];delete this._tick2Labels[this._oldestTick],delete this._cache[o],this._oldestTick++,this._actualSize--}var s=t.measureText(n).width;return 0===s&&e.length?0:(this._cache[n]={width:s,tick:this._usageTick},this._tick2Labels[this._usageTick]=n,this._actualSize++,this._usageTick++,s)},t}(),Bt=function(){function t(t){this._priceAxisViewRenderer=null,this._rendererOptions=null,this._align="right",this._width=0,this._textWidthCache=t}return t.prototype.setParams=function(t,e,i,r){this._priceAxisViewRenderer=t,this._rendererOptions=e,this._width=i,this._align=r},t.prototype.draw=function(t){null!==this._rendererOptions&&null!==this._priceAxisViewRenderer&&this._priceAxisViewRenderer.draw(t,this._rendererOptions,this._textWidthCache,this._width,this._align)},t}(),Wt=function(){function t(t,e,i){this._priceAxisView=t,this._textWidthCache=new zt(50),this._dataSource=e,this._chartModel=i,this._fontSize=-1,this._renderer=new Bt(this._textWidthCache)}return t.prototype.update=function(){this._priceAxisView.update()},t.prototype.renderer=function(t,e){var i=this._chartModel.paneForSource(this._dataSource);if(null===i)return null;if(null===this._dataSource.priceScale())return null;var r=i.priceScalePosition();if("overlay"===r)return null;var n=this._chartModel.priceAxisRendererOptions();return n.fontSize!==this._fontSize&&(this._fontSize=n.fontSize,this._textWidthCache.reset()),this._renderer.setParams(this._priceAxisView.paneRenderer(),n,e,r),this._renderer},t}(),Ft=function(){function t(){this._data=null}return t.prototype.setData=function(t){this._data=t},t.prototype.draw=function(t){if(null!==this._data&&!1!==this._data.visible){var e=this._data.y;if(!(e<0||e>this._data.height)){var r=this._data.width;t.lineCap="square",t.strokeStyle=this._data.color,t.lineWidth=this._data.lineWidth,i(t,0,e,r,e,this._data.lineStyle)}}},t}(),Nt=function(){function t(t){this._lineRendererData={width:0,height:0,y:0,color:"rgba(0, 0, 0, 0)",lineWidth:1,lineStyle:0,visible:!1},this._lineRenderer=new Ft,this._invalidated=!0,this._series=t,this._model=t.model(),this._lineRenderer.setData(this._lineRendererData)}return t.prototype.update=function(){this._invalidated=!0},t.prototype.renderer=function(){return this._invalidated&&(this._updateImpl(),this._invalidated=!1),this._lineRenderer},t}(),Ht=function(t){function e(e){return t.call(this,e)||this}return o(e,t),e.prototype._updateImpl=function(){this._lineRendererData.visible=!1;var t=this._series.priceScale().mode().mode;if(2===t||3===t){var e=this._series.options();if(e.baseLineVisible){var i=this._series.firstValue();null!==i&&(this._lineRendererData.visible=!0,this._lineRendererData.y=this._series.priceScale().priceToCoordinate(i,i),this._lineRendererData.width=this._model.timeScale().width(),this._lineRendererData.height=this._series.priceScale().height(),this._lineRendererData.color=e.baseLineColor,this._lineRendererData.lineWidth=e.baseLineWidth,this._lineRendererData.lineStyle=e.baseLineStyle)}}},e}(Nt),Ut=function(t){function e(e){return t.call(this,e)||this}return o(e,t),e.prototype._updateImpl=function(){this._lineRendererData.visible=!1;var t=this._series.options();if(t.priceLineVisible){var e=this._series.lastValueData(void 0,!0);e.noData||(this._lineRendererData.visible=!0,this._lineRendererData.y=e.coordinate,this._lineRendererData.color=this._series.priceLineColor(e.color),this._lineRendererData.width=this._model.timeScale().width(),this._lineRendererData.height=this._series.priceScale().height(),this._lineRendererData.lineWidth=t.priceLineWidth,this._lineRendererData.lineStyle=t.priceLineStyle)}},e}(Nt),Yt=function(t){function e(e,i){var r=t.call(this)||this;return r._source=e,r._data=i,r}return o(e,t),e.prototype._getSource=function(){return this._source},e.prototype._getData=function(){return this._data},e.prototype._updateRendererData=function(t,e,i){t.visible=!1,e.visible=!1;var r=this._source.options(),n=r.lastValueVisible,o=""!==this._source.title(),s=0===r.seriesLastValueMode,a=this._source.lastValueData(void 0,!1);a.noData||(n&&(t.text=this._axisText(a,n,s),t.visible=0!==t.text.length),(o||s)&&(e.text=this._paneText(a,n,o,s),e.visible=e.text.length>0),i.background=this._source.priceLineColor(a.color),i.color=O(i.background),i.coordinate=a.coordinate,i.floatCoordinate=a.floatCoordinate)},e.prototype._paneText=function(t,e,i,r){var n="",o=this._source.title();return i&&0!==o.length&&(n+=o+" "),e&&r&&(n+=this._source.priceScale().isPercentage()?t.formattedPriceAbsolute:t.formattedPricePercentage),n.trim()},e.prototype._axisText=function(t,e,i){return e?i?this._source.priceScale().isPercentage()?t.formattedPricePercentage:t.formattedPriceAbsolute:t.text:""},e}(B),Xt=function(){function t(){this._maxUsedIndex=0,this._colorToIndex=new Map,this._indexToColor=new Map}return t.prototype.colorByIndex=function(t){return h(this._indexToColor.get(t))},t.prototype.addColor=function(t){var e=this._colorToIndex.get(t);return void 0===e&&(e=this._maxUsedIndex++,this._colorToIndex.set(t,e),this._indexToColor.set(e,t)),e},t.prototype.size=function(){return this._indexToColor.size},t}(),jt={barColor:"",barBorderColor:"",barWickColor:""},qt=function(){function t(t){this._series=t}return t.prototype.barStyle=function(t,e){var i=this._series.seriesType(),r=this._series.options();switch(i){case"Line":return this._lineStyle(r);case"Area":return this._areaStyle(r);case"Bar":return this._barStyle(r,t,e);case"Candlestick":return this._candleStyle(r,t,e);case"Histogram":return this._histogramStyle(r,t,e)}throw new Error("Unknown chart style")},t.prototype._barStyle=function(t,e,i){var r=s({},jt),n=t.upColor,o=t.downColor,a=n,h=o,u=l(this._findBar(e,i)),p=c(u.value[0])<=c(u.value[3]);return r.barColor=p?n:o,r.barBorderColor=p?a:h,r},t.prototype._candleStyle=function(t,e,i){var r=s({},jt),n=t.upColor,o=t.downColor,a=t.borderUpColor,h=t.borderDownColor,u=t.wickUpColor,p=t.wickDownColor,d=l(this._findBar(e,i)),_=c(d.value[0])<=c(d.value[3]);return r.barColor=_?n:o,r.barBorderColor=_?a:h,r.barWickColor=_?u:p,r},t.prototype._areaStyle=function(t){return s({},jt,{barColor:t.lineColor})},t.prototype._lineStyle=function(t){return s({},jt,{barColor:t.color})},t.prototype._histogramStyle=function(t,e,i){var r=s({},jt),n=l(this._findBar(e,i)).value[4];if(null!=n){var o=l(this._series.palette());r.barColor=o.colorByIndex(n)}else r.barColor=t.color;return r},t.prototype._getSeriesBars=function(){return this._series.bars()},t.prototype._findBar=function(t,e){return void 0!==e?e.value:this._getSeriesBars().valueAt(t)},t}();!function(t){t[t.NearestLeft=-1]="NearestLeft",t[t.Exact=0]="Exact",t[t.NearestRight=1]="NearestRight"}(Vt||(Vt={}));var Gt,Zt=function(){function t(t,e){void 0===t&&(t=null),void 0===e&&(e=null),this._items=[],this._start=0,this._end=0,this._shareRead=!1,this._minMaxCache=new Map,this._rowSearchCache=new Map,this._rowSearchCacheWithoutEmptyValues=new Map,this._plotFunctions=t||new Map,this._emptyValuePredicate=e}return t.prototype.clear=function(){this._items=[],this._start=0,this._end=0,this._shareRead=!1,this._minMaxCache.clear(),this._rowSearchCache.clear(),this._rowSearchCacheWithoutEmptyValues.clear()},t.prototype.first=function(){return this.size()>0?this._items[this._start]:null},t.prototype.last=function(){return this.size()>0?this._items[this._end-1]:null},t.prototype.firstIndex=function(){return this.size()>0?this._indexAt(this._start):null},t.prototype.lastIndex=function(){return this.size()>0?this._indexAt(this._end-1):null},t.prototype.size=function(){return this._end-this._start},t.prototype.isEmpty=function(){return 0===this.size()},t.prototype.contains=function(t){return null!==this._search(t,0)},t.prototype.valueAt=function(t){return this.search(t)},t.prototype.add=function(t,e,i){if(this._shareRead)return!1;var r={index:t,value:i,time:e},n=this._search(t,0);return this._rowSearchCache.clear(),this._rowSearchCacheWithoutEmptyValues.clear(),null===n?(this._items.splice(this._lowerbound(t),0,r),this._start=0,this._end=this._items.length,!0):(this._items[n]=r,!1)},t.prototype.search=function(t,e,i){void 0===e&&(e=0);var r=this._search(t,e,i);if(null===r)return null;var n=this._valueAt(r);return{index:this._indexAt(r),time:n.time,value:n.value}},t.prototype.each=function(t){for(var e=this._start;e<this._end;++e){if(t(this._indexAt(e),this._valueAt(e)))break}},t.prototype.range=function(e,i){var r=new t(this._plotFunctions,this._emptyValuePredicate);return r._items=this._items,r._start=this._lowerbound(e),r._end=this._upperbound(i),r._shareRead=!0,r},t.prototype.minMaxOnRangeCached=function(t,e,i){if(this.isEmpty())return null;for(var r=null,n=0,o=i;n<o.length;n++){var s=o[n];r=Kt(r,this._minMaxOnRangeCachedImpl(t,e,s))}return r},t.prototype.merge=function(t){return this._shareRead?null:0===t.length?null:this.isEmpty()||t[t.length-1].index<this._items[0].index?this._prepend(t):t[0].index>this._items[this._items.length-1].index?this._append(t):1===t.length&&t[0].index===this._items[this._items.length-1].index?(this._updateLast(t[0]),t[0]):this._merge(t)},t.prototype.remove=function(t){if(this._shareRead)return null;var e=this._search(t,1);if(null===e)return null;var i=this._items.splice(e);return this._end=this._items.length,this._minMaxCache.clear(),this._rowSearchCache.clear(),this._rowSearchCacheWithoutEmptyValues.clear(),i.length>0?i[0]:null},t.prototype._indexAt=function(t){return this._items[t].index},t.prototype._valueAt=function(t){return this._items[t]},t.prototype._search=function(t,e,i){var r=this._bsearch(t);if(null===r&&0!==e)switch(e){case-1:return this._searchNearestLeft(t,i);case 1:return this._searchNearestRight(t,i);default:throw new TypeError("Unknown search mode")}if(!i||null===r||0===e)return r;switch(e){case-1:return this._nonEmptyNearestLeft(r);case 1:return this._nonEmptyNearestRight(r);default:throw new TypeError("Unknown search mode")}},t.prototype._nonEmptyNearestRight=function(t){for(var e=l(this._emptyValuePredicate);t<this._end&&e(this._valueAt(t).value);)t+=1;return t===this._end?null:t},t.prototype._nonEmptyNearestLeft=function(t){for(var e=l(this._emptyValuePredicate);t>=this._start&&e(this._valueAt(t).value);)t-=1;return t<this._start?null:t},t.prototype._searchNearestLeft=function(t,e){var i=this._lowerbound(t);i>this._start&&(i-=1);var r=i!==this._end&&this._indexAt(i)<t?i:null;return e&&null!==r?this._nonEmptyNearestLeft(r):r},t.prototype._searchNearestRight=function(t,e){var i=this._upperbound(t),r=i!==this._end&&t<this._indexAt(i)?i:null;return e&&null!==r?this._nonEmptyNearestRight(r):r},t.prototype._bsearch=function(t){var e=this._lowerbound(t);return e===this._end||t<this._items[e].index?null:e},t.prototype._lowerbound=function(t){return vt(this._items,t,function(t,e){return t.index<e},this._start,this._end)},t.prototype._upperbound=function(t){return gt(this._items,t,function(t,e){return e.index>t},this._start,this._end)},t.prototype._plotMinMax=function(t,e,i){var r=null,n=this._plotFunctions.get(i.name);if(void 0===n)throw new Error('Plot "'+i.name+'" is not registered');for(var o=t;o<e;o++){var s=n(this._items[o].value);null==s||Number.isNaN(s)||(null===r?r={min:s,max:s}:(s<r.min&&(r.min=s),s>r.max&&(r.max=s)))}return r},t.prototype._invalidateCacheForRow=function(t){var e=Math.floor(t.index/30);this._minMaxCache.forEach(function(t){return t.delete(e)})},t.prototype._prepend=function(t){return a(!this._shareRead,"collection should not be readonly"),a(0!==t.length,"plotRows should not be empty"),this._rowSearchCache.clear(),this._rowSearchCacheWithoutEmptyValues.clear(),this._minMaxCache.clear(),this._items=t.concat(this._items),this._start=0,this._end=this._items.length,t[0]},t.prototype._append=function(t){return a(!this._shareRead,"collection should not be readonly"),a(0!==t.length,"plotRows should not be empty"),this._rowSearchCache.clear(),this._rowSearchCacheWithoutEmptyValues.clear(),this._minMaxCache.clear(),this._items=this._items.concat(t),this._start=0,this._end=this._items.length,t[0]},t.prototype._updateLast=function(t){a(!this.isEmpty(),"plot list should not be empty"),a(this._items[this._end-1].index===t.index,"last row index should match new row index"),this._invalidateCacheForRow(t),this._rowSearchCache.delete(t.index),this._rowSearchCacheWithoutEmptyValues.delete(t.index),this._items[this._end-1]=t},t.prototype._merge=function(t){return a(0!==t.length,"plot rows should not be empty"),this._rowSearchCache.clear(),this._rowSearchCacheWithoutEmptyValues.clear(),this._minMaxCache.clear(),this._items=function(t,e){var i=function(t,e){var i=t.length,r=e.length,n=i+r,o=0,s=0;for(;o<i&&s<r;)t[o].index<e[s].index?o++:t[o].index>e[s].index?s++:(o++,s++,n--);return n}(t,e),r=new Array(i),n=0,o=0,s=t.length,a=e.length,h=0;for(;n<s&&o<a;)t[n].index<e[o].index?(r[h]=t[n],n++):t[n].index>e[o].index?(r[h]=e[o],o++):(r[h]=e[o],n++,o++),h++;for(;n<s;)r[h]=t[n],n++,h++;for(;o<a;)r[h]=e[o],o++,h++;return r}(this._items,t),this._start=0,this._end=this._items.length,t[0]},t.prototype._minMaxOnRangeCachedImpl=function(t,e,i){if(this.isEmpty())return null;var r=null,n=l(this.firstIndex()),o=l(this.lastIndex()),s=t-i.offset,a=e-i.offset;s=Math.max(s,n),a=Math.min(a,o);var h=30*Math.ceil(s/30),c=Math.max(h,30*Math.floor(a/30)),u=this._lowerbound(s),p=this._upperbound(Math.min(a,h,e));r=Kt(r,this._plotMinMax(u,p,i));var d=this._minMaxCache.get(i.name);void 0===d&&(d=new Map,this._minMaxCache.set(i.name,d));for(var _=Math.max(h+1,s);_<c;_+=30){var f=Math.floor(_/30),m=d.get(f);if(void 0===m){var v=this._lowerbound(30*f),g=this._upperbound(30*(f+1)-1);m=this._plotMinMax(v,g,i),d.set(f,m)}r=Kt(r,m)}u=this._lowerbound(c),p=this._upperbound(a);return r=Kt(r,this._plotMinMax(u,p,i))},t}();function Kt(t,e){return null===t?e:null===e?t:{min:Math.min(t.min,e.min),max:Math.max(t.max,e.max)}}!function(t){t[t.Open=0]="Open",t[t.High=1]="High",t[t.Low=2]="Low",t[t.Close=3]="Close",t[t.Color=4]="Color"}(Gt||(Gt={}));var Jt={open:function(t){return t[0]},high:function(t){return t[1]},low:function(t){return t[2]},close:function(t){return t[3]},hl2:function(t){return(t[1]+t[2])/2},hlc3:function(t){return(t[1]+t[2]+t[3])/3},ohlc4:function(t){return(t[0]+t[1]+t[2]+t[3])/4}},$t=["open","high","low","close","hl2","hlc3","ohlc4"];function Qt(t){return Jt[t]}var te,ee=function(){function t(){var t;this._bars=new Zt((t=new Map,$t.forEach(function(e,i){t.set(e,Qt(e))}),t))}return t.prototype.bars=function(){return this._bars},t.prototype.size=function(){return this._bars.size()},t.prototype.each=function(t){this._bars.each(t)},t.prototype.clear=function(){this._bars.clear()},t.prototype.isEmpty=function(){return this._bars.isEmpty()},t.prototype.first=function(){return this._bars.first()},t.prototype.last=function(){return this._bars.last()},t.prototype.search=function(t,e){return this.bars().search(t,e)},t.prototype.valueAt=function(t){return this.search(t)},t}(),ie=function(t){function e(e,i,r){var n=t.call(this,e)||this;n._data=new ee,n._priceLineView=new Ut(n),n._baseHorizontalLineView=new Ht(n),n._endOfData=!1,n._paneView=null,n._barColorerCache=null,n._options=i,n._seriesType=r,n._palette=n._createDefaultPalette(),n.createPaneView();var o=new Yt(n,{model:e});return n._priceAxisViews=[o],n._panePriceAxisView=new Wt(o,n,e),n._recreateFormatter(),n._updateBarFunction(),n._barFunction=n.barFunction(),n}return o(e,t),e.prototype.destroy=function(){},e.prototype.endOfData=function(){return this._endOfData},e.prototype.priceLineColor=function(t){return this._options.priceLineColor||t},e.prototype.lastValueData=function(t,e,i){var r={noData:!0},n=this.priceScale();if(this.model().timeScale().isEmpty()||n.isEmpty()||this.data().isEmpty())return r;var o,s,a=this.model().timeScale().visibleBars(),h=this.firstValue();if(null===a||null===h)return r;if(e){var l=this.data().bars().last();if(null===l)return r;o=l,s=l.index}else{var c=this.data().bars().search(a.lastBar(),-1);if(null===c)return r;if(null===(o=this.data().bars().valueAt(c.index)))return r;s=c.index}var u=void 0!==t?o.value[t]:this._barFunction(o.value),p=this.barColorer().barStyle(s,{value:o}),d=n.priceToCoordinate(u,h,!0);return{noData:!1,price:i?u:void 0,text:n.formatPrice(u,h),formattedPriceAbsolute:n.formatPriceAbsolute(u),formattedPricePercentage:n.formatPricePercentage(u,h),color:p.barColor,floatCoordinate:d,coordinate:Math.round(d),index:s}},e.prototype.data=function(){return this._data},e.prototype.createPaneView=function(){switch(this._paneView=null,this._seriesType){case"Bar":this._paneView=new Dt(this,this.model());break;case"Candlestick":this._paneView=new Rt(this,this.model());break;case"Line":this._paneView=new Lt(this,this.model());break;case"Area":this._paneView=new Ct(this,this.model());break;case"Histogram":this._paneView=new At(this,this.model());break;default:throw Error("Unknown chart style assigned: "+this._seriesType)}},e.prototype.barColorer=function(){return null!==this._barColorerCache?this._barColorerCache:(this._barColorerCache=new qt(this),this._barColorerCache)},e.prototype.options=function(){return this._options},e.prototype.applyOptions=function(t){var e=this._options.overlay;u(this._options,t),this._options.overlay=e,e&&null!==this._priceScale&&void 0!==t.scaleMargins&&this._priceScale.applyOptions({scaleMargins:this._options.scaleMargins}),this._recreateFormatter(),this.model().updateSource(this)},e.prototype.setData=function(t,e,i){this._data.clear(),this._data.bars().merge(t),e&&(this._palette=void 0===i?this._createDefaultPalette():i),null!==this._paneView&&this._paneView.update("data");var r=this.model().paneForSource(this);this.model().recalculatePane(r),this.model().updateSource(this),this.model().updateCrosshair(),this.model().lightUpdate()},e.prototype.updateData=function(t){this._data.bars().merge(t),null!==this._paneView&&this._paneView.update("data");var e=this.model().paneForSource(this);this.model().recalculatePane(e),this.model().updateSource(this),this.model().updateCrosshair(),this.model().lightUpdate()},e.prototype.palette=function(){return this._palette},e.prototype.seriesType=function(){return this._seriesType},e.prototype.firstValue=function(){var t=this.firstBar();return null===t?null:this._barFunction(t.value)},e.prototype.firstBar=function(){var t=this.model().timeScale().visibleBars();if(null===t)return null;var e=t.firstBar();return this.data().search(e,1)},e.prototype.bars=function(){return this._data.bars()},e.prototype.nearestIndex=function(t,e){var i=this.nearestData(t,e);return i?i.index:null},e.prototype.nearestData=function(t,e){return d(t)?this.data().search(t,e):null},e.prototype.dataAt=function(t){var e=this.data().valueAt(t);return null===e?null:"Bar"===this._seriesType||"Candlestick"===this._seriesType?{open:e.value[0],high:e.value[1],low:e.value[2],close:e.value[3]}:this.barFunction()(e.value)},e.prototype.paneViews=function(){var t=[];return this.priceScale()===this.model().mainPriceScale()&&t.push(this._baseHorizontalLineView),t.push(l(this._paneView)),t.push(this._priceLineView),t.push(this._panePriceAxisView),t},e.prototype.priceAxisViews=function(t,e){return this._priceAxisViews},e.prototype.priceRange=function(t,e){if(!d(t))return null;if(!d(e))return null;if(this.data().isEmpty())return null;var i,r="Line"===this._seriesType||"Area"===this._seriesType||"Histogram"===this._seriesType?"close":null,n=null!==(i=null!==r?this.data().bars().minMaxOnRangeCached(t,e,[{name:r,offset:0}]):this.data().bars().minMaxOnRangeCached(t,e,[{name:"low",offset:0},{name:"high",offset:0}]))?i.min===i.max?new tt(i.min-.5,i.max+.5):new tt(i.min,i.max):new tt(-.5,.5);if("Histogram"===this.seriesType()){var o=this._options.base;n=n.merge(new tt(o,o))}return n},e.prototype.base=function(){return Math.round(1/this._options.priceFormat.minMove)},e.prototype.formatter=function(){return this._formatter},e.prototype.barFunction=function(){return this._barFunction},e.prototype.updateAllViews=function(){if(null!==this._paneView){this._paneView.update();for(var t=this._priceAxisViews.length,e=0;e<t;e++)this._priceAxisViews[e].update();this._priceLineView.update(),this._baseHorizontalLineView.update()}},e.prototype.setPriceScale=function(t){this._priceScale!==t&&(this._priceScale=t)},e.prototype.priceScale=function(){return l(this._priceScale)},e.prototype.markerDataAtIndex=function(t){if(!(("Line"===this._seriesType||"Area"===this._seriesType)&&this._options.crosshairMarkerVisible))return null;var e=this._data.valueAt(t);return null===e?null:{price:this._barFunction(e.value),radius:this._markerRadius()}},e.prototype.title=function(){return this._options.title},e.prototype._markerRadius=function(){switch(this._seriesType){case"Line":case"Area":return this._options.crosshairMarkerRadius}return 0},e.prototype._recreateFormatter=function(){switch(this._options.priceFormat.type){case"volume":this._formatter=new dt(this._options.priceFormat.precision);break;case"percent":this._formatter=new J(this._options.priceFormat.precision);break;default:var t=Math.pow(10,this._options.priceFormat.precision);this._formatter=new K(t,this._options.priceFormat.minMove*t,!1,void 0)}null!==this._priceScale&&this._priceScale.updateFormatter()},e.prototype._updateBarFunction=function(){this._barFunction=Qt("close")},e.prototype._createDefaultPalette=function(){var t=new Xt;return"Histogram"===this._seriesType&&t.addColor(this._options.color),t},e}(Q);function re(t){return t.slice().sort(function(t,e){return l(t.zorder())-l(e.zorder())})}!function(t){t[t.Normal=0]="Normal",t[t.Logarithmic=1]="Logarithmic",t[t.Percentage=2]="Percentage",t[t.IndexedTo100=3]="IndexedTo100"}(te||(te={}));var ne=new J,oe=new K(100,1),se=function(){function t(t,e,i){this._height=0,this._internalHeightCache=null,this._internalHeightChanged=new $,this._priceRange=null,this._priceRangeSnapshot=null,this._priceRangeChanged=new $,this._invalidatedForRange={isValid:!1,visibleBars:null},this._onMarksChanged=new $,this._modeChanged=new $,this._dataSources=[],this._cachedOrderedSources=null,this._hasSeries=!1,this._mainSource=null,this._marksCache=null,this._scaleStartPoint=null,this._scrollStartPoint=null,this._formatter=oe,this._optionsChanged=new $,this._options=t,this._layoutOptions=e,this._localizationOptions=i,this._markBuilder=new pt(this,100,this._coordinateToLogical.bind(this),this._logicalToCoordinate.bind(this))}return t.prototype.options=function(){return this._options},t.prototype.applyOptions=function(t){if(u(this._options,t),this.updateFormatter(),void 0!==t.mode&&this.setMode({mode:t.mode}),this._optionsChanged.fire(),void 0!==t.scaleMargins){var e=h(t.scaleMargins.top),i=h(t.scaleMargins.bottom);if(e<0||e>1)throw new Error("Invalid top margin - expect value between 0 and 1, given="+e);if(i<0||i>1||e+i>1)throw new Error("Invalid bottom margin - expect value between 0 and 1, given="+i);if(e+i>1)throw new Error("Invalid margins - sum of margins must be less than 1, given="+(e+i));this._invalidateInternalHeightCache(),this._marksCache=null}},t.prototype.optionsChanged=function(){return this._optionsChanged},t.prototype.isAutoScale=function(){return this._options.autoScale},t.prototype.isLog=function(){return 1===this._options.mode},t.prototype.isPercentage=function(){return 2===this._options.mode},t.prototype.isIndexedTo100=function(){return 3===this._options.mode},t.prototype.mode=function(){return{autoScale:this._options.autoScale,isInverted:this._options.invertScale,mode:this._options.mode}},t.prototype.setMode=function(t){var e=this.mode(),i=null;void 0!==t.autoScale&&(this._options.autoScale=t.autoScale),void 0!==t.mode&&(this._options.mode=t.mode,2!==t.mode&&3!==t.mode||(this._options.autoScale=!0),this._invalidatedForRange.isValid=!1),1===e.mode&&t.mode!==e.mode&&(!function(t){if(null===t)return!1;var e=lt(t.minValue()),i=lt(t.maxValue());return isFinite(e)&&isFinite(i)}(this._priceRange)?this._options.autoScale=!0:null!==(i=function(t){if(null===t)return null;var e=lt(t.minValue()),i=lt(t.maxValue());return new tt(e,i)}(this._priceRange))&&this.setPriceRange(i)),1===t.mode&&t.mode!==e.mode&&null!==(i=ct(this._priceRange))&&this.setPriceRange(i);var r=e.mode!==this._options.mode;r&&(2===e.mode||this.isPercentage())&&this.updateFormatter(),r&&(3===e.mode||this.isIndexedTo100())&&this.updateFormatter(),void 0!==t.isInverted&&e.isInverted!==t.isInverted&&(this._options.invertScale=t.isInverted,this._onIsInvertedChanged()),this._modeChanged.fire(e,this.mode())},t.prototype.modeChanged=function(){return this._modeChanged},t.prototype.fontSize=function(){return this._layoutOptions.fontSize},t.prototype.height=function(){return this._height},t.prototype.setHeight=function(t){this._height!==t&&(this._height=t,this._invalidateInternalHeightCache(),this._marksCache=null)},t.prototype.topMargin=function(){return this.isInverted()?this._options.scaleMargins.bottom:this._options.scaleMargins.top},t.prototype.bottomMargin=function(){return this.isInverted()?this._options.scaleMargins.top:this._options.scaleMargins.bottom},t.prototype.internalHeight=function(){if(this._internalHeightCache)return this._internalHeightCache;var t=this.height()*(1-this.topMargin()-this.bottomMargin());return this._internalHeightCache=t,t},t.prototype.internalHeightChanged=function(){return this._internalHeightChanged},t.prototype.priceRange=function(){return this._makeSureItIsValid(),this._priceRange},t.prototype.priceRangeChanged=function(){return this._priceRangeChanged},t.prototype.setPriceRange=function(t,e,i){var r=this._priceRange;(e||null===r&&null!==t||null!==r&&!r.equals(t))&&(this._marksCache=null,this._priceRange=t,i||this._priceRangeChanged.fire(r,t))},t.prototype.isEmpty=function(){return this._makeSureItIsValid(),0===this._height||!this._priceRange||this._priceRange.isEmpty()},t.prototype.invertedCoordinate=function(t){return this.isInverted()?t:this.height()-1-t},t.prototype.priceToCoordinate=function(t,e,i){return this.isPercentage()?t=nt(t,e):this.isIndexedTo100()&&(t=st(t,e)),this._logicalToCoordinate(t,e,i)},t.prototype.pointsArrayToCoordinates=function(t,e,i){this._makeSureItIsValid();for(var r=this.bottomMargin()*this.height(),n=l(this.priceRange()),o=n.minValue(),s=n.maxValue(),a=this.internalHeight()-1,h=this.isInverted(),c=a/(s-o),u=void 0===i?0:i.from,p=void 0===i?t.length:i.to,d=this._getCoordinateTransformer(),_=u;_<p;_++){var f=t[_],m=f.price;if(!isNaN(m)){var v=m;null!==d&&(v=d(f.price,e));var g=r+c*(v-o),y=h?g:this._height-1-g;f.y=Math.round(y)}}},t.prototype.barPricesToCoordinates=function(t,e,i){this._makeSureItIsValid();for(var r=this.bottomMargin()*this.height(),n=l(this.priceRange()),o=n.minValue(),s=n.maxValue(),a=this.internalHeight()-1,h=this.isInverted(),c=a/(s-o),u=void 0===i?0:i.from,p=void 0===i?t.length:i.to,d=this._getCoordinateTransformer(),_=u;_<p;_++){var f=t[_],m=f.open,v=f.high,g=f.low,y=f.close;null!==d&&(m=d(f.open,e),v=d(f.high,e),g=d(f.low,e),y=d(f.close,e));var b=r+c*(m-o),S=h?b:this._height-1-b;f.openY=Math.round(S),b=r+c*(v-o),S=h?b:this._height-1-b,f.highY=Math.round(S),b=r+c*(g-o),S=h?b:this._height-1-b,f.lowY=Math.round(S),b=r+c*(y-o),S=h?b:this._height-1-b,f.closeY=Math.round(S)}},t.prototype.coordinateToPrice=function(t,e){var i=this._coordinateToLogical(t,e);return this.logicalToPrice(i,e)},t.prototype.logicalToPrice=function(t,e){var i=t;return this.isPercentage()?i=function(t,e){return e<0&&(t=-t),t/100*e+e}(i,e):this.isIndexedTo100()&&(i=function(t,e){return t-=100,e<0&&(t=-t),t/100*e+e}(i,e)),i},t.prototype.dataSources=function(){return this._dataSources},t.prototype.orderedSources=function(){if(this._cachedOrderedSources)return this._cachedOrderedSources;for(var t=[],e=0;e<this._dataSources.length;e++){var i=this._dataSources[e];null===i.zorder()&&i.setZorder(e+1),t.push(i)}return t=re(t),this._cachedOrderedSources=t,this._cachedOrderedSources},t.prototype.hasSeries=function(){return this._hasSeries},t.prototype.addDataSource=function(t){-1===this._dataSources.indexOf(t)&&(t instanceof ie&&(this._hasSeries=!0),this._dataSources.push(t),this._mainSource=null,this.updateFormatter(),this.invalidateSourcesCache())},t.prototype.removeDataSource=function(t){var e=this._dataSources.indexOf(t);if(-1===e)throw new Error("source is not attached to scale");this._dataSources.splice(e,1),t instanceof ie&&(this._hasSeries=!1),this.mainSource()||this.setMode({autoScale:!0}),this._mainSource=null,this.updateFormatter(),this.invalidateSourcesCache()},t.prototype.mainSource=function(){if(null!==this._mainSource)return this._mainSource;for(var t=null,e=0;e<this._dataSources.length;e++){var i=this._dataSources[e];if(i instanceof ie){t=i;break}null===t&&i instanceof Q&&(t=i)}return this._mainSource=t,this._mainSource},t.prototype.isInverted=function(){return this._options.invertScale},t.prototype.marks=function(){return this._marksCache?this._marksCache:(this._markBuilder.rebuildTickMarks(),this._marksCache=this._markBuilder.marks(),this._onMarksChanged.fire(),this._marksCache)},t.prototype.onMarksChanged=function(){return this._onMarksChanged},t.prototype.startScale=function(t){this.isPercentage()||this.isIndexedTo100()||null===this._scaleStartPoint&&null===this._priceRangeSnapshot&&(this.isEmpty()||(this._scaleStartPoint=this._height-t,this._priceRangeSnapshot=l(this.priceRange()).clone()))},t.prototype.scaleTo=function(t){if(!this.isPercentage()&&!this.isIndexedTo100()&&null!==this._scaleStartPoint){this.setMode({autoScale:!1}),(t=this._height-t)<0&&(t=0);var e=(this._scaleStartPoint+.2*(this._height-1))/(t+.2*(this._height-1)),i=l(this._priceRangeSnapshot).clone();e=Math.max(e,.1),i.scaleAroundCenter(e),this.setPriceRange(i)}},t.prototype.endScale=function(){this.isPercentage()||this.isIndexedTo100()||(this._scaleStartPoint=null,this._priceRangeSnapshot=null)},t.prototype.startScroll=function(t){this.isAutoScale()||null===this._scrollStartPoint&&null===this._priceRangeSnapshot&&(this.isEmpty()||(this._scrollStartPoint=t,this._priceRangeSnapshot=l(this.priceRange()).clone()))},t.prototype.scrollTo=function(t){if(!this.isAutoScale()&&null!==this._scrollStartPoint){var e=l(this.priceRange()).length()/(this.height()-1),i=t-this._scrollStartPoint;this.isInverted()&&(i*=-1);var r=i*e,n=l(this._priceRangeSnapshot).clone();n.shift(r),this.setPriceRange(n,!0),this._marksCache=null}},t.prototype.endScroll=function(){this.isAutoScale()||null!==this._scrollStartPoint&&(this._scrollStartPoint=null,this._priceRangeSnapshot=null)},t.prototype.formatter=function(){return this._formatter||this.updateFormatter(),this._formatter},t.prototype.formatPrice=function(t,e){switch(this._options.mode){case 2:return this.formatter().format(nt(t,e));case 3:return this.formatter().format(st(t,e));default:return this._formatPrice(t)}},t.prototype.formatLogical=function(t){switch(this._options.mode){case 2:case 3:return this.formatter().format(t);default:return this._formatPrice(t)}},t.prototype.formatPriceAbsolute=function(t){return this._formatPrice(t,this._mainSourceFormatter())},t.prototype.formatPricePercentage=function(t,e){return t=nt(t,e),ne.format(t)},t.prototype.sourcesForAutoScale=function(){return this._dataSources.filter(function(t){return t instanceof Q})},t.prototype.recalculatePriceRange=function(t){this._invalidatedForRange={visibleBars:t,isValid:!1}},t.prototype.updateAllViews=function(){this._dataSources.forEach(function(t){return t.updateAllViews()})},t.prototype.updateFormatter=function(){this._marksCache=null;var t=this.mainSource(),e=100;null!==t&&(e=t.base()),this._formatter=oe,this.isPercentage()?(this._formatter=ne,e=100):this.isIndexedTo100()?(this._formatter=new K(100,1),e=100):null!==t&&(this._formatter=t.formatter()),this._markBuilder=new pt(this,e,this._coordinateToLogical.bind(this),this._logicalToCoordinate.bind(this)),this._markBuilder.rebuildTickMarks()},t.prototype.invalidateSourcesCache=function(){this._cachedOrderedSources=null},t.prototype._makeSureItIsValid=function(){this._invalidatedForRange.isValid||(this._invalidatedForRange.isValid=!0,this._recalculatePriceRangeImpl())},t.prototype._invalidateInternalHeightCache=function(){this._internalHeightCache=null,this._internalHeightChanged.fire()},t.prototype._logicalToCoordinate=function(t,e,i){if(this._makeSureItIsValid(),this.isEmpty())return 0;t=this.isLog()&&t?ht(t):t;var r=l(this.priceRange()),n=this.bottomMargin()*this.height()+(this.internalHeight()-1)*(t-r.minValue())/r.length(),o=this.invertedCoordinate(n);return i?o:Math.round(o)},t.prototype._coordinateToLogical=function(t,e){if(this._makeSureItIsValid(),this.isEmpty())return 0;var i=this.invertedCoordinate(t),r=l(this.priceRange()),n=r.minValue()+r.length()*((i-this.bottomMargin()*this.height())/(this.internalHeight()-1));return this.isLog()?lt(n):n},t.prototype._onIsInvertedChanged=function(){this._marksCache=null,this._markBuilder.rebuildTickMarks()},t.prototype._mainSourceFormatter=function(){return l(this.mainSource()).formatter()},t.prototype._recalculatePriceRangeImpl=function(){var t=this._invalidatedForRange.visibleBars;if(null!==t){for(var e=null,i=this.sourcesForAutoScale(),r=0;r<i.length;r++){var n=i[r],o=n.firstValue();if(null!==o){var s=t.firstBar(),a=t.lastBar(),h=n.priceRange(s,a);if(null!==h){switch(this._options.mode){case 1:h=ct(h);break;case 2:h=ot(h,o);break;case 3:h=at(h,o)}e=null===e?h:e.merge(l(h))}}}e?(e.minValue()===e.maxValue()&&(e=new tt(e.minValue()-.5,e.maxValue()+.5)),this.setPriceRange(e)):null===this._priceRange&&this.setPriceRange(new tt(-.5,.5)),this._invalidatedForRange.isValid=!0}},t.prototype._getCoordinateTransformer=function(){return this.isPercentage()?nt:this.isIndexedTo100()?st:this.isLog()?ht:null},t.prototype._formatPrice=function(t,e){return void 0===this._localizationOptions.priceFormatter?(void 0===e&&(e=this.formatter()),e.format(t)):this._localizationOptions.priceFormatter(t)},t}();function ae(t){return!p(t)}function he(t){return p(t)}var le=/(\d+(?:\.\d+)?)(px|em|rem|pt)/g,ce=document.createElement("canvas").getContext("2d")||{},ue=ce.backingStorePixelRatio||ce.webkitBackingStorePixelRatio||ce.mozBackingStorePixelRatio||ce.msBackingStorePixelRatio||ce.oBackingStorePixelRatio||ce.backingStorePixelRatio||1,pe=(window.devicePixelRatio||1)/ue;function de(t){t.width!==Math.floor(parseInt(l(t.style.width))*pe)&&(t.style.width=t.width+"px",t.width*=pe,t.height*=pe);var e=t.getContext("2d");return null===e?null:new fe(e,pe)}var _e,fe=function(){function t(t,e){this.canvas=t.canvas,this._ctx=t,this._rto=e}return t.prototype.restore=function(){this._ctx.restore()},t.prototype.save=function(){this._ctx.save()},t.prototype.getTransform=function(){return this._ctx.getTransform()},t.prototype.resetTransform=function(){this._ctx.resetTransform()},t.prototype.rotate=function(t){this._ctx.rotate(t)},t.prototype.scale=function(t,e){this._ctx.scale(t,e)},t.prototype.setTransform=function(t,e,i,r,n,o){p(t)?this._ctx.setTransform(t,e,i,r,n,o):this._ctx.setTransform(t)},t.prototype.transform=function(t,e,i,r,n,o){this._ctx.transform(t,e,i,r,n,o)},t.prototype.translate=function(t,e){this._ctx.translate(t*this._rto,e*this._rto)},Object.defineProperty(t.prototype,"globalAlpha",{get:function(){return this._ctx.globalAlpha},set:function(t){this._ctx.globalAlpha=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"globalCompositeOperation",{get:function(){return this._ctx.globalCompositeOperation},set:function(t){this._ctx.globalCompositeOperation=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"imageSmoothingEnabled",{get:function(){return this._ctx.imageSmoothingEnabled},set:function(t){this._ctx.imageSmoothingEnabled=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"imageSmoothingQuality",{get:function(){return this._ctx.imageSmoothingQuality},set:function(t){this._ctx.imageSmoothingQuality=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"fillStyle",{get:function(){return this._ctx.fillStyle},set:function(t){this._ctx.fillStyle=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"strokeStyle",{get:function(){return this._ctx.strokeStyle},set:function(t){this._ctx.strokeStyle=t},enumerable:!0,configurable:!0}),t.prototype.createLinearGradient=function(t,e,i,r){return this._ctx.createLinearGradient(t*this._rto,e*this._rto,i*this._rto,r*this._rto)},t.prototype.createPattern=function(t,e){return this._ctx.createPattern(t,e)},t.prototype.createRadialGradient=function(t,e,i,r,n,o){return this._ctx.createRadialGradient(t*this._rto,e*this._rto,i*this._rto,r*this._rto,n*this._rto,o*this._rto)},Object.defineProperty(t.prototype,"shadowBlur",{get:function(){return this._ctx.shadowBlur},set:function(t){this._ctx.shadowBlur=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"shadowColor",{get:function(){return this._ctx.shadowColor},set:function(t){this._ctx.shadowColor=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"shadowOffsetX",{get:function(){return this._ctx.shadowOffsetX},set:function(t){this._ctx.shadowOffsetX=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"shadowOffsetY",{get:function(){return this._ctx.shadowOffsetY},set:function(t){this._ctx.shadowOffsetY=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"filter",{get:function(){return this._ctx.filter},set:function(t){this._ctx.filter=t},enumerable:!0,configurable:!0}),t.prototype.clearRect=function(t,e,i,r){this._ctx.clearRect(t*this._rto,e*this._rto,i*this._rto,r*this._rto)},t.prototype.fillRect=function(t,e,i,r){this._ctx.fillRect(t*this._rto,e*this._rto,i*this._rto,r*this._rto)},t.prototype.strokeRect=function(t,e,i,r){this._ctx.strokeRect(t*this._rto,e*this._rto,i*this._rto,r*this._rto)},t.prototype.beginPath=function(){this._ctx.beginPath()},t.prototype.clip=function(t,e){"nonzero"===t||"evenodd"===t||void 0===t?this._ctx.clip(t):this._ctx.clip(t,e)},t.prototype.fill=function(t,e){"nonzero"===t||"evenodd"===t||void 0===t?this._ctx.fill(t):this._ctx.fill(t,e)},t.prototype.isPointInPath=function(t,e,i,r){return p(t)?this._ctx.isPointInPath(t*this._rto,e*this._rto,i):this._ctx.isPointInPath(t,e*this._rto,i*this._rto,r)},t.prototype.isPointInStroke=function(t,e,i){return p(t)?this._ctx.isPointInStroke(t*this._rto,e*this._rto):this._ctx.isPointInStroke(t,e*this._rto,i*this._rto)},t.prototype.stroke=function(t){void 0!==t?this._ctx.stroke(t):this._ctx.stroke()},t.prototype.drawFocusIfNeeded=function(t,e){void 0!==e?this._ctx.drawFocusIfNeeded(t,e):this._ctx.drawFocusIfNeeded(t)},t.prototype.scrollPathIntoView=function(t){void 0!==t?this._ctx.scrollPathIntoView(t):this._ctx.scrollPathIntoView()},t.prototype.fillText=function(t,e,i,r){var n=this;1!==this._rto&&(this.font=this.font.replace(le,function(t,e,i){return e*n._rto+i})),void 0===r?this._ctx.fillText(t,e*this._rto,i*this._rto):this._ctx.fillText(t,e*this._rto,i*this._rto,r*this._rto),-1!==this._rto&&(this.font=this.font.replace(le,function(t,e,i){return e/n._rto+i}))},t.prototype.measureText=function(t){return this._ctx.measureText(t)},t.prototype.strokeText=function(t,e,i,r){var n=this;1!==this._rto&&(this.font=this.font.replace(le,function(t,e,i){return e*n._rto+i})),void 0===r?this._ctx.strokeText(t,e*this._rto,i*this._rto):this._ctx.strokeText(t,e*this._rto,i*this._rto,r*this._rto),1!==this._rto&&(this.font=this.font.replace(le,function(t,e,i){return e/n._rto+i}))},t.prototype.drawImage=function(t,e,i,r,n,o,s,a,h){return t instanceof HTMLCanvasElement?this._drawImagePatchedSourceAndDest(t,e,i,r,n,o,s,a,h):this._drawImagePatchedSource(t,e,i,r,n,o,s,a,h)},t.prototype.createImageData=function(t,e){return p(t)?this._ctx.createImageData(t,e):this._ctx.createImageData(t)},t.prototype.getImageData=function(t,e,i,r){return this._ctx.getImageData(t,e,i,r)},t.prototype.putImageData=function(t,e,i,r,n,o,s){void 0===r?this._ctx.putImageData(t,e,i):this._ctx.putImageData(t,e,i,r,n,o,s)},Object.defineProperty(t.prototype,"lineCap",{get:function(){return this._ctx.lineCap},set:function(t){this._ctx.lineCap=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"lineDashOffset",{get:function(){return this._ctx.lineDashOffset},set:function(t){this._ctx.lineDashOffset=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"lineJoin",{get:function(){return this._ctx.lineJoin},set:function(t){this._ctx.lineJoin=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"lineWidth",{get:function(){return this._ctx.lineWidth},set:function(t){this._ctx.lineWidth=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"miterLimit",{get:function(){return this._ctx.miterLimit},set:function(t){this._ctx.miterLimit=t},enumerable:!0,configurable:!0}),t.prototype.getLineDash=function(){return this._ctx.getLineDash()},t.prototype.setLineDash=function(t){this._ctx.setLineDash(t)},Object.defineProperty(t.prototype,"direction",{get:function(){return this._ctx.direction},set:function(t){this._ctx.direction=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"font",{get:function(){return this._ctx.font},set:function(t){this._ctx.font=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"textAlign",{get:function(){return this._ctx.textAlign},set:function(t){this._ctx.textAlign=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"textBaseline",{get:function(){return this._ctx.textBaseline},set:function(t){this._ctx.textBaseline=t},enumerable:!0,configurable:!0}),t.prototype.arc=function(t,e,i,r,n,o){this._ctx.arc(t*this._rto,e*this._rto,i*this._rto,r,n,o)},t.prototype.arcTo=function(t,e,i,r,n){this._ctx.arcTo(t*this._rto,e*this._rto,i*this._rto,r*this._rto,n*this._rto)},t.prototype.bezierCurveTo=function(t,e,i,r,n,o){this._ctx.bezierCurveTo(t*this._rto,e*this._rto,i*this._rto,r*this._rto,n*this._rto,o*this._rto)},t.prototype.closePath=function(){this._ctx.closePath()},t.prototype.ellipse=function(t,e,i,r,n,o,s,a){this._ctx.ellipse(t,e,i,r,n,o,s,a)},t.prototype.lineTo=function(t,e){this._ctx.lineTo(t*this._rto,e*this._rto)},t.prototype.moveTo=function(t,e){this._ctx.moveTo(t*this._rto,e*this._rto)},t.prototype.quadraticCurveTo=function(t,e,i,r){this._ctx.quadraticCurveTo(t*this._rto,e*this._rto,i*this._rto,r*this._rto)},t.prototype.rect=function(t,e,i,r){this._ctx.rect(t*this._rto,e*this._rto,i*this._rto,r*this._rto)},t.prototype._drawImageImpl=function(t,e,i,r,n,o,s,a,h){void 0===r?this._ctx.drawImage(t,e,i):void 0===o?this._ctx.drawImage(t,e,i,r,n):this._ctx.drawImage(t,e,i,r,n,o,s,a,h)},t.prototype._drawImagePatchedSource=function(t,e,i,r,n,o,s,a,h){this._drawImageImpl(t,e*this._rto,i*this._rto,void 0===r?r:r*this._rto,void 0===n?n:n*this._rto,void 0===o?o:o*this._rto,void 0===s?s:s*this._rto,void 0===a?a:a*this._rto,void 0===h?h:h*this._rto)},t.prototype._drawImagePatchedSourceAndDest=function(t,e,i,r,n,o,s,a,h){void 0!==o&&("width"in t&&(r=Math.min(t.width,Math.max(1,r))),"height"in t&&(n=Math.min(t.height,Math.max(1,n)))),this._drawImageImpl(t,e*this._rto,i*this._rto,void 0===r?r:r*this._rto,void 0===n?n:n*this._rto,void 0===o?o:o*this._rto,void 0===s?s:s*this._rto,void 0===a?a:a*this._rto,void 0===h?h:h*this._rto)},t}(),me="'Trebuchet MS', Roboto, Ubuntu, sans-serif";function ve(t,e,i){return void 0!==i?i+=" ":i="",void 0===e&&(e=me),""+i+t+"px "+e}!function(t){t[t.BorderSize=1]="BorderSize",t[t.TickLength=4]="TickLength",t[t.OffsetSize=1]="OffsetSize"}(_e||(_e={}));var ge,ye=function(){function t(t){this._rendererOptions={borderSize:1,tickLength:4,offsetSize:1,fontSize:NaN,font:"",fontFamily:"",color:"",paddingBottom:0,paddingInner:0,paddingOuter:0,paddingTop:0,baselineOffset:0},this._chartModel=t}return t.prototype.options=function(){var t=this._rendererOptions,e=this._fontSize(),i=this._fontFamily();return t.fontSize===e&&t.fontFamily===i||(t.fontSize=e,t.fontFamily=i,t.font=ve(e,i),t.paddingTop=Math.floor(e/3.5),t.paddingBottom=t.paddingTop,t.paddingInner=Math.max(Math.ceil(e/2-t.tickLength/2),0),t.paddingOuter=Math.ceil(e/2+t.tickLength/2),t.baselineOffset=Math.round(e/5)),t.color=this._textColor(),this._rendererOptions},t.prototype._textColor=function(){return this._chartModel.options().layout.textColor},t.prototype._fontSize=function(){return this._chartModel.options().layout.fontSize},t.prototype._fontFamily=function(){return this._chartModel.options().layout.fontFamily},t}(),be=function(){function t(){this._data=null}return t.prototype.setData=function(t){this._data=t},t.prototype.draw=function(t){if(null!==this._data){if(t.lineWidth=1,this._data.vertLinesVisible){t.strokeStyle=this._data.vertLinesColor,r(t,this._data.vertLineStyle),t.beginPath();for(var e=0,i=this._data.timeMarks;e<i.length;e++){var n=i[e];t.moveTo(n.coord+1,0),t.lineTo(n.coord+1,this._data.h)}t.stroke()}if(this._data.horzLinesVisible){t.strokeStyle=this._data.horzLinesColor,r(t,this._data.horzLineStyle),t.beginPath();for(var o=0,s=this._data.priceMarks;o<s.length;o++){var a=s[o];t.moveTo(0,a.coord),t.lineTo(this._data.w,a.coord)}t.stroke()}}},t}(),Se=function(){function t(t){this._renderer=new be,this._invalidated=!0,this._pane=t}return t.prototype.update=function(){this._invalidated=!0},t.prototype.renderer=function(t,e){if(this._invalidated){var i=this._pane.model().options().grid,r={h:t,w:e,horzLinesVisible:i.horzLines.visible,vertLinesVisible:i.vertLines.visible,horzLinesColor:i.horzLines.color,vertLinesColor:i.vertLines.color,horzLineStyle:i.horzLines.style,vertLineStyle:i.vertLines.style,priceMarks:this._pane.defaultPriceScale().marks(),timeMarks:this._pane.model().timeScale().marks()||[]};this._renderer.setData(r),this._invalidated=!1}return this._renderer},t}(),xe=function(){function t(){this._paneViews=new WeakMap,this._invalidated=!0}return t.prototype.paneViews=function(t){var e=this._paneViews.get(t);return void 0===e&&(e=[new Se(t)],this._paneViews.set(t,e)),this._invalidated&&(e.forEach(function(t){return t.update()}),this._invalidated=!1),e},t.prototype.invalidate=function(){this._invalidated=!0},t}();!function(t){t[t.None=0]="None",t[t.Cursor=1]="Cursor",t[t.Light=2]="Light",t[t.Full=3]="Full"}(ge||(ge={}));var we=function(){function t(t){this._invalidatedPanes=new Map,this._force=!1,this._fitContent=!1,this._targetTimeRange=null,this._globalLevel=t}return t.prototype.invalidatePane=function(t,e){var i=function(t,e){return void 0===t?e:{level:Math.max(t.level,e.level),autoScale:t.autoScale||e.autoScale}}(this._invalidatedPanes.get(t),e);this._invalidatedPanes.set(t,i)},t.prototype.invalidateAll=function(t){this._globalLevel=Math.max(this._globalLevel,t)},t.prototype.fullInvalidation=function(){return this._globalLevel},t.prototype.invalidateForPane=function(t){var e=this._invalidatedPanes.get(t);return void 0===e?{level:this._globalLevel}:{level:Math.max(this._globalLevel,e.level),autoScale:e.autoScale}},t.prototype.setFitContent=function(){this._fitContent=!0,this._targetTimeRange=null},t.prototype.getFitContent=function(){return this._fitContent},t.prototype.setTargetTimeRange=function(t){this._targetTimeRange=t,this._fitContent=!1},t.prototype.getTargetTimeRange=function(){return this._targetTimeRange},t.prototype.merge=function(t){var e=this;this._force=this._force||t._force,t._fitContent&&this.setFitContent(),t._targetTimeRange&&this.setTargetTimeRange(t._targetTimeRange),this._globalLevel=Math.max(this._globalLevel,t._globalLevel),t._invalidatedPanes.forEach(function(t,i){e.invalidatePane(i,t)})},t}(),Ce=function(){function t(t){this._options=t}return t.prototype.align=function(t,e,i){var r=t;if(0===this._options.mode)return r;var n=i.defaultPriceScale(),o=n.mainSource();if(n.isEmpty()||null===o)return r;var s=o.firstValue();if(null===s)return r;var a=n.priceToCoordinate(t,s),h=i.dataSources().filter(function(t){return t instanceof ie}).reduce(function(t,r){if(i.isOverlay(r))return t;var n=r.priceScale(),o=r.bars();if(n.isEmpty()||!o.contains(e))return t;var s=o.valueAt(e);if(null===s)return t;var a=[s.value[3]],h=c(r.firstValue());return t.concat(a.map(function(t){return n.priceToCoordinate(t,h,!0)}))},[]);if(0===h.length)return r;h.sort(function(t,e){return Math.abs(t-a)-Math.abs(e-a)});var l=h[0];return r=n.coordinateToPrice(l,s)},t}(),Te=1e3,Me=function(){function t(t,e){this._dataSources=[],this._overlaySources=[],this._height=0,this._width=0,this._stretchFactor=Te,this._mainDataSource=null,this._cachedOrderedSources=null,this._destroyed=new $,this._timeScale=t,this._model=e,this.model().mainPriceScaleOptionsChanged().subscribe(this.onPriceScaleOptionsChanged.bind(this),this),this._defaultNonOverlayPriceScale=this._createPriceScale()}return t.prototype.onPriceScaleOptionsChanged=function(){this._defaultNonOverlayPriceScale.applyOptions(this._model.options().priceScale)},t.prototype.destroy=function(){this.model().mainPriceScaleOptionsChanged().unsubscribeAll(this),this._timeScale.barSpacingChanged().unsubscribeAll(this),this._defaultNonOverlayPriceScale.modeChanged().unsubscribeAll(this),this._dataSources.forEach(function(t){t.destroy&&t.destroy()}),this._destroyed.fire()},t.prototype.stretchFactor=function(){return this._stretchFactor},t.prototype.setStretchFactor=function(t){this._stretchFactor=t},t.prototype.model=function(){return this._model},t.prototype.width=function(){return this._width},t.prototype.height=function(){return this._height},t.prototype.setWidth=function(t){this._width=t,this.updateAllViews()},t.prototype.setHeight=function(t){var e=this;this._height=t,this._defaultNonOverlayPriceScale.setHeight(t),this._dataSources.forEach(function(i){if(e.isOverlay(i)){var r=i.priceScale();null!==r&&r.setHeight(t)}}),this.updateAllViews()},t.prototype.dataSources=function(){return this._dataSources},t.prototype.isOverlay=function(t){var e=t.priceScale();return null===e||this._defaultNonOverlayPriceScale!==e},t.prototype.addDataSource=function(t,e,i){var r=this._getZOrderMinMax().minZOrder-1;this._insertDataSource(t,e,r)},t.prototype.removeDataSource=function(t){var e=this._dataSources.indexOf(t);a(-1!==e,"removeDataSource: invalid data source"),this._dataSources.splice(e,1),t===this._mainDataSource&&(this._mainDataSource=null);var i=this._overlaySources.indexOf(t);-1!==i&&this._overlaySources.splice(i,1);var r=t.priceScale();if(r&&r.dataSources().indexOf(t)>=0&&r.removeDataSource(t),r&&null===r.mainSource()){var n=r.dataSources().length;a(0===n,"Invalid priceScale state: empty mainSource but non-empty data sources="+n),r!==this._defaultNonOverlayPriceScale&&r.modeChanged().unsubscribeAll(this)}t instanceof Q&&this._processMainSourceChange(),r&&t instanceof Q&&(r.invalidateSourcesCache(),this.recalculatePriceScale(r)),this._cachedOrderedSources=null},t.prototype.priceScalePosition=function(){var t=this._model.options().priceScale.position;return"none"===t?"overlay":t},t.prototype.startScalePrice=function(t,e){t.startScale(e)},t.prototype.scalePriceTo=function(t,e){t.scaleTo(e),this.updateAllViews()},t.prototype.endScalePrice=function(t){t.endScale()},t.prototype.startScrollPrice=function(t,e){t.startScroll(e)},t.prototype.scrollPriceTo=function(t,e){t.scrollTo(e),this.updateAllViews()},t.prototype.endScrollPrice=function(t){t.endScroll()},t.prototype.setPriceAutoScale=function(t,e){t.setMode({autoScale:e}),this._timeScale.isEmpty()?t.setPriceRange(null):this.recalculatePriceScale(t)},t.prototype.updateAllViews=function(){this._dataSources.forEach(function(t){t.updateAllViews()})},t.prototype.defaultPriceScale=function(){var t=this.mainDataSource(),e=null!==t?t.priceScale():null;return null===e&&(e=this._defaultNonOverlayPriceScale),e},t.prototype.mainDataSource=function(){return this._mainDataSource},t.prototype.recalculatePriceScale=function(t){null!==t&&t.isAutoScale()&&this._recalculatePriceScaleImpl(t)},t.prototype.resetPriceScale=function(t){var e=this._timeScale.visibleBars();t.setMode({autoScale:!0}),null!==e&&t.recalculatePriceRange(e),this.updateAllViews()},t.prototype.momentaryAutoScale=function(){this._recalculatePriceScaleImpl(this._defaultNonOverlayPriceScale)},t.prototype.recalculate=function(){var t=this;this.recalculatePriceScale(this._defaultNonOverlayPriceScale),this._dataSources.forEach(function(e){t.isOverlay(e)&&t.recalculatePriceScale(e.priceScale())}),this.updateAllViews(),this._model.updatePane(this)},t.prototype.isEmpty=function(){return null===this._mainDataSource},t.prototype.containsSeries=function(){return this._dataSources.some(function(t){return t instanceof ie})},t.prototype.orderedSources=function(){return null===this._cachedOrderedSources&&(this._cachedOrderedSources=re(this._dataSources)),this._cachedOrderedSources},t.prototype.onDestroyed=function(){return this._destroyed},t.prototype._findSuitableScale=function(t,e){return"overlay"!==e?this._defaultNonOverlayPriceScale:this._createPriceScale()},t.prototype._recalculatePriceScaleImpl=function(t){var e=t.sourcesForAutoScale();if(e&&e.length>0&&!this._timeScale.isEmpty()){var i=this._timeScale.visibleBars();null!==i&&t.recalculatePriceRange(i)}t.updateAllViews()},t.prototype._getZOrderMinMax=function(){var t=this.orderedSources();if(0===t.length)return{minZOrder:0,maxZOrder:0};for(var e=0,i=0,r=0;r<t.length;r++){var n=t[r].zorder();null!==n&&(n<e&&(e=n),n>i&&(i=n))}return{minZOrder:e,maxZOrder:i}},t.prototype._insertDataSource=function(t,e,i){var r="overlay",n=null;if(!e){var o=this.model().options().priceScale.position;r="none"===o?"overlay":o}t instanceof Q&&(n=this._findSuitableScale(t,r)),this._dataSources.push(t),e&&this._overlaySources.push(t),null!==n&&(n.addDataSource(t),t.setPriceScale(n)),t.setZorder(i),this._processMainSourceChange(),t instanceof Q&&this.recalculatePriceScale(n),this._cachedOrderedSources=null},t.prototype._onPriceScaleModeChanged=function(t,e,i){e.mode!==i.mode&&this._recalculatePriceScaleImpl(t)},t.prototype._processMainSourceChange=function(){if(null===this._mainDataSource||-1!==this._overlaySources.indexOf(this._mainDataSource)){for(var t=0,e=this._dataSources;t<e.length;t++){if((n=e[t])instanceof Q&&!this.isOverlay(n))return void this._setMainSource(n)}for(var i=0,r=this._overlaySources;i<r.length;i++){var n;if((n=r[i])instanceof Q)return void this._setMainSource(n)}}},t.prototype._setMainSource=function(t){var e=l(t.priceScale());this.defaultPriceScale().modeChanged().unsubscribeAll(this),e.modeChanged().subscribe(this._onPriceScaleModeChanged.bind(this,e),this),this._mainDataSource=t},t.prototype._createPriceScale=function(){var t=new se(m(this._model.options().priceScale),this._model.options().layout,this._model.options().localization);return t.setHeight(this.height()),t},t}(),ke=function(t){return t.getUTCFullYear()},Pe=function(t){return G(function(t){return t.getUTCDate()}(t),2)},De=function(t){return G(function(t){return t.getUTCMonth()+1}(t),2)},Ee=function(t){return G(ke(t)%100,2)},Re=function(t){return G(ke(t),4)},Ie={"dd MMM 'yy":function(t,e){return Pe(t)+" "+function(t,e){return new Date(t.getUTCFullYear(),t.getUTCMonth(),1).toLocaleString(e,{month:"short"})}(t,e)+" '"+Ee(t)},"yyyy-MM-dd":function(t,e){return Re(t)+"-"+De(t)+"-"+Pe(t)},"yy-MM-dd":function(t,e){return Ee(t)+"-"+De(t)+"-"+Pe(t)},"yy/MM/dd":function(t,e){return Ee(t)+"/"+De(t)+"/"+Pe(t)},"yyyy/MM/dd":function(t,e){return Re(t)+"/"+De(t)+"/"+Pe(t)},"dd-MM-yyyy":function(t,e){return Pe(t)+"-"+De(t)+"-"+Re(t)},"dd-MM-yy":function(t,e){return Pe(t)+"-"+De(t)+"-"+Ee(t)},"dd/MM/yy":function(t,e){return Pe(t)+"/"+De(t)+"/"+Ee(t)},"dd/MM/yyyy":function(t,e){return Pe(t)+"/"+De(t)+"/"+Re(t)},"MM/dd/yy":function(t,e){return De(t)+"/"+Pe(t)+"/"+Ee(t)},"MM/dd/yyyy":function(t,e){return De(t)+"/"+Pe(t)+"/"+Re(t)}},Ve=function(){function t(t,e){void 0===t&&(t="yyyy-MM-dd"),void 0===e&&(e="default"),this._dateFormatFunc=Ie[t],this._locale=e}return t.prototype.format=function(t){return this._dateFormatFunc(t,this._locale)},t}(),Ae=function(){function t(t){this._formatStr=t||"%h:%m:%s"}return t.prototype.format=function(t){return this._formatStr.replace("%h",G(t.getUTCHours(),2)).replace("%m",G(t.getUTCMinutes(),2)).replace("%s",G(t.getUTCSeconds(),2))},t}(),Le={dateFormat:"yyyy-MM-dd",timeFormat:"%h:%m:%s",dateTimeSeparator:" ",locale:"default"},Oe=function(){function t(t){void 0===t&&(t={});var e=s({},Le,t);this._dateFormatter=new Ve(e.dateFormat,e.locale),this._timeFormatter=new Ae(e.timeFormat),this._separator=e.dateTimeSeparator}return t.prototype.format=function(t){return""+this._dateFormatter.format(t)+this._separator+this._timeFormatter.format(t)},t}(),ze=function(){function t(t,e){a(t<=e,"The last bar in the bars range should be greater than or equal to the first bar"),this._firstBar=t,this._lastBar=e}return t.prototype.firstBar=function(){return this._firstBar},t.prototype.lastBar=function(){return this._lastBar},t.prototype.count=function(){return this._lastBar-this._firstBar+1},t.prototype.contains=function(t){return this._firstBar<=t&&t<=this._lastBar},t.prototype.equals=function(t){return this._firstBar===t.firstBar()&&this._lastBar===t.lastBar()},t}(),Be=function(){function t(t,e){void 0===e&&(e=50),this._actualSize=0,this._usageTick=1,this._oldestTick=1,this._cache=new Map,this._tick2Labels=new Map,this._format=t,this._maxSize=e}return t.prototype.format=function(t){var e=this._cache.get(t.valueOf());if(void 0!==e)return e.string;if(this._actualSize===this._maxSize){var i=this._tick2Labels.get(this._oldestTick);this._tick2Labels.delete(this._oldestTick),this._cache.delete(h(i)),this._oldestTick++,this._actualSize--}var r=this._format(t);return this._cache.set(t.valueOf(),{string:r,tick:this._usageTick}),this._tick2Labels.set(this._usageTick,t.valueOf()),this._actualSize++,this._usageTick++,r},t}();function We(t,e){return t.index-e.index}var Fe,Ne,He=function(){function t(){this._minIndex=1/0,this._maxIndex=-1/0,this._marksByIndex=new Map,this._marksBySpan=[],this._changed=new $,this._cache=null,this._maxBar=NaN}return t.prototype.reset=function(){this._marksByIndex.clear(),this._marksBySpan=[],this._minIndex=1/0,this._maxIndex=-1/0,this._cache=null,this._changed.fire()},t.prototype.merge=function(t){for(var e=this._marksBySpan,i={},r=0,n=t;r<n.length;r++){var o=n[r],s=o.index,a=o.span,h=this._marksByIndex.get(o.index);if(h){if(h.index===o.index&&h.span===o.span){h.time=o.time;continue}this._removeTickMark(h)}this._marksByIndex.set(s,o),this._minIndex>s&&(this._minIndex=s),this._maxIndex<s&&(this._maxIndex=s),void 0===(l=e[a])&&(l=[],e[a]=l),l.push(o),i[a]=!0}for(a=e.length;a--;){var l;void 0!==(l=e[a])&&(0===l.length&&delete e[a],i[a]&&l.sort(We))}this._cache=null,this._changed.fire()},t.prototype.indexToTime=function(t){var e=this._marksByIndex.get(t);return void 0===e?null:e.time},t.prototype.nearestIndex=function(t){for(var e=this._minIndex,i=this._maxIndex;i-e>2;){if(1e3*h(this._marksByIndex.get(e)).time.timestamp===t)return e;if(1e3*h(this._marksByIndex.get(i)).time.timestamp===t)return i;var r=Math.round((e+i)/2);1e3*h(this._marksByIndex.get(r)).time.timestamp>t?i=r:e=r}return e},t.prototype.build=function(t,e){var i=Math.ceil(e/t);if(this._maxBar===i&&this._cache)return this._cache;this._maxBar=i;for(var r=[],n=this._marksBySpan.length;n--;)if(this._marksBySpan[n]){var o=r;r=[];for(var s=o.length,a=0,l=h(this._marksBySpan[n]),c=l.length,u=1/0,p=-1/0,d=0;d<c;d++){for(var _=l[d],f=_.index;a<s;){var m=o[a],v=m.index;if(!(v<f)){u=v;break}a++,r.push(m),p=v,u=1/0}u-f>=i&&f-p>=i&&(r.push(_),p=f)}for(;a<s;a++)r.push(o[a])}return this._cache=r,this._cache},t.prototype._removeTickMark=function(t){var e=t.index;if(this._marksByIndex.get(e)===t){this._marksByIndex.delete(e),e<=this._minIndex&&this._minIndex++,e>=this._maxIndex&&this._maxIndex--,this._maxIndex<this._minIndex&&(this._minIndex=1/0,this._maxIndex=-1/0);var i=h(this._marksBySpan[t.span]),r=i.indexOf(t);-1!==r&&i.splice(r,1)}},t}(),Ue=function(){function t(){this._items=[]}return t.prototype.clear=function(){this._items=[]},t.prototype.size=function(){return this._items.length},t.prototype.firstIndex=function(){return this._offsetToIndex(0)},t.prototype.lastIndex=function(){return this._offsetToIndex(this._items.length-1)},t.prototype.merge=function(t,e){if(0!==e.length)if(0!==this._items.length){var i=t;if(i<0){var r=Math.abs(i);if(e.length<r)return;this._items=new Array(r).concat(this._items);for(var n=0;n<e.length;++n)this._items[t+n]=e[n]}else{for(var o=i;o<this._items.length&&o-i<e.length;++o)this._items[o]=e[o-i];var s=i+e.length;if(s>this._items.length){r=s-this._items.length;for(var a=o;a<o+r;++a)this._items.push(e[a-i])}}}else this._items=e},t.prototype.valueAt=function(t){var e=this._indexToOffset(t);return null!==e?this._items[e]:null},t.prototype.indexOf=function(t,e){if(this._items.length<1)return null;if(t>this._items[this._items.length-1].timestamp)return e?this._items.length-1:null;for(var i=0;i<this._items.length;++i){if(t===this._items[i].timestamp)return i;if(t<this._items[i].timestamp)return e?i:null}return null},t.prototype.closestIndexLeft=function(t){var e=this._items;if(!e.length)return null;if(Number.isNaN(t.timestamp))return null;var i=e.length-1;if(t>=e[i])return i;var r=0,n=e[r];if(t<n)return null;if(t===n)return r;for(;i>r+1;){var o=r+i>>1,s=e[o];if(s.timestamp>t.timestamp)i=o;else{if(!(s.timestamp<t.timestamp))return s.timestamp===t.timestamp?o:null;r=o}}return r},t.prototype._offsetToIndex=function(t){return 0<=t&&t<this.size()?t:null},t.prototype._indexToOffset=function(t){return 0<=t&&t<this.size()?t:null},t}();!function(t){t[t.DefaultAnimationDuration=400]="DefaultAnimationDuration",t[t.MaxBarSpacing=50]="MaxBarSpacing",t[t.MinBarSpacing=.5]="MinBarSpacing",t[t.MinVisibleBarsCount=5]="MinVisibleBarsCount"}(Fe||(Fe={})),function(t){t[t.Minute=20]="Minute",t[t.Hour=30]="Hour",t[t.Day=40]="Day",t[t.Week=50]="Week",t[t.Month=60]="Month",t[t.Year=70]="Year"}(Ne||(Ne={}));var Ye=function(){function t(t,e,i){this._width=0,this._baseIndexOrNull=null,this._points=new Ue,this._barSpacingChanged=new $,this._scrollStartPoint=null,this._scaleStartPoint=null,this._tickMarks=new He,this._formattedBySpan=new Map,this._visibleBars=null,this._visibleBarsInvalidated=!0,this._visibleBarsChanged=new $,this._optionsApplied=new $,this._leftEdgeIndex=null,this._commonTransitionStartState=null,this._timeMarksCache=null,this._labels=[],this._options=e,this._localizationOptions=i,this._rightOffset=e.rightOffset,this._barSpacing=Xe(e.barSpacing),this._model=t,this._updateDateTimeFormatter()}return t.prototype.options=function(){return this._options},t.prototype.applyLocalizationOptions=function(t){u(this._localizationOptions,t),this._invalidateTickMarks(),this._updateDateTimeFormatter()},t.prototype.applyOptions=function(t,e){if(u(this._options,t),this._options.fixLeftEdge){var i=this._points.firstIndex();null!==i&&this.setLeftEdgeFix(i)}else this._leftEdgeIndex=null;void 0!==t.rightOffset&&this.setRightOffset(t.rightOffset),void 0!==t.barSpacing&&this.setBarSpacing(t.barSpacing),this._invalidateTickMarks(),this._updateDateTimeFormatter(),this._optionsApplied.fire()},t.prototype.isEmpty=function(){return 0===this._width||0===this._points.size()},t.prototype.visibleBars=function(){return this._visibleBarsInvalidated&&(this._visibleBarsInvalidated=!1,this._updateVisibleBars()),this._visibleBars},t.prototype.tickMarks=function(){return this._tickMarks},t.prototype.points=function(){return this._points},t.prototype.width=function(){return this._width},t.prototype.setWidth=function(t){if(isFinite(t)&&!(t<=0)&&this._width!==t){if(this._visibleBarsInvalidated=!0,this._options.lockVisibleTimeRangeOnResize&&this._width){var e=this._barSpacing*t/this._width;this._setBarSpacing(e)}if(null!==this._leftEdgeIndex)if(l(this.visibleBars()).firstBar()<=this._leftEdgeIndex){var i=this._width-t;this._rightOffset-=Math.round(i/this._barSpacing)+1}this._width=t,this._correctOffset()}},t.prototype.indexToCoordinate=function(t,e){if(this.isEmpty()||!d(t))return 0;var i=this.baseIndex()+this._rightOffset-t,r=this._width-(i+.5)*this._barSpacing;return e?r:Math.round(r)},t.prototype.indexesToCoordinates=function(t,e){for(var i=this.baseIndex(),r=void 0===e?0:e.from,n=void 0===e?t.length:e.to,o=r;o<n;o++){var s=t[o].time,a=i+this._rightOffset-s,h=this._width-(a+.5)*this._barSpacing;t[o].x=Math.round(h)}},t.prototype.indexToUserTime=function(t){return this._tickMarks.indexToTime(t)},t.prototype.coordinateToIndex=function(t){return Math.ceil(this._coordinateToFloatIndex(t))},t.prototype.setRightOffset=function(t){this._visibleBarsInvalidated=!0,this._rightOffset=t,this._correctOffset(),this._model.recalculateAllPanes(),this._model.lightUpdate()},t.prototype.barSpacing=function(){return this._barSpacing},t.prototype.setBarSpacing=function(t){this._setBarSpacing(t),this._correctOffset()},t.prototype.barSpacingChanged=function(){return this._barSpacingChanged},t.prototype.rightOffset=function(){return this._rightOffset},t.prototype.marks=function(){if(this.isEmpty())return null;if(null!==this._timeMarksCache)return this._timeMarksCache;for(var t=this._barSpacing,e=5*(this._model.options().layout.fontSize+4),i=Math.round(e/t),r=l(this.visibleBars()),n=Math.max(r.firstBar(),r.firstBar()-i),o=Math.max(r.lastBar(),r.lastBar()-i),s=0,a=0,h=this._tickMarks.build(t,e);a<h.length;a++){var c=h[a];if(n<=c.index&&c.index<=o){var u=this._tickMarks.indexToTime(c.index);if(null!==u){if(s<this._labels.length){var p=this._labels[s];p.coord=this.indexToCoordinate(c.index),p.label=this._formatLabel(u,c.span),p.span=c.span,p.major=!1}else this._labels.push({coord:this.indexToCoordinate(c.index),label:this._formatLabel(u,c.span),span:c.span,major:!1});s++}}}return this._labels.length=s,this._timeMarksCache=this._labels,this._labels},t.prototype.reset=function(){this._visibleBarsInvalidated=!0,this._points=new Ue,this._scrollStartPoint=null,this._scaleStartPoint=null,this._clearCommonTransitionsStartState(),this._tickMarks.reset(),this._leftEdgeIndex=null},t.prototype.restoreDefault=function(){this._visibleBarsInvalidated=!0,this.setBarSpacing(this._options.barSpacing),this.setRightOffset(this._options.rightOffset)},t.prototype.setLeftEdgeFix=function(t){this._leftEdgeIndex=t;var e=l(this.visibleBars()).firstBar()-t;if(e<0){var i=this._rightOffset-e-1;this.scrollToOffsetAnimated(i,500)}},t.prototype.fixLeftEdge=function(){return this._options.fixLeftEdge},t.prototype.setBaseIndex=function(t){this._visibleBarsInvalidated=!0,this._baseIndexOrNull=t,this._correctOffset()},t.prototype.zoom=function(t,e){var i=this._coordinateToFloatIndex(t),r=this.barSpacing(),n=r+e*(r/10);this.setBarSpacing(n),this._options.rightBarStaysOnScroll||this.setRightOffset(this.rightOffset()+(i-this._coordinateToFloatIndex(t)))},t.prototype.startScale=function(t){this._scrollStartPoint&&this.endScroll(),null===this._scaleStartPoint&&null===this._commonTransitionStartState&&(this.isEmpty()||(this._scaleStartPoint=t,this._saveCommonTransitionsStartState()))},t.prototype.scaleTo=function(t){if(null!==this._commonTransitionStartState){var e=et(this._width-t,0,this._width),i=et(this._width-l(this._scaleStartPoint),0,this._width);0!==e&&0!==i&&this.setBarSpacing(this._commonTransitionStartState.barSpacing*e/i)}},t.prototype.endScale=function(){null!==this._scaleStartPoint&&(this._scaleStartPoint=null,this._clearCommonTransitionsStartState())},t.prototype.startScroll=function(t){null===this._scrollStartPoint&&null===this._commonTransitionStartState&&(this.isEmpty()||(this._scrollStartPoint=t,this._saveCommonTransitionsStartState()))},t.prototype.scrollTo=function(t){if(this._visibleBarsInvalidated=!0,null!==this._scrollStartPoint){var e=(this._scrollStartPoint-t)/this.barSpacing();this._rightOffset=l(this._commonTransitionStartState).rightOffset+e,this._correctOffset()}},t.prototype.endScroll=function(){null!==this._scrollStartPoint&&(this._scrollStartPoint=null,this._clearCommonTransitionsStartState())},t.prototype.scrollToRealTime=function(){this.scrollToOffsetAnimated(this._options.rightOffset)},t.prototype.scrollToOffsetAnimated=function(t,e){var i=this;if(void 0===e&&(e=400),!isFinite(t))throw new RangeError("offset is required and must be finite number");if(!isFinite(e)||e<=0)throw new RangeError("animationDuration (optional) must be finite positive number");var r=this._rightOffset,n=(new Date).getTime(),o=function(){var s=((new Date).getTime()-n)/e,a=s>=1,h=a?t:r+(t-r)*s;i.setRightOffset(h),a||setTimeout(o,20)};o()},t.prototype.update=function(t,e,i){if(this._visibleBarsInvalidated=!0,e.length>0){var r=this._points.size();this._points.merge(t,e),this._rightOffset<0&&this._points.size()===r+1&&(this._rightOffset-=1,this._visibleBarsInvalidated=!0)}this._tickMarks.merge(i),this._correctOffset()},t.prototype.visibleBarsChanged=function(){return this._visibleBarsChanged},t.prototype.optionsApplied=function(){return this._optionsApplied},t.prototype.baseIndex=function(){return this._baseIndexOrNull||0},t.prototype.setVisibleRange=function(t){var e=t.count();this._setBarSpacing(this._width/e),this._rightOffset=t.lastBar()-this.baseIndex(),this._correctOffset(),this._visibleBarsInvalidated=!0,this._model.recalculateAllPanes(),this._model.lightUpdate()},t.prototype.fitContent=function(){var t=this._points.firstIndex(),e=this._points.lastIndex();null!==t&&null!==e&&this.setVisibleRange(new ze(t-1,e+1+this._options.rightOffset))},t.prototype.setTimePointsRange=function(t){var e=this.points(),i=e.firstIndex(),r=e.lastIndex();if(null!==i&&null!==r){var n=l(e.valueAt(i)).timestamp,o=l(e.valueAt(r)).timestamp,s=new ze(l(e.indexOf(Math.max(n,t.from.timestamp),!0)),l(e.indexOf(Math.min(o,t.to.timestamp),!0)));this.setVisibleRange(s)}},t.prototype.formatDateTime=function(t){return void 0!==this._localizationOptions.timeFormatter?this._localizationOptions.timeFormatter(t.businessDay||t.timestamp):this._dateTimeFormatter.format(new Date(1e3*t.timestamp))},t.prototype._rightOffsetForCoordinate=function(t){return(this._width+1-t)/this._barSpacing},t.prototype._coordinateToFloatIndex=function(t){var e=this._rightOffsetForCoordinate(t),i=this.baseIndex()+this._rightOffset-e;return Math.round(1e6*i)/1e6},t.prototype._setBarSpacing=function(t){t=Xe(t);var e=this._barSpacing;e!==t&&(this._visibleBarsInvalidated=!0,this._barSpacing=t,this._barSpacingChanged.fire(e,t),this._resetTimeMarksCache())},t.prototype._updateVisibleBars=function(){if(this.isEmpty())this._setVisibleBars(null);else{var t=this.baseIndex(),e=Math.ceil(this._width/this._barSpacing)-1,i=Math.round(this._rightOffset+t),r=i-e;this._setVisibleBars(new ze(r,i))}},t.prototype._correctOffset=function(){var t=this._maxRightOffset();this._rightOffset>t&&(this._rightOffset=t,this._visibleBarsInvalidated=!0);var e=this._minRightOffset();null!==e&&this._rightOffset<e&&(this._rightOffset=e,this._visibleBarsInvalidated=!0)},t.prototype._minRightOffset=function(){var t=this._points.firstIndex(),e=this._baseIndexOrNull;if(null===t||null===e)return null;if(null!==this._leftEdgeIndex){var i=this._width/this._barSpacing;return this._leftEdgeIndex-e+i-1}return t-e-1+5},t.prototype._maxRightOffset=function(){return this._width/this._barSpacing-5},t.prototype._saveCommonTransitionsStartState=function(){this._commonTransitionStartState={barSpacing:this.barSpacing(),rightOffset:this.rightOffset()}},t.prototype._clearCommonTransitionsStartState=function(){this._commonTransitionStartState=null},t.prototype._formatLabel=function(t,e){var i=this,r=this._formattedBySpan.get(e);return void 0===r&&(r=new Be(function(t){return i._formatLabelImpl(t,e)}),this._formattedBySpan.set(e,r)),void 0===t.businessDay?r.format(new Date(1e3*t.timestamp)):r.format(new Date(Date.UTC(t.businessDay.year,t.businessDay.month-1,t.businessDay.day)))},t.prototype._formatLabelImpl=function(t,e){var i={},r=this._options.timeVisible;return e<20&&r?(i.hour12=!1,i.hour="2-digit",i.minute="2-digit",this._options.secondsVisible&&(i.second="2-digit")):e<40&&r?(i.hour12=!1,i.hour="2-digit",i.minute="2-digit"):e<50?i.day="numeric":e<60?i.day="numeric":e<70?i.month="short":i.year="numeric",new Date(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate(),t.getUTCHours(),t.getUTCMinutes(),t.getUTCSeconds(),t.getUTCMilliseconds()).toLocaleString(this._localizationOptions.locale,i)},t.prototype._setVisibleBars=function(t){if(null!==t||null!==this._visibleBars){var e=this._visibleBars;this._visibleBars=t,(null===this._visibleBars||null!==e&&!this._visibleBars.equals(e))&&this._visibleBarsChanged.fire(),this._resetTimeMarksCache()}},t.prototype._resetTimeMarksCache=function(){this._timeMarksCache=null},t.prototype._invalidateTickMarks=function(){this._resetTimeMarksCache(),this._formattedBySpan.clear()},t.prototype._updateDateTimeFormatter=function(){var t=this._localizationOptions.dateFormat;this._options.timeVisible?this._dateTimeFormatter=new Oe({dateFormat:t,timeFormat:this._options.secondsVisible?"%h:%m:%s":"%h:%m",dateTimeSeparator:"   ",locale:this._localizationOptions.locale}):this._dateTimeFormatter=new Ve(t,this._localizationOptions.locale)},t}();function Xe(t){return t<.5?.5:t>50?50:t}var je=function(){function t(t){this._metricsCache=new Map,this._data=t}return t.prototype.draw=function(t){},t.prototype.drawBackground=function(t){if(this._data.visible){t.save();for(var e=0,i=0,r=this._data.lines;i<r.length;i++){if(0!==(h=r[i]).text.length){t.font=h.font;var n=this._metrics(t,h.text);n>this._data.width?h.zoom=this._data.width/n:h.zoom=1,e+=h.lineHeight*h.zoom}}var o=0;switch(this._data.vertAlign){case"top":o=0;break;case"center":o=Math.max((this._data.height-e)/2,0);break;case"bottom":o=Math.max(this._data.height-e,0)}t.fillStyle=this._data.color;for(var s=0,a=this._data.lines;s<a.length;s++){var h=a[s];t.save();var l=0;switch(this._data.horzAlign){case"left":t.textAlign="left",l=h.lineHeight/2;break;case"center":t.textAlign="center",l=this._data.width/2;break;case"right":t.textAlign="right",l=this._data.width-1-h.lineHeight/2}t.translate(l,o),t.textBaseline="top",t.font=h.font,t.scale(h.zoom,h.zoom),t.fillText(h.text,0,h.vertOffset),t.restore(),o+=h.lineHeight*h.zoom}t.restore()}},t.prototype._metrics=function(t,e){var i=this._fontCache(t.font),r=i.get(e);return void 0===r&&(r=t.measureText(e).width,i.set(e,r)),r},t.prototype._fontCache=function(t){var e=this._metricsCache.get(t);return void 0===e&&(e=new Map,this._metricsCache.set(t,e)),e},t}(),qe=function(){function t(t){this._invalidated=!0,this._rendererData={visible:!1,color:"",height:0,width:0,lines:[],vertAlign:"center",horzAlign:"center"},this._renderer=new je(this._rendererData),this._source=t}return t.prototype.update=function(){this._invalidated=!0},t.prototype.renderer=function(t,e){return this._invalidated&&(this._updateImpl(t,e),this._invalidated=!1),this._renderer},t.prototype._updateImpl=function(t,e){var i=this._source.options(),r=this._rendererData;r.visible=i.visible,r.visible&&(r.color=i.color,r.width=e,r.height=t,r.horzAlign=i.horzAlign,r.vertAlign=i.vertAlign,r.lines=[{text:i.text,font:ve(i.fontSize),lineHeight:1.2*i.fontSize,vertOffset:0,zoom:0}])},t}(),Ge=function(t){function e(e,i){var r=t.call(this)||this;return r._options=i,r._paneView=new qe(r),r}return o(e,t),e.prototype.paneViews=function(){return[this._paneView]},e.prototype.options=function(){return this._options},e.prototype.updateAllViews=function(){this._paneView.update()},e}(Y),Ze=function(){function t(t,e){this._panes=[],this._serieses=[],this._width=0,this._initialTimeScrollPos=null,this._hoveredSource=null,this._mainPriceScaleOptionsChanged=new $,this._crosshairMoved=new $,this._invalidateHandler=t,this._options=e,this._rendererOptionsProvider=new ye(this),this._timeScale=new Ye(this,e.timeScale,this._options.localization),this._grid=new xe,this._crosshair=new X(this,e.crosshair),this._magnet=new Ce(e.crosshair),this._watermark=new Ge(this,e.watermark),this.createPane(),this._panes[0].setStretchFactor(2*Te),this._panes[0].addDataSource(this._watermark,!0,!1)}return t.prototype.updatePane=function(t){var e=this._paneInvalidationMask(t,0);this._invalidate(e)},t.prototype.fullUpdate=function(){this._invalidate(new we(3))},t.prototype.lightUpdate=function(){this._invalidate(new we(2))},t.prototype.updateSource=function(t){var e=this._invalidationMaskForSource(t);this._invalidate(e)},t.prototype.hoveredSource=function(){return this._hoveredSource},t.prototype.setHoveredSource=function(t){this._hoveredSource=t},t.prototype.options=function(){return this._options},t.prototype.applyOptions=function(t){u(this._options,t),void 0!==t.priceScale&&(this.mainPriceScale().applyOptions(t.priceScale),this._mainPriceScaleOptionsChanged.fire()),void 0!==t.timeScale&&this._timeScale.applyOptions(t.timeScale),void 0!==t.localization&&(this._timeScale.applyLocalizationOptions(t.localization),this.mainPriceScale().updateFormatter()),this.fullUpdate()},t.prototype.updateAllPaneViews=function(){this._panes.forEach(function(t){return t.updateAllViews()})},t.prototype.timeScale=function(){return this._timeScale},t.prototype.panes=function(){return this._panes},t.prototype.gridSource=function(){return this._grid},t.prototype.watermarkSource=function(){return this._watermark},t.prototype.crosshairSource=function(){return this._crosshair},t.prototype.crosshairMoved=function(){return this._crosshairMoved},t.prototype.width=function(){return this._width},t.prototype.setPaneHeight=function(t,e){t.setHeight(e),this.recalculateAllPanes(),this.lightUpdate()},t.prototype.setWidth=function(t){this._width=t,this._timeScale.setWidth(this._width),this._panes.forEach(function(e){return e.setWidth(t)}),this.recalculateAllPanes()},t.prototype.createPane=function(t){var e=new Me(this._timeScale,this);void 0!==t?this._panes.splice(t,0,e):this._panes.push(e);var i=void 0===t?this._panes.length-1:t,r=new we(3);return r.invalidatePane(i,{level:0,autoScale:!0}),this.invalidate(r),e},t.prototype.startScalePrice=function(t,e,i){t.startScalePrice(e,i)},t.prototype.scalePriceTo=function(t,e,i){t.scalePriceTo(e,i),this.updateCrosshair(),this._invalidate(this._paneInvalidationMask(t,2))},t.prototype.endScalePrice=function(t,e){t.endScalePrice(e),this._invalidate(this._paneInvalidationMask(t,2))},t.prototype.startScrollPrice=function(t,e,i){e.isAutoScale()||t.startScrollPrice(e,i)},t.prototype.scrollPriceTo=function(t,e,i){e.isAutoScale()||(t.scrollPriceTo(e,i),this.updateCrosshair(),this._invalidate(this._paneInvalidationMask(t,2)))},t.prototype.endScrollPrice=function(t,e){e.isAutoScale()||(t.endScrollPrice(e),this._invalidate(this._paneInvalidationMask(t,2)))},t.prototype.setPriceAutoScale=function(t,e,i){t.setPriceAutoScale(e,i),this._invalidate(this._paneInvalidationMask(t,2))},t.prototype.resetPriceScale=function(t,e){t.resetPriceScale(e),this._invalidate(this._paneInvalidationMask(t,2))},t.prototype.startScaleTime=function(t){this._timeScale.startScale(t)},t.prototype.zoomTime=function(t,e){var i=this.timeScale();if(!i.isEmpty()&&0!==e){var r=i.width();t=Math.max(1,Math.min(t,r)),i.zoom(t,e),this.updateCrosshair(),this.recalculateAllPanes(),this.lightUpdate()}},t.prototype.scrollChart=function(t){this.startScrollTime(0),this.scrollTimeTo(t),this.endScrollTime()},t.prototype.scaleTimeTo=function(t){this._timeScale.scaleTo(t),this.recalculateAllPanes(),this.updateCrosshair(),this.lightUpdate()},t.prototype.endScaleTime=function(){this._timeScale.endScale(),this.lightUpdate()},t.prototype.startScrollTime=function(t){this._initialTimeScrollPos=t,this._timeScale.startScroll(t)},t.prototype.scrollTimeTo=function(t){var e=!1;return null!==this._initialTimeScrollPos&&Math.abs(t-this._initialTimeScrollPos)>20&&(this._initialTimeScrollPos=null,e=!0),this._timeScale.scrollTo(t),this.recalculateAllPanes(),this.updateCrosshair(),this.lightUpdate(),e},t.prototype.endScrollTime=function(){this._timeScale.endScroll(),this.lightUpdate(),this._initialTimeScrollPos=null},t.prototype.resetTimeScale=function(){this._timeScale.restoreDefault(),this.recalculateAllPanes(),this.updateCrosshair(),this.lightUpdate()},t.prototype.invalidate=function(t){this._invalidateHandler&&this._invalidateHandler(t),this._grid.invalidate(),this.lightUpdate()},t.prototype.dataSources=function(){return this._panes.reduce(function(t,e){return t.concat(e.dataSources())},[])},t.prototype.serieses=function(){return this._serieses},t.prototype.setAndSaveCurrentPosition=function(t,e,i){this._crosshair.saveOriginCoord(t,e);var r=NaN,n=this._timeScale.coordinateToIndex(t),o=i.mainDataSource();if(null!==o){var s=i.defaultPriceScale();if(!s.isEmpty()){var a=l(o.firstValue());r=s.coordinateToPrice(e,a)}r=this._magnet.align(r,n,i)}this._crosshair.setPosition(n,r,i),this._cursorUpdate(),this._crosshairMoved.fire(this._crosshair.appliedIndex(),{x:t,y:e})},t.prototype.clearCurrentPosition=function(){this.crosshairSource().clearPosition(),this._cursorUpdate(),this._crosshairMoved.fire(null,null)},t.prototype.updateCrosshair=function(){var t=this._crosshair.pane();if(null!==t){var e=this._crosshair.originCoordX(),i=this._crosshair.originCoordY();this.setAndSaveCurrentPosition(e,i,t)}},t.prototype.updateTimeScale=function(t,e,i,r){r&&this._timeScale.reset(),this._timeScale.update(t,e,i)},t.prototype.updateTimeScaleBaseIndex=function(t){var e=this._serieses.reduce(function(t,e){var i=e.bars();if(i.isEmpty())return t;var r=l(i.lastIndex());return void 0===t?r:Math.max(r,t)},void 0);if(void 0!==e){var i=this._timeScale,r=i.baseIndex(),n=i.visibleBars();if(null!==n){var o=n.contains(r);if(void 0!==t&&t>0&&!o){var s=e-r;i.setRightOffset(i.rightOffset()-s)}}i.setBaseIndex(e)}this.updateCrosshair(),this.recalculateAllPanes(),this.lightUpdate()},t.prototype.recalculatePane=function(t){null!==t&&t.recalculate()},t.prototype.paneForSource=function(t){var e=this._panes.find(function(e){return e.orderedSources().includes(t)});return void 0===e?null:e},t.prototype.recalculateAllPanes=function(){this._panes.forEach(function(t){return t.recalculate()}),this.updateAllPaneViews()},t.prototype.destroy=function(){this._panes.forEach(function(t){return t.destroy()}),this._panes.length=0,this._options.localization.priceFormatter=void 0,this._options.localization.timeFormatter=void 0},t.prototype.setPriceAutoScaleForAllMainSources=function(){this._panes.map(function(t){return t.mainDataSource()}).forEach(function(t){null!==t&&l(t.priceScale()).setMode({autoScale:!0})})},t.prototype.rendererOptionsProvider=function(){return this._rendererOptionsProvider},t.prototype.priceAxisRendererOptions=function(){return this._rendererOptionsProvider.options()},t.prototype.mainPriceScaleOptionsChanged=function(){return this._mainPriceScaleOptionsChanged},t.prototype.mainPriceScale=function(){return this._panes[0].defaultPriceScale()},t.prototype.createSeries=function(t,e){var i=this._panes[0],r=this._createSeries(e,t,i);return this._serieses.push(r),this.lightUpdate(),r},t.prototype.removeSeries=function(t){var e=this.paneForSource(t),i=this._serieses.indexOf(t);a(-1!==i,"Series not found"),this._serieses.splice(i,1),l(e).removeDataSource(t),t.destroy&&t.destroy()},t.prototype.fitContent=function(){var t=new we(2);t.setFitContent(),this._invalidate(t)},t.prototype.setTargetTimeRange=function(t){var e=new we(2);e.setTargetTimeRange(t),this._invalidate(e)},t.prototype._paneInvalidationMask=function(t,e){var i=new we(e);if(null!==t){var r=this._panes.indexOf(t);i.invalidatePane(r,{level:e})}return i},t.prototype._invalidationMaskForSource=function(t,e){return void 0===e&&(e=2),this._paneInvalidationMask(this.paneForSource(t),e)},t.prototype._invalidate=function(t){this._invalidateHandler&&this._invalidateHandler(t),this._grid.invalidate()},t.prototype._cursorUpdate=function(){this._invalidate(new we(1))},t.prototype._createSeries=function(t,e,i){var r=new ie(this,t,e);return i.addDataSource(r,Boolean(t.overlay),!1),t.overlay&&r.applyOptions(t),r},t}(),Ke=function(){function t(t,e){this.w=t,this.h=e}return t.prototype.equals=function(t){return this.w===t.w&&this.h===t.h},t}();function Je(t,e){t.width=e.w,t.height=e.h;var i=de(t);i&&i.translate(.5,.5)}function $e(t,e,i,r,n,o){t.save(),t.translate(-.5,-.5),t.globalCompositeOperation="copy",t.fillStyle=o,t.fillRect(e,i,r,n),t.restore()}function Qe(t,e){var i=document.createElement("canvas");return t.appendChild(i),Je(i,e),function(t){t.style.userSelect="none",t.style.webkitUserSelect="none",t.style.msUserSelect="none",t.style.MozUserSelect="none",t.style.webkitTapHighlightColor="transparent"}(i),i}var ti,ei,ii=!!navigator.maxTouchPoints||!!navigator.msMaxTouchPoints||"ontouchstart"in window||Boolean(window.DocumentTouch&&document instanceof window.DocumentTouch),ri="onorientationchange"in window&&ii,ni=/Android/i.test(navigator.userAgent),oi=/iPhone|iPad|iPod|AppleWebKit.+Mobile/i.test(navigator.userAgent),si=ni||oi,ai=!1;!function(t){t[t.ResetClick=500]="ResetClick",t[t.LongTap=240]="LongTap"}(ti||(ti={})),function(t){t[t.Left=0]="Left"}(ei||(ei={}));var hi=function(){function t(t,e,i){this._clickCount=0,this._clickTimeoutId=null,this._longTapTimeoutId=null,this._mouseMoveStartPosition=null,this._moveExceededManhattanDistance=!1,this._cancelClick=!1,this._unsubscribeOutsideEvents=null,this._unsubscribeMousemove=null,this._unsubscribeRoot=null,this._startPinchMiddlePoint=null,this._startPinchDistance=0,this._pinchPrevented=!1,this._preventDragProcess=!1,this._target=t,this._handler=e,this._options=i,this._init()}return t.prototype.destroy=function(){null!==this._unsubscribeOutsideEvents&&(this._unsubscribeOutsideEvents(),this._unsubscribeOutsideEvents=null),null!==this._unsubscribeMousemove&&(this._unsubscribeMousemove(),this._unsubscribeMousemove=null),null!==this._unsubscribeRoot&&(this._unsubscribeRoot(),this._unsubscribeRoot=null),this._clearLongTapTimeout(),this._resetClickTimeout()},t.prototype._mouseEnterHandler=function(t){var e=this;this._unsubscribeMousemove&&this._unsubscribeMousemove();var i=this._mouseMoveHandler.bind(this);this._unsubscribeMousemove=function(){e._target.removeEventListener("mousemove",i)},this._target.addEventListener("mousemove",i),ri&&this._mouseMoveHandler(t);var r=this._makeCompatEvent(t);this._processEvent(r,this._handler.mouseEnterEvent)},t.prototype._resetClickTimeout=function(){null!==this._clickTimeoutId&&clearTimeout(this._clickTimeoutId),this._clickCount=0,this._clickTimeoutId=null},t.prototype._mouseMoveHandler=function(t){if(!ai||ri){var e=this._makeCompatEvent(t);this._processEvent(e,this._handler.mouseMoveEvent)}},t.prototype._mouseMoveWithDownHandler=function(t){if(!("button"in t&&0!==t.button)&&null===this._startPinchMiddlePoint){var e=ui(t);if(!this._preventDragProcess||!e){this._pinchPrevented=!0;var i=this._makeCompatEvent(t),r=c(this._mouseMoveStartPosition),n=Math.abs(r.x-i.pageX),o=Math.abs(r.y-i.pageY),s=n+o>5;if(s||!e){if(s&&!this._moveExceededManhattanDistance&&e){var a=.5*n,h=o>=a&&!this._options.treatVertTouchDragAsPageScroll,l=a>o&&!this._options.treatHorzTouchDragAsPageScroll;h||l||(this._preventDragProcess=!0)}s&&(this._moveExceededManhattanDistance=!0,this._cancelClick=!0,e&&this._clearLongTapTimeout()),this._preventDragProcess||(this._processEvent(i,this._handler.pressedMouseMoveEvent),e&&pi(t))}}}},t.prototype._mouseUpHandler=function(t){if(!("button"in t&&0!==t.button)){var e=this._makeCompatEvent(t),i=ri||"touches"in t;i&&this._clearLongTapTimeout(),this._mouseMoveStartPosition=null,ai=!1,this._unsubscribeRoot&&(this._unsubscribeRoot(),this._unsubscribeRoot=null),i&&this._mouseLeaveHandler(t),this._processEvent(e,this._handler.mouseUpEvent),++this._clickCount,this._clickTimeoutId&&this._clickCount>1?(this._processEvent(e,this._handler.mouseDoubleClickEvent),this._resetClickTimeout()):this._cancelClick||this._processEvent(e,this._handler.mouseClickEvent),"touchend"===t.type&&pi(t),ri&&this._mouseLeaveHandler(t)}},t.prototype._clearLongTapTimeout=function(){null!==this._longTapTimeoutId&&(clearTimeout(this._longTapTimeoutId),this._longTapTimeoutId=null)},t.prototype._mouseDownHandler=function(t){if(!("button"in t&&0!==t.button)){var e=this._makeCompatEvent(t);this._cancelClick=!1,this._moveExceededManhattanDistance=!1,this._preventDragProcess=!1,ui(t)&&this._mouseEnterHandler(t),this._mouseMoveStartPosition={x:e.pageX,y:e.pageY},this._unsubscribeRoot&&(this._unsubscribeRoot(),this._unsubscribeRoot=null);var i=this._mouseMoveWithDownHandler.bind(this),r=this._mouseUpHandler.bind(this),n=this._target.ownerDocument.documentElement;this._unsubscribeRoot=function(){n.removeEventListener("touchmove",i),n.removeEventListener("touchend",r),n.removeEventListener("mousemove",i),n.removeEventListener("mouseup",r)},n.addEventListener("touchmove",i,{passive:!1}),n.addEventListener("touchend",r,{passive:!1}),ri?(this._clearLongTapTimeout(),this._longTapTimeoutId=setTimeout(this._longTapHandler.bind(this,t),240)):(n.addEventListener("mousemove",i),n.addEventListener("mouseup",r)),ai=!0,this._processEvent(e,this._handler.mouseDownEvent),this._clickTimeoutId||(this._clickCount=0,this._clickTimeoutId=setTimeout(this._resetClickTimeout.bind(this),500))}},t.prototype._init=function(){var t=this;this._target.addEventListener("mouseenter",this._mouseEnterHandler.bind(this)),this._target.addEventListener("touchcancel",this._clearLongTapTimeout.bind(this));var e=this._target.ownerDocument,i=function(e){t._handler.mouseDownOutsideEvent&&(e.target&&t._target.contains(e.target)||t._handler.mouseDownOutsideEvent())};this._unsubscribeOutsideEvents=function(){e.removeEventListener("mousedown",i),e.removeEventListener("touchstart",i)},e.addEventListener("mousedown",i),e.addEventListener("touchstart",i),this._target.addEventListener("mouseleave",this._mouseLeaveHandler.bind(this)),this._target.addEventListener("touchstart",this._mouseDownHandler.bind(this)),ri||this._target.addEventListener("mousedown",this._mouseDownHandler.bind(this)),this._initPinch(),this._target.addEventListener("touchmove",function(){},{passive:!1})},t.prototype._initPinch=function(){var t=this;void 0===this._handler.pinchStartEvent&&void 0===this._handler.pinchEvent&&void 0===this._handler.pinchEndEvent||(this._target.addEventListener("touchstart",function(e){t._checkPinchState(e.touches)}),this._target.addEventListener("touchmove",function(e){if(2===e.touches.length&&null!==t._startPinchMiddlePoint&&void 0!==t._handler.pinchEvent){var i=ci(e.touches[0],e.touches[1])/t._startPinchDistance;t._handler.pinchEvent(t._startPinchMiddlePoint,i),pi(e)}},{passive:!1}),this._target.addEventListener("touchend",function(e){t._checkPinchState(e.touches)}))},t.prototype._checkPinchState=function(t){1===t.length&&(this._pinchPrevented=!1),2!==t.length||this._pinchPrevented?this._stopPinch():this._startPinch(t)},t.prototype._startPinch=function(t){var e=li(this._target);this._startPinchMiddlePoint={x:(t[0].clientX-e.left+(t[1].clientX-e.left))/2,y:(t[0].clientY-e.top+(t[1].clientY-e.top))/2},this._startPinchDistance=ci(t[0],t[1]),void 0!==this._handler.pinchStartEvent&&this._handler.pinchStartEvent(),this._clearLongTapTimeout()},t.prototype._stopPinch=function(){null!==this._startPinchMiddlePoint&&(this._startPinchMiddlePoint=null,void 0!==this._handler.pinchEndEvent&&this._handler.pinchEndEvent())},t.prototype._mouseLeaveHandler=function(t){this._unsubscribeMousemove&&this._unsubscribeMousemove();var e=this._makeCompatEvent(t);this._processEvent(e,this._handler.mouseLeaveEvent)},t.prototype._longTapHandler=function(t){var e=this._makeCompatEvent(t);this._processEvent(e,this._handler.longTapEvent),this._cancelClick=!0},t.prototype._processEvent=function(t,e){e&&e.call(this._handler,t)},t.prototype._makeCompatEvent=function(t){var e;e="touches"in t&&t.touches.length?t.touches[0]:"changedTouches"in t&&t.changedTouches.length?t.changedTouches[0]:t;var i=li(this._target);return{clientX:e.clientX,clientY:e.clientY,pageX:e.pageX,pageY:e.pageY,screenX:e.screenX,screenY:e.screenY,localX:e.clientX-i.left,localY:e.clientY-i.top,ctrlKey:t.ctrlKey,altKey:t.altKey,shiftKey:t.shiftKey,metaKey:t.metaKey,type:t.type.startsWith("mouse")?"mouse":"touch",target:e.target,view:t.view}},t}();function li(t){return t.getBoundingClientRect()||{left:0,top:0}}function ci(t,e){var i=t.clientX-e.clientX,r=t.clientY-e.clientY;return Math.sqrt(i*i+r*r)}function ui(t){return ri||Boolean(t.touches)}function pi(t){t.cancelable&&t.preventDefault()}var di,_i=1,fi=function(){function t(t,e,i,r){if(this._startY=0,this._deltaY=0,this._totalHeight=0,this._totalStretch=0,this._minPaneHeight=0,this._maxPaneHeight=0,this._pixelStretchFactor=0,this._chartWidget=t,this._paneA=t.paneWidgets()[e],this._paneB=t.paneWidgets()[i],this._rowElement=document.createElement("tr"),this._rowElement.style.height=_i+"px",this._cell=document.createElement("td"),this._cell.style.padding="0",this._cell.setAttribute("colspan","3"),this._updateBorderColor(),this._rowElement.appendChild(this._cell),r)this._handle=null,this._mouseEventHandler=null;else{this._handle=document.createElement("div"),this._handle.style.position="absolute",this._handle.style.zIndex="50",this._handle.style.height="5px",this._handle.style.width="100%",this._handle.style.backgroundColor="rgba(255, 255, 255, 0.02)",this._handle.style.cursor="ns-resize",this._cell.appendChild(this._handle);var n={mouseDownEvent:this._mouseDownEvent.bind(this),pressedMouseMoveEvent:this._pressedMouseMoveEvent.bind(this),mouseUpEvent:this._mouseUpEvent.bind(this)};this._mouseEventHandler=new hi(this._handle,n,{treatVertTouchDragAsPageScroll:!1,treatHorzTouchDragAsPageScroll:!0})}}return t.prototype.destroy=function(){null!==this._mouseEventHandler&&this._mouseEventHandler.destroy()},t.prototype.getElement=function(){return this._rowElement},t.prototype.getImage=function(){var t=document.createElement("canvas"),e=this._paneA.getSize().w,i=_i;Je(t,new Ke(e,i));var r=l(de(t));return r.fillStyle=this._chartWidget.options().timeScale.borderColor,r.fillRect(0,0,e,i),t},t.prototype.update=function(){this._updateBorderColor()},t.prototype._updateBorderColor=function(){this._cell.style.background=this._chartWidget.options().timeScale.borderColor},t.prototype._mouseDownEvent=function(t){this._startY=t.pageY,this._deltaY=0,this._totalHeight=this._paneA.getSize().h+this._paneB.getSize().h,this._totalStretch=this._paneA.stretchFactor()+this._paneB.stretchFactor(),this._minPaneHeight=30,this._maxPaneHeight=this._totalHeight-this._minPaneHeight,this._pixelStretchFactor=this._totalStretch/this._totalHeight},t.prototype._pressedMouseMoveEvent=function(t){this._deltaY=t.pageY-this._startY;var e=this._paneA.getSize().h,i=et(e+this._deltaY,this._minPaneHeight,this._maxPaneHeight)*this._pixelStretchFactor,r=this._totalStretch-i;this._paneA.setStretchFactor(i),this._paneB.setStretchFactor(r),this._chartWidget.adjustSize(),this._paneA.getSize().h!==e&&(this._startY=t.pageY)},t.prototype._mouseUpEvent=function(t){this._startY=0,this._deltaY=0,this._totalHeight=0,this._totalStretch=0,this._minPaneHeight=0,this._maxPaneHeight=0,this._pixelStretchFactor=0},t}(),mi=200,vi=function(){function t(t,e,i,r){this._textWidthCache=new zt(mi),this._fontSize=0,this._color="",this._font="",this._keys=[],this._hash=new Map,this._fontSize=t,this._color=e,this._font=ve(t,i,r)}return t.prototype.destroy=function(){delete this._textWidthCache,this._keys=[],this._hash.clear()},t.prototype.paintTo=function(t,e,i,r,n){var o=this.getLabelImage(t,e);"left"!==n&&(i-=o.textWidth),r-=Math.floor(o.height/2),t.drawImage(o.canvas,i,r)},t.prototype.getLabelImage=function(t,e){var i;if(this._hash.has(e))i=h(this._hash.get(e));else{if(this._keys.length>=mi){var r=h(this._keys.shift());this._hash.delete(r)}i={text:e,textWidth:0,width:0,height:0,canvas:document.createElement("canvas")};var n=Math.ceil(this._fontSize/4.5),o=Math.round(this._fontSize/10),s=Math.ceil(this._textWidthCache.measureText(t,e));i.textWidth=Math.round(Math.max(1,s)),i.width=Math.round(s+2*n),i.height=this._fontSize+2*n,0!==s&&(this._keys.push(i.text),this._hash.set(i.text,i)),i.canvas.width=i.width,i.canvas.height=i.height,(t=l(de(i.canvas))).font=this._font,t.fillStyle=this._color,t.fillText(e,0,i.height-n-o)}return i},t}();!function(t){t[t.Default=0]="Default",t[t.NsResize=1]="NsResize"}(di||(di={}));var gi,yi,bi=function(){function t(t,e,i,r){this._priceScale=null,this._size=null,this._updateTimeout=null,this._mousedown=!1,this._isVisible=!0,this._widthCache=new zt(50),this._tickMarksCache=new vi(11,"#000"),this._color=null,this._font=null,this._prevOptimalWidth=0,this._pane=t,this._options=e,this._rendererOptionsProvider=i,this._isLeft="left"===r,this._cell=document.createElement("div"),this._cell.style.height="100%",this._cell.style.overflow="hidden",this._cell.style.width="25px",this._cell.style.left="0",this._cell.style.position="relative",this._canvas=Qe(this._cell,new Ke(16,16)),this._canvas.style.position="absolute",this._canvas.style.zIndex="1",this._canvas.style.left="0",this._canvas.style.top="0",this._ctx=l(de(this._canvas)),this._topCanvas=Qe(this._cell,new Ke(16,16)),this._topCanvas.style.position="absolute",this._topCanvas.style.zIndex="2",this._topCanvas.style.left="0",this._topCanvas.style.top="0",this._topCtx=l(de(this._topCanvas));var n={mouseDownEvent:this._mouseDownEvent.bind(this),pressedMouseMoveEvent:this._pressedMouseMoveEvent.bind(this),mouseDownOutsideEvent:this._mouseDownOutsideEvent.bind(this),mouseUpEvent:this._mouseUpEvent.bind(this),mouseDoubleClickEvent:this._mouseDoubleClickEvent.bind(this),mouseEnterEvent:this._mouseEnterEvent.bind(this),mouseLeaveEvent:this._mouseLeaveEvent.bind(this)};this._mouseEventHandler=new hi(this._topCanvas,n,{treatVertTouchDragAsPageScroll:!1,treatHorzTouchDragAsPageScroll:!0})}return t.prototype.destroy=function(){this._mouseEventHandler.destroy(),null!==this._priceScale&&(this._priceScale.onMarksChanged().unsubscribeAll(this),this._priceScale.optionsChanged().unsubscribeAll(this)),this._priceScale=null,null!==this._updateTimeout&&(clearTimeout(this._updateTimeout),this._updateTimeout=null),this._tickMarksCache.destroy()},t.prototype.getElement=function(){return this._cell},t.prototype.backgroundColor=function(){return this._options.backgroundColor},t.prototype.lineColor=function(){return this._pane.chart().options().priceScale.borderColor},t.prototype.textColor=function(){return this._options.textColor},t.prototype.fontSize=function(){return this._options.fontSize},t.prototype.baseFont=function(){return ve(this.fontSize(),this._options.fontFamily)},t.prototype.rendererOptions=function(){var t=this._rendererOptionsProvider.options(),e=this._color!==t.color,i=this._font!==t.font;return(e||i)&&(this._recreateTickMarksCache(t),this._color=t.color),i&&(this._widthCache.reset(),this._font=t.font),t},t.prototype.optimalWidth=function(){if(!this.isVisible()||null===this._priceScale)return 0;var t=34,e=this.rendererOptions(),i=this._ctx,r=this._priceScale.marks();i.font=this.baseFont(),r.length>0&&(t=Math.max(this._widthCache.measureText(i,r[0].label),this._widthCache.measureText(i,r[r.length-1].label)));for(var n=this._backLabels(),o=n.length;o--;){var s=this._widthCache.measureText(i,n[o].text());s>t&&(t=s)}return Math.ceil(e.offsetSize+e.borderSize+e.tickLength+e.paddingInner+e.paddingOuter+t)},t.prototype.setSize=function(t){if(t.w<0||t.h<0)throw new Error("Try to set invalid size to PriceAxisWidget "+JSON.stringify(t));null!==this._size&&this._size.equals(t)||(this._size=t,Je(this._canvas,t),Je(this._topCanvas,t),this._cell.style.width=t.w+"px",this._cell.style.height=t.h+"px",this._cell.style.minWidth=t.w+"px")},t.prototype.getWidth=function(){return l(this._size).w},t.prototype.setPriceScale=function(t){this._priceScale!==t&&(null!==this._priceScale&&(this._priceScale.onMarksChanged().unsubscribeAll(this),this._priceScale.optionsChanged().unsubscribeAll(this)),this._priceScale=t,t.onMarksChanged().subscribe(this._onMarksChanged.bind(this),this))},t.prototype.priceScale=function(){return this._priceScale},t.prototype.isVisible=function(){return this._isVisible},t.prototype.setVisible=function(t){t!==this._isVisible&&(this._cell.style.display=t?"table-cell":"none",this._isVisible=t)},t.prototype.setAutoScale=function(t){var e=this._pane.state();this._pane.chart().model().setPriceAutoScale(e,l(this.priceScale()),t)},t.prototype.reset=function(){var t=this._pane.state();this._pane.chart().model().resetPriceScale(t,l(this.priceScale()))},t.prototype.paint=function(t){this._isVisible&&null!==this._size&&(this._topCtx.clearRect(-.5,-.5,this._size.w,this._size.h),1!==t&&(this._alignLabels(),this._drawBackground(this._ctx),this._drawBorder(this._ctx),this._drawTickMarks(this._ctx),this._drawBackLabels(this._ctx)),this._drawCrosshairLabel(this._topCtx))},t.prototype.getImage=function(){return this._canvas},t.prototype.isLeft=function(){return this._isLeft},t.prototype._mouseDownEvent=function(t){if(null!==this._priceScale&&!this._priceScale.isEmpty()&&this._pane.chart().options().handleScale.axisPressedMouseMove){var e=this._pane.chart().model(),i=this._pane.state();this._mousedown=!0,e.startScalePrice(i,this._priceScale,t.localY)}},t.prototype._pressedMouseMoveEvent=function(t){if(null!==this._priceScale&&this._pane.chart().options().handleScale.axisPressedMouseMove){var e=this._pane.chart().model(),i=this._pane.state(),r=this._priceScale;e.scalePriceTo(i,r,t.localY)}},t.prototype._mouseDownOutsideEvent=function(){if(null!==this._priceScale&&this._pane.chart().options().handleScale.axisPressedMouseMove){var t=this._pane.chart().model(),e=this._pane.state(),i=this._priceScale;this._mousedown&&(this._mousedown=!1,t.endScalePrice(e,i))}},t.prototype._mouseUpEvent=function(t){if(null!==this._priceScale&&this._pane.chart().options().handleScale.axisPressedMouseMove){var e=this._pane.chart().model(),i=this._pane.state();this._mousedown=!1,e.endScalePrice(i,this._priceScale)}},t.prototype._mouseDoubleClickEvent=function(t){this.reset()},t.prototype._mouseEnterEvent=function(t){null!==this._priceScale&&(!this._pane.chart().model().options().handleScale.axisPressedMouseMove||this._priceScale.isPercentage()||this._priceScale.isIndexedTo100()||this._setCursor(1))},t.prototype._mouseLeaveEvent=function(t){this._setCursor(0)},t.prototype._backLabels=function(){var t=this,e=[],i=null===this._priceScale?void 0:this._priceScale;return function(r){for(var n=0;n<r.length;++n)for(var o=r[n].priceAxisViews(t._pane.state(),i),s=0;s<o.length;s++)e.push(o[s])}(this._pane.state().orderedSources()),e},t.prototype._drawBackground=function(t){null!==this._size&&$e(t,0,0,this._size.w,this._size.h,this.backgroundColor())},t.prototype._drawBorder=function(t){if(null!==this._size&&null!==this._priceScale&&this._priceScale.options().borderVisible){t.save(),t.fillStyle=this.lineColor();var e,i=this.rendererOptions().borderSize;this._isLeft?(t.translate(-.5,-.5),e=this._size.w-i-1):(t.translate(.5,-.5),e=0),t.fillRect(e,0,i,this._size.h),t.restore()}},t.prototype._drawTickMarks=function(t){if(null!==this._size&&null!==this._priceScale){t.save(),t.strokeStyle=this.lineColor();var e=this._priceScale.marks();t.font=this.baseFont(),t.translate(-.5,-.5),t.fillStyle=this.lineColor();var i=this.rendererOptions(),r=this._priceScale.options().borderVisible,n=this._isLeft?this._size.w-i.offsetSize-i.borderSize-i.tickLength:i.borderSize+i.offsetSize,o=this._isLeft?n-i.paddingInner:n+i.tickLength+i.paddingInner,s=this._isLeft?"right":"left";if(r){t.beginPath();for(var a=0,h=e;a<h.length;a++){var l=h[a];t.rect(n,l.coord,i.tickLength,1)}t.fill()}t.fillStyle=this.textColor();for(var c=0,u=e;c<u.length;c++){l=u[c];this._tickMarksCache.paintTo(t,l.label,o,l.coord,s)}t.restore()}},t.prototype._alignLabels=function(){if(null!==this._size&&null!==this._priceScale){var t=this._size.h/2,e=[],i=this._priceScale.orderedSources().slice(),r=this._pane.state(),n=this.rendererOptions();this._priceScale===r.defaultPriceScale()&&this._pane.state().orderedSources().forEach(function(t){r.isOverlay(t)&&i.push(t)});var o=this._priceScale.mainSource(),s=this._priceScale;i.forEach(function(i){var n=i.priceAxisViews(r,s);n.forEach(function(t){t.setFixedCoordinate(null),t.isVisible()&&e.push(t)}),o===i&&n.length>0&&(t=n[0].floatCoordinate())});var a=e.filter(function(e){return e.floatCoordinate()<=t}),h=e.filter(function(e){return e.floatCoordinate()>t});if(a.sort(function(t,e){return e.floatCoordinate()-t.floatCoordinate()}),a.length&&h.length&&h.push(a[0]),h.sort(function(t,e){return t.floatCoordinate()-e.floatCoordinate()}),e.forEach(function(t){return t.setFixedCoordinate(t.coordinate())}),this._priceScale.options().alignLabels){for(var l=1;l<a.length;l++){var c=a[l],u=(d=a[l-1]).height(n,!1);c.coordinate()>(_=d.getFixedCoordinate())-u&&c.setFixedCoordinate(_-u)}for(var p=1;p<h.length;p++){var d,_;c=h[p],u=(d=h[p-1]).height(n,!0);c.coordinate()<(_=d.getFixedCoordinate())+u&&c.setFixedCoordinate(_+u)}}}},t.prototype._drawBackLabels=function(t){var e=this;if(null!==this._size){var i=this._size,r=this._backLabels(),n=this.rendererOptions(),o=this._isLeft?"right":"left";r.forEach(function(r){if(r.isAxisLabelVisible()){var s=r.renderer();t.save(),s.draw(t,n,e._widthCache,i.w,o),t.restore()}})}},t.prototype._drawCrosshairLabel=function(t){var e=this;if(null!==this._size&&null!==this._priceScale){var i=this._size,r=this._pane.chart().model(),n=[],o=this._pane.state(),s=r.crosshairSource().priceAxisViews(o,this._priceScale);s.length&&n.push(s);var a=this.rendererOptions(),h=this._isLeft?"right":"left";n.forEach(function(r){r.forEach(function(r){t.save(),r.renderer().draw(t,a,e._widthCache,i.w,h),t.restore()})})}},t.prototype._setCursor=function(t){this._cell.style.cursor=1===t?"ns-resize":"default"},t.prototype._onMarksChanged=function(){var t=this,e=this.optimalWidth();if(this._prevOptimalWidth<e){var i=this._pane.chart();null===this._updateTimeout&&(this._updateTimeout=setTimeout(function(){i&&i.model().fullUpdate(),t._updateTimeout=null},100))}this._prevOptimalWidth=e},t.prototype._recreateTickMarksCache=function(t){this._tickMarksCache.destroy(),this._tickMarksCache=new vi(t.fontSize,t.color,t.fontFamily)},t}(),Si=si,xi=function(){function t(t,e){this._size=new Ke(0,0),this._priceAxisWidget=null,this._startScrollingPos=null,this._isScrolling=!1,this._priceAxisPosition="none",this._clicked=new $,this._prevPinchScale=0,this._longTap=!1,this._startTrackPoint=null,this._exitTrackingModeOnNextTry=!1,this._initCrosshairPosition=null,this._chart=t,this._state=e,this._state.onDestroyed().subscribe(this._onStateDestroyed.bind(this),this,!0),this._paneCell=document.createElement("td"),this._paneCell.style.padding="0",this._paneCell.style.position="relative";var i=document.createElement("div");i.style.width="100%",i.style.height="100%",i.style.position="relative",i.style.overflow="hidden",this._leftAxisCell=document.createElement("td"),this._leftAxisCell.style.padding="0",this._rightAxisCell=document.createElement("td"),this._rightAxisCell.style.padding="0",this._paneCell.appendChild(i),this._canvas=Qe(i,new Ke(16,16)),this._canvas.style.position="absolute",this._canvas.style.zIndex="1",this._canvas.style.left="0",this._canvas.style.top="0",this._ctx=l(de(this._canvas)),this._topCanvas=Qe(i,new Ke(16,16)),this._topCanvas.style.position="absolute",this._topCanvas.style.zIndex="2",this._topCanvas.style.left="0",this._topCanvas.style.top="0",this._topCtx=l(de(this._topCanvas)),this._rowElement=document.createElement("tr"),this._rowElement.appendChild(this._leftAxisCell),this._rowElement.appendChild(this._paneCell),this._rowElement.appendChild(this._rightAxisCell),this._recreatePriceAxisWidgetImpl(),t.model().mainPriceScaleOptionsChanged().subscribe(this._recreatePriceAxisWidget.bind(this),this),this.updatePriceAxisWidget();var r=this.chart().options().handleScroll;this._mouseEventHandler=new hi(this._topCanvas,this,{treatVertTouchDragAsPageScroll:!r.vertTouchDrag,treatHorzTouchDragAsPageScroll:!r.horzTouchDrag})}return t.prototype.destroy=function(){null!==this._priceAxisWidget&&this._priceAxisWidget.destroy(),null!==this._state&&this._state.onDestroyed().unsubscribeAll(this),this._mouseEventHandler.destroy()},t.prototype.state=function(){return l(this._state)},t.prototype.stateOrNull=function(){return this._state},t.prototype.setState=function(e){null!==this._state&&this._state.onDestroyed().unsubscribeAll(this),this._state=e,null!==this._state&&this._state.onDestroyed().subscribe(t.prototype._onStateDestroyed.bind(this),this,!0),this.updatePriceAxisWidget()},t.prototype.chart=function(){return this._chart},t.prototype.getElement=function(){return this._rowElement},t.prototype.updatePriceAxisWidget=function(){if(null!==this._state&&null!==this._priceAxisWidget&&0!==this._model().serieses().length){var t=this._state.defaultPriceScale();this._priceAxisWidget.setPriceScale(l(t))}},t.prototype.stretchFactor=function(){return null!==this._state?this._state.stretchFactor():0},t.prototype.setStretchFactor=function(t){this._state&&this._state.setStretchFactor(t)},t.prototype.mouseEnterEvent=function(t){if(this._state){var e=t.localX,i=t.localY;ri||this._setCrosshairPosition(e,i)}},t.prototype.mouseDownEvent=function(t){if(this._longTap=!1,this._exitTrackingModeOnNextTry=null!==this._startTrackPoint,this._state){if(document.activeElement!==document.body&&document.activeElement!==document.documentElement)l(document.activeElement).blur();else{var e=document.getSelection();null!==e&&e.removeAllRanges()}var i=this._model();if(!this._state.defaultPriceScale().isEmpty()&&!i.timeScale().isEmpty()){if(null!==this._startTrackPoint){var r=i.crosshairSource();this._initCrosshairPosition={x:r.appliedX(),y:r.appliedY()},this._startTrackPoint={x:t.localX,y:t.localY}}ri||this._setCrosshairPosition(t.localX,t.localY)}}},t.prototype.mouseMoveEvent=function(t){if(this._state){var e=t.localX,i=t.localY;if(this._preventCrosshairMove()&&this._clearCrosshairPosition(),!ri){this._setCrosshairPosition(e,i);var r=this.hitTest(e,i);this._model().setHoveredSource(r&&r.source),null!==r&&void 0!==r.view.moveHandler&&r.view.moveHandler(e,i)}}},t.prototype.mouseClickEvent=function(t){if(null!==this._state){var e=t.localX,i=t.localY,r=this.hitTest(e,i);if(null!==r&&void 0!==r.view.clickHandler&&r.view.clickHandler(e,i),this._clicked.hasListeners()){var n=this._model().crosshairSource().appliedIndex();this._clicked.fire(n,{x:e,y:i})}this._tryExitTrackingMode()}},t.prototype.pressedMouseMoveEvent=function(t){if(null!==this._state){var e=this._model(),i=t.localX,r=t.localY;if(null!==this._startTrackPoint){this._exitTrackingModeOnNextTry=!1;var n=l(this._initCrosshairPosition),o=n.x+(i-this._startTrackPoint.x),s=n.y+(r-this._startTrackPoint.y);this._setCrosshairPosition(o,s)}else this._preventCrosshairMove()||this._setCrosshairPosition(i,r);if(!e.timeScale().isEmpty()){var a=this._chart.options().handleScroll;if(a.pressedMouseMove&&"touch"!==t.type||(a.horzTouchDrag||a.vertTouchDrag)&&"mouse"!==t.type){var h=this._state.defaultPriceScale();null!==this._startScrollingPos||this._preventScroll()||(this._startScrollingPos={x:t.clientX,y:t.clientY}),null===this._startScrollingPos||this._startScrollingPos.x===t.clientX&&this._startScrollingPos.y===t.clientY||this._isScrolling||(h.isEmpty()||e.startScrollPrice(this._state,h,t.localY),e.startScrollTime(t.localX),this._isScrolling=!0),this._isScrolling&&(h.isEmpty()||e.scrollPriceTo(this._state,h,t.localY),e.scrollTimeTo(t.localX))}}}},t.prototype.mouseUpEvent=function(t){if(null!==this._state){this._longTap=!1;var e=this._model();if(this._isScrolling){var i=this._state.defaultPriceScale();e.endScrollPrice(this._state,i),e.endScrollTime(),this._startScrollingPos=null,this._isScrolling=!1}}},t.prototype.longTapEvent=function(t){if(this._longTap=!0,null===this._startTrackPoint&&Si){var e={x:t.localX,y:t.localY};this._startTrackingMode(e,e)}},t.prototype.mouseLeaveEvent=function(t){null!==this._state&&(this._state.model().setHoveredSource(null),si||this._clearCrosshairPosition())},t.prototype.clicked=function(){return this._clicked},t.prototype.pinchStartEvent=function(){this._prevPinchScale=1},t.prototype.pinchEvent=function(t,e){if(this._chart.options().handleScale.pinch){var i=5*(e-this._prevPinchScale);this._prevPinchScale=e,this._model().zoomTime(t.x,i)}},t.prototype.hitTest=function(t,e){var i=this._state;if(null===i)return null;for(var r=0,n=i.orderedSources();r<n.length;r++){var o=n[r],s=this._hitTestPaneView(o.paneViews(i),t,e);if(null!==s)return{source:o,view:s}}return null},t.prototype.setPriceAxisSize=function(t){l(this._priceAxisWidget).setSize(new Ke(t,this._size.h))},t.prototype.getSize=function(){return this._size},t.prototype.setSize=function(t){if(t.w<0||t.h<0)throw new Error("Try to set invalid size to PaneWidget "+JSON.stringify(t));this._size.equals(t)||(this._size=t,Je(this._canvas,t),Je(this._topCanvas,t),this._ctx=l(de(this._canvas)),this._paneCell.style.width=t.w+"px",this._paneCell.style.height=t.h+"px")},t.prototype.recalculatePriceScale=function(){var t=l(this._state);t.recalculatePriceScale(t.defaultPriceScale());for(var e=0,i=t.dataSources();e<i.length;e++){var r=i[e];if(t.isOverlay(r)){var n=r.priceScale();null!==n&&t.recalculatePriceScale(n),r.updateAllViews()}}},t.prototype.getImage=function(){return this._canvas},t.prototype.paint=function(t){0!==t&&null!==this._state&&(t>1&&this.recalculatePriceScale(),null!==this._priceAxisWidget&&this._priceAxisWidget.paint(t),this._topCtx.clearRect(-.5,-.5,this._size.w,this._size.h),1!==t&&(this._drawBackground(this._ctx,this._backgroundColor()),this._state&&(this._drawGrid(this._ctx),this._drawWatermark(this._ctx),this._drawSources(this._ctx))),this._drawCrosshair(this._topCtx))},t.prototype.priceAxisWidget=function(){return this._priceAxisWidget},t.prototype._backgroundColor=function(){return this._chart.options().layout.backgroundColor},t.prototype._onStateDestroyed=function(){null!==this._state&&this._state.onDestroyed().unsubscribeAll(this),this._state=null},t.prototype._drawBackground=function(t,e){$e(t,0,0,this._size.w,this._size.h,e)},t.prototype._drawGrid=function(t){for(var e=l(this._state),i=this._model().gridSource().paneViews(e),r=e.height(),n=e.width(),o=0,s=i;o<s.length;o++){var a=s[o];t.save();var h=a.renderer(r,n);null!==h&&h.draw(t,!1),t.restore()}},t.prototype._drawWatermark=function(t){var e=this._model().watermarkSource();if(null!==e){var i=l(this._state);if(i.containsSeries())for(var r=e.paneViews(),n=i.height(),o=i.width(),s=0,a=r;s<a.length;s++){var h=a[s];t.save();var c=h.renderer(n,o);null!==c&&c.draw(t,!1),t.restore()}}},t.prototype._drawCrosshair=function(t){this._drawSource(this._model().crosshairSource(),t)},t.prototype._drawSources=function(t){for(var e=l(this._state).orderedSources(),i=this._model().crosshairSource(),r=0,n=e;r<n.length;r++){var o=n[r];this._drawSourceBackground(o,t)}for(var s=0,a=e;s<a.length;s++){(o=a[s])!==i&&this._drawSource(o,t)}},t.prototype._drawSource=function(t,e){for(var i=l(this._state),r=t.paneViews(i),n=i.height(),o=i.width(),s=i.model().hoveredSource()===t,a=0,h=r;a<h.length;a++){var c=h[a].renderer(n,o);null!==c&&(e.save(),c.draw(e,s),e.restore())}},t.prototype._drawSourceBackground=function(t,e){for(var i=l(this._state),r=t.paneViews(i),n=i.height(),o=i.width(),s=i.model().hoveredSource()===t,a=0,h=r;a<h.length;a++){var c=h[a].renderer(n,o);null!==c&&void 0!==c.drawBackground&&(e.save(),c.drawBackground(e,s),e.restore())}},t.prototype._hitTestPaneView=function(t,e,i){for(var r=0,n=t;r<n.length;r++){var o=n[r],s=o.renderer(this._size.h,this._size.w);if(null!==s&&s.hitTest)if(s.hitTest(e,i))return o}return null},t.prototype._recreatePriceAxisWidget=function(){this._recreatePriceAxisWidgetImpl(),this._chart.adjustSize()},t.prototype._recreatePriceAxisWidgetImpl=function(){if(null!==this._state){var t=this._chart,e=this._state.defaultPriceScale().options().position;if(this._priceAxisPosition!==e){if(null!==this._priceAxisWidget&&(this._priceAxisWidget.isLeft()?this._leftAxisCell.removeChild(this._priceAxisWidget.getElement()):this._rightAxisCell.removeChild(this._priceAxisWidget.getElement()),this._priceAxisWidget.destroy(),this._priceAxisWidget=null),"none"!==e){var i=t.model().rendererOptionsProvider();this._priceAxisWidget=new bi(this,t.options().layout,i,e),"left"===e&&this._leftAxisCell.appendChild(this._priceAxisWidget.getElement()),"right"===e&&this._rightAxisCell.appendChild(this._priceAxisWidget.getElement())}this._priceAxisPosition=e}}},t.prototype._preventCrosshairMove=function(){return Si&&null===this._startTrackPoint},t.prototype._preventScroll=function(){return Si&&this._longTap||null!==this._startTrackPoint},t.prototype._correctXCoord=function(t){return Math.max(0,Math.min(t,this._size.w-1))},t.prototype._correctYCoord=function(t){return Math.max(0,Math.min(t,this._size.h-1))},t.prototype._setCrosshairPosition=function(t,e){this._model().setAndSaveCurrentPosition(this._correctXCoord(t),this._correctYCoord(e),l(this._state))},t.prototype._clearCrosshairPosition=function(){this._model().clearCurrentPosition()},t.prototype._tryExitTrackingMode=function(){this._exitTrackingModeOnNextTry&&(this._startTrackPoint=null,this._clearCrosshairPosition())},t.prototype._startTrackingMode=function(t,e){this._startTrackPoint=t,this._exitTrackingModeOnNextTry=!1,this._setCrosshairPosition(e.x,e.y);var i=this._model().crosshairSource();this._initCrosshairPosition={x:i.appliedX(),y:i.appliedY()}},t.prototype._model=function(){return this._chart.model()},t}(),wi=function(){function t(t,e,i,r){this._invalidated=!0,this._size=new Ke(0,0),this._isLeft="left"===t,this._rendererOptionsProvider=i.rendererOptionsProvider,this._options=e,this._borderVisible=r,this._cell=document.createElement("div"),this._cell.style.width="25px",this._cell.style.height="100%",this._cell.style.overflow="hidden",this._canvas=Qe(this._cell,new Ke(16,16)),this._ctx=de(this._canvas)}return t.prototype.destroy=function(){},t.prototype.update=function(){this._invalidated=!0},t.prototype.getElement=function(){return this._cell},t.prototype.setSize=function(t){if(t.w<0||t.h<0)throw new Error("Try to set invalid size to PriceAxisStub "+JSON.stringify(t));this._size.equals(t)||(this._size=t,Je(this._canvas,t),this._cell.style.width=t.w+"px",this._cell.style.minWidth=t.w+"px",this._cell.style.height=t.h+"px",this._invalidated=!0)},t.prototype.paint=function(t){t<3&&!this._invalidated||0!==this._size.w&&0!==this._size.h&&(this._invalidated=!1,this._drawBackground(),this._drawBorder())},t.prototype.getImage=function(){return this._canvas},t.prototype.getWidth=function(){return this._size.w},t.prototype.isLeft=function(){return this._isLeft},t.prototype._drawBorder=function(){if(this._borderVisible()){var t=this._size.w;this._ctx.save(),this._ctx.fillStyle=this._options.timeScale.borderColor;var e,i=this._rendererOptionsProvider.options().borderSize;this._isLeft?(this._ctx.translate(-.5,-.5),e=t-i-1):(this._ctx.translate(-.5,-.5),e=0),this._ctx.fillRect(e,0,2*i,1),this._ctx.restore()}},t.prototype._drawBackground=function(){$e(this._ctx,0,0,this._size.w,this._size.h,this._options.layout.backgroundColor)},t}();function Ci(t,e){return t.span>e.span?t:e}!function(t){t[t.BorderSize=1]="BorderSize",t[t.TickLength=3]="TickLength"}(gi||(gi={})),function(t){t[t.Default=0]="Default",t[t.EwResize=1]="EwResize"}(yi||(yi={}));var Ti,Mi=function(){function t(t){this._stub=null,this._minVisibleSpan=70,this._rendererOptions=null,this._mouseDown=!1,this._size=new Ke(0,0),this._priceAxisPosition="none",this._chart=t,this._options=t.options().layout,this._element=document.createElement("tr"),this._leftStubCell=document.createElement("td"),this._leftStubCell.style.padding="0",this._rightStubCell=document.createElement("td"),this._rightStubCell.style.padding="0",this._cell=document.createElement("td"),this._cell.style.height="25px",this._cell.style.padding="0",this._dv=document.createElement("div"),this._dv.style.width="100%",this._dv.style.height="100%",this._dv.style.position="relative",this._dv.style.overflow="hidden",this._cell.appendChild(this._dv),this._canvas=Qe(this._dv,new Ke(16,16)),this._canvas.style.position="absolute",this._canvas.style.zIndex="1",this._canvas.style.left="0",this._canvas.style.top="0",this._canvasContext=l(de(this._canvas)),this._topCanvas=Qe(this._dv,new Ke(16,16)),this._topCanvas.style.position="absolute",this._topCanvas.style.zIndex="2",this._topCanvas.style.left="0",this._topCanvas.style.top="0",this._topCanvasContext=l(de(this._topCanvas)),this._element.appendChild(this._leftStubCell),this._element.appendChild(this._cell),this._element.appendChild(this._rightStubCell),this._recreateStub(),this._chart.model().mainPriceScaleOptionsChanged().subscribe(this._recreateStub.bind(this),this),this._mouseEventHandler=new hi(this._topCanvas,this,{treatVertTouchDragAsPageScroll:!0,treatHorzTouchDragAsPageScroll:!1})}return t.prototype.destroy=function(){this._mouseEventHandler.destroy(),null!==this._stub&&this._stub.destroy()},t.prototype.getElement=function(){return this._element},t.prototype.stub=function(){return this._stub},t.prototype.mouseDownEvent=function(t){if(!this._mouseDown){this._mouseDown=!0;var e=this._chart.model();!e.timeScale().isEmpty()&&this._chart.options().handleScale.axisPressedMouseMove&&e.startScaleTime(t.localX)}},t.prototype.mouseDownOutsideEvent=function(){var t=this._chart.model();!t.timeScale().isEmpty()&&this._mouseDown&&(this._mouseDown=!1,this._chart.options().handleScale.axisPressedMouseMove&&t.endScaleTime())},t.prototype.pressedMouseMoveEvent=function(t){var e=this._chart.model();!e.timeScale().isEmpty()&&this._chart.options().handleScale.axisPressedMouseMove&&e.scaleTimeTo(t.localX)},t.prototype.mouseUpEvent=function(t){this._mouseDown=!1;var e=this._chart.model();e.timeScale().isEmpty()&&!this._chart.options().handleScale.axisPressedMouseMove||e.endScaleTime()},t.prototype.mouseDoubleClickEvent=function(){this._chart.model().resetTimeScale()},t.prototype.mouseEnterEvent=function(t){this._chart.model().options().handleScale.axisPressedMouseMove&&this._setCursor(1)},t.prototype.mouseLeaveEvent=function(t){this._setCursor(0)},t.prototype.setSizes=function(t,e){this._size&&this._size.equals(t)||(this._size=t,Je(this._canvas,t),Je(this._topCanvas,t),de(this._canvas),de(this._topCanvas),this._cell.style.width=t.w+"px",this._cell.style.height=t.h+"px"),null!==this._stub&&this._stub.setSize(new Ke(e,t.h))},t.prototype.width=function(){return this._size.w},t.prototype.height=function(){return this._size.h},t.prototype.optimalHeight=function(){var t=this._getRendererOptions();return Math.ceil(t.borderSize+t.tickLength+t.fontSize+t.paddingTop+t.paddingBottom)},t.prototype.update=function(){var t=this,e=this._chart.model().timeScale().marks();e&&(this._minVisibleSpan=70,e.forEach(function(e){t._minVisibleSpan=Math.min(e.span,t._minVisibleSpan)}))},t.prototype.getImage=function(){return this._canvas},t.prototype.paint=function(t){if(0!==t){if(1!==t){var e=this._canvasContext;this._drawBackground(e),this._drawBorder(e),this._drawTickMarks(e),this._drawBackLabels(e),null!==this._stub&&this._stub.paint(t)}this._drawCrosshairLabel(this._topCanvasContext)}},t.prototype._drawBackground=function(t){$e(t,0,0,this._size.w,this._size.h,this._backgroundColor())},t.prototype._drawBorder=function(t){this._chart.options().timeScale.borderVisible&&(t.save(),t.fillStyle=this._lineColor(),t.translate(-.5,-.5),t.fillRect(0,0,this._size.w,1),t.restore())},t.prototype._drawTickMarks=function(t){var e=this._chart.model().timeScale().marks();if(e&&0!==e.length){var i=e.reduce(Ci,e[0]).span;i>30&&i<40&&(i=30),t.save(),t.strokeStyle=this._lineColor();var r=this._getRendererOptions(),n=r.borderSize+r.tickLength+r.paddingTop+r.fontSize-r.baselineOffset;if(t.textAlign="center",t.translate(.5,-.5),t.fillStyle=this._lineColor(),this._chart.model().timeScale().options().borderVisible){t.beginPath();for(var o=e.length;o--;)t.rect(e[o].coord,1,1,r.tickLength);t.fill()}t.fillStyle=this._textColor(),t.font=this._baseFont();for(var s=0,a=e;s<a.length;s++){(c=a[s]).span<i&&t.fillText(c.label,c.coord,n)}t.font=this._baseBoldFont();for(var h=0,l=e;h<l.length;h++){var c;(c=l[h]).span>=i&&t.fillText(c.label,c.coord,n)}t.restore()}},t.prototype._drawBackLabels=function(t){t.save();var e=new Set,i=this._chart.model(),r=i.dataSources();e.add(i.crosshairSource());for(var n=this._getRendererOptions(),o=0,s=r;o<s.length;o++){var a=s[o];if(!e.has(a))for(var h=0,l=a.timeAxisViews();h<l.length;h++){l[h].renderer().draw(t,n)}}t.restore()},t.prototype._drawCrosshairLabel=function(t){this._topCanvasContext.clearRect(-.5,-.5,this._size.w,this._size.h);var e=[],i=this._chart.model().crosshairSource().timeAxisViews();e.push(i);var r=this._getRendererOptions();e.forEach(function(e){e.forEach(function(e){t.save(),e.renderer().draw(t,r),t.restore()})})},t.prototype._backgroundColor=function(){return this._options.backgroundColor},t.prototype._lineColor=function(){return this._chart.options().timeScale.borderColor},t.prototype._textColor=function(){return this._options.textColor},t.prototype._fontSize=function(){return this._options.fontSize},t.prototype._baseFont=function(){return ve(this._fontSize(),this._options.fontFamily)},t.prototype._baseBoldFont=function(){return ve(this._fontSize(),this._options.fontFamily,"bold")},t.prototype._getRendererOptions=function(){null===this._rendererOptions&&(this._rendererOptions={borderSize:1,baselineOffset:NaN,paddingTop:NaN,paddingBottom:NaN,paddingHorizontal:NaN,tickLength:3,fontSize:NaN,font:"",widthCache:new zt});var t=this._rendererOptions,e=this._baseFont();if(t.font!==e){var i=this._fontSize();t.fontSize=i,t.font=e,t.paddingTop=Math.ceil(i/2.5),t.paddingBottom=t.paddingTop,t.paddingHorizontal=Math.ceil(i/2),t.baselineOffset=Math.round(this._fontSize()/5),t.widthCache.reset()}return this._rendererOptions},t.prototype._setCursor=function(t){this._cell.style.cursor=1===t?"ew-resize":"default"},t.prototype._recreateStub=function(){var t=this._chart.model().mainPriceScale().options().position;if(t!==this._priceAxisPosition){if(null!==this._stub&&(this._stub.isLeft()?this._leftStubCell.removeChild(this._stub.getElement()):this._rightStubCell.removeChild(this._stub.getElement()),this._stub.destroy(),this._stub=null),"none"!==t){var e={rendererOptionsProvider:this._chart.model().rendererOptionsProvider()},i=this._chart.model();this._stub=new wi(t,this._chart.options(),e,function(){return i.mainPriceScale().options().borderVisible&&i.timeScale().options().borderVisible}),("left"===t?this._leftStubCell:this._rightStubCell).appendChild(this._stub.getElement())}this._priceAxisPosition=t}},t}(),ki=function(){function t(t,e){var i=this;this._paneWidgets=[],this._paneSeparators=[],this._drawRafId=0,this._priceAxisWidthChanged=new $,this._height=0,this._width=0,this._priceAxisWidth=0,this._invalidateMask=null,this._drawPlanned=!1,this._clicked=new $,this._crosshairMoved=new $,this._options=e,this._element=document.createElement("div"),this._element.classList.add("tv-lightweight-charts"),this._element.style.overflow="hidden",this._element.style.width="100%",this._element.style.height="100%",this._tableElement=document.createElement("table"),this._tableElement.setAttribute("cellspacing","0"),this._element.appendChild(this._tableElement),this._onWheelBound=this._onMousewheel.bind(this),this._element.addEventListener("wheel",this._onWheelBound,{passive:!1}),this._model=new Ze(this._invalidateHandler.bind(this),this._options),this.model().crosshairMoved().subscribe(this._onPaneWidgetCrosshairMoved.bind(this),this),this._timeAxisWidget=new Mi(this),this._tableElement.appendChild(this._timeAxisWidget.getElement());var r=this._options.width,n=this._options.height;if(0===r&&0===n){var o=t.getBoundingClientRect();r=o.width,n=o.height}r=Math.max(70,r),n=Math.max(50,n),this.resize(n,r),this._syncGuiWithModel(),t.appendChild(this._element),this._updateTimeAxisVisibility(),this._model.timeScale().optionsApplied().subscribe(function(){i._updateTimeAxisVisibility(),i.adjustSize()},this)}return t.prototype.model=function(){return this._model},t.prototype.options=function(){return this._options},t.prototype.paneWidgets=function(){return this._paneWidgets},t.prototype.destroy=function(){this._element.removeEventListener("wheel",this._onWheelBound),0!==this._drawRafId&&window.cancelAnimationFrame(this._drawRafId),this._model.crosshairMoved().unsubscribeAll(this),this._model.timeScale().optionsApplied().unsubscribeAll(this),this._model.destroy();for(var t=0,e=this._paneWidgets;t<e.length;t++){var i=e[t];this._tableElement.removeChild(i.getElement()),i.clicked().unsubscribeAll(this),i.destroy()}this._paneWidgets=[];for(var r=0,n=this._paneSeparators;r<n.length;r++){var o=n[r];this._destroySeparator(o)}this._paneSeparators=[],l(this._timeAxisWidget).destroy(),null!==this._element.parentElement&&this._element.parentElement.removeChild(this._element),this._crosshairMoved.destroy(),this._clicked.destroy(),delete this._element},t.prototype.resize=function(t,e,i){if(void 0===i&&(i=!1),this._height!==t||this._width!==e){this._height=t,this._width=e;var r=t+"px",n=e+"px";l(this._element).style.height=r,l(this._element).style.width=n,this._tableElement.style.height=r,this._tableElement.style.width=n,i?this._drawImpl(new we(3)):this._model.fullUpdate()}},t.prototype.paint=function(t){void 0===t&&(t=new we(3));for(var e=0;e<this._paneWidgets.length;e++)this._paneWidgets[e].paint(t.invalidateForPane(e).level);this._timeAxisWidget.paint(t.fullInvalidation())},t.prototype.adjustSize=function(){this._adjustSizeImpl(),this._model.fullUpdate()},t.prototype.applyOptions=function(t){this._model.applyOptions(t),this._updateTimeAxisVisibility();var e=t.width||this._width,i=t.height||this._height;this.resize(i,e)},t.prototype.clicked=function(){return this._clicked},t.prototype.crosshairMoved=function(){return this._crosshairMoved},t.prototype.takeScreenshot=function(){var t=this;null!==this._invalidateMask&&(this._drawImpl(this._invalidateMask),this._invalidateMask=null);var e=this._paneWidgets[0],i=this._width,r=this._height,n=document.createElement("canvas");Je(n,new Ke(i,r));var o=l(de(n));o.translate(-.5,-.5);var s=0,a=0,h=function(){for(var e=0;e<t._paneWidgets.length;e++){var i=t._paneWidgets[e],r=l(i.priceAxisWidget()).getImage();o.drawImage(r,s,a),a+=i.getSize().h,e<t._paneWidgets.length-1&&(a+=_i)}};"left"===this._options.priceScale.position&&(h(),s=l(e.priceAxisWidget()).getWidth()),a=0;for(var c=0;c<this._paneWidgets.length;c++){var u=this._paneWidgets[c],p=u.getImage();if(o.drawImage(p,s,a),a+=u.getSize().h,c<this._paneWidgets.length-1){var d=this._paneSeparators[c].getImage();o.drawImage(d,s,a),a+=_i}}s+=e.getSize().w,"right"===this._options.priceScale.position&&(a=0,h());var _=function(){var e=l(t._timeAxisWidget.stub()).getImage();o.drawImage(e,s,a)};if(this._options.timeScale.visible){s=0,"left"===this._options.priceScale.position&&(_(),s=l(e.priceAxisWidget()).getWidth());p=this._timeAxisWidget.getImage();o.drawImage(p,s,a),"right"===this._options.priceScale.position&&(s=e.getSize().w,_(),o.restore())}return n},t.prototype._adjustSizeImpl=function(){for(var t=0,e=0,i=0,r=this._paneWidgets;i<r.length;i++){var n=r[i];"none"!==this._options.priceScale.position&&(e=Math.max(e,l(n.priceAxisWidget()).optimalWidth())),t+=n.stretchFactor()}for(var o=this._width,s=this._height,a=Math.max(o-e,0),h=this._paneSeparators.length,c=_i*h,u=this._options.timeScale.visible?this._timeAxisWidget.optimalHeight():0,p=c+u,d=s<p?0:s-p,_=d/t,f=0,m=0;m<this._paneWidgets.length;++m){(n=this._paneWidgets[m]).setState(this._model.panes()[m]);var v,g=0;g=m===this._paneWidgets.length-1?d-f:Math.round(n.stretchFactor()*_),f+=v=Math.max(g,2),n.setSize(new Ke(a,v)),"none"!==this._options.priceScale.position&&n.setPriceAxisSize(e),n.state()&&this._model.setPaneHeight(n.state(),v)}this._timeAxisWidget.setSizes(new Ke(a,u),e),this._model.setWidth(a),this._priceAxisWidth!==e&&(this._priceAxisWidth=e,this._priceAxisWidthChanged.fire(e))},t.prototype._onMousewheel=function(t){var e=t.deltaX/100,i=-t.deltaY/100;if(0!==e&&this._options.handleScroll.mouseWheel||0!==i&&this._options.handleScale.mouseWheel){switch(t.cancelable&&t.preventDefault(),t.deltaMode){case t.DOM_DELTA_PAGE:e*=120,i*=120;break;case t.DOM_DELTA_LINE:e*=32,i*=32}if(0!==i&&this._options.handleScale.mouseWheel){var r=Math.sign(i)*Math.min(1,Math.abs(i)),n=t.clientX-this._element.getBoundingClientRect().left;this.model().zoomTime(n,r)}0!==e&&this._options.handleScroll.mouseWheel&&this.model().scrollChart(-80*e)}},t.prototype._drawImpl=function(t){var e=t.fullInvalidation();if(3===e&&this._updateGui(),3===e||2===e){for(var i=this._model.panes(),r=0;r<i.length;r++)t.invalidateForPane(r).autoScale&&i[r].momentaryAutoScale();t.getFitContent()&&this._model.timeScale().fitContent();var n=t.getTargetTimeRange();null!==n&&this._model.timeScale().setTimePointsRange(n),this._timeAxisWidget.update()}this.paint(t)},t.prototype._invalidateHandler=function(t){var e=this;null!==this._invalidateMask?this._invalidateMask.merge(t):this._invalidateMask=t,this._drawPlanned||(this._drawPlanned=!0,this._drawRafId=window.requestAnimationFrame(function(){e._drawPlanned=!1,e._drawRafId=0,null!==e._invalidateMask&&(e._drawImpl(e._invalidateMask),e._invalidateMask=null)}))},t.prototype._updateGui=function(){this._syncGuiWithModel()},t.prototype._destroySeparator=function(t){this._tableElement.removeChild(t.getElement()),t.destroy()},t.prototype._syncGuiWithModel=function(){for(var t=this._model.panes(),e=t.length,i=this._paneWidgets.length,r=e;r<i;r++){var n=h(this._paneWidgets.pop());this._tableElement.removeChild(n.getElement()),n.clicked().unsubscribeAll(this),n.destroy(),void 0!==(o=this._paneSeparators.pop())&&this._destroySeparator(o)}for(r=i;r<e;r++){if((n=new xi(this,t[r])).clicked().subscribe(this._onPaneWidgetClicked.bind(this),this),this._paneWidgets.push(n),r>1){var o=new fi(this,r-1,r,!0);this._paneSeparators.push(o),this._tableElement.insertBefore(o.getElement(),this._timeAxisWidget.getElement())}this._tableElement.insertBefore(n.getElement(),this._timeAxisWidget.getElement())}for(r=0;r<e;r++){var s=t[r];(n=this._paneWidgets[r]).state()!==s?n.setState(s):n.updatePriceAxisWidget()}this._updateTimeAxisVisibility(),this._adjustSizeImpl()},t.prototype._getMouseEventParamsImpl=function(t,e){var i,r=new Map;null!==t&&this._model.serieses().forEach(function(e){var i=e.dataAt(t);null!==i&&r.set(e,i)});if(null!==t){var n=this._model.timeScale().indexToUserTime(t);null!==n&&(i=n)}return{time:i,point:e||void 0,seriesPrices:r}},t.prototype._onPaneWidgetClicked=function(t,e){var i=this;this._clicked.fire(function(){return i._getMouseEventParamsImpl(t,e)})},t.prototype._onPaneWidgetCrosshairMoved=function(t,e){var i=this;this._crosshairMoved.fire(function(){return i._getMouseEventParamsImpl(t,e)})},t.prototype._updateTimeAxisVisibility=function(){var t=this._options.timeScale.visible?"":"none";this._timeAxisWidget.getElement().style.display=t},t}();function Pi(t){void 0!==t.borderColor&&(t.borderUpColor=t.borderColor,t.borderDownColor=t.borderColor),void 0!==t.wickColor&&(t.wickUpColor=t.wickColor,t.wickDownColor=t.wickColor)}!function(t){t[t.LastPriceAndPercentageValue=0]="LastPriceAndPercentageValue",t[t.LastValueAccordingToScale=1]="LastValueAccordingToScale"}(Ti||(Ti={}));var Di=function(){function t(t,e){this._series=t,this._dataUpdatesConsumer=e}return t.prototype.destroy=function(){delete this._series,delete this._dataUpdatesConsumer},t.prototype.priceFormatter=function(){return this._series.formatter()},t.prototype.series=function(){return this._series},t.prototype.priceToCoordinate=function(t){var e=this._series.firstValue();return null===e?null:this._series.priceScale().priceToCoordinate(t,e)},t.prototype.setData=function(t){this._dataUpdatesConsumer.applyNewData(this._series,t)},t.prototype.update=function(t){this._dataUpdatesConsumer.updateData(this._series,t)},t.prototype.applyOptions=function(t){this._series.applyOptions(t)},t.prototype.options=function(){return m(this._series.options())},t}(),Ei=function(t){function e(){return null!==t&&t.apply(this,arguments)||this}return o(e,t),e.prototype.applyOptions=function(e){Pi(e),t.prototype.applyOptions.call(this,e)},e}(Di);function Ri(t){if(!ae(t))throw new Error("time must be of type BusinessDay");var e=new Date(Date.UTC(t.year,t.month-1,t.day,0,0,0,0));return{timestamp:Math.round(e.getTime()/1e3),businessDay:t}}function Ii(t){if(!he(t))throw new Error("time must be of type isUTCTimestamp");return{timestamp:t}}function Vi(t){return 0===t.length?null:ae(t[0].time)?Ri:Ii}function Ai(t){return ae(t)?Ri(t):Ii(t)}function Li(t,e){if("value"in t){var i=t.value,r=0;if("color"in t){var n=t;void 0!==n.color&&(r=h(e).addColor(n.color))}return[i,i,i,i,r]}var o=t;return[o.open,o.high,o.low,o.close,0]}function Oi(t){return 60*t*60*1e3}function zi(t){return 60*t*1e3}var Bi,Wi=[{divisor:1,span:20},{divisor:(Bi=1,1e3*Bi),span:19},{divisor:zi(1),span:20},{divisor:zi(5),span:21},{divisor:zi(30),span:22},{divisor:Oi(1),span:30},{divisor:Oi(3),span:31},{divisor:Oi(6),span:32},{divisor:Oi(12),span:33}];function Fi(t,e){if(null!==e){var i=new Date(1e3*e.timestamp),r=new Date(1e3*t.timestamp);if(r.getUTCFullYear()!==i.getUTCFullYear())return 70;if(r.getUTCMonth()!==i.getUTCMonth())return 60;if(r.getUTCDate()!==i.getUTCDate())return 50;for(var n=Wi.length-1;n>=0;--n)if(Math.floor(i.getTime()/Wi[n].divisor)!==Math.floor(r.getTime()/Wi[n].divisor))return Wi[n].span}return 20}function Ni(t,e){return t.timestamp<e.timestamp}function Hi(t){_(t.time)&&(t.time=function(t){var e=new Date(t);if(isNaN(e.getTime()))throw new Error("Invalid date string="+t+", expected format=yyyy-mm-dd");return{day:e.getUTCDate(),month:e.getUTCMonth()+1,year:e.getUTCFullYear()}}(t.time))}var Ui=function(){function t(){this._pointDataByTimePoint=new Map,this._timePointsByIndex=new Map,this._sortedTimePoints=[]}return t.prototype.destroy=function(){this._pointDataByTimePoint.clear(),this._timePointsByIndex.clear(),this._sortedTimePoints=[]},t.prototype.setSeriesData=function(t,e,i){var r=this;!function(t){t.forEach(Hi)}(e),this._pointDataByTimePoint.forEach(function(e){return e.mapping.delete(t)});var n=Vi(e);null!==n&&e.forEach(function(e){var i=n(e.time),o=r._pointDataByTimePoint.get(i.timestamp)||{index:0,mapping:new Map,timePoint:i};o.mapping.set(t,e),r._pointDataByTimePoint.set(i.timestamp,o)});var o=new Map;return this._pointDataByTimePoint.forEach(function(t,e){t.mapping.size>0&&o.set(e,t)}),this._setNewPoints(t,o,i)},t.prototype.removeSeries=function(t){return this.setSeriesData(t,[])},t.prototype.updateSeriesData=function(t,e,i){Hi(e);var r=t.data().bars();if(r.size()>0)if(void 0!==l(r.last()).time.businessDay){if(!ae(e.time))throw new Error("time must be of type BusinessDay")}else if(!he(e.time))throw new Error("time must be of type isUTCTimestamp");var n=l(Vi([e]))(e.time),o=this._pointDataByTimePoint.get(n.timestamp)||{index:0,mapping:new Map,timePoint:n},s=0===o.mapping.size;o.mapping.set(t,e);var a=!1;if(s){var c=this._pointDataByTimePoint.size;this._sortedTimePoints.length>0&&this._sortedTimePoints[this._sortedTimePoints.length-1].timestamp>n.timestamp?(c=gt(this._sortedTimePoints,n,Ni),this._sortedTimePoints.splice(c,0,n),this._incrementIndicesFrom(c),a=!0):this._sortedTimePoints.push(n),o.index=c,this._timePointsByIndex.set(o.index,n)}this._pointDataByTimePoint.set(n.timestamp,o);var u=new Map,p=function(e){var r=h(d._timePointsByIndex.get(e));h(d._pointDataByTimePoint.get(r.timestamp)).mapping.forEach(function(n,o){if(a||o===t){var s=u.get(o)||{update:[]},h={index:e,time:r,value:Li(n,i)};s.update.push(h),u.set(o,s)}})},d=this;for(c=o.index;c<this._pointDataByTimePoint.size;++c)p(c);var _=s?this._generateMarksSinceIndex(o.index):[],f=s?this._sortedTimePoints.slice(o.index):[];return{timeScaleUpdate:{seriesUpdates:u,changes:f,index:o.index,marks:_}}},t.prototype._setNewPoints=function(t,e,i){var r=this;this._pointDataByTimePoint=e,this._sortedTimePoints=Array.from(this._pointDataByTimePoint.values()).map(function(t){return t.timePoint}),this._sortedTimePoints.sort(function(t,e){return t.timestamp-e.timestamp});var n=new Map;this._sortedTimePoints.forEach(function(e,o){var s=h(r._pointDataByTimePoint.get(e.timestamp));s.index=o,s.mapping.forEach(function(r,s){var a=n.get(s)||{update:[]},h=t===s?i:s.palette(),l={index:o,time:e,value:Li(r,h)};a.update.push(l),n.set(s,a)})});var o=null,s=this._sortedTimePoints.map(function(t,e){var i=Fi(t,o);return o=t,{span:i,time:t,index:e}}),a={seriesUpdates:n,changes:this._sortedTimePoints.slice(),index:0,marks:s};return this._rebuildTimePointsByIndex(),{timeScaleUpdate:a}},t.prototype._incrementIndicesFrom=function(t){for(var e=this._timePointsByIndex.size-1;e>=t;--e){var i=h(this._timePointsByIndex.get(e)),r=e+1;h(this._pointDataByTimePoint.get(i.timestamp)).index=r,this._timePointsByIndex.delete(e),this._timePointsByIndex.set(r,i)}},t.prototype._rebuildTimePointsByIndex=function(){var t=this;this._timePointsByIndex.clear(),this._pointDataByTimePoint.forEach(function(e,i){t._timePointsByIndex.set(e.index,e.timePoint)})},t.prototype._generateMarksSinceIndex=function(t){for(var e=[],i=this._timePointsByIndex.get(t-1)||null,r=t;r<this._timePointsByIndex.size;++r){var n=h(this._timePointsByIndex.get(r)),o=Fi(n,i);i=n,e.push({span:o,time:n,index:r})}return e},t}();var Yi,Xi=function(t){function e(){return null!==t&&t.apply(this,arguments)||this}return o(e,t),e.prototype.setData=function(t){var e,i,r,n=(e=t,i=this._series.options().color,(r=new Xt).addColor(i),e.forEach(function(t){void 0!==t.color&&r.addColor(t.color)}),r);this._dataUpdatesConsumer.applyNewData(this._series,t,n)},e}(Di),ji={upColor:"#26a69a",downColor:"#ef5350",wickVisible:!0,borderVisible:!0,borderColor:"#378658",borderUpColor:"#26a69a",borderDownColor:"#ef5350",wickColor:"#737375",wickUpColor:"#26a69a",wickDownColor:"#ef5350"},qi={upColor:"#26a69a",downColor:"#ef5350",openVisible:!0,thinBars:!0},Gi={color:"#2196f3",lineStyle:0,lineWidth:3,crosshairMarkerVisible:!0,crosshairMarkerRadius:4},Zi={topColor:"rgba( 46, 220, 135, 0.4)",bottomColor:"rgba( 40, 221, 100, 0)",lineColor:"#33D778",lineStyle:0,lineWidth:3,crosshairMarkerVisible:!0,crosshairMarkerRadius:4},Ki={color:"#26a69a",base:0,lineWidth:2},Ji={title:"",lastValueVisible:!0,priceLineVisible:!0,priceLineWidth:1,priceLineColor:"",priceLineStyle:1,baseLineVisible:!0,baseLineWidth:1,baseLineColor:"#B2B5BE",baseLineStyle:0,priceFormat:{type:"price",precision:2,minMove:.01}},$i=function(){function t(t){this._chartModel=t}return t.prototype.destroy=function(){delete this._chartModel},t.prototype.applyOptions=function(t){this._chartModel.applyOptions({priceScale:t})},t.prototype.options=function(){return this._priceScale().options()},t.prototype._priceScale=function(){return this._chartModel.mainPriceScale()},t}();!function(t){t[t.AnimationDurationMs=1e3]="AnimationDurationMs"}(Yi||(Yi={}));var Qi=function(){function t(t){this._model=t}return t.prototype.destroy=function(){delete this._model},t.prototype.scrollPosition=function(){return this._timeScale().rightOffset()},t.prototype.scrollToPosition=function(t,e){e?this._timeScale().scrollToOffsetAnimated(t,1e3):this._timeScale().setRightOffset(t)},t.prototype.scrollToRealTime=function(){this._timeScale().scrollToRealTime()},t.prototype.getVisibleRange=function(){var t=this._timeScale().visibleBars();if(null===t)return null;var e=this._model.timeScale().points(),i=l(e.firstIndex()),r=l(e.lastIndex());return{from:tr(l(e.valueAt(Math.max(i,t.firstBar())))),to:tr(l(e.valueAt(Math.min(r,t.lastBar()))))}},t.prototype.setVisibleRange=function(t){var e={from:Ai(t.from),to:Ai(t.to)};this._model.setTargetTimeRange(e)},t.prototype.resetTimeScale=function(){this._model.resetTimeScale()},t.prototype.fitContent=function(){this._model.fitContent()},t.prototype.applyOptions=function(t){this._timeScale().applyOptions(t)},t.prototype.options=function(){return m(this._timeScale().options())},t.prototype._timeScale=function(){return this._model.timeScale()},t}();function tr(t){return t.businessDay||t.timestamp}function er(t){void 0!==t&&void 0!==t.minMove&&void 0===t.precision&&(t.precision=function(t){if(t>=1)return 0;for(var e=0;e<8;e++){var i=Math.round(t);if(Math.abs(i-t)<1e-8)return e;t*=10}return e}(t.minMove))}var ir=function(){function t(t,e){var i=this;this._dataLayer=new Ui,this._timeRangeChanged=new $,this._seriesMap=new Map,this._seriesMapReversed=new Map,this._clickedDelegate=new $,this._crosshairMovedDelegate=new $,this._chartWidget=new ki(t,e),this._chartWidget.model().timeScale().visibleBarsChanged().subscribe(this._onVisibleBarsChanged.bind(this)),this._chartWidget.clicked().subscribe(function(t){i._clickedDelegate.hasListeners()&&i._clickedDelegate.fire(i._convertMouseParams(t()))},this),this._chartWidget.crosshairMoved().subscribe(function(t){i._crosshairMovedDelegate.hasListeners()&&i._crosshairMovedDelegate.fire(i._convertMouseParams(t()))},this);var r=this._chartWidget.model();this._priceScaleApi=new $i(r),this._timeScaleApi=new Qi(r)}return t.prototype.remove=function(){this._chartWidget.model().timeScale().visibleBarsChanged().unsubscribeAll(this),this._chartWidget.clicked().unsubscribeAll(this),this._chartWidget.crosshairMoved().unsubscribeAll(this),this._priceScaleApi.destroy(),this._timeScaleApi.destroy(),this._chartWidget.destroy(),delete this._chartWidget,this._seriesMap.forEach(function(t,e){e.destroy()}),this._seriesMap.clear(),this._seriesMapReversed.clear(),this._timeRangeChanged.destroy(),this._clickedDelegate.destroy(),this._crosshairMovedDelegate.destroy(),this._dataLayer.destroy(),delete this._dataLayer},t.prototype.resize=function(t,e,i){this._chartWidget.resize(t,e,i)},t.prototype.addAreaSeries=function(t){void 0===t&&(t={}),er(t.priceFormat);var e=u(m(Ji),Zi,t),i=this._chartWidget.model().createSeries("Area",e),r=new Di(i,this);return this._seriesMap.set(r,i),this._seriesMapReversed.set(i,r),r},t.prototype.addBarSeries=function(t){void 0===t&&(t={}),er(t.priceFormat);var e=u(m(Ji),qi,t),i=this._chartWidget.model().createSeries("Bar",e),r=new Di(i,this);return this._seriesMap.set(r,i),this._seriesMapReversed.set(i,r),r},t.prototype.addCandlestickSeries=function(t){void 0===t&&(t={}),Pi(t),er(t.priceFormat);var e=u(m(Ji),ji,t),i=this._chartWidget.model().createSeries("Candlestick",e),r=new Ei(i,this);return this._seriesMap.set(r,i),this._seriesMapReversed.set(i,r),r},t.prototype.addHistogramSeries=function(t){void 0===t&&(t={}),er(t.priceFormat);var e=u(m(Ji),Ki,t),i=this._chartWidget.model().createSeries("Histogram",e),r=new Xi(i,this);return this._seriesMap.set(r,i),this._seriesMapReversed.set(i,r),r},t.prototype.addLineSeries=function(t){void 0===t&&(t={}),er(t.priceFormat);var e=u(m(Ji),Gi,t),i=this._chartWidget.model().createSeries("Line",e),r=new Di(i,this);return this._seriesMap.set(r,i),this._seriesMapReversed.set(i,r),r},t.prototype.removeSeries=function(t){var e=t,i=h(this._seriesMap.get(e)),r=this._dataLayer.removeSeries(i),n=this._chartWidget.model();n.removeSeries(i);var o=r.timeScaleUpdate;n.updateTimeScale(o.index,o.changes,o.marks,!0),o.seriesUpdates.forEach(function(t,e){e.setData(t.update,!1)}),n.updateTimeScaleBaseIndex(0),this._seriesMap.delete(e),this._seriesMapReversed.delete(i)},t.prototype.applyNewData=function(t,e,i){var r=this._dataLayer.setSeriesData(t,e,i),n=this._chartWidget.model(),o=r.timeScaleUpdate;n.updateTimeScale(o.index,o.changes,o.marks,!0),o.seriesUpdates.forEach(function(e,r){r.setData(e.update,t===r,i)}),n.updateTimeScaleBaseIndex(0)},t.prototype.updateData=function(t,e){var i=t.palette(),r=this._dataLayer.updateSeriesData(t,e,i),n=this._chartWidget.model(),o=r.timeScaleUpdate;n.updateTimeScale(o.index,o.changes,o.marks,!1),o.seriesUpdates.forEach(function(t,e){e.updateData(t.update)}),n.updateTimeScaleBaseIndex(0)},t.prototype.subscribeClick=function(t){this._clickedDelegate.subscribe(t)},t.prototype.unsubscribeClick=function(t){this._clickedDelegate.unsubscribe(t)},t.prototype.subscribeCrosshairMove=function(t){this._crosshairMovedDelegate.subscribe(t)},t.prototype.unsubscribeCrosshairMove=function(t){this._crosshairMovedDelegate.unsubscribe(t)},t.prototype.subscribeVisibleTimeRangeChange=function(t){this._timeRangeChanged.subscribe(t)},t.prototype.unsubscribeVisibleTimeRangeChange=function(t){this._timeRangeChanged.unsubscribe(t)},t.prototype.priceScale=function(){return this._priceScaleApi},t.prototype.timeScale=function(){return this._timeScaleApi},t.prototype.applyOptions=function(t){this._chartWidget.applyOptions(t)},t.prototype.options=function(){return this._chartWidget.options()},t.prototype.takeScreenshot=function(){return this._chartWidget.takeScreenshot()},t.prototype._onVisibleBarsChanged=function(){this._timeRangeChanged.hasListeners()&&this._timeRangeChanged.fire(this.timeScale().getVisibleRange())},t.prototype._mapSeriesToApi=function(t){return h(this._seriesMapReversed.get(t))},t.prototype._convertMouseParams=function(t){var e=this,i=new Map;return t.seriesPrices.forEach(function(t,r){i.set(e._mapSeriesToApi(r),t)}),{time:t.time&&(t.time.businessDay||t.time.timestamp),point:t.point,seriesPrices:i}},t}(),rr={width:0,height:0,layout:{backgroundColor:"#FFFFFF",textColor:"#191919",fontSize:11,fontFamily:me},crosshair:{vertLine:{color:"#758696",width:1,style:2,visible:!0,labelVisible:!0,labelBackgroundColor:"#4c525e"},horzLine:{color:"#758696",width:1,style:2,visible:!0,labelVisible:!0,labelBackgroundColor:"#4c525e"},mode:1},grid:{vertLines:{color:"#D6DCDE",style:0,visible:!0},horzLines:{color:"#D6DCDE",style:0,visible:!0}},priceScale:{autoScale:!0,mode:0,invertScale:!1,alignLabels:!0,position:"right",borderVisible:!0,borderColor:"#2B2B43",entireTextOnly:!1,scaleMargins:{bottom:.1,top:.2}},timeScale:{rightOffset:0,barSpacing:6,fixLeftEdge:!1,lockVisibleTimeRangeOnResize:!1,rightBarStaysOnScroll:!1,borderVisible:!0,borderColor:"#2B2B43",visible:!0,timeVisible:!1,secondsVisible:!0},watermark:{color:"rgba(0, 0, 0, 0)",visible:!1,fontSize:48,text:"",horzAlign:"center",vertAlign:"center"},localization:{locale:navigator.language,dateFormat:"dd MMM 'yy"},handleScroll:{mouseWheel:!0,pressedMouseMove:!0,horzTouchDrag:!0,vertTouchDrag:!0},handleScale:{axisPressedMouseMove:!0,mouseWheel:!0,pinch:!0}};var nr=Object.freeze({version:function(){return"1.0.2"},get LineStyle(){return e},get LineType(){return t},get CrosshairMode(){return H},get PriceScaleMode(){return te},isBusinessDay:ae,isUTCTimestamp:he,createChart:function(t,e){var i=l(_(t)?document.getElementById(t):t),r=void 0===e?m(rr):u(m(rr),e);return new ir(i,r)}});window.LightweightCharts=nr}();
+(function () {
+    'use strict';
+
+    var LineType;
+    (function (LineType) {
+        LineType[LineType["Simple"] = 0] = "Simple";
+        LineType[LineType["WithSteps"] = 1] = "WithSteps";
+    })(LineType || (LineType = {}));
+    var LineStyle;
+    (function (LineStyle) {
+        LineStyle[LineStyle["Solid"] = 0] = "Solid";
+        LineStyle[LineStyle["Dotted"] = 1] = "Dotted";
+        LineStyle[LineStyle["Dashed"] = 2] = "Dashed";
+        LineStyle[LineStyle["LargeDashed"] = 3] = "LargeDashed";
+        LineStyle[LineStyle["SparseDotted"] = 4] = "SparseDotted";
+    })(LineStyle || (LineStyle = {}));
+    function drawLine(ctx, x1, y1, x2, y2, lineStyle) {
+        if (!isFinite(x1) || !isFinite(x2) || !isFinite(y1) || !isFinite(y2)) {
+            return;
+        }
+        ctx.save();
+        setLineStyle(ctx, lineStyle);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.restore();
+    }
+    function setLineStyle(ctx, style) {
+        var _a;
+        var dashPatterns = (_a = {},
+            _a[0 /* Solid */] = [],
+            _a[1 /* Dotted */] = [ctx.lineWidth, 2 * ctx.lineWidth],
+            _a[2 /* Dashed */] = [5 * ctx.lineWidth, 6 * ctx.lineWidth],
+            _a[3 /* LargeDashed */] = [6 * ctx.lineWidth, 6 * ctx.lineWidth],
+            _a[4 /* SparseDotted */] = [ctx.lineWidth, 4 * ctx.lineWidth],
+            _a);
+        var dashPattern = dashPatterns[style];
+        ctx.setLineDash(dashPattern);
+    }
+
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    /**
+     * Checks an assertion. Throws if the assertion is failed.
+     * @param condition Result of the assertion evaluation
+     * @param message Text to include in the exception message
+     */
+    function assert(condition, message) {
+        if (!condition) {
+            throw new Error('Assertion failed' + (message ? ': ' + message : ''));
+        }
+    }
+    function ensureDefined(value) {
+        if (value === undefined) {
+            throw new Error('Value is undefined');
+        }
+        return value;
+    }
+    function ensureNotNull(value) {
+        if (value === null) {
+            throw new Error('Value is null');
+        }
+        return value;
+    }
+    function ensure(value) {
+        return ensureNotNull(ensureDefined(value));
+    }
+
+    // tslint:disable-next-line:no-any
+    function merge(dst) {
+        var sources = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            sources[_i - 1] = arguments[_i];
+        }
+        for (var _a = 0, sources_1 = sources; _a < sources_1.length; _a++) {
+            var src = sources_1[_a];
+            for (var i in src) {
+                if (src[i] === undefined) {
+                    continue;
+                }
+                if ('object' !== typeof src[i] || dst[i] === undefined) {
+                    dst[i] = src[i];
+                }
+                else {
+                    merge(dst[i], src[i]);
+                }
+            }
+        }
+        return dst;
+    }
+    function isNumber(value) {
+        return (typeof value === 'number') && (isFinite(value));
+    }
+    function isInteger(value) {
+        return (typeof value === 'number') && ((value % 1) === 0);
+    }
+    function isString(value) {
+        return typeof value === 'string';
+    }
+    function isNaN$1(value) {
+        return !(value <= 0) && !(value > 0);
+    }
+    function clone(object) {
+        // tslint:disable-next-line:no-any
+        var o = object;
+        if (!o || 'object' !== typeof o) {
+            return o;
+        }
+        // tslint:disable-next-line:no-any
+        var c;
+        if (Array.isArray(o)) {
+            c = [];
+        }
+        else {
+            c = {};
+        }
+        var p;
+        var v;
+        for (p in o) {
+            if (o.hasOwnProperty(p)) {
+                v = o[p];
+                if (v && 'object' === typeof v) {
+                    c[p] = clone(v);
+                }
+                else {
+                    c[p] = v;
+                }
+            }
+        }
+        return c;
+    }
+    function notNull(t) {
+        return t !== null;
+    }
+    function undefinedIfNull(t) {
+        return (t === null) ? undefined : t;
+    }
+
+    var CompositeRenderer = /** @class */ (function () {
+        function CompositeRenderer() {
+            this._renderers = [];
+        }
+        CompositeRenderer.prototype.setRenderers = function (renderers) {
+            this._renderers = renderers;
+        };
+        CompositeRenderer.prototype.draw = function (ctx, isHovered) {
+            this._renderers.forEach(function (r) {
+                ctx.save();
+                r.draw(ctx, isHovered);
+                ctx.restore();
+            });
+        };
+        return CompositeRenderer;
+    }());
+
+    var PaneRendererMarks = /** @class */ (function () {
+        function PaneRendererMarks() {
+            this._data = null;
+        }
+        PaneRendererMarks.prototype.setData = function (data) {
+            this._data = data;
+        };
+        PaneRendererMarks.prototype.draw = function (ctx) {
+            if (this._data === null || this._data.visibleRange === null) {
+                return;
+            }
+            var visibleRange = this._data.visibleRange;
+            var data = this._data;
+            var draw = function (radius) {
+                ctx.beginPath();
+                for (var i = visibleRange.to - 1; i >= visibleRange.from; --i) {
+                    var point = data.items[i];
+                    ctx.moveTo(point.x, point.y);
+                    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                }
+                ctx.fill();
+            };
+            ctx.fillStyle = data.backColor;
+            draw(data.radius + 2);
+            ctx.fillStyle = data.lineColor;
+            draw(data.radius);
+        };
+        return PaneRendererMarks;
+    }());
+
+    function createEmptyMarkerData(chartOptions) {
+        return {
+            items: [{
+                    x: 0,
+                    y: 0,
+                    time: 0,
+                    price: 0,
+                }],
+            lineColor: '',
+            backColor: chartOptions.layout.backgroundColor,
+            radius: 0,
+            visibleRange: null,
+        };
+    }
+    var rangeForSinglePoint = { from: 0, to: 1 };
+    var CrosshairMarksPaneView = /** @class */ (function () {
+        function CrosshairMarksPaneView(chartModel, crosshair) {
+            this._compositeRenderer = new CompositeRenderer();
+            this._markersRenderers = [];
+            this._markersData = [];
+            this._invalidated = true;
+            this._chartModel = chartModel;
+            this._crosshair = crosshair;
+            this._compositeRenderer.setRenderers(this._markersRenderers);
+        }
+        CrosshairMarksPaneView.prototype.update = function (updateType) {
+            var _this = this;
+            var serieses = this._chartModel.serieses();
+            if (serieses.length !== this._markersRenderers.length) {
+                this._markersData = serieses.map(function () { return createEmptyMarkerData(_this._chartModel.options()); });
+                this._markersRenderers = this._markersData.map(function (data) {
+                    var res = new PaneRendererMarks();
+                    res.setData(data);
+                    return res;
+                });
+                this._compositeRenderer.setRenderers(this._markersRenderers);
+            }
+            this._invalidated = true;
+        };
+        CrosshairMarksPaneView.prototype.renderer = function (height, width, addAnchors) {
+            if (this._invalidated) {
+                this._updateImpl();
+                this._invalidated = false;
+            }
+            return this._compositeRenderer;
+        };
+        CrosshairMarksPaneView.prototype._updateImpl = function () {
+            var _this = this;
+            var serieses = this._chartModel.serieses();
+            var timePointIndex = this._crosshair.appliedIndex();
+            var timeScale = this._chartModel.timeScale();
+            serieses.forEach(function (s, index) {
+                var data = _this._markersData[index];
+                var seriesData = s.markerDataAtIndex(timePointIndex);
+                if (seriesData === null) {
+                    data.visibleRange = null;
+                }
+                else {
+                    var firstValue = ensureNotNull(s.firstValue());
+                    data.lineColor = s.barColorer().barStyle(timePointIndex).barColor;
+                    data.backColor = _this._chartModel.options().layout.backgroundColor;
+                    data.radius = seriesData.radius;
+                    data.items[0].price = seriesData.price;
+                    data.items[0].y = s.priceScale().priceToCoordinate(seriesData.price, firstValue);
+                    data.items[0].time = timePointIndex;
+                    data.items[0].x = timeScale.indexToCoordinate(timePointIndex);
+                    data.visibleRange = rangeForSinglePoint;
+                }
+            });
+        };
+        return CrosshairMarksPaneView;
+    }());
+
+    var CrosshairRenderer = /** @class */ (function () {
+        function CrosshairRenderer(data) {
+            this._data = data;
+        }
+        CrosshairRenderer.prototype.draw = function (ctx) {
+            if (this._data === null) {
+                return;
+            }
+            var vertLinesVisible = this._data.vertLine.visible;
+            var horzLinesVisible = this._data.horzLine.visible;
+            if (!vertLinesVisible && !horzLinesVisible) {
+                return;
+            }
+            var vertFix = this._data.vertLine.lineWidth % 2 === 0 ? 0.5 : 0;
+            var horzFix = this._data.horzLine.lineWidth % 2 === 0 ? 0.5 : 0;
+            var x = this._data.x + 1 + horzFix;
+            var y = this._data.y + vertFix;
+            var w = this._data.w;
+            var h = this._data.h;
+            if (vertLinesVisible && x >= 0) {
+                ctx.lineWidth = this._data.vertLine.lineWidth;
+                ctx.strokeStyle = this._data.vertLine.color;
+                ctx.fillStyle = this._data.vertLine.color;
+                drawLine(ctx, x, 0, x, h, this._data.vertLine.lineStyle);
+            }
+            if (horzLinesVisible && y >= 0) {
+                ctx.lineWidth = this._data.horzLine.lineWidth;
+                ctx.strokeStyle = this._data.horzLine.color;
+                ctx.fillStyle = this._data.horzLine.color;
+                drawLine(ctx, 0, y, w, y, this._data.horzLine.lineStyle);
+            }
+        };
+        return CrosshairRenderer;
+    }());
+
+    var CrosshairPaneView = /** @class */ (function () {
+        function CrosshairPaneView(source) {
+            this._invalidated = true;
+            this._rendererData = {
+                vertLine: {
+                    lineWidth: 1,
+                    lineStyle: 0,
+                    color: '',
+                    visible: false,
+                },
+                horzLine: {
+                    lineWidth: 1,
+                    lineStyle: 0,
+                    color: '',
+                    visible: false,
+                },
+                w: 0,
+                h: 0,
+                x: 0,
+                y: 0,
+            };
+            this._renderer = new CrosshairRenderer(this._rendererData);
+            this._source = source;
+        }
+        CrosshairPaneView.prototype.update = function () {
+            this._invalidated = true;
+        };
+        CrosshairPaneView.prototype.renderer = function (height, width) {
+            if (this._invalidated) {
+                this._updateImpl();
+            }
+            return this._renderer;
+        };
+        CrosshairPaneView.prototype._updateImpl = function () {
+            var visible = this._source.visible();
+            var pane = ensureNotNull(this._source.pane());
+            var crosshairOptions = pane.model().options().crosshair;
+            var data = this._rendererData;
+            data.horzLine.visible = visible && this._source.horzLineVisible(pane);
+            data.vertLine.visible = visible && this._source.vertLineVisible();
+            data.horzLine.lineWidth = crosshairOptions.horzLine.width;
+            data.horzLine.lineStyle = crosshairOptions.horzLine.style;
+            data.horzLine.color = crosshairOptions.horzLine.color;
+            data.vertLine.lineWidth = crosshairOptions.vertLine.width;
+            data.vertLine.lineStyle = crosshairOptions.vertLine.style;
+            data.vertLine.color = crosshairOptions.vertLine.color;
+            data.w = pane.width();
+            data.h = pane.height();
+            data.x = this._source.appliedX();
+            data.y = this._source.appliedY();
+        };
+        return CrosshairPaneView;
+    }());
+
+    var namedColorRgbHexStrings = {
+        aliceblue: '#f0f8ff',
+        antiquewhite: '#faebd7',
+        aqua: '#00ffff',
+        aquamarine: '#7fffd4',
+        azure: '#f0ffff',
+        beige: '#f5f5dc',
+        bisque: '#ffe4c4',
+        black: '#000000',
+        blanchedalmond: '#ffebcd',
+        blue: '#0000ff',
+        blueviolet: '#8a2be2',
+        brown: '#a52a2a',
+        burlywood: '#deb887',
+        cadetblue: '#5f9ea0',
+        chartreuse: '#7fff00',
+        chocolate: '#d2691e',
+        coral: '#ff7f50',
+        cornflowerblue: '#6495ed',
+        cornsilk: '#fff8dc',
+        crimson: '#dc143c',
+        cyan: '#00ffff',
+        darkblue: '#00008b',
+        darkcyan: '#008b8b',
+        darkgoldenrod: '#b8860b',
+        darkgray: '#a9a9a9',
+        darkgreen: '#006400',
+        darkkhaki: '#bdb76b',
+        darkmagenta: '#8b008b',
+        darkolivegreen: '#556b2f',
+        darkorange: '#ff8c00',
+        darkorchid: '#9932cc',
+        darkred: '#8b0000',
+        darksalmon: '#e9967a',
+        darkseagreen: '#8fbc8f',
+        darkslateblue: '#483d8b',
+        darkslategray: '#2f4f4f',
+        darkturquoise: '#00ced1',
+        darkviolet: '#9400d3',
+        deeppink: '#ff1493',
+        deepskyblue: '#00bfff',
+        dimgray: '#696969',
+        dodgerblue: '#1e90ff',
+        feldspar: '#d19275',
+        firebrick: '#b22222',
+        floralwhite: '#fffaf0',
+        forestgreen: '#228b22',
+        fuchsia: '#ff00ff',
+        gainsboro: '#dcdcdc',
+        ghostwhite: '#f8f8ff',
+        gold: '#ffd700',
+        goldenrod: '#daa520',
+        gray: '#808080',
+        green: '#008000',
+        greenyellow: '#adff2f',
+        honeydew: '#f0fff0',
+        hotpink: '#ff69b4',
+        indianred: '#cd5c5c',
+        indigo: '#4b0082',
+        ivory: '#fffff0',
+        khaki: '#f0e68c',
+        lavender: '#e6e6fa',
+        lavenderblush: '#fff0f5',
+        lawngreen: '#7cfc00',
+        lemonchiffon: '#fffacd',
+        lightblue: '#add8e6',
+        lightcoral: '#f08080',
+        lightcyan: '#e0ffff',
+        lightgoldenrodyellow: '#fafad2',
+        lightgreen: '#90ee90',
+        lightgrey: '#d3d3d3',
+        lightpink: '#ffb6c1',
+        lightsalmon: '#ffa07a',
+        lightseagreen: '#20b2aa',
+        lightskyblue: '#87cefa',
+        lightslateblue: '#8470ff',
+        lightslategray: '#778899',
+        lightsteelblue: '#b0c4de',
+        lightyellow: '#ffffe0',
+        lime: '#00ff00',
+        limegreen: '#32cd32',
+        linen: '#faf0e6',
+        magenta: '#ff00ff',
+        maroon: '#800000',
+        mediumaquamarine: '#66cdaa',
+        mediumblue: '#0000cd',
+        mediumorchid: '#ba55d3',
+        mediumpurple: '#9370d8',
+        mediumseagreen: '#3cb371',
+        mediumslateblue: '#7b68ee',
+        mediumspringgreen: '#00fa9a',
+        mediumturquoise: '#48d1cc',
+        mediumvioletred: '#c71585',
+        midnightblue: '#191970',
+        mintcream: '#f5fffa',
+        mistyrose: '#ffe4e1',
+        moccasin: '#ffe4b5',
+        navajowhite: '#ffdead',
+        navy: '#000080',
+        oldlace: '#fdf5e6',
+        olive: '#808000',
+        olivedrab: '#6b8e23',
+        orange: '#ffa500',
+        orangered: '#ff4500',
+        orchid: '#da70d6',
+        palegoldenrod: '#eee8aa',
+        palegreen: '#98fb98',
+        paleturquoise: '#afeeee',
+        palevioletred: '#d87093',
+        papayawhip: '#ffefd5',
+        peachpuff: '#ffdab9',
+        peru: '#cd853f',
+        pink: '#ffc0cb',
+        plum: '#dda0dd',
+        powderblue: '#b0e0e6',
+        purple: '#800080',
+        red: '#ff0000',
+        rosybrown: '#bc8f8f',
+        royalblue: '#4169e1',
+        saddlebrown: '#8b4513',
+        salmon: '#fa8072',
+        sandybrown: '#f4a460',
+        seagreen: '#2e8b57',
+        seashell: '#fff5ee',
+        sienna: '#a0522d',
+        silver: '#c0c0c0',
+        skyblue: '#87ceeb',
+        slateblue: '#6a5acd',
+        slategray: '#708090',
+        snow: '#fffafa',
+        springgreen: '#00ff7f',
+        steelblue: '#4682b4',
+        tan: '#d2b48c',
+        teal: '#008080',
+        thistle: '#d8bfd8',
+        tomato: '#ff6347',
+        turquoise: '#40e0d0',
+        violet: '#ee82ee',
+        violetred: '#d02090',
+        wheat: '#f5deb3',
+        white: '#ffffff',
+        whitesmoke: '#f5f5f5',
+        yellow: '#ffff00',
+        yellowgreen: '#9acd32',
+    };
+    function normalizeInteger(min, n, max) {
+        return (isNaN$1(n) ? min :
+            n < min ? min :
+                n > max ? max :
+                    Math.round(n));
+    }
+    function normalizeNumber(min, n, max) {
+        return (isNaN$1(n) ? min :
+            n < min ? min :
+                n > max ? max :
+                    // limit the precision of all numbers to at most 4 digits in fractional part
+                    Math.round(n * 10000) / 10000);
+    }
+    function normalizeRgbComponent(component) {
+        return normalizeInteger(0, component, 255);
+    }
+    function normalizeAlphaComponent(alpha) {
+        return normalizeNumber(0, alpha, 1);
+    }
+    var RgbShortHexRepresentation;
+    (function (RgbShortHexRepresentation) {
+        /**
+         * @example
+         * #fb0
+         * @example
+         * #f0f
+         */
+        RgbShortHexRepresentation.re = /^#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])$/;
+        function parse(matches) {
+            return [
+                normalizeRgbComponent(parseInt(matches[1] + matches[1], 16)),
+                normalizeRgbComponent(parseInt(matches[2] + matches[2], 16)),
+                normalizeRgbComponent(parseInt(matches[3] + matches[3], 16)),
+            ];
+        }
+        RgbShortHexRepresentation.parse = parse;
+    })(RgbShortHexRepresentation || (RgbShortHexRepresentation = {}));
+    function tryParseRgbShortHexString(rgbShortHexString) {
+        var matches = RgbShortHexRepresentation.re.exec(rgbShortHexString);
+        return matches !== null ? RgbShortHexRepresentation.parse(matches) : null;
+    }
+    var RgbHexRepresentation;
+    (function (RgbHexRepresentation) {
+        /**
+         * @example
+         * #00ff00
+         * @example
+         * #336699
+         */
+        RgbHexRepresentation.re = /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/;
+        function parse(matches) {
+            return [
+                normalizeRgbComponent(parseInt(matches[1], 16)),
+                normalizeRgbComponent(parseInt(matches[2], 16)),
+                normalizeRgbComponent(parseInt(matches[3], 16)),
+            ];
+        }
+        RgbHexRepresentation.parse = parse;
+    })(RgbHexRepresentation || (RgbHexRepresentation = {}));
+    var RgbRepresentation;
+    (function (RgbRepresentation) {
+        /**
+         * @example
+         * rgb(123, 234, 45)
+         * @example
+         * rgb(255,234,245)
+         */
+        RgbRepresentation.re = /^rgb\(\s*(-?\d{1,10})\s*,\s*(-?\d{1,10})\s*,\s*(-?\d{1,10})\s*\)$/;
+        function parse(matches) {
+            return [
+                normalizeRgbComponent(parseInt(matches[1], 10)),
+                normalizeRgbComponent(parseInt(matches[2], 10)),
+                normalizeRgbComponent(parseInt(matches[3], 10)),
+            ];
+        }
+        RgbRepresentation.parse = parse;
+    })(RgbRepresentation || (RgbRepresentation = {}));
+    var RgbaRepresentation;
+    (function (RgbaRepresentation) {
+        /**
+         * @example
+         * rgba(123, 234, 45, 1)
+         * @example
+         * rgba(255,234,245,0.1)
+         */
+        RgbaRepresentation.re = /^rgba\(\s*(-?\d{1,10})\s*,\s*(-?\d{1,10})\s*,\s*(-?\d{1,10})\s*,\s*(-?[\d]{0,10}(?:\.\d+)?)\s*\)$/;
+        function parse(matches) {
+            return [
+                normalizeRgbComponent(parseInt(matches[1], 10)),
+                normalizeRgbComponent(parseInt(matches[2], 10)),
+                normalizeRgbComponent(parseInt(matches[3], 10)),
+                normalizeAlphaComponent(parseFloat(matches[4])),
+            ];
+        }
+        RgbaRepresentation.parse = parse;
+    })(RgbaRepresentation || (RgbaRepresentation = {}));
+    function tryParseRgbHexString(rgbHexString) {
+        var matches = RgbHexRepresentation.re.exec(rgbHexString);
+        return matches !== null ? RgbHexRepresentation.parse(matches) : null;
+    }
+    function tryParseRgbString(rgbString) {
+        var matches = RgbRepresentation.re.exec(rgbString);
+        return matches !== null ? RgbRepresentation.parse(matches) : null;
+    }
+    function tryParseRgbaString(rgbaString) {
+        var matches = RgbaRepresentation.re.exec(rgbaString);
+        return matches !== null ? RgbaRepresentation.parse(matches) : null;
+    }
+    function tryParseRgb(colorString) {
+        colorString = colorString.toLowerCase();
+        if (colorString in namedColorRgbHexStrings) {
+            colorString = namedColorRgbHexStrings[colorString];
+        }
+        var rgbParseResult = tryParseRgbString(colorString);
+        if (rgbParseResult !== null) {
+            return rgbParseResult;
+        }
+        var rgbHexParseResult = tryParseRgbHexString(colorString);
+        if (rgbHexParseResult !== null) {
+            return rgbHexParseResult;
+        }
+        var rgbShortHexParseResult = tryParseRgbShortHexString(colorString);
+        if (rgbShortHexParseResult !== null) {
+            return rgbShortHexParseResult;
+        }
+        var rgbaParseResult = tryParseRgbaString(colorString);
+        if (rgbaParseResult !== null) {
+            return [rgbaParseResult[0], rgbaParseResult[1], rgbaParseResult[2]];
+        }
+        return null;
+    }
+    function parseRgb(colorString) {
+        var parseResult = tryParseRgb(colorString);
+        if (parseResult !== null) {
+            return parseResult;
+        }
+        else {
+            throw new Error("Passed color string " + colorString + " does not match any of the known color representations");
+        }
+    }
+    function rgbToGrayscale(rgbValue) {
+        // Originally, the NTSC RGB to YUV formula
+        // perfected by @eugene-korobko's black magic
+        var redComponentGrayscaleWeight = 0.199;
+        var greenComponentGrayscaleWeight = 0.687;
+        var blueComponentGrayscaleWeight = 0.114;
+        return (redComponentGrayscaleWeight * rgbValue[0] +
+            greenComponentGrayscaleWeight * rgbValue[1] +
+            blueComponentGrayscaleWeight * rgbValue[2]);
+    }
+    function rgbToBlackWhiteString(rgbValue, threshold) {
+        if (threshold < 0 || threshold > 255) {
+            throw new Error('invalid threshold value, valid values are [0, 255]');
+        }
+        return rgbToGrayscale(rgbValue) >= threshold ? 'white' : 'black';
+    }
+    function rgba(rgb, alpha) {
+        return [
+            rgb[0],
+            rgb[1],
+            rgb[2],
+            normalizeAlphaComponent(alpha),
+        ];
+    }
+    function rgbaToString(rgbaValue) {
+        return "rgba(" + rgbaValue[0] + ", " + rgbaValue[1] + ", " + rgbaValue[2] + ", " + rgbaValue[3] + ")";
+    }
+    function resetTransparency(color) {
+        if (isHexColor(color)) {
+            return color;
+        }
+        return rgbaToString(rgba(parseRgb(color), 1));
+    }
+    function isHexColor(color) {
+        return color.indexOf('#') === 0;
+    }
+    function generateTextColor(color) {
+        var backColorBW = rgbToBlackWhiteString(parseRgb(color), 160);
+        return backColorBW === 'black' ? 'white' : 'black';
+    }
+
+    var PriceAxisViewRenderer = /** @class */ (function () {
+        function PriceAxisViewRenderer(data, commonData) {
+            this.setData(data, commonData);
+        }
+        PriceAxisViewRenderer.prototype.setData = function (data, commonData) {
+            this._data = data;
+            this._commonData = commonData;
+        };
+        PriceAxisViewRenderer.prototype.draw = function (ctx, rendererOptions, textWidthCache, width, align) {
+            if (!this._data.visible) {
+                return;
+            }
+            var fontSize = rendererOptions.fontSize;
+            ctx.font = rendererOptions.font;
+            var tickSize = this._data.tickVisible ? rendererOptions.tickLength : 0;
+            var horzBorder = this._data.borderVisible ? rendererOptions.borderSize : 0;
+            var paddingTop = rendererOptions.paddingTop;
+            var paddingBottom = rendererOptions.paddingBottom;
+            var paddingInner = rendererOptions.paddingInner;
+            var paddingOuter = rendererOptions.paddingOuter;
+            var text = this._data.text;
+            var textWidth = Math.ceil(textWidthCache.measureText(ctx, text));
+            var baselineOffset = rendererOptions.baselineOffset;
+            var totalHeight = rendererOptions.fontSize + paddingTop + paddingBottom;
+            var totalWidth = horzBorder + textWidth + paddingInner + paddingOuter + tickSize;
+            var yMid = this._commonData.coordinate;
+            if (this._commonData.fixedCoordinate) {
+                yMid = this._commonData.fixedCoordinate;
+            }
+            var yTop = yMid - Math.floor(fontSize / 2) - paddingTop - 0.5;
+            var yBottom = yTop + totalHeight;
+            var alignRight = align === 'right';
+            var xInside = alignRight ? width - horzBorder - 0.5 : 0.5;
+            var xOutside = xInside;
+            var xTick;
+            var xText;
+            ctx.fillStyle = resetTransparency(this._commonData.background);
+            ctx.lineWidth = 1;
+            ctx.lineCap = 'butt';
+            if (text) {
+                if (alignRight) {
+                    // 2               1
+                    //
+                    //              6  5
+                    //
+                    // 3               4
+                    xOutside = xInside - totalWidth;
+                    xTick = xInside - tickSize;
+                    xText = xOutside + paddingOuter;
+                }
+                else {
+                    // 1               2
+                    //
+                    // 6  5
+                    //
+                    // 4               3
+                    xOutside = xInside + totalWidth;
+                    xTick = xInside + tickSize;
+                    xText = xInside + horzBorder + tickSize + paddingInner;
+                }
+                ctx.beginPath();
+                ctx.moveTo(xInside, yTop);
+                ctx.lineTo(xOutside, yTop);
+                ctx.lineTo(xOutside, yBottom);
+                ctx.lineTo(xInside, yBottom);
+                ctx.fill();
+                if (this._data.tickVisible) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = this._commonData.color;
+                    ctx.moveTo(xInside, yMid);
+                    ctx.lineTo(xTick, yMid);
+                    ctx.stroke();
+                }
+                ctx.textAlign = 'left';
+                ctx.fillStyle = this._commonData.color;
+                ctx.fillText(text, xText, yBottom - paddingBottom - baselineOffset);
+            }
+        };
+        PriceAxisViewRenderer.prototype.height = function (rendererOptions, useSecondLine) {
+            if (!this._data.visible) {
+                return 0;
+            }
+            return rendererOptions.fontSize + rendererOptions.paddingTop + rendererOptions.paddingBottom;
+        };
+        return PriceAxisViewRenderer;
+    }());
+
+    var PriceAxisView = /** @class */ (function () {
+        function PriceAxisView(ctor) {
+            this._commonRendererData = {
+                coordinate: 0,
+                color: '#FFF',
+                background: '#000',
+            };
+            this._axisRendererData = {
+                text: '',
+                visible: false,
+                tickVisible: true,
+                borderVisible: true,
+                lineStyle: 1 /* Dotted */,
+            };
+            this._paneRendererData = {
+                text: '',
+                visible: false,
+                tickVisible: false,
+                borderVisible: false,
+                lineStyle: 1 /* Dotted */,
+            };
+            this._invalidated = true;
+            this._axisRenderer = new (ctor || PriceAxisViewRenderer)(this._axisRendererData, this._commonRendererData);
+            this._paneRenderer = new (ctor || PriceAxisViewRenderer)(this._paneRendererData, this._commonRendererData);
+        }
+        PriceAxisView.prototype.text = function () {
+            return this._axisRendererData.text;
+        };
+        PriceAxisView.prototype.background = function () {
+            return this._commonRendererData.background;
+        };
+        PriceAxisView.prototype.color = function () {
+            return generateTextColor(this.background());
+        };
+        PriceAxisView.prototype.coordinate = function () {
+            this._updateRendererDataIfNeeded();
+            return this._commonRendererData.coordinate;
+        };
+        PriceAxisView.prototype.floatCoordinate = function () {
+            this._updateRendererDataIfNeeded();
+            return this._commonRendererData.floatCoordinate || this._commonRendererData.coordinate;
+        };
+        PriceAxisView.prototype.update = function () {
+            this._invalidated = true;
+        };
+        PriceAxisView.prototype.height = function (rendererOptions, useSecondLine) {
+            if (useSecondLine === void 0) { useSecondLine = false; }
+            return Math.max(this._axisRenderer.height(rendererOptions, useSecondLine), this._paneRenderer.height(rendererOptions, useSecondLine));
+        };
+        PriceAxisView.prototype.getFixedCoordinate = function () {
+            return this._commonRendererData.fixedCoordinate || 0;
+        };
+        PriceAxisView.prototype.setFixedCoordinate = function (value) {
+            this._commonRendererData.fixedCoordinate = value;
+        };
+        PriceAxisView.prototype.isVisible = function () {
+            this._updateRendererDataIfNeeded();
+            return this._axisRendererData.visible || this._paneRendererData.visible;
+        };
+        PriceAxisView.prototype.isAxisLabelVisible = function () {
+            this._updateRendererDataIfNeeded();
+            return this._axisRendererData.visible;
+        };
+        PriceAxisView.prototype.isPaneLabelVisible = function () {
+            this._updateRendererDataIfNeeded();
+            return this._paneRendererData.visible;
+        };
+        PriceAxisView.prototype.renderer = function () {
+            this._updateRendererDataIfNeeded();
+            this._axisRenderer.setData(this._axisRendererData, this._commonRendererData);
+            this._paneRenderer.setData(this._paneRendererData, this._commonRendererData);
+            return this._axisRenderer;
+        };
+        PriceAxisView.prototype.paneRenderer = function () {
+            this._updateRendererDataIfNeeded();
+            this._axisRenderer.setData(this._axisRendererData, this._commonRendererData);
+            this._paneRenderer.setData(this._paneRendererData, this._commonRendererData);
+            return this._paneRenderer;
+        };
+        PriceAxisView.prototype._updateRendererDataIfNeeded = function () {
+            if (this._invalidated) {
+                this._updateRendererData(this._axisRendererData, this._paneRendererData, this._commonRendererData);
+                this._invalidated = false;
+            }
+        };
+        return PriceAxisView;
+    }());
+
+    var CrosshairPriceAxisView = /** @class */ (function (_super) {
+        __extends(CrosshairPriceAxisView, _super);
+        function CrosshairPriceAxisView(source, priceScale, valueProvider) {
+            var _this = _super.call(this) || this;
+            _this._source = source;
+            _this._priceScale = priceScale;
+            _this._valueProvider = valueProvider;
+            return _this;
+        }
+        CrosshairPriceAxisView.prototype._updateRendererData = function (axisRendererData, paneRendererData, commonRendererData) {
+            axisRendererData.visible = false;
+            var options = this._source.options().horzLine;
+            if (!options.labelVisible) {
+                return;
+            }
+            var mainSource = this._priceScale.mainSource();
+            var firstValue = mainSource !== null ? mainSource.firstValue() : null;
+            if (!this._source.visible() || this._priceScale.isEmpty() || (firstValue === null)) {
+                return;
+            }
+            commonRendererData.background = options.labelBackgroundColor;
+            commonRendererData.color = generateTextColor(options.labelBackgroundColor);
+            var value = this._valueProvider(this._priceScale);
+            commonRendererData.coordinate = value.coordinate;
+            axisRendererData.text = this._priceScale.formatPrice(value.price, firstValue);
+            axisRendererData.visible = true;
+        };
+        return CrosshairPriceAxisView;
+    }(PriceAxisView));
+
+    var optimizationReplacementRe = /[1-9]/g;
+    var TimeAxisViewRenderer = /** @class */ (function () {
+        function TimeAxisViewRenderer() {
+            this._data = null;
+        }
+        TimeAxisViewRenderer.prototype.setData = function (data) {
+            this._data = data;
+        };
+        TimeAxisViewRenderer.prototype.draw = function (ctx, rendererOptions) {
+            if (this._data === null || this._data.visible === false || this._data.text.length === 0) {
+                return;
+            }
+            ctx.font = rendererOptions.font;
+            var textWidth = Math.round(rendererOptions.widthCache.measureText(ctx, this._data.text, optimizationReplacementRe));
+            if (textWidth <= 0) {
+                return;
+            }
+            var horzMargin = rendererOptions.paddingHorizontal;
+            var labelWidth = textWidth + 2 * horzMargin;
+            var labelWidthHalf = labelWidth / 2;
+            var timeScaleWidth = this._data.width;
+            var coordinate = this._data.coordinate;
+            var x1 = Math.floor(coordinate - labelWidthHalf) + 0.5;
+            if (x1 < 0) {
+                coordinate = coordinate + Math.abs(0 - x1);
+                x1 = Math.floor(coordinate - labelWidthHalf) + 0.5;
+            }
+            else if (x1 + labelWidth > timeScaleWidth) {
+                coordinate = coordinate - Math.abs(timeScaleWidth - (x1 + labelWidth));
+                x1 = Math.floor(coordinate - labelWidthHalf) + 0.5;
+            }
+            var x2 = x1 + labelWidth;
+            var y1 = -0.5;
+            var y2 = (y1 +
+                rendererOptions.borderSize +
+                rendererOptions.paddingTop +
+                rendererOptions.fontSize +
+                rendererOptions.paddingBottom);
+            ctx.fillStyle = this._data.background;
+            ctx.lineWidth = 1;
+            drawRoundRect(ctx, x1, y1, x2 - x1, y2 - y1, 1);
+            ctx.fill();
+            var tickX = Math.round(this._data.coordinate + 1);
+            var tickTop = y1;
+            var tickBottom = tickTop + rendererOptions.borderSize + rendererOptions.tickLength;
+            ctx.strokeStyle = this._data.color;
+            ctx.beginPath();
+            ctx.moveTo(tickX, tickTop);
+            ctx.lineTo(tickX, tickBottom);
+            ctx.stroke();
+            var yText = y2 - rendererOptions.baselineOffset - rendererOptions.paddingBottom;
+            ctx.textAlign = 'left';
+            ctx.fillStyle = this._data.color;
+            ctx.fillText(this._data.text, x1 + horzMargin, yText);
+        };
+        return TimeAxisViewRenderer;
+    }());
+    function drawRoundRect(ctx, x, y, w, h, rad) {
+        ctx.beginPath();
+        ctx.moveTo(x + rad, y);
+        ctx.lineTo(x + w - rad, y);
+        ctx.arcTo(x + w, y, x + w, y + rad, rad);
+        ctx.lineTo(x + w, y + h - rad);
+        ctx.arcTo(x + w, y + h, x + w - rad, y + h, rad);
+        ctx.lineTo(x + rad, y + h);
+        ctx.arcTo(x, y + h, x, y + h - rad, rad);
+        ctx.lineTo(x, y + rad);
+        ctx.arcTo(x, y, x + rad, y, rad);
+    }
+
+    var TimeAxisView = /** @class */ (function () {
+        function TimeAxisView() {
+            this._text = '';
+            this._background = '#585858';
+            this._coordinate = 0;
+        }
+        TimeAxisView.prototype.text = function () {
+            return this._text;
+        };
+        TimeAxisView.prototype.background = function () {
+            return this._background;
+        };
+        TimeAxisView.prototype.color = function () {
+            var backgroundBW = rgbToBlackWhiteString(parseRgb(this._background), 150);
+            return backgroundBW === 'black' ? 'white' : 'black';
+        };
+        TimeAxisView.prototype.coordinate = function () {
+            return this._coordinate;
+        };
+        return TimeAxisView;
+    }());
+
+    var CrosshairTimeAxisView = /** @class */ (function (_super) {
+        __extends(CrosshairTimeAxisView, _super);
+        function CrosshairTimeAxisView(crosshair, model, valueProvider) {
+            var _this = _super.call(this) || this;
+            _this._invalidated = true;
+            _this._renderer = new TimeAxisViewRenderer();
+            _this._rendererData = {
+                visible: false,
+                background: '#4c525e',
+                color: 'white',
+                text: '',
+                width: 0,
+                coordinate: NaN,
+            };
+            _this._crosshair = crosshair;
+            _this._model = model;
+            _this._valueProvider = valueProvider;
+            return _this;
+        }
+        CrosshairTimeAxisView.prototype.update = function () {
+            this._invalidated = true;
+        };
+        CrosshairTimeAxisView.prototype.renderer = function () {
+            if (this._invalidated) {
+                this._updateImpl();
+                this._invalidated = false;
+            }
+            this._renderer.setData(this._rendererData);
+            return this._renderer;
+        };
+        CrosshairTimeAxisView.prototype._updateImpl = function () {
+            var data = this._rendererData;
+            data.visible = false;
+            var options = this._crosshair.options().vertLine;
+            if (!options.labelVisible) {
+                return;
+            }
+            var timeScale = this._model.timeScale();
+            if (timeScale.isEmpty()) {
+                return;
+            }
+            var currentTime = timeScale.indexToUserTime(this._crosshair.appliedIndex());
+            data.width = timeScale.width();
+            var value = this._valueProvider();
+            if (!value.time) {
+                return;
+            }
+            data.coordinate = value.coordinate;
+            data.text = timeScale.formatDateTime(ensureNotNull(currentTime));
+            data.visible = true;
+            data.background = options.labelBackgroundColor;
+            data.color = generateTextColor(options.labelBackgroundColor);
+        };
+        return CrosshairTimeAxisView;
+    }(TimeAxisView));
+
+    var DataSource = /** @class */ (function () {
+        function DataSource() {
+            this._priceScale = null;
+            this._zorder = 0;
+        }
+        DataSource.prototype.zorder = function () {
+            return this._zorder;
+        };
+        DataSource.prototype.setZorder = function (zorder) {
+            this._zorder = zorder;
+        };
+        DataSource.prototype.priceScale = function () {
+            return this._priceScale;
+        };
+        DataSource.prototype.setPriceScale = function (priceScale) {
+            this._priceScale = priceScale;
+        };
+        DataSource.prototype.priceAxisViews = function (pane, priceScale) {
+            return [];
+        };
+        DataSource.prototype.paneViews = function (pane) {
+            return [];
+        };
+        DataSource.prototype.timeAxisViews = function () {
+            return [];
+        };
+        return DataSource;
+    }());
+
+    /**
+     * Enum of possible crosshair behavior modes.
+     * Normal means that the crosshair always follows the pointer.
+     * Magnet means that the vertical line of the crosshair follows the pointer, while the horizontal line is placed on the corresponding series point.
+     */
+    var CrosshairMode;
+    (function (CrosshairMode) {
+        CrosshairMode[CrosshairMode["Normal"] = 0] = "Normal";
+        CrosshairMode[CrosshairMode["Magnet"] = 1] = "Magnet";
+    })(CrosshairMode || (CrosshairMode = {}));
+    var Crosshair = /** @class */ (function (_super) {
+        __extends(Crosshair, _super);
+        function Crosshair(model, options) {
+            var _this = _super.call(this) || this;
+            _this._pane = null;
+            _this._price = NaN;
+            _this._index = 0;
+            _this._visible = true;
+            _this._priceAxisViews = new Map();
+            _this._subscribed = false;
+            _this._x = NaN;
+            _this._y = NaN;
+            _this._originX = NaN;
+            _this._originY = NaN;
+            _this._model = model;
+            _this._options = options;
+            _this._markersPaneView = new CrosshairMarksPaneView(model, _this);
+            var valuePriceProvider = function (rawPriceProvider, rawCoordinateProvider) {
+                return function (priceScale) {
+                    var coordinate = rawCoordinateProvider();
+                    var rawPrice = rawPriceProvider();
+                    if (priceScale === ensureNotNull(_this._pane).defaultPriceScale()) {
+                        // price must be defined
+                        return { price: rawPrice, coordinate: coordinate };
+                    }
+                    else {
+                        // always convert from coordinate
+                        var mainSource = ensureNotNull(priceScale.mainSource());
+                        var firstValue = ensureNotNull(mainSource.firstValue());
+                        var price = priceScale.coordinateToPrice(coordinate, firstValue);
+                        return { price: price, coordinate: coordinate };
+                    }
+                };
+            };
+            var valueTimeProvider = function (rawIndexProvider, rawCoordinateProvider) {
+                return function () {
+                    return {
+                        time: _this._model.timeScale().indexToUserTime(rawIndexProvider()),
+                        coordinate: rawCoordinateProvider(),
+                    };
+                };
+            };
+            // for current position always return both price and coordinate
+            _this._currentPosPriceProvider = valuePriceProvider(function () { return _this._price; }, function () { return _this._y; });
+            var currentPosTimeProvider = valueTimeProvider(function () { return _this._index; }, function () { return _this.appliedX(); });
+            _this._timeAxisView = new CrosshairTimeAxisView(_this, model, currentPosTimeProvider);
+            _this._paneView = new CrosshairPaneView(_this);
+            return _this;
+        }
+        Crosshair.prototype.index = function () {
+            return this._index;
+        };
+        Crosshair.prototype.options = function () {
+            return this._options;
+        };
+        Crosshair.prototype.saveOriginCoord = function (x, y) {
+            this._originX = x;
+            this._originY = y;
+        };
+        Crosshair.prototype.clearOriginCoord = function () {
+            this._originX = NaN;
+            this._originY = NaN;
+        };
+        Crosshair.prototype.originCoordX = function () {
+            return this._originX;
+        };
+        Crosshair.prototype.originCoordY = function () {
+            return this._originY;
+        };
+        Crosshair.prototype.setPosition = function (index, price, pane) {
+            if (!this._subscribed) {
+                this._subscribed = true;
+            }
+            this._visible = true;
+            this._tryToUpdateViews(index, price, pane);
+        };
+        Crosshair.prototype.appliedIndex = function () {
+            return this._index;
+        };
+        Crosshair.prototype.appliedX = function () {
+            return this._x;
+        };
+        Crosshair.prototype.appliedY = function () {
+            return this._y;
+        };
+        Crosshair.prototype.visible = function () {
+            return this._visible;
+        };
+        Crosshair.prototype.clearPosition = function () {
+            this._visible = false;
+            this._setIndexToLastSeriesBarIndex();
+            this._price = NaN;
+            this._x = NaN;
+            this._y = NaN;
+            this._pane = null;
+            this.clearOriginCoord();
+        };
+        Crosshair.prototype.paneViews = function (pane) {
+            return this._pane !== null ? [this._paneView, this._markersPaneView] : [];
+        };
+        Crosshair.prototype.horzLineVisible = function (pane) {
+            return pane === this._pane && this._options.horzLine.visible;
+        };
+        Crosshair.prototype.vertLineVisible = function () {
+            return this._options.vertLine.visible;
+        };
+        Crosshair.prototype.priceAxisViews = function (pane, priceScale) {
+            if (!this._visible || this._pane !== pane) {
+                this._priceAxisViews.clear();
+            }
+            var views = [];
+            if (this._pane === pane) {
+                views.push(this._createPriceAxisViewOnDemand(this._priceAxisViews, priceScale, this._currentPosPriceProvider));
+            }
+            return views;
+        };
+        Crosshair.prototype.timeAxisViews = function () {
+            return this._visible ? [this._timeAxisView] : [];
+        };
+        Crosshair.prototype.pane = function () {
+            return this._pane;
+        };
+        Crosshair.prototype.updateAllViews = function () {
+            this._priceAxisViews.forEach(function (value) { return value.update(); });
+            this._timeAxisView.update();
+            this._markersPaneView.update();
+        };
+        Crosshair.prototype._priceScaleByPane = function (pane) {
+            if (pane && !pane.defaultPriceScale().isEmpty()) {
+                return pane.defaultPriceScale();
+            }
+            return null;
+        };
+        Crosshair.prototype._tryToUpdateViews = function (index, price, pane) {
+            if (this._tryToUpdateData(index, price, pane)) {
+                this.updateAllViews();
+            }
+        };
+        Crosshair.prototype._tryToUpdateData = function (newIndex, newPrice, newPane) {
+            var oldX = this._x;
+            var oldY = this._y;
+            var oldPrice = this._price;
+            var oldIndex = this._index;
+            var oldPane = this._pane;
+            var priceScale = this._priceScaleByPane(newPane);
+            this._index = newIndex;
+            this._x = isNaN(newIndex) ? NaN : this._model.timeScale().indexToCoordinate(newIndex);
+            var newPaneMainSource = newPane.mainDataSource();
+            var newPaneMainSourceFirstValue = newPaneMainSource !== null ? newPaneMainSource.firstValue() : null;
+            if (priceScale !== null && newPaneMainSourceFirstValue !== null) {
+                this._pane = newPane;
+                this._price = newPrice;
+                this._y = priceScale.priceToCoordinate(newPrice, newPaneMainSourceFirstValue);
+            }
+            else {
+                this._pane = null;
+                this._price = NaN;
+                this._y = NaN;
+            }
+            return (oldX !== this._x || oldY !== this._y || oldIndex !== this._index ||
+                oldPrice !== this._price || oldPane !== this._pane);
+        };
+        Crosshair.prototype._setIndexToLastSeriesBarIndex = function () {
+            var lastIndexes = this._model.serieses()
+                .map(function (s) { return s.bars().lastIndex(); })
+                .filter(notNull);
+            var lastBarIndex = (lastIndexes.length === 0) ? null : Math.max.apply(Math, lastIndexes);
+            this._index = lastBarIndex !== null ? lastBarIndex : NaN;
+        };
+        Crosshair.prototype._createPriceAxisViewOnDemand = function (map, priceScale, valueProvider) {
+            var view = map.get(priceScale);
+            if (view === undefined) {
+                view = new CrosshairPriceAxisView(this, priceScale, valueProvider);
+                map.set(priceScale, view);
+            }
+            return view;
+        };
+        return Crosshair;
+    }(DataSource));
+
+    var formatterOptions = {
+        decimalSign: '.',
+        decimalSignFractional: '\'',
+    };
+    // length mustn't be more then 16
+    function numberToStringWithLeadingZero(value, length) {
+        if (!isNumber(value)) {
+            return 'n/a';
+        }
+        if (!isInteger(length)) {
+            throw new TypeError('invalid length');
+        }
+        if (length < 0 || length > 16) {
+            throw new TypeError('invalid length');
+        }
+        if (length === 0) {
+            return value.toString();
+        }
+        var dummyString = '0000000000000000';
+        return (dummyString + value.toString()).slice(-length);
+    }
+    var PriceFormatter = /** @class */ (function () {
+        function PriceFormatter(priceScale, minMove, fractional, minMove2) {
+            if (!minMove) {
+                minMove = 1;
+            }
+            if (!isNumber(priceScale) || !isInteger(priceScale)) {
+                priceScale = 100;
+            }
+            if (priceScale < 0) {
+                throw new TypeError('invalid base');
+            }
+            this._priceScale = priceScale;
+            this._minMove = minMove;
+            this._minMove2 = minMove2;
+            if (fractional && minMove2 !== undefined && minMove2 > 0 && minMove2 !== 2 && minMove2 !== 4 && minMove2 !== 8) {
+                return;
+            }
+            this._fractional = fractional;
+            this._calculateDecimal();
+        }
+        // tailSize > 0 for formatting avg prices
+        PriceFormatter.prototype.format = function (price, signPositive, tailSize, signNegative) {
+            if (signNegative === void 0) { signNegative = true; }
+            // split price into integer part and fractional
+            var sign = '';
+            if (price < 0) {
+                if (signPositive === true) {
+                    sign = '\u2212';
+                }
+                else if (signNegative === false) {
+                    sign = '';
+                }
+                else {
+                    sign = '−';
+                }
+                price = -price;
+            }
+            else if (price && signPositive === true) {
+                sign = '+';
+            }
+            var value;
+            if (this._fractional) {
+                value = sign + this._formatAsFractional(price, tailSize);
+            }
+            else {
+                value = sign + this._formatAsDecimal(price, tailSize);
+            }
+            return value;
+        };
+        PriceFormatter.prototype._calculateDecimal = function () {
+            // check if this._base is power of 10
+            // for double fractional _fractionalLength if for the main fractional only
+            this._fractionalLength = 0;
+            if (this._priceScale > 0 && this._minMove > 0) {
+                var base = this._priceScale;
+                if (this._fractional && this._minMove2) {
+                    base /= this._minMove2;
+                }
+                while (base > 1) {
+                    base /= 10;
+                    this._fractionalLength++;
+                }
+            }
+        };
+        PriceFormatter.prototype._formatAsDecimal = function (price, tailSize) {
+            var base;
+            tailSize = tailSize || 0;
+            if (this._fractional) {
+                // if you really want to format fractional as decimal
+                base = Math.pow(10, (this._fractionalLength || 0));
+            }
+            else {
+                base = Math.pow(10, tailSize) * this._priceScale / this._minMove;
+            }
+            var intPart = Math.floor(price);
+            var fracString = '';
+            var fracLength = this._fractionalLength !== undefined ? this._fractionalLength : NaN;
+            if (base > 1) {
+                var fracPart = +(Math.round(price * base) - intPart * base).toFixed(this._fractionalLength);
+                if (fracPart >= base) {
+                    fracPart -= base;
+                    intPart += 1;
+                }
+                fracString = formatterOptions.decimalSign + numberToStringWithLeadingZero(+fracPart.toFixed(this._fractionalLength) * this._minMove, fracLength + tailSize);
+                // remove ending 0 but not more then tailSize
+                fracString = this._removeEndingZeros(fracString, tailSize);
+            }
+            else {
+                // should round int part to minmov
+                intPart = Math.round(intPart * base) / base;
+                // if minmov > 1, fractional part is always = 0
+                if (fracLength > 0) {
+                    fracString = formatterOptions.decimalSign + numberToStringWithLeadingZero(0, fracLength + tailSize);
+                }
+            }
+            return intPart.toFixed(0) + fracString;
+        };
+        PriceFormatter.prototype._formatAsFractional = function (price, tailSize) {
+            // temporary solution - use decimal format with 2 digits
+            var base = this._priceScale / this._minMove;
+            var intPart = Math.floor(price);
+            var fracPart = tailSize ?
+                Math.floor(price * base) - intPart * base :
+                Math.round(price * base) - intPart * base;
+            if (fracPart === base) {
+                fracPart = 0;
+                intPart += 1;
+            }
+            var tailStr = '';
+            if (tailSize) {
+                var tail = (price - intPart - fracPart / base) * base;
+                tail = Math.round(tail * Math.pow(10, tailSize));
+                tailStr = numberToStringWithLeadingZero(tail, tailSize);
+                tailStr = this._removeEndingZeros(tailStr, tailSize);
+            }
+            if (!this._fractionalLength) {
+                throw new Error('_fractionalLength is not calculated');
+            }
+            var fracString = '';
+            if (this._minMove2) {
+                var minmove2 = ['0', '5'];
+                var minmove4 = ['0', '2', '5', '7'];
+                var minmove8 = ['0', '1', '2', '3', '4', '5', '6', '7'];
+                // format double fractional
+                var secondFract = fracPart % this._minMove2;
+                fracPart = (fracPart - secondFract) / this._minMove2;
+                var part1 = numberToStringWithLeadingZero(fracPart, this._fractionalLength);
+                var part2 = this._minMove2 === 2 ?
+                    minmove2[secondFract] :
+                    this._minMove2 === 8 ?
+                        minmove8[secondFract] :
+                        minmove4[secondFract];
+                fracString = part1 + formatterOptions.decimalSignFractional + part2;
+            }
+            else {
+                fracString = numberToStringWithLeadingZero(fracPart * this._minMove, this._fractionalLength);
+            }
+            return intPart.toString() + formatterOptions.decimalSignFractional + fracString + tailStr;
+        };
+        PriceFormatter.prototype._removeEndingZeros = function (str, limit) {
+            for (var i = 0; i < limit; i++) {
+                if (str[str.length - 1] === '0') {
+                    str = str.substr(0, str.length - 1);
+                }
+                else {
+                    break;
+                }
+            }
+            return str;
+        };
+        return PriceFormatter;
+    }());
+
+    var PercentageFormatter = /** @class */ (function (_super) {
+        __extends(PercentageFormatter, _super);
+        function PercentageFormatter(priceScale) {
+            if (priceScale === void 0) { priceScale = 100; }
+            return _super.call(this, priceScale) || this;
+        }
+        PercentageFormatter.prototype.format = function (price, signPositive, tailSize, signNegative) {
+            return _super.prototype.format.call(this, price, signPositive, tailSize, signNegative) + "%";
+        };
+        return PercentageFormatter;
+    }(PriceFormatter));
+
+    var Delegate = /** @class */ (function () {
+        function Delegate() {
+            this._listeners = [];
+        }
+        Delegate.prototype.subscribe = function (callback, linkedObject, singleshot) {
+            var listener = {
+                callback: callback,
+                linkedObject: linkedObject,
+                singleshot: singleshot === true,
+            };
+            this._listeners.push(listener);
+        };
+        Delegate.prototype.unsubscribe = function (callback) {
+            var index = this._listeners.findIndex(function (listener) { return callback === listener.callback; });
+            if (index > -1) {
+                this._listeners.splice(index, 1);
+            }
+        };
+        Delegate.prototype.unsubscribeAll = function (linkedObject) {
+            this._listeners = this._listeners.filter(function (listener) { return listener.linkedObject === linkedObject; });
+        };
+        Delegate.prototype.fire = function (param1, param2) {
+            var listenersSnapshot = this._listeners.slice();
+            this._listeners = this._listeners.filter(function (listener) { return !listener.singleshot; });
+            listenersSnapshot.forEach(function (listener) { return listener.callback(param1, param2); });
+        };
+        Delegate.prototype.hasListeners = function () {
+            return this._listeners.length > 0;
+        };
+        Delegate.prototype.destroy = function () {
+            this._listeners = [];
+        };
+        return Delegate;
+    }());
+
+    var PriceDataSource = /** @class */ (function (_super) {
+        __extends(PriceDataSource, _super);
+        function PriceDataSource(model) {
+            var _this = _super.call(this) || this;
+            _this._model = model;
+            return _this;
+        }
+        PriceDataSource.prototype.model = function () {
+            return this._model;
+        };
+        PriceDataSource.prototype.base = function () {
+            return 0;
+        };
+        PriceDataSource.prototype.priceRange = function (startTimePoint, endTimePoint) {
+            return null;
+        };
+        return PriceDataSource;
+    }(DataSource));
+
+    var PriceRange = /** @class */ (function () {
+        function PriceRange(minValue, maxValue) {
+            this._minValue = minValue;
+            this._maxValue = maxValue;
+        }
+        PriceRange.prototype.equals = function (pr) {
+            if (pr === null) {
+                return false;
+            }
+            return this._minValue === pr._minValue && this._maxValue === pr._maxValue;
+        };
+        PriceRange.prototype.clone = function () {
+            return new PriceRange(this._minValue, this._maxValue);
+        };
+        PriceRange.prototype.minValue = function () {
+            return this._minValue;
+        };
+        PriceRange.prototype.setMinValue = function (v) {
+            this._minValue = v;
+        };
+        PriceRange.prototype.maxValue = function () {
+            return this._maxValue;
+        };
+        PriceRange.prototype.setMaxValue = function (v) {
+            this._maxValue = v;
+        };
+        PriceRange.prototype.length = function () {
+            return this._maxValue - this._minValue;
+        };
+        PriceRange.prototype.isEmpty = function () {
+            return this._maxValue === this._minValue || Number.isNaN(this._maxValue) || Number.isNaN(this._minValue);
+        };
+        PriceRange.prototype.merge = function (anotherRange) {
+            return new PriceRange(Math.min(this.minValue(), anotherRange.minValue()), Math.max(this.maxValue(), anotherRange.maxValue()));
+        };
+        PriceRange.prototype.apply = function (min, max) {
+            this._minValue = Math.min(this._minValue, min);
+            this._maxValue = Math.max(this._maxValue, max);
+        };
+        PriceRange.prototype.set = function (min, max) {
+            this._minValue = min;
+            this._maxValue = max;
+        };
+        PriceRange.prototype.scaleAroundCenter = function (coeff) {
+            if (!isNumber(coeff)) {
+                return;
+            }
+            var delta = this._maxValue - this._minValue;
+            if (delta === 0) {
+                return;
+            }
+            var center = (this._maxValue + this._minValue) * 0.5;
+            var maxDelta = this._maxValue - center;
+            var minDelta = this._minValue - center;
+            maxDelta *= coeff;
+            minDelta *= coeff;
+            this._maxValue = center + maxDelta;
+            this._minValue = center + minDelta;
+        };
+        PriceRange.prototype.shift = function (delta) {
+            if (!isNumber(delta)) {
+                return;
+            }
+            this._maxValue += delta;
+            this._minValue += delta;
+        };
+        PriceRange.prototype.containsStrictly = function (priceRange) {
+            return priceRange.minValue() > this._minValue &&
+                priceRange.maxValue() < this._maxValue;
+        };
+        return PriceRange;
+    }());
+
+    function clamp(value, minVal, maxVal) {
+        return Math.min(Math.max(value, minVal), maxVal);
+    }
+    function isBaseDecimal(value) {
+        if (value < 0) {
+            return false;
+        }
+        for (var current = value; current > 1; current /= 10) {
+            if ((current % 10) !== 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    function greaterOrEqual(x1, x2, epsilon) {
+        return (x2 - x1) <= epsilon;
+    }
+    function equal(x1, x2, epsilon) {
+        return Math.abs(x1 - x2) < epsilon;
+    }
+    function log10(x) {
+        if (x <= 0) {
+            return NaN;
+        }
+        return Math.log(x) / Math.log(10);
+    }
+    function min(arr) {
+        if (arr.length < 1) {
+            throw Error('array is empty');
+        }
+        var minVal = arr[0];
+        for (var i = 1; i < arr.length; ++i) {
+            if (arr[i] < minVal) {
+                minVal = arr[i];
+            }
+        }
+        return minVal;
+    }
+
+    var Constants;
+    (function (Constants) {
+        Constants[Constants["LogicalOffset"] = 4] = "LogicalOffset";
+        Constants[Constants["CoordOffset"] = 0.0001] = "CoordOffset";
+    })(Constants || (Constants = {}));
+    function fromPercent(value, baseValue) {
+        if (baseValue < 0) {
+            value = -value;
+        }
+        return (value / 100) * baseValue + baseValue;
+    }
+    function toPercent(value, baseValue) {
+        var result = 100 * (value - baseValue) / baseValue;
+        return (baseValue < 0 ? -result : result);
+    }
+    function toPercentRange(priceRange, baseValue) {
+        var minPercent = toPercent(priceRange.minValue(), baseValue);
+        var maxPercent = toPercent(priceRange.maxValue(), baseValue);
+        return new PriceRange(minPercent, maxPercent);
+    }
+    function fromIndexedTo100(value, baseValue) {
+        value -= 100;
+        if (baseValue < 0) {
+            value = -value;
+        }
+        return (value / 100) * baseValue + baseValue;
+    }
+    function toIndexedTo100(value, baseValue) {
+        var result = 100 * (value - baseValue) / baseValue + 100;
+        return (baseValue < 0 ? -result : result);
+    }
+    function toIndexedTo100Range(priceRange, baseValue) {
+        var minPercent = toIndexedTo100(priceRange.minValue(), baseValue);
+        var maxPercent = toIndexedTo100(priceRange.maxValue(), baseValue);
+        return new PriceRange(minPercent, maxPercent);
+    }
+    function toLog(price) {
+        var m = Math.abs(price);
+        if (m < 1e-8) {
+            return 0;
+        }
+        var res = log10(m + 0.0001 /* CoordOffset */) + 4 /* LogicalOffset */;
+        return ((price < 0) ? -res : res);
+    }
+    function fromLog(logical) {
+        var m = Math.abs(logical);
+        if (m < 1e-8) {
+            return 0;
+        }
+        var res = Math.pow(10, m - 4 /* LogicalOffset */) - 0.0001 /* CoordOffset */;
+        return (logical < 0) ? -res : res;
+    }
+    function convertPriceRangeToLog(priceRange) {
+        if (priceRange === null) {
+            return null;
+        }
+        var min = toLog(priceRange.minValue());
+        var max = toLog(priceRange.maxValue());
+        return new PriceRange(min, max);
+    }
+    function canConvertPriceRangeFromLog(priceRange) {
+        if (priceRange === null) {
+            return false;
+        }
+        var min = fromLog(priceRange.minValue());
+        var max = fromLog(priceRange.maxValue());
+        return isFinite(min) && isFinite(max);
+    }
+    function convertPriceRangeFromLog(priceRange) {
+        if (priceRange === null) {
+            return null;
+        }
+        var min = fromLog(priceRange.minValue());
+        var max = fromLog(priceRange.maxValue());
+        return new PriceRange(min, max);
+    }
+
+    var TICK_SPAN_EPSILON = 1e-9;
+    var PriceTickSpanCalculator = /** @class */ (function () {
+        function PriceTickSpanCalculator(base, integralDividers) {
+            this._base = base;
+            this._integralDividers = integralDividers;
+            if (isBaseDecimal(this._base)) {
+                this._fractionalDividers = [2, 2.5, 2];
+            }
+            else {
+                this._fractionalDividers = [];
+                for (var baseRest = this._base; baseRest !== 1;) {
+                    if ((baseRest % 2) === 0) {
+                        this._fractionalDividers.push(2);
+                        baseRest /= 2;
+                    }
+                    else if ((baseRest % 5) === 0) {
+                        this._fractionalDividers.push(2);
+                        this._fractionalDividers.push(2.5);
+                        baseRest /= 5;
+                    }
+                    else {
+                        throw new Error('unexpected base');
+                    }
+                    if (this._fractionalDividers.length > 100) {
+                        throw new Error('something wrong with base');
+                    }
+                }
+            }
+        }
+        PriceTickSpanCalculator.prototype.tickSpan = function (high, low, maxTickSpan) {
+            var minMovement = (this._base === 0) ? (0) : (1 / this._base);
+            var tickSpanEpsilon = TICK_SPAN_EPSILON;
+            var resultTickSpan = Math.pow(10, Math.max(0, Math.ceil(log10(high - low))));
+            var index = 0;
+            var c = this._integralDividers[0];
+            while (true) {
+                // the second part is actual for small with very small values like 1e-10
+                // greaterOrEqual fails for such values
+                var resultTickSpanLargerMinMovement = greaterOrEqual(resultTickSpan, minMovement, tickSpanEpsilon) && resultTickSpan > (minMovement + tickSpanEpsilon);
+                var resultTickSpanLargerMaxTickSpan = greaterOrEqual(resultTickSpan, maxTickSpan * c, tickSpanEpsilon);
+                var resultTickSpanLarger1 = greaterOrEqual(resultTickSpan, 1, tickSpanEpsilon);
+                var haveToContinue = resultTickSpanLargerMinMovement && resultTickSpanLargerMaxTickSpan && resultTickSpanLarger1;
+                if (!haveToContinue) {
+                    break;
+                }
+                resultTickSpan /= c;
+                c = this._integralDividers[++index % this._integralDividers.length];
+            }
+            if (resultTickSpan <= (minMovement + tickSpanEpsilon)) {
+                resultTickSpan = minMovement;
+            }
+            resultTickSpan = Math.max(1, resultTickSpan);
+            if ((this._fractionalDividers.length > 0) && equal(resultTickSpan, 1, tickSpanEpsilon)) {
+                index = 0;
+                c = this._fractionalDividers[0];
+                while (greaterOrEqual(resultTickSpan, maxTickSpan * c, tickSpanEpsilon) && resultTickSpan > (minMovement + tickSpanEpsilon)) {
+                    resultTickSpan /= c;
+                    c = this._fractionalDividers[++index % this._fractionalDividers.length];
+                }
+            }
+            return resultTickSpan;
+        };
+        return PriceTickSpanCalculator;
+    }());
+
+    var TICK_DENSITY = 2.5;
+    var PriceTickMarkBuilder = /** @class */ (function () {
+        function PriceTickMarkBuilder(priceScale, base, coordinateToLogicalFunc, logicalToCoordinateFunc) {
+            this._marks = [];
+            this._priceScale = priceScale;
+            this._base = base;
+            this._coordinateToLogicalFunc = coordinateToLogicalFunc;
+            this._logicalToCoordinateFunc = logicalToCoordinateFunc;
+        }
+        PriceTickMarkBuilder.prototype.base = function () {
+            return this._base;
+        };
+        PriceTickMarkBuilder.prototype.setBase = function (base) {
+            if (base < 0) {
+                throw new Error('base < 0');
+            }
+            this._base = base;
+        };
+        PriceTickMarkBuilder.prototype.tickSpan = function (high, low) {
+            if (high < low) {
+                throw new Error('high < low');
+            }
+            var scaleHeight = this._priceScale.height();
+            var markHeight = this._tickMarkHeight();
+            var maxTickSpan = (high - low) * markHeight / scaleHeight;
+            var spanCalculator1 = new PriceTickSpanCalculator(this._base, [2, 2.5, 2]);
+            var spanCalculator2 = new PriceTickSpanCalculator(this._base, [2, 2, 2.5]);
+            var spanCalculator3 = new PriceTickSpanCalculator(this._base, [2.5, 2, 2]);
+            var spans = [];
+            spans.push(spanCalculator1.tickSpan(high, low, maxTickSpan));
+            spans.push(spanCalculator2.tickSpan(high, low, maxTickSpan));
+            spans.push(spanCalculator3.tickSpan(high, low, maxTickSpan));
+            return min(spans);
+        };
+        // tslint:disable-next-line:cyclomatic-complexity
+        PriceTickMarkBuilder.prototype.rebuildTickMarks = function () {
+            var priceScale = this._priceScale;
+            if (priceScale.isEmpty()) {
+                this._marks = [];
+                return;
+            }
+            var mainSource = priceScale.mainSource();
+            if (mainSource === null) {
+                this._marks = [];
+                return;
+            }
+            var firstValue = mainSource.firstValue();
+            if (firstValue === null) {
+                this._marks = [];
+                return;
+            }
+            var scaleHeight = priceScale.height();
+            var bottom = this._coordinateToLogicalFunc(scaleHeight - 1, firstValue);
+            var top = this._coordinateToLogicalFunc(0, firstValue);
+            var extraTopBottomMargin = this._priceScale.options().entireTextOnly ? this._fontHeight() / 2 : 0;
+            var minCoord = extraTopBottomMargin;
+            var maxCoord = scaleHeight - 1 - extraTopBottomMargin;
+            var high = Math.max(bottom, top);
+            var low = Math.min(bottom, top);
+            if (high === low) {
+                this._marks = [];
+                return;
+            }
+            var span = this.tickSpan(high, low);
+            var mod = high % span;
+            mod += mod < 0 ? span : 0;
+            var sign = (high >= low) ? 1 : -1;
+            var prevCoord = null;
+            var targetIndex = 0;
+            for (var logical = high - mod; logical > low; logical -= span) {
+                var coord = this._logicalToCoordinateFunc(logical, firstValue, true);
+                // check if there is place for it
+                // this is required for log scale
+                if (prevCoord !== null && Math.abs(coord - prevCoord) < this._tickMarkHeight()) {
+                    continue;
+                }
+                // check if a tick mark is partially visible and skip it if entireTextOnly is true
+                if (coord < minCoord || coord > maxCoord) {
+                    continue;
+                }
+                if (targetIndex < this._marks.length) {
+                    this._marks[targetIndex].coord = Math.round(coord);
+                    this._marks[targetIndex].label = priceScale.formatLogical(logical);
+                }
+                else {
+                    this._marks.push({
+                        coord: Math.round(coord),
+                        label: priceScale.formatLogical(logical),
+                    });
+                }
+                targetIndex++;
+                prevCoord = coord;
+                if (priceScale.isLog()) {
+                    // recalc span
+                    span = this.tickSpan(logical * sign, low);
+                }
+            }
+            this._marks.length = targetIndex;
+        };
+        PriceTickMarkBuilder.prototype.marks = function () {
+            return this._marks;
+        };
+        PriceTickMarkBuilder.prototype._fontHeight = function () {
+            return this._priceScale.fontSize();
+        };
+        PriceTickMarkBuilder.prototype._tickMarkHeight = function () {
+            return Math.ceil(this._fontHeight() * TICK_DENSITY);
+        };
+        return PriceTickMarkBuilder;
+    }());
+
+    var VolumeFormatter = /** @class */ (function () {
+        function VolumeFormatter(precision) {
+            this._precision = precision;
+        }
+        VolumeFormatter.prototype.format = function (vol) {
+            var sign = '';
+            if (vol < 0) {
+                sign = '-';
+                vol = -vol;
+            }
+            if (vol < 995) {
+                return sign + this._formatNumber(vol);
+            }
+            else if (vol < 999995) {
+                return sign + this._formatNumber(vol / 1000) + 'K';
+            }
+            else if (vol < 999999995) {
+                vol = 1000 * Math.round(vol / 1000);
+                return sign + this._formatNumber(vol / 1000000) + 'M';
+            }
+            else {
+                vol = 1000000 * Math.round(vol / 1000000);
+                return sign + this._formatNumber(vol / 1000000000) + 'B';
+            }
+        };
+        VolumeFormatter.prototype._formatNumber = function (value) {
+            var res;
+            var priceScale = Math.pow(10, this._precision);
+            value = Math.round(value * priceScale) / priceScale;
+            if (value >= 1e-15 && value < 1) {
+                res = value.toFixed(this._precision).replace(/\.?0+$/, ''); // regex removes trailing zeroes
+            }
+            else {
+                res = String(value);
+            }
+            return res.replace(/(\.[1-9]*)0+$/, function (e, p1) { return p1; });
+        };
+        return VolumeFormatter;
+    }());
+
+    /**
+     * BEWARE: The method must be called after beginPath and before stroke/fill/closePath/etc
+     */
+    function walkLine(ctx, points, lineType, visibleRange) {
+        if (points.length === 0) {
+            return;
+        }
+        var x = points[visibleRange.from].x;
+        var y = points[visibleRange.from].y;
+        ctx.moveTo(x, y);
+        for (var i = visibleRange.from + 1; i < visibleRange.to; ++i) {
+            var currItem = points[i];
+            //  x---x---x   or   x---x   o   or   start
+            if (lineType === 1 /* WithSteps */) {
+                var prevX = points[i - 1].x;
+                var currX = currItem.x;
+                ctx.lineTo(prevX, currX);
+            }
+            ctx.lineTo(currItem.x, currItem.y);
+        }
+    }
+
+    var PaneRendererArea = /** @class */ (function () {
+        function PaneRendererArea() {
+            this._data = null;
+        }
+        PaneRendererArea.prototype.setData = function (data) {
+            this._data = data;
+        };
+        PaneRendererArea.prototype.draw = function (ctx) {
+            if (this._data === null || this._data.items.length === 0 || this._data.visibleRange === null) {
+                return;
+            }
+            ctx.save();
+            ctx.lineCap = 'square';
+            ctx.strokeStyle = this._data.lineColor;
+            ctx.lineWidth = this._data.lineWidth;
+            setLineStyle(ctx, this._data.lineStyle);
+            // walk lines with width=1 to have more accurate gradient's filling
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(this._data.items[this._data.visibleRange.from].x, this._data.bottom);
+            ctx.lineTo(this._data.items[this._data.visibleRange.from].x, this._data.items[this._data.visibleRange.from].y);
+            walkLine(ctx, this._data.items, this._data.lineType, this._data.visibleRange);
+            ctx.lineTo(this._data.items[this._data.visibleRange.to - 1].x, this._data.bottom);
+            ctx.lineTo(this._data.items[this._data.visibleRange.from].x, this._data.bottom);
+            ctx.closePath();
+            var gradient = ctx.createLinearGradient(0, 0, 0, this._data.bottom);
+            gradient.addColorStop(0, this._data.topColor);
+            gradient.addColorStop(1, this._data.bottomColor);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.restore();
+        };
+        return PaneRendererArea;
+    }());
+
+    var PaneRendererLine = /** @class */ (function () {
+        function PaneRendererLine() {
+            this._data = null;
+        }
+        PaneRendererLine.prototype.setData = function (data) {
+            this._data = data;
+        };
+        PaneRendererLine.prototype.draw = function (ctx) {
+            if (this._data === null || this._data.items.length === 0 || this._data.visibleRange === null) {
+                return;
+            }
+            ctx.lineCap = 'square';
+            ctx.lineWidth = this._data.lineWidth;
+            setLineStyle(ctx, this._data.lineStyle);
+            ctx.strokeStyle = this._data.lineColor;
+            ctx.lineJoin = 'miter';
+            ctx.beginPath();
+            walkLine(ctx, this._data.items, this._data.lineType, this._data.visibleRange);
+            ctx.stroke();
+        };
+        return PaneRendererLine;
+    }());
+
+    /**
+     * Binary function that accepts two arguments (the first of the type of array elements, and the second is always val), and returns a value convertible to bool.
+     * The value returned indicates whether the first argument is considered to go before the second.
+     * The function shall not modify any of its arguments.
+     */
+    function lowerbound(arr, value, compare, start, to) {
+        if (start === void 0) { start = 0; }
+        if (to === void 0) { to = arr.length; }
+        var count = to - start;
+        while (0 < count) {
+            var count2 = (count >> 1);
+            var mid = start + count2;
+            if (compare(arr[mid], value)) {
+                start = mid + 1;
+                count -= count2 + 1;
+            }
+            else {
+                count = count2;
+            }
+        }
+        return start;
+    }
+    function upperbound(arr, value, compare, start, to) {
+        if (start === void 0) { start = 0; }
+        if (to === void 0) { to = arr.length; }
+        var count = to - start;
+        while (0 < count) {
+            var count2 = (count >> 1);
+            var mid = start + count2;
+            if (!(compare(value, arr[mid]))) {
+                start = mid + 1;
+                count -= count2 + 1;
+            }
+            else {
+                count = count2;
+            }
+        }
+        return start;
+    }
+
+    function lowerBoundItemsCompare(item, time) {
+        return item.time < time;
+    }
+    function upperBoundItemsCompare(time, item) {
+        return time < item.time;
+    }
+    function visibleTimedValues(items, range) {
+        var from = lowerbound(items, range.firstBar(), lowerBoundItemsCompare);
+        var to = upperbound(items, range.lastBar(), upperBoundItemsCompare);
+        return { from: from, to: to };
+    }
+
+    var SeriesPaneViewBase = /** @class */ (function () {
+        function SeriesPaneViewBase(series, model) {
+            this._invalidated = true;
+            this._dataInvalidated = true;
+            this._items = [];
+            this._itemsVisibleRange = null;
+            this._series = series;
+            this._model = model;
+        }
+        SeriesPaneViewBase.prototype.update = function (updateType) {
+            this._invalidated = true;
+            if (updateType === 'data') {
+                this._dataInvalidated = true;
+            }
+        };
+        SeriesPaneViewBase.prototype._makeValid = function () {
+            if (this._dataInvalidated) {
+                this._fillRawPoints();
+                this._dataInvalidated = false;
+            }
+            if (this._invalidated) {
+                this._updatePoints();
+                this._invalidated = false;
+            }
+        };
+        SeriesPaneViewBase.prototype._clearVisibleRange = function () {
+            this._itemsVisibleRange = null;
+        };
+        SeriesPaneViewBase.prototype._updatePoints = function () {
+            var priceScale = this._series.priceScale();
+            var timeScale = this._model.timeScale();
+            this._clearVisibleRange();
+            if (timeScale.isEmpty() || priceScale.isEmpty()) {
+                return;
+            }
+            var visibleBars = timeScale.visibleBars();
+            if (visibleBars === null) {
+                return;
+            }
+            if (this._series.data().bars().size() === 0) {
+                return;
+            }
+            var firstValue = this._series.firstValue();
+            if (firstValue === null) {
+                return;
+            }
+            this._itemsVisibleRange = visibleTimedValues(this._items, visibleBars);
+            this._convertToCoordinates(priceScale, timeScale, firstValue);
+        };
+        return SeriesPaneViewBase;
+    }());
+
+    var LinePaneViewBase = /** @class */ (function (_super) {
+        __extends(LinePaneViewBase, _super);
+        function LinePaneViewBase(series, model) {
+            return _super.call(this, series, model) || this;
+        }
+        LinePaneViewBase.prototype._convertToCoordinates = function (priceScale, timeScale, firstValue) {
+            timeScale.indexesToCoordinates(this._items, undefinedIfNull(this._itemsVisibleRange));
+            priceScale.pointsArrayToCoordinates(this._items, firstValue, undefinedIfNull(this._itemsVisibleRange));
+        };
+        LinePaneViewBase.prototype._createRawItemBase = function (time, price) {
+            return {
+                time: time,
+                price: price,
+                x: NaN,
+                y: NaN,
+            };
+        };
+        LinePaneViewBase.prototype._fillRawPoints = function () {
+            var _this = this;
+            var barValueGetter = this._series.barFunction();
+            var newItems = [];
+            var colorer = this._series.barColorer();
+            this._series.bars().each(function (index, bar) {
+                var value = barValueGetter(bar.value);
+                var item = _this._createRawItem(index, value, colorer);
+                newItems.push(item);
+                return false;
+            });
+            this._items = newItems;
+        };
+        return LinePaneViewBase;
+    }(SeriesPaneViewBase));
+
+    var SeriesAreaPaneView = /** @class */ (function (_super) {
+        __extends(SeriesAreaPaneView, _super);
+        function SeriesAreaPaneView(series, model) {
+            var _this = _super.call(this, series, model) || this;
+            _this._renderer = new CompositeRenderer();
+            _this._areaRenderer = new PaneRendererArea();
+            _this._lineRenderer = new PaneRendererLine();
+            _this._renderer.setRenderers([_this._areaRenderer, _this._lineRenderer]);
+            return _this;
+        }
+        SeriesAreaPaneView.prototype.renderer = function (height, width) {
+            this._makeValid();
+            var areaStyleProperties = this._series.options();
+            var data = {
+                lineType: 0 /* Simple */,
+                items: this._items,
+                lineColor: areaStyleProperties.lineColor,
+                lineStyle: areaStyleProperties.lineStyle,
+                lineWidth: areaStyleProperties.lineWidth,
+                topColor: areaStyleProperties.topColor,
+                bottomColor: areaStyleProperties.bottomColor,
+                bottom: height,
+                visibleRange: this._itemsVisibleRange,
+            };
+            this._areaRenderer.setData(data);
+            this._lineRenderer.setData(data);
+            return this._renderer;
+        };
+        SeriesAreaPaneView.prototype._createRawItem = function (time, price) {
+            return this._createRawItemBase(time, price);
+        };
+        return SeriesAreaPaneView;
+    }(LinePaneViewBase));
+
+    function optimalBarWidth(barSpacing) {
+        return barSpacing * 0.3;
+    }
+
+    var PaneRendererBars = /** @class */ (function () {
+        function PaneRendererBars() {
+            this._data = null;
+            this._barWidth = 0;
+            this._barLineWidth = 0;
+        }
+        PaneRendererBars.prototype.setData = function (data) {
+            this._data = data;
+            this._barWidth = optimalBarWidth(data.barSpacing);
+            this._barLineWidth = data.thinBars ? 1 : Math.max(1, Math.round(this._barWidth));
+        };
+        PaneRendererBars.prototype.draw = function (ctx) {
+            if (this._data === null || this._data.bars.length === 0 || this._data.visibleRange === null) {
+                return;
+            }
+            ctx.save();
+            ctx.translate(0.5, 0.5);
+            var offset = this._data.thinBars ? 1 : Math.round(this._barWidth);
+            var negativeOffset = this._data.thinBars ? 1 : offset / 2;
+            var prevColor = null;
+            for (var i = this._data.visibleRange.from; i < this._data.visibleRange.to; ++i) {
+                var bar = this._data.bars[i];
+                if (prevColor !== bar.color) {
+                    ctx.fillStyle = bar.color;
+                    prevColor = bar.color;
+                }
+                ctx.fillRect(Math.round(bar.x - this._barLineWidth / 2), Math.round(bar.highY - negativeOffset), Math.round(this._barLineWidth), Math.round(bar.lowY - bar.highY + offset));
+                if (this._barLineWidth < (this._data.barSpacing - 1)) {
+                    if (this._data.openVisible) {
+                        ctx.fillRect(Math.round(bar.x - this._barWidth * 1.5), Math.floor(bar.openY - negativeOffset), Math.round(this._barWidth * 1.5), offset);
+                    }
+                    ctx.fillRect(Math.round(bar.x), Math.floor(bar.closeY - negativeOffset), Math.round(this._barWidth * 1.5), offset);
+                }
+            }
+            ctx.restore();
+        };
+        return PaneRendererBars;
+    }());
+
+    var BarsPaneViewBase = /** @class */ (function (_super) {
+        __extends(BarsPaneViewBase, _super);
+        function BarsPaneViewBase(series, model) {
+            return _super.call(this, series, model) || this;
+        }
+        BarsPaneViewBase.prototype._convertToCoordinates = function (priceScale, timeScale, firstValue) {
+            timeScale.indexesToCoordinates(this._items, undefinedIfNull(this._itemsVisibleRange));
+            priceScale.barPricesToCoordinates(this._items, firstValue, undefinedIfNull(this._itemsVisibleRange));
+        };
+        BarsPaneViewBase.prototype._createDefaultItem = function (time, bar, colorer) {
+            return {
+                time: time,
+                open: bar.value[0 /* Open */],
+                high: bar.value[1 /* High */],
+                low: bar.value[2 /* Low */],
+                close: bar.value[3 /* Close */],
+                x: NaN,
+                openY: NaN,
+                highY: NaN,
+                lowY: NaN,
+                closeY: NaN,
+            };
+        };
+        BarsPaneViewBase.prototype._fillRawPoints = function () {
+            var _this = this;
+            var newItems = [];
+            var colorer = this._series.barColorer();
+            this._series.bars().each(function (index, bar) {
+                var item = _this._createRawItem(index, bar, colorer);
+                newItems.push(item);
+                return false;
+            });
+            this._items = newItems;
+        };
+        return BarsPaneViewBase;
+    }(SeriesPaneViewBase));
+
+    var SeriesBarsPaneView = /** @class */ (function (_super) {
+        __extends(SeriesBarsPaneView, _super);
+        function SeriesBarsPaneView(series, model) {
+            var _this = _super.call(this, series, model) || this;
+            _this._renderer = new PaneRendererBars();
+            return _this;
+        }
+        SeriesBarsPaneView.prototype.renderer = function (height, width) {
+            this._makeValid();
+            var barStyleProps = this._series.options();
+            var data = {
+                bars: this._items,
+                barSpacing: this._model.timeScale().barSpacing(),
+                openVisible: barStyleProps.openVisible,
+                thinBars: barStyleProps.thinBars,
+                visibleRange: this._itemsVisibleRange,
+            };
+            this._renderer.setData(data);
+            return this._renderer;
+        };
+        SeriesBarsPaneView.prototype._createRawItem = function (time, bar, colorer) {
+            return __assign({}, this._createDefaultItem(time, bar, colorer), { color: colorer.barStyle(time).barColor });
+        };
+        return SeriesBarsPaneView;
+    }(BarsPaneViewBase));
+
+    var Constants$1;
+    (function (Constants) {
+        Constants[Constants["BarBorderWidth"] = 1] = "BarBorderWidth";
+    })(Constants$1 || (Constants$1 = {}));
+    var PaneRendererCandlesticks = /** @class */ (function () {
+        function PaneRendererCandlesticks() {
+            this._data = null;
+            this._barWidth = 0;
+        }
+        PaneRendererCandlesticks.prototype.setData = function (data) {
+            this._data = data;
+            this._barWidth = optimalBarWidth(data.barSpacing);
+        };
+        PaneRendererCandlesticks.prototype.draw = function (ctx) {
+            if (this._data === null || this._data.bars.length === 0 || this._data.visibleRange === null) {
+                return;
+            }
+            ctx.lineCap = 'square';
+            if (this._data.barSpacing < 1) {
+                this._drawThinCandles(ctx);
+            }
+            else {
+                var bars = this._data.bars;
+                ctx.translate(-0.5, -0.5);
+                ctx.lineWidth = 1 /* BarBorderWidth */;
+                if (this._data.wickVisible) {
+                    this._drawWicks(ctx, bars, this._data.visibleRange);
+                }
+                if (this._data.borderVisible) {
+                    this._drawBorder(ctx, bars, this._data.visibleRange);
+                }
+                this._drawCandles(ctx, bars, this._data.visibleRange);
+            }
+        };
+        PaneRendererCandlesticks.prototype._drawWicks = function (ctx, bars, visibleRange) {
+            var prevWickColor = '';
+            for (var i = visibleRange.from; i < visibleRange.to; i++) {
+                var bar = bars[i];
+                if (bar.wickColor !== prevWickColor) {
+                    ctx.fillStyle = bar.wickColor;
+                    prevWickColor = bar.wickColor;
+                }
+                ctx.fillRect(bar.x, bar.highY, 1, bar.lowY - bar.highY);
+            }
+        };
+        PaneRendererCandlesticks.prototype._drawBorder = function (ctx, bars, visibleRange) {
+            var prevBorderColor = '';
+            for (var i = visibleRange.from; i < visibleRange.to; i++) {
+                var bar = bars[i];
+                if (bar.borderColor !== prevBorderColor) {
+                    ctx.fillStyle = bar.borderColor;
+                    prevBorderColor = bar.borderColor;
+                }
+                var left = Math.round(bar.x - this._barWidth);
+                var right = Math.round(bar.x + this._barWidth);
+                var top_1 = Math.min(bar.openY, bar.closeY);
+                var bottom = Math.max(bar.openY, bar.closeY);
+                ctx.fillRect(left, top_1, right - left + 1, bottom - top_1 + 1);
+            }
+        };
+        PaneRendererCandlesticks.prototype._drawCandles = function (ctx, bars, visibleRange) {
+            if (this._data === null) {
+                return;
+            }
+            var prevBarColor = '';
+            for (var i = visibleRange.from; i < visibleRange.to; i++) {
+                var bar = bars[i];
+                var top_2 = Math.min(bar.openY, bar.closeY);
+                var bottom = Math.max(bar.openY, bar.closeY);
+                var left = Math.round(bar.x - this._barWidth);
+                var right = Math.round(bar.x + this._barWidth);
+                if (this._data.borderVisible) {
+                    left += 1;
+                    top_2 += 1;
+                    right -= 1;
+                    bottom -= 1;
+                }
+                if (top_2 > bottom) {
+                    continue;
+                }
+                if (bar.color !== prevBarColor) {
+                    var barColor = bar.color;
+                    ctx.fillStyle = barColor;
+                    prevBarColor = barColor;
+                }
+                ctx.fillRect(left, top_2, right - left + 1, bottom - top_2 + 1);
+            }
+        };
+        PaneRendererCandlesticks.prototype._drawThinCandles = function (ctx) {
+            if (this._data === null || this._data.visibleRange === null) {
+                return;
+            }
+            ctx.lineWidth = 1;
+            // draw wicks, then bodies
+            if (this._data.wickVisible) {
+                ctx.strokeStyle = this._data.wickColor;
+                ctx.beginPath();
+                for (var i = this._data.visibleRange.from; i < this._data.visibleRange.to; i++) {
+                    var bar = this._data.bars[i];
+                    ctx.moveTo(bar.x, bar.lowY);
+                    ctx.lineTo(bar.x, bar.highY);
+                }
+                ctx.stroke();
+            }
+            // bodies
+            var prevBarColor = '';
+            var needStroke = false;
+            ctx.beginPath();
+            for (var i = this._data.visibleRange.from; i < this._data.visibleRange.to; i++) {
+                var bar = this._data.bars[i];
+                if (prevBarColor !== bar.color) {
+                    if (needStroke) {
+                        ctx.stroke();
+                        ctx.beginPath();
+                        needStroke = false;
+                    }
+                    ctx.strokeStyle = bar.color;
+                    prevBarColor = bar.color;
+                }
+                ctx.moveTo(bar.x, bar.openY);
+                ctx.lineTo(bar.x, bar.closeY);
+                needStroke = true;
+            }
+            if (needStroke) {
+                ctx.stroke();
+            }
+        };
+        return PaneRendererCandlesticks;
+    }());
+
+    var SeriesCandlesticksPaneView = /** @class */ (function (_super) {
+        __extends(SeriesCandlesticksPaneView, _super);
+        function SeriesCandlesticksPaneView(series, model) {
+            var _this = _super.call(this, series, model) || this;
+            _this._renderer = new PaneRendererCandlesticks();
+            return _this;
+        }
+        SeriesCandlesticksPaneView.prototype.renderer = function (height, width) {
+            this._makeValid();
+            var candlestickStyleProps = this._series.options();
+            var data = {
+                bars: this._items,
+                barSpacing: this._model.timeScale().barSpacing(),
+                wickColor: candlestickStyleProps.wickColor,
+                wickVisible: candlestickStyleProps.wickVisible,
+                borderVisible: candlestickStyleProps.borderVisible,
+                visibleRange: this._itemsVisibleRange,
+            };
+            this._renderer.setData(data);
+            return this._renderer;
+        };
+        SeriesCandlesticksPaneView.prototype._createRawItem = function (time, bar, colorer) {
+            var style = colorer.barStyle(time);
+            return __assign({}, this._createDefaultItem(time, bar, colorer), { color: style.barColor, wickColor: style.barWickColor, borderColor: style.barBorderColor });
+        };
+        return SeriesCandlesticksPaneView;
+    }(BarsPaneViewBase));
+
+    var PaneRendererHistogram = /** @class */ (function () {
+        function PaneRendererHistogram() {
+            this._data = null;
+        }
+        PaneRendererHistogram.prototype.setData = function (data) {
+            this._data = data;
+        };
+        PaneRendererHistogram.prototype.draw = function (ctx) {
+            if (this._data === null || this._data.items.length === 0 || this._data.visibleRange === null) {
+                return;
+            }
+            var histogramBase = this._data.histogramBase;
+            ctx.translate(0.5, 0.5);
+            ctx.fillStyle = this._data.color;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (var i = this._data.visibleRange.from; i < this._data.visibleRange.to; i++) {
+                var item = this._data.items[i];
+                // force cast to avoid ensureDefined call
+                var y = item.y;
+                var left = item.left;
+                var right = item.right;
+                ctx.rect(left, y, right - left, histogramBase - y);
+            }
+            ctx.fill();
+        };
+        return PaneRendererHistogram;
+    }());
+
+    function createEmptyHistogramData(barSpacing, lineWidth, color) {
+        return {
+            items: [],
+            barSpacing: barSpacing,
+            lineWidth: lineWidth,
+            histogramBase: NaN,
+            color: color,
+            visibleRange: null,
+        };
+    }
+    function createRawItem(time, price) {
+        return {
+            time: time,
+            price: price,
+            x: NaN,
+            y: NaN,
+        };
+    }
+    var showSpacingMinimalBarWidth = 5;
+    var SeriesHistogramPaneView = /** @class */ (function (_super) {
+        __extends(SeriesHistogramPaneView, _super);
+        function SeriesHistogramPaneView(series, model) {
+            var _this = _super.call(this, series, model) || this;
+            _this._compositeRenderer = new CompositeRenderer();
+            _this._paletteData = [];
+            _this._paletteRenderers = [];
+            _this._colorIndexes = new Int32Array(0);
+            _this._sourceIndexes = new Int32Array(0);
+            return _this;
+        }
+        SeriesHistogramPaneView.prototype.renderer = function (height, width) {
+            this._makeValid();
+            return this._compositeRenderer;
+        };
+        SeriesHistogramPaneView.prototype._fillRawPoints = function () {
+            var _this = this;
+            var barSpacing = this._model.timeScale().barSpacing();
+            var palette = this._series.palette();
+            // resize arrays
+            this._paletteRenderers.length = palette.size();
+            this._paletteData.length = palette.size();
+            var targetIndexes = new Int32Array(palette.size());
+            var histogramStyleProps = this._series.options();
+            var barValueGetter = this._series.barFunction();
+            this._colorIndexes = new Int32Array(this._series.bars().size());
+            var targetColorIndex = 0;
+            this._items.length = this._series.bars().size();
+            var itemIndex = 0;
+            this._series.bars().each(function (index, bar) {
+                var value = barValueGetter(bar.value);
+                var colorIndex = bar.value[4 /* Color */];
+                var item = createRawItem(index, value);
+                var color = palette.colorByIndex(colorIndex);
+                var data = _this._paletteData[colorIndex] || createEmptyHistogramData(barSpacing, histogramStyleProps.lineWidth, color);
+                var targetIndex = targetIndexes[colorIndex]++;
+                if (targetIndex < data.items.length) {
+                    data.items[targetIndex] = item;
+                }
+                else {
+                    data.items.push(item);
+                }
+                _this._items[itemIndex++] = { time: index, x: 0 };
+                _this._paletteData[colorIndex] = data;
+                _this._colorIndexes[targetColorIndex++] = colorIndex;
+                return false;
+            });
+            // update renderers
+            this._paletteRenderers.length = this._paletteData.length;
+            if (this._sourceIndexes.length !== this._paletteData.length) {
+                this._sourceIndexes = new Int32Array(this._paletteData.length);
+            }
+            this._paletteData.forEach(function (element, index) {
+                element.items.length = targetIndexes[index];
+                var renderer = _this._paletteRenderers[index] || new PaneRendererHistogram();
+                renderer.setData(element);
+                _this._paletteRenderers[index] = renderer;
+            });
+            this._compositeRenderer.setRenderers(this._paletteRenderers);
+        };
+        SeriesHistogramPaneView.prototype._clearVisibleRange = function () {
+            _super.prototype._clearVisibleRange.call(this);
+            this._paletteData.forEach(function (data, colorIndex) {
+                data.visibleRange = null;
+            });
+        };
+        SeriesHistogramPaneView.prototype._convertToCoordinates = function (priceScale, timeScale, firstValue) {
+            var _this = this;
+            if (this._itemsVisibleRange === null) {
+                return;
+            }
+            var barSpacing = timeScale.barSpacing();
+            var visibleBars = ensureNotNull(timeScale.visibleBars());
+            var histogramBase = priceScale.priceToCoordinate(this._series.options().base, firstValue);
+            this._paletteData.forEach(function (data, colorIndex) {
+                timeScale.indexesToCoordinates(data.items);
+                priceScale.pointsArrayToCoordinates(data.items, firstValue);
+                data.histogramBase = histogramBase;
+                data.visibleRange = visibleTimedValues(data.items, visibleBars);
+                _this._sourceIndexes[colorIndex] = data.visibleRange.from;
+            });
+            // now calculate left and right
+            var prevItem = null;
+            for (var i = this._itemsVisibleRange.from; i < this._itemsVisibleRange.to; ++i) {
+                var colorIndex = this._colorIndexes[i];
+                var data = this._paletteData[colorIndex];
+                var sourceIndex = this._sourceIndexes[colorIndex]++;
+                var item = data.items[sourceIndex];
+                item.left = Math.floor(item.x - barSpacing * 0.5);
+                item.right = Math.ceil(item.left + barSpacing);
+                if (prevItem !== null) {
+                    var itemsSpacing = item.right - item.left > showSpacingMinimalBarWidth ? 1 : 0;
+                    prevItem.right = (item.left - itemsSpacing);
+                }
+                prevItem = item;
+            }
+        };
+        return SeriesHistogramPaneView;
+    }(SeriesPaneViewBase));
+
+    var SeriesLinePaneView = /** @class */ (function (_super) {
+        __extends(SeriesLinePaneView, _super);
+        function SeriesLinePaneView(series, model) {
+            var _this = _super.call(this, series, model) || this;
+            _this._lineRenderer = new PaneRendererLine();
+            return _this;
+        }
+        SeriesLinePaneView.prototype.renderer = function (height, width) {
+            this._makeValid();
+            var lineStyleProps = this._series.options();
+            var data = {
+                items: this._items,
+                lineColor: lineStyleProps.color,
+                lineStyle: lineStyleProps.lineStyle,
+                lineType: 0,
+                lineWidth: lineStyleProps.lineWidth,
+                visibleRange: this._itemsVisibleRange,
+            };
+            this._lineRenderer.setData(data);
+            return this._lineRenderer;
+        };
+        SeriesLinePaneView.prototype._createRawItem = function (time, price) {
+            return this._createRawItemBase(time, price);
+        };
+        return SeriesLinePaneView;
+    }(LinePaneViewBase));
+
+    var defaultReplacementRe = /[2-9]/g;
+    var TextWidthCache = /** @class */ (function () {
+        function TextWidthCache(size) {
+            if (size === void 0) { size = 50; }
+            this._actualSize = 0;
+            this._usageTick = 1;
+            this._oldestTick = 1;
+            this._tick2Labels = {};
+            this._cache = {};
+            this._maxSize = size;
+        }
+        TextWidthCache.prototype.reset = function () {
+            this._actualSize = 0;
+            this._cache = {};
+            this._usageTick = 1;
+            this._oldestTick = 1;
+            this._tick2Labels = {};
+        };
+        TextWidthCache.prototype.measureText = function (ctx, text, optimizationReplacementRe) {
+            var re = optimizationReplacementRe || defaultReplacementRe;
+            var cacheString = String(text).replace(re, '0');
+            if (this._cache[cacheString]) {
+                return this._cache[cacheString].width;
+            }
+            if (this._actualSize === this._maxSize) {
+                var oldestValue = this._tick2Labels[this._oldestTick];
+                delete this._tick2Labels[this._oldestTick];
+                delete this._cache[oldestValue];
+                this._oldestTick++;
+                this._actualSize--;
+            }
+            var width = ctx.measureText(cacheString).width;
+            if (width === 0 && !!text.length) {
+                // measureText can return 0 in FF depending on a canvas size, don't cache it
+                return 0;
+            }
+            this._cache[cacheString] = { width: width, tick: this._usageTick };
+            this._tick2Labels[this._usageTick] = cacheString;
+            this._actualSize++;
+            this._usageTick++;
+            return width;
+        };
+        return TextWidthCache;
+    }());
+
+    var PanePriceAxisViewRenderer = /** @class */ (function () {
+        function PanePriceAxisViewRenderer(textWidthCache) {
+            this._priceAxisViewRenderer = null;
+            this._rendererOptions = null;
+            this._align = 'right';
+            this._width = 0;
+            this._textWidthCache = textWidthCache;
+        }
+        PanePriceAxisViewRenderer.prototype.setParams = function (priceAxisViewRenderer, rendererOptions, width, align) {
+            this._priceAxisViewRenderer = priceAxisViewRenderer;
+            this._rendererOptions = rendererOptions;
+            this._width = width;
+            this._align = align;
+        };
+        PanePriceAxisViewRenderer.prototype.draw = function (ctx) {
+            if (this._rendererOptions === null || this._priceAxisViewRenderer === null) {
+                return;
+            }
+            this._priceAxisViewRenderer.draw(ctx, this._rendererOptions, this._textWidthCache, this._width, this._align);
+        };
+        return PanePriceAxisViewRenderer;
+    }());
+    var PanePriceAxisView = /** @class */ (function () {
+        function PanePriceAxisView(priceAxisView, dataSource, chartModel) {
+            this._priceAxisView = priceAxisView;
+            this._textWidthCache = new TextWidthCache(50); // when should we clear cache?
+            this._dataSource = dataSource;
+            this._chartModel = chartModel;
+            this._fontSize = -1;
+            this._renderer = new PanePriceAxisViewRenderer(this._textWidthCache);
+        }
+        PanePriceAxisView.prototype.update = function () {
+            this._priceAxisView.update();
+        };
+        PanePriceAxisView.prototype.renderer = function (height, width) {
+            var pane = this._chartModel.paneForSource(this._dataSource);
+            if (pane === null) {
+                return null;
+            }
+            var priceScale = this._dataSource.priceScale();
+            if (priceScale === null) {
+                return null;
+            }
+            var position = pane.priceScalePosition();
+            if (position === 'overlay') {
+                // both source and main source are overlays
+                return null;
+            }
+            var options = this._chartModel.priceAxisRendererOptions();
+            if (options.fontSize !== this._fontSize) {
+                this._fontSize = options.fontSize;
+                this._textWidthCache.reset();
+            }
+            this._renderer.setParams(this._priceAxisView.paneRenderer(), options, width, position);
+            return this._renderer;
+        };
+        return PanePriceAxisView;
+    }());
+
+    var HorizontalLineRenderer = /** @class */ (function () {
+        function HorizontalLineRenderer() {
+            this._data = null;
+        }
+        HorizontalLineRenderer.prototype.setData = function (data) {
+            this._data = data;
+        };
+        HorizontalLineRenderer.prototype.draw = function (ctx) {
+            if (this._data === null) {
+                return;
+            }
+            if (this._data.visible === false) {
+                return;
+            }
+            var y = this._data.y;
+            if (y < 0 || y > this._data.height) {
+                return;
+            }
+            var width = this._data.width;
+            ctx.lineCap = 'square';
+            ctx.strokeStyle = this._data.color;
+            ctx.lineWidth = this._data.lineWidth;
+            drawLine(ctx, 0, y, width, y, this._data.lineStyle);
+        };
+        return HorizontalLineRenderer;
+    }());
+
+    var SeriesHorizontalLinePaneView = /** @class */ (function () {
+        function SeriesHorizontalLinePaneView(series) {
+            this._lineRendererData = {
+                width: 0,
+                height: 0,
+                y: 0,
+                color: 'rgba(0, 0, 0, 0)',
+                lineWidth: 1,
+                lineStyle: 0 /* Solid */,
+                visible: false,
+            };
+            this._lineRenderer = new HorizontalLineRenderer();
+            this._invalidated = true;
+            this._series = series;
+            this._model = series.model();
+            this._lineRenderer.setData(this._lineRendererData);
+        }
+        SeriesHorizontalLinePaneView.prototype.update = function () {
+            this._invalidated = true;
+        };
+        SeriesHorizontalLinePaneView.prototype.renderer = function () {
+            if (this._invalidated) {
+                this._updateImpl();
+                this._invalidated = false;
+            }
+            return this._lineRenderer;
+        };
+        return SeriesHorizontalLinePaneView;
+    }());
+
+    var SeriesHorizontalBaseLinePaneView = /** @class */ (function (_super) {
+        __extends(SeriesHorizontalBaseLinePaneView, _super);
+        function SeriesHorizontalBaseLinePaneView(series) {
+            return _super.call(this, series) || this;
+        }
+        SeriesHorizontalBaseLinePaneView.prototype._updateImpl = function () {
+            this._lineRendererData.visible = false;
+            var mode = this._series.priceScale().mode().mode;
+            if (mode !== 2 /* Percentage */ && mode !== 3 /* IndexedTo100 */) {
+                return;
+            }
+            var seriesOptions = this._series.options();
+            if (!seriesOptions.baseLineVisible) {
+                return;
+            }
+            var firstValue = this._series.firstValue();
+            if (firstValue === null) {
+                return;
+            }
+            this._lineRendererData.visible = true;
+            this._lineRendererData.y = this._series.priceScale().priceToCoordinate(firstValue, firstValue);
+            this._lineRendererData.width = this._model.timeScale().width();
+            this._lineRendererData.height = this._series.priceScale().height();
+            this._lineRendererData.color = seriesOptions.baseLineColor;
+            this._lineRendererData.lineWidth = seriesOptions.baseLineWidth;
+            this._lineRendererData.lineStyle = seriesOptions.baseLineStyle;
+        };
+        return SeriesHorizontalBaseLinePaneView;
+    }(SeriesHorizontalLinePaneView));
+
+    var SeriesPriceLinePaneView = /** @class */ (function (_super) {
+        __extends(SeriesPriceLinePaneView, _super);
+        function SeriesPriceLinePaneView(series) {
+            return _super.call(this, series) || this;
+        }
+        SeriesPriceLinePaneView.prototype._updateImpl = function () {
+            this._lineRendererData.visible = false;
+            var seriesOptions = this._series.options();
+            if (!seriesOptions.priceLineVisible) {
+                return;
+            }
+            var data = this._series.lastValueData(undefined, true);
+            if (data.noData) {
+                return;
+            }
+            this._lineRendererData.visible = true;
+            this._lineRendererData.y = data.coordinate;
+            this._lineRendererData.color = this._series.priceLineColor(data.color);
+            this._lineRendererData.width = this._model.timeScale().width();
+            this._lineRendererData.height = this._series.priceScale().height();
+            this._lineRendererData.lineWidth = seriesOptions.priceLineWidth;
+            this._lineRendererData.lineStyle = seriesOptions.priceLineStyle;
+        };
+        return SeriesPriceLinePaneView;
+    }(SeriesHorizontalLinePaneView));
+
+    var SeriesPriceAxisView = /** @class */ (function (_super) {
+        __extends(SeriesPriceAxisView, _super);
+        function SeriesPriceAxisView(source, data) {
+            var _this = _super.call(this) || this;
+            _this._source = source;
+            _this._data = data;
+            return _this;
+        }
+        SeriesPriceAxisView.prototype._getSource = function () {
+            return this._source;
+        };
+        SeriesPriceAxisView.prototype._getData = function () {
+            return this._data;
+        };
+        // tslint:disable-next-line:cyclomatic-complexity
+        SeriesPriceAxisView.prototype._updateRendererData = function (axisRendererData, paneRendererData, commonRendererData) {
+            axisRendererData.visible = false;
+            paneRendererData.visible = false;
+            var seriesOptions = this._source.options();
+            var showSeriesLastValue = seriesOptions.lastValueVisible;
+            var showSymbolLabel = this._source.title() !== '';
+            var showPriceAndPercentage = seriesOptions.seriesLastValueMode === 0 /* LastPriceAndPercentageValue */;
+            var lastValueData = this._source.lastValueData(undefined, false);
+            if (lastValueData.noData) {
+                return;
+            }
+            if (showSeriesLastValue) {
+                axisRendererData.text = this._axisText(lastValueData, showSeriesLastValue, showPriceAndPercentage);
+                axisRendererData.visible = axisRendererData.text.length !== 0;
+            }
+            if (showSymbolLabel || showPriceAndPercentage) {
+                paneRendererData.text = this._paneText(lastValueData, showSeriesLastValue, showSymbolLabel, showPriceAndPercentage);
+                paneRendererData.visible = paneRendererData.text.length > 0;
+            }
+            commonRendererData.background = this._source.priceLineColor(lastValueData.color);
+            commonRendererData.color = generateTextColor(commonRendererData.background);
+            commonRendererData.coordinate = lastValueData.coordinate;
+            commonRendererData.floatCoordinate = lastValueData.floatCoordinate;
+        };
+        SeriesPriceAxisView.prototype._paneText = function (lastValue, showSeriesLastValue, showSymbolLabel, showPriceAndPercentage) {
+            var result = '';
+            var title = this._source.title();
+            if (showSymbolLabel && title.length !== 0) {
+                result += title + " ";
+            }
+            if (showSeriesLastValue && showPriceAndPercentage) {
+                result += this._source.priceScale().isPercentage() ?
+                    lastValue.formattedPriceAbsolute : lastValue.formattedPricePercentage;
+            }
+            return result.trim();
+        };
+        SeriesPriceAxisView.prototype._axisText = function (lastValueData, showSeriesLastValue, showPriceAndPercentage) {
+            if (!showSeriesLastValue) {
+                return '';
+            }
+            if (!showPriceAndPercentage) {
+                return lastValueData.text;
+            }
+            return this._source.priceScale().isPercentage() ?
+                lastValueData.formattedPricePercentage : lastValueData.formattedPriceAbsolute;
+        };
+        return SeriesPriceAxisView;
+    }(PriceAxisView));
+
+    var Palette = /** @class */ (function () {
+        function Palette() {
+            this._maxUsedIndex = 0;
+            this._colorToIndex = new Map();
+            this._indexToColor = new Map();
+        }
+        Palette.prototype.colorByIndex = function (index) {
+            return ensureDefined(this._indexToColor.get(index));
+        };
+        Palette.prototype.addColor = function (color) {
+            var res = this._colorToIndex.get(color);
+            if (res === undefined) {
+                res = this._maxUsedIndex++;
+                this._colorToIndex.set(color, res);
+                this._indexToColor.set(res, color);
+            }
+            return res;
+        };
+        Palette.prototype.size = function () {
+            return this._indexToColor.size;
+        };
+        return Palette;
+    }());
+
+    var emptyResult = {
+        barColor: '',
+        barBorderColor: '',
+        barWickColor: '',
+    };
+    var SeriesBarColorer = /** @class */ (function () {
+        function SeriesBarColorer(series) {
+            this._series = series;
+        }
+        SeriesBarColorer.prototype.barStyle = function (barIndex, precomputedBars) {
+            // precomputedBars: {value: [Array BarValues], previousValue: [Array BarValues] | undefined}
+            // Used to avoid binary search if bars are already known
+            var targetType = this._series.seriesType();
+            var seriesOptions = this._series.options();
+            switch (targetType) {
+                case 'Line':
+                    return this._lineStyle(seriesOptions);
+                case 'Area':
+                    return this._areaStyle(seriesOptions);
+                case 'Bar':
+                    return this._barStyle(seriesOptions, barIndex, precomputedBars);
+                case 'Candlestick':
+                    return this._candleStyle(seriesOptions, barIndex, precomputedBars);
+                case 'Histogram':
+                    return this._histogramStyle(seriesOptions, barIndex, precomputedBars);
+            }
+            throw new Error('Unknown chart style');
+        };
+        SeriesBarColorer.prototype._barStyle = function (barStyle, barIndex, precomputedBars) {
+            var result = __assign({}, emptyResult);
+            var upColor = barStyle.upColor;
+            var downColor = barStyle.downColor;
+            var borderUpColor = upColor;
+            var borderDownColor = downColor;
+            var currentBar = ensureNotNull(this._findBar(barIndex, precomputedBars));
+            var isUp = ensure(currentBar.value[0 /* Open */]) <= ensure(currentBar.value[3 /* Close */]);
+            result.barColor = isUp ? upColor : downColor;
+            result.barBorderColor = isUp ? borderUpColor : borderDownColor;
+            return result;
+        };
+        SeriesBarColorer.prototype._candleStyle = function (candlestickStyle, barIndex, precomputedBars) {
+            var result = __assign({}, emptyResult);
+            var upColor = candlestickStyle.upColor;
+            var downColor = candlestickStyle.downColor;
+            var borderUpColor = candlestickStyle.borderUpColor;
+            var borderDownColor = candlestickStyle.borderDownColor;
+            var wickUpColor = candlestickStyle.wickUpColor;
+            var wickDownColor = candlestickStyle.wickDownColor;
+            var currentBar = ensureNotNull(this._findBar(barIndex, precomputedBars));
+            var isUp = ensure(currentBar.value[0 /* Open */]) <= ensure(currentBar.value[3 /* Close */]);
+            result.barColor = isUp ? upColor : downColor;
+            result.barBorderColor = isUp ? borderUpColor : borderDownColor;
+            result.barWickColor = isUp ? wickUpColor : wickDownColor;
+            return result;
+        };
+        SeriesBarColorer.prototype._areaStyle = function (areaStyle) {
+            return __assign({}, emptyResult, { barColor: areaStyle.lineColor });
+        };
+        SeriesBarColorer.prototype._lineStyle = function (lineStyle) {
+            return __assign({}, emptyResult, { barColor: lineStyle.color });
+        };
+        SeriesBarColorer.prototype._histogramStyle = function (histogramStyle, barIndex, precomputedBars) {
+            var result = __assign({}, emptyResult);
+            var currentBar = ensureNotNull(this._findBar(barIndex, precomputedBars));
+            var colorValue = currentBar.value[4 /* Color */];
+            if (colorValue !== undefined && colorValue !== null) {
+                var palette = ensureNotNull(this._series.palette());
+                result.barColor = palette.colorByIndex(colorValue);
+            }
+            else {
+                result.barColor = histogramStyle.color;
+            }
+            return result;
+        };
+        SeriesBarColorer.prototype._getSeriesBars = function () {
+            return this._series.bars();
+        };
+        SeriesBarColorer.prototype._findBar = function (barIndex, precomputedBars) {
+            if (precomputedBars !== undefined) {
+                return precomputedBars.value;
+            }
+            return this._getSeriesBars().valueAt(barIndex);
+        };
+        return SeriesBarColorer;
+    }());
+
+    var PlotRowSearchMode;
+    (function (PlotRowSearchMode) {
+        PlotRowSearchMode[PlotRowSearchMode["NearestLeft"] = -1] = "NearestLeft";
+        PlotRowSearchMode[PlotRowSearchMode["Exact"] = 0] = "Exact";
+        PlotRowSearchMode[PlotRowSearchMode["NearestRight"] = 1] = "NearestRight";
+    })(PlotRowSearchMode || (PlotRowSearchMode = {}));
+    // TODO: think about changing it dynamically
+    var CHUNK_SIZE = 30;
+    /**
+     * PlotList is an array of plot rows
+     * each plot row consists of key (index in timescale) and plot value map
+     */
+    var PlotList = /** @class */ (function () {
+        function PlotList(plotFunctions, emptyValuePredicate) {
+            if (plotFunctions === void 0) { plotFunctions = null; }
+            if (emptyValuePredicate === void 0) { emptyValuePredicate = null; }
+            // TODO: should be renamed to _rows, but the current name is frozen because of myriads of references to it
+            this._items = [];
+            // some PlotList instances are just readonly views of sub-range of data stored in another PlotList
+            // _start and _end fields are used to implement such views
+            this._start = 0;
+            // end is an after-last index
+            this._end = 0;
+            this._shareRead = false;
+            this._minMaxCache = new Map();
+            this._rowSearchCache = new Map();
+            this._rowSearchCacheWithoutEmptyValues = new Map();
+            this._plotFunctions = plotFunctions || new Map();
+            this._emptyValuePredicate = emptyValuePredicate;
+        }
+        PlotList.prototype.clear = function () {
+            this._items = [];
+            this._start = 0;
+            this._end = 0;
+            this._shareRead = false;
+            this._minMaxCache.clear();
+            this._rowSearchCache.clear();
+            this._rowSearchCacheWithoutEmptyValues.clear();
+        };
+        // @returns First row
+        PlotList.prototype.first = function () {
+            return this.size() > 0 ? this._items[this._start] : null;
+        };
+        // @returns Last row
+        PlotList.prototype.last = function () {
+            return this.size() > 0 ? this._items[(this._end - 1)] : null;
+        };
+        PlotList.prototype.firstIndex = function () {
+            return this.size() > 0 ? this._indexAt(this._start) : null;
+        };
+        PlotList.prototype.lastIndex = function () {
+            return this.size() > 0 ? this._indexAt((this._end - 1)) : null;
+        };
+        PlotList.prototype.size = function () {
+            return this._end - this._start;
+        };
+        PlotList.prototype.isEmpty = function () {
+            return this.size() === 0;
+        };
+        PlotList.prototype.contains = function (index) {
+            return this._search(index, 0 /* Exact */) !== null;
+        };
+        PlotList.prototype.valueAt = function (index) {
+            return this.search(index);
+        };
+        /**
+         * @returns true if new index is added or false if existing index is updated
+         */
+        PlotList.prototype.add = function (index, time, value) {
+            if (this._shareRead) {
+                return false;
+            }
+            var row = { index: index, value: value, time: time };
+            var pos = this._search(index, 0 /* Exact */);
+            this._rowSearchCache.clear();
+            this._rowSearchCacheWithoutEmptyValues.clear();
+            if (pos === null) {
+                this._items.splice(this._lowerbound(index), 0, row);
+                this._start = 0;
+                this._end = this._items.length;
+                return true;
+            }
+            else {
+                this._items[pos] = row;
+                return false;
+            }
+        };
+        PlotList.prototype.search = function (index, searchMode, skipEmptyValues) {
+            if (searchMode === void 0) { searchMode = 0 /* Exact */; }
+            var pos = this._search(index, searchMode, skipEmptyValues);
+            if (pos === null) {
+                return null;
+            }
+            var item = this._valueAt(pos);
+            return {
+                index: this._indexAt(pos),
+                time: item.time,
+                value: item.value,
+            };
+        };
+        /**
+         * Execute fun on each element.
+         * Stops iteration if callback function returns true.
+         * @param fun Callback function on each element function(index, value): boolean
+         */
+        PlotList.prototype.each = function (fun) {
+            for (var i = this._start; i < this._end; ++i) {
+                var index = this._indexAt(i);
+                var item = this._valueAt(i);
+                if (fun(index, item)) {
+                    break;
+                }
+            }
+        };
+        /**
+         * @returns Readonly collection of elements in range
+         */
+        PlotList.prototype.range = function (start, end) {
+            var copy = new PlotList(this._plotFunctions, this._emptyValuePredicate);
+            copy._items = this._items;
+            copy._start = this._lowerbound(start);
+            copy._end = this._upperbound(end);
+            copy._shareRead = true;
+            return copy;
+        };
+        PlotList.prototype.minMaxOnRangeCached = function (start, end, plots) {
+            // this code works for single series only
+            // could fail after whitespaces implementation
+            if (this.isEmpty()) {
+                return null;
+            }
+            var result = null;
+            for (var _i = 0, plots_1 = plots; _i < plots_1.length; _i++) {
+                var plot = plots_1[_i];
+                var plotMinMax = this._minMaxOnRangeCachedImpl(start, end, plot);
+                result = mergeMinMax(result, plotMinMax);
+            }
+            return result;
+        };
+        PlotList.prototype.merge = function (plotRows) {
+            if (this._shareRead) {
+                return null;
+            }
+            if (plotRows.length === 0) {
+                return null;
+            }
+            // if we get a bunch of history - just prepend it
+            if (this.isEmpty() || plotRows[plotRows.length - 1].index < this._items[0].index) {
+                return this._prepend(plotRows);
+            }
+            // if we get new rows - just append it
+            if (plotRows[0].index > this._items[this._items.length - 1].index) {
+                return this._append(plotRows);
+            }
+            // if we get update for the last row - just replace it
+            if (plotRows.length === 1 && plotRows[0].index === this._items[this._items.length - 1].index) {
+                this._updateLast(plotRows[0]);
+                return plotRows[0];
+            }
+            return this._merge(plotRows);
+        };
+        PlotList.prototype.remove = function (start) {
+            if (this._shareRead) {
+                return null;
+            }
+            var startOffset = this._search(start, 1 /* NearestRight */);
+            if (startOffset === null) {
+                return null;
+            }
+            var removedPlotRows = this._items.splice(startOffset);
+            // _start should never be modified in this method
+            this._end = this._items.length;
+            this._minMaxCache.clear();
+            this._rowSearchCache.clear();
+            this._rowSearchCacheWithoutEmptyValues.clear();
+            return removedPlotRows.length > 0 ? removedPlotRows[0] : null;
+        };
+        PlotList.prototype._indexAt = function (offset) {
+            return this._items[offset].index;
+        };
+        PlotList.prototype._valueAt = function (offset) {
+            return this._items[offset];
+        };
+        PlotList.prototype._search = function (index, searchMode, skipEmptyValues) {
+            var exactPos = this._bsearch(index);
+            if (exactPos === null && searchMode !== 0 /* Exact */) {
+                switch (searchMode) {
+                    case -1 /* NearestLeft */:
+                        return this._searchNearestLeft(index, skipEmptyValues);
+                    case 1 /* NearestRight */:
+                        return this._searchNearestRight(index, skipEmptyValues);
+                    default:
+                        throw new TypeError('Unknown search mode');
+                }
+            }
+            // there is a found value or search mode is Exact
+            if (!skipEmptyValues || exactPos === null || searchMode === 0 /* Exact */) {
+                return exactPos;
+            }
+            // skipEmptyValues is true, additionally check for emptiness
+            switch (searchMode) {
+                case -1 /* NearestLeft */:
+                    return this._nonEmptyNearestLeft(exactPos);
+                case 1 /* NearestRight */:
+                    return this._nonEmptyNearestRight(exactPos);
+                default:
+                    throw new TypeError('Unknown search mode');
+            }
+        };
+        PlotList.prototype._nonEmptyNearestRight = function (index) {
+            var predicate = ensureNotNull(this._emptyValuePredicate);
+            while (index < this._end && predicate(this._valueAt(index).value)) {
+                index = index + 1;
+            }
+            return index === this._end ? null : index;
+        };
+        PlotList.prototype._nonEmptyNearestLeft = function (index) {
+            var predicate = ensureNotNull(this._emptyValuePredicate);
+            while (index >= this._start && predicate(this._valueAt(index).value)) {
+                index = index - 1;
+            }
+            return index < this._start ? null : index;
+        };
+        PlotList.prototype._searchNearestLeft = function (index, skipEmptyValues) {
+            var nearestLeftPos = this._lowerbound(index);
+            if (nearestLeftPos > this._start) {
+                nearestLeftPos = nearestLeftPos - 1;
+            }
+            var result = (nearestLeftPos !== this._end && this._indexAt(nearestLeftPos) < index) ? nearestLeftPos : null;
+            if (skipEmptyValues && result !== null) {
+                return this._nonEmptyNearestLeft(result);
+            }
+            return result;
+        };
+        PlotList.prototype._searchNearestRight = function (index, skipEmptyValues) {
+            var nearestRightPos = this._upperbound(index);
+            var result = (nearestRightPos !== this._end && index < this._indexAt(nearestRightPos)) ? nearestRightPos : null;
+            if (skipEmptyValues && result !== null) {
+                return this._nonEmptyNearestRight(result);
+            }
+            return result;
+        };
+        PlotList.prototype._bsearch = function (index) {
+            var start = this._lowerbound(index);
+            if (start !== this._end && !(index < this._items[start].index)) {
+                return start;
+            }
+            return null;
+        };
+        PlotList.prototype._lowerbound = function (index) {
+            return lowerbound(this._items, index, function (a, b) { return a.index < b; }, this._start, this._end);
+        };
+        PlotList.prototype._upperbound = function (index) {
+            return upperbound(this._items, index, function (a, b) { return b.index > a; }, this._start, this._end);
+        };
+        /**
+         * @param endIndex Non-inclusive end
+         */
+        PlotList.prototype._plotMinMax = function (startIndex, endIndex, plot) {
+            var result = null;
+            var func = this._plotFunctions.get(plot.name);
+            if (func === undefined) {
+                throw new Error("Plot \"" + plot.name + "\" is not registered");
+            }
+            for (var i = startIndex; i < endIndex; i++) {
+                var values = this._items[i].value;
+                var v = func(values);
+                if (v === undefined || v === null || Number.isNaN(v)) {
+                    continue;
+                }
+                if (result === null) {
+                    result = { min: v, max: v };
+                }
+                else {
+                    if (v < result.min) {
+                        result.min = v;
+                    }
+                    if (v > result.max) {
+                        result.max = v;
+                    }
+                }
+            }
+            return result;
+        };
+        PlotList.prototype._invalidateCacheForRow = function (row) {
+            var chunkIndex = Math.floor(row.index / CHUNK_SIZE);
+            this._minMaxCache.forEach(function (cacheItem) { return cacheItem.delete(chunkIndex); });
+        };
+        PlotList.prototype._prepend = function (plotRows) {
+            assert(!this._shareRead, 'collection should not be readonly');
+            assert(plotRows.length !== 0, 'plotRows should not be empty');
+            this._rowSearchCache.clear();
+            this._rowSearchCacheWithoutEmptyValues.clear();
+            this._minMaxCache.clear();
+            this._items = plotRows.concat(this._items);
+            this._start = 0;
+            this._end = this._items.length;
+            return plotRows[0];
+        };
+        PlotList.prototype._append = function (plotRows) {
+            assert(!this._shareRead, 'collection should not be readonly');
+            assert(plotRows.length !== 0, 'plotRows should not be empty');
+            this._rowSearchCache.clear();
+            this._rowSearchCacheWithoutEmptyValues.clear();
+            this._minMaxCache.clear();
+            this._items = this._items.concat(plotRows);
+            this._start = 0;
+            this._end = this._items.length;
+            return plotRows[0];
+        };
+        PlotList.prototype._updateLast = function (plotRow) {
+            assert(!this.isEmpty(), 'plot list should not be empty');
+            var currentLastRow = this._items[this._end - 1];
+            assert(currentLastRow.index === plotRow.index, 'last row index should match new row index');
+            this._invalidateCacheForRow(plotRow);
+            this._rowSearchCache.delete(plotRow.index);
+            this._rowSearchCacheWithoutEmptyValues.delete(plotRow.index);
+            this._items[this._end - 1] = plotRow;
+        };
+        PlotList.prototype._merge = function (plotRows) {
+            assert(plotRows.length !== 0, 'plot rows should not be empty');
+            this._rowSearchCache.clear();
+            this._rowSearchCacheWithoutEmptyValues.clear();
+            this._minMaxCache.clear();
+            this._items = mergePlotRows(this._items, plotRows);
+            this._start = 0;
+            this._end = this._items.length;
+            return plotRows[0];
+        };
+        PlotList.prototype._minMaxOnRangeCachedImpl = function (start, end, plotInfo) {
+            // this code works for single series only
+            // could fail after whitespaces implementation
+            if (this.isEmpty()) {
+                return null;
+            }
+            var result = null;
+            // assume that bar indexes only increase
+            var firstIndex = ensureNotNull(this.firstIndex());
+            var lastIndex = ensureNotNull(this.lastIndex());
+            var s = start - plotInfo.offset;
+            var e = end - plotInfo.offset;
+            s = Math.max(s, firstIndex);
+            e = Math.min(e, lastIndex);
+            var cachedLow = Math.ceil(s / CHUNK_SIZE) * CHUNK_SIZE;
+            var cachedHigh = Math.max(cachedLow, Math.floor(e / CHUNK_SIZE) * CHUNK_SIZE);
+            {
+                var startIndex = this._lowerbound(s);
+                var endIndex = this._upperbound(Math.min(e, cachedLow, end)); // non-inclusive end
+                var plotMinMax = this._plotMinMax(startIndex, endIndex, plotInfo);
+                result = mergeMinMax(result, plotMinMax);
+            }
+            var minMaxCache = this._minMaxCache.get(plotInfo.name);
+            if (minMaxCache === undefined) {
+                minMaxCache = new Map();
+                this._minMaxCache.set(plotInfo.name, minMaxCache);
+            }
+            // now go cached
+            for (var c = Math.max(cachedLow + 1, s); c < cachedHigh; c += CHUNK_SIZE) {
+                var chunkIndex = Math.floor(c / CHUNK_SIZE);
+                var chunkMinMax = minMaxCache.get(chunkIndex);
+                if (chunkMinMax === undefined) {
+                    var chunkStart = this._lowerbound(chunkIndex * CHUNK_SIZE);
+                    var chunkEnd = this._upperbound((chunkIndex + 1) * CHUNK_SIZE - 1);
+                    chunkMinMax = this._plotMinMax(chunkStart, chunkEnd, plotInfo);
+                    minMaxCache.set(chunkIndex, chunkMinMax);
+                }
+                result = mergeMinMax(result, chunkMinMax);
+            }
+            // tail
+            {
+                var startIndex = this._lowerbound(cachedHigh);
+                var endIndex = this._upperbound(e); // non-inclusive end
+                var plotMinMax = this._plotMinMax(startIndex, endIndex, plotInfo);
+                result = mergeMinMax(result, plotMinMax);
+            }
+            return result;
+        };
+        return PlotList;
+    }());
+    function mergeMinMax(first, second) {
+        if (first === null) {
+            return second;
+        }
+        else {
+            if (second === null) {
+                return first;
+            }
+            else {
+                // merge MinMax values
+                var min = Math.min(first.min, second.min);
+                var max = Math.max(first.max, second.max);
+                return { min: min, max: max };
+            }
+        }
+    }
+    /**
+     * Merges two ordered plot row arrays and returns result (ordered plot row array).
+     *
+     * BEWARE: If row indexes from plot rows are equal, the new plot row is used.
+     *
+     * NOTE: Time and memory complexity are O(N+M).
+     */
+    function mergePlotRows(originalPlotRows, newPlotRows) {
+        var newArraySize = calcMergedArraySize(originalPlotRows, newPlotRows);
+        // tslint:disable-next-line:prefer-array-literal
+        var result = new Array(newArraySize);
+        var originalRowsIndex = 0;
+        var newRowsIndex = 0;
+        var originalRowsSize = originalPlotRows.length;
+        var newRowsSize = newPlotRows.length;
+        var resultRowsIndex = 0;
+        while (originalRowsIndex < originalRowsSize && newRowsIndex < newRowsSize) {
+            if (originalPlotRows[originalRowsIndex].index < newPlotRows[newRowsIndex].index) {
+                result[resultRowsIndex] = originalPlotRows[originalRowsIndex];
+                originalRowsIndex++;
+            }
+            else if (originalPlotRows[originalRowsIndex].index > newPlotRows[newRowsIndex].index) {
+                result[resultRowsIndex] = newPlotRows[newRowsIndex];
+                newRowsIndex++;
+            }
+            else {
+                result[resultRowsIndex] = newPlotRows[newRowsIndex];
+                originalRowsIndex++;
+                newRowsIndex++;
+            }
+            resultRowsIndex++;
+        }
+        while (originalRowsIndex < originalRowsSize) {
+            result[resultRowsIndex] = originalPlotRows[originalRowsIndex];
+            originalRowsIndex++;
+            resultRowsIndex++;
+        }
+        while (newRowsIndex < newRowsSize) {
+            result[resultRowsIndex] = newPlotRows[newRowsIndex];
+            newRowsIndex++;
+            resultRowsIndex++;
+        }
+        return result;
+    }
+    function calcMergedArraySize(firstPlotRows, secondPlotRows) {
+        var firstPlotsSize = firstPlotRows.length;
+        var secondPlotsSize = secondPlotRows.length;
+        // new plot rows size is (first plot rows size) + (second plot rows size) - common part size
+        // in this case we can just calculate common part size
+        var result = firstPlotsSize + secondPlotsSize;
+        // TODO: we can move first/second indexes to the right and first/second size to lower/upper bound of opposite array
+        // to skip checking uncommon parts
+        var firstIndex = 0;
+        var secondIndex = 0;
+        while (firstIndex < firstPlotsSize && secondIndex < secondPlotsSize) {
+            if (firstPlotRows[firstIndex].index < secondPlotRows[secondIndex].index) {
+                firstIndex++;
+            }
+            else if (firstPlotRows[firstIndex].index > secondPlotRows[secondIndex].index) {
+                secondIndex++;
+            }
+            else {
+                firstIndex++;
+                secondIndex++;
+                result--;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Plot's index in plot list tuple for series (or overlay study)
+     * @see {Bar}
+     */
+    var SeriesPlotIndex;
+    (function (SeriesPlotIndex) {
+        SeriesPlotIndex[SeriesPlotIndex["Open"] = 0] = "Open";
+        SeriesPlotIndex[SeriesPlotIndex["High"] = 1] = "High";
+        SeriesPlotIndex[SeriesPlotIndex["Low"] = 2] = "Low";
+        SeriesPlotIndex[SeriesPlotIndex["Close"] = 3] = "Close";
+        SeriesPlotIndex[SeriesPlotIndex["Color"] = 4] = "Color";
+    })(SeriesPlotIndex || (SeriesPlotIndex = {}));
+    var barFunctions = {
+        open: function (bar) { return bar[0 /* Open */]; },
+        high: function (bar) { return bar[1 /* High */]; },
+        low: function (bar) { return bar[2 /* Low */]; },
+        close: function (bar) { return bar[3 /* Close */]; },
+        hl2: function (bar) {
+            return (bar[1 /* High */] +
+                bar[2 /* Low */]) / 2;
+        },
+        hlc3: function (bar) {
+            return (bar[1 /* High */] +
+                bar[2 /* Low */] +
+                bar[3 /* Close */]) / 3;
+        },
+        ohlc4: function (bar) {
+            return (bar[0 /* Open */] +
+                bar[1 /* High */] +
+                bar[2 /* Low */] +
+                bar[3 /* Close */]) / 4;
+        },
+    };
+    var seriesSource = ['open', 'high', 'low', 'close', 'hl2', 'hlc3', 'ohlc4'];
+    function seriesPlotFunctionMap() {
+        var result = new Map();
+        seriesSource.forEach(function (plot, index) {
+            result.set(plot, barFunction(plot));
+        });
+        return result;
+    }
+    function barFunction(priceSource) {
+        return barFunctions[priceSource];
+    }
+    var SeriesData = /** @class */ (function () {
+        function SeriesData() {
+            this._bars = new PlotList(seriesPlotFunctionMap());
+        }
+        SeriesData.prototype.bars = function () {
+            return this._bars;
+        };
+        SeriesData.prototype.size = function () {
+            return this._bars.size();
+        };
+        SeriesData.prototype.each = function (fun) {
+            this._bars.each(fun);
+        };
+        SeriesData.prototype.clear = function () {
+            this._bars.clear();
+        };
+        SeriesData.prototype.isEmpty = function () {
+            return this._bars.isEmpty();
+        };
+        SeriesData.prototype.first = function () {
+            return this._bars.first();
+        };
+        SeriesData.prototype.last = function () {
+            return this._bars.last();
+        };
+        SeriesData.prototype.search = function (index, options) {
+            return this.bars().search(index, options);
+        };
+        SeriesData.prototype.valueAt = function (index) {
+            return this.search(index);
+        };
+        return SeriesData;
+    }());
+
+    var Series = /** @class */ (function (_super) {
+        __extends(Series, _super);
+        function Series(model, options, seriesType) {
+            var _this = _super.call(this, model) || this;
+            _this._data = new SeriesData();
+            _this._priceLineView = new SeriesPriceLinePaneView(_this);
+            _this._baseHorizontalLineView = new SeriesHorizontalBaseLinePaneView(_this);
+            _this._endOfData = false;
+            _this._paneView = null;
+            _this._barColorerCache = null;
+            _this._options = options;
+            _this._seriesType = seriesType;
+            _this._palette = _this._createDefaultPalette();
+            _this.createPaneView();
+            var priceAxisView = new SeriesPriceAxisView(_this, { model: model });
+            _this._priceAxisViews = [priceAxisView];
+            _this._panePriceAxisView = new PanePriceAxisView(priceAxisView, _this, model);
+            _this._recreateFormatter();
+            _this._updateBarFunction();
+            _this._barFunction = _this.barFunction(); // redundant
+            return _this;
+        }
+        Series.prototype.destroy = function () {
+        };
+        Series.prototype.endOfData = function () {
+            return this._endOfData;
+        };
+        Series.prototype.priceLineColor = function (lastBarColor) {
+            return this._options.priceLineColor || lastBarColor;
+        };
+        // returns object with:
+        // formatted price
+        // raw price (if withRawPrice)
+        // coordinate
+        // color
+        // or { "noData":true } if last value could not be found
+        // NOTE: should NEVER return null or undefined!
+        Series.prototype.lastValueData = function (plot, globalLast, withRawPrice) {
+            var noDataRes = { noData: true };
+            var priceScale = this.priceScale();
+            if (this.model().timeScale().isEmpty() || priceScale.isEmpty() || this.data().isEmpty()) {
+                return noDataRes;
+            }
+            var visibleBars = this.model().timeScale().visibleBars();
+            var firstValue = this.firstValue();
+            if (visibleBars === null || firstValue === null) {
+                return noDataRes;
+            }
+            // find range of bars inside range
+            // TODO: make it more optimal
+            var bar;
+            var lastIndex;
+            if (globalLast) {
+                var lastBar = this.data().bars().last();
+                if (lastBar === null) {
+                    return noDataRes;
+                }
+                bar = lastBar;
+                lastIndex = lastBar.index;
+            }
+            else {
+                var endBar = this.data().bars().search(visibleBars.lastBar(), -1 /* NearestLeft */);
+                if (endBar === null) {
+                    return noDataRes;
+                }
+                bar = this.data().bars().valueAt(endBar.index);
+                if (bar === null) {
+                    return noDataRes;
+                }
+                lastIndex = endBar.index;
+            }
+            var price = plot !== undefined ? bar.value[plot] : this._barFunction(bar.value);
+            var barColorer = this.barColorer();
+            var style = barColorer.barStyle(lastIndex, { value: bar });
+            var floatCoordinate = priceScale.priceToCoordinate(price, firstValue, true);
+            return {
+                noData: false,
+                price: withRawPrice ? price : undefined,
+                text: priceScale.formatPrice(price, firstValue),
+                formattedPriceAbsolute: priceScale.formatPriceAbsolute(price),
+                formattedPricePercentage: priceScale.formatPricePercentage(price, firstValue),
+                color: style.barColor,
+                floatCoordinate: floatCoordinate,
+                coordinate: Math.round(floatCoordinate),
+                index: lastIndex,
+            };
+        };
+        Series.prototype.data = function () {
+            return this._data;
+        };
+        Series.prototype.createPaneView = function () {
+            this._paneView = null;
+            switch (this._seriesType) {
+                case 'Bar': {
+                    this._paneView = new SeriesBarsPaneView(this, this.model());
+                    break;
+                }
+                case 'Candlestick': {
+                    this._paneView = new SeriesCandlesticksPaneView(this, this.model());
+                    break;
+                }
+                case 'Line': {
+                    this._paneView = new SeriesLinePaneView(this, this.model());
+                    break;
+                }
+                case 'Area': {
+                    this._paneView = new SeriesAreaPaneView(this, this.model());
+                    break;
+                }
+                case 'Histogram': {
+                    this._paneView = new SeriesHistogramPaneView(this, this.model());
+                    break;
+                }
+                default: throw Error('Unknown chart style assigned: ' + this._seriesType);
+            }
+        };
+        Series.prototype.barColorer = function () {
+            if (this._barColorerCache !== null) {
+                return this._barColorerCache;
+            }
+            this._barColorerCache = new SeriesBarColorer(this);
+            return this._barColorerCache;
+        };
+        Series.prototype.options = function () {
+            return this._options;
+        };
+        Series.prototype.applyOptions = function (options) {
+            var overlay = this._options.overlay;
+            merge(this._options, options);
+            this._options.overlay = overlay;
+            if (overlay && this._priceScale !== null && options.scaleMargins !== undefined) {
+                this._priceScale.applyOptions({
+                    scaleMargins: this._options.scaleMargins,
+                });
+            }
+            this._recreateFormatter();
+            this.model().updateSource(this);
+        };
+        Series.prototype.setData = function (data, updatePalette, palette) {
+            this._data.clear();
+            this._data.bars().merge(data);
+            if (updatePalette) {
+                this._palette = (palette === undefined) ? this._createDefaultPalette() : palette;
+            }
+            if (this._paneView !== null) {
+                this._paneView.update('data');
+            }
+            var sourcePane = this.model().paneForSource(this);
+            this.model().recalculatePane(sourcePane);
+            this.model().updateSource(this);
+            this.model().updateCrosshair();
+            this.model().lightUpdate();
+        };
+        Series.prototype.updateData = function (data) {
+            this._data.bars().merge(data);
+            if (this._paneView !== null) {
+                this._paneView.update('data');
+            }
+            var sourcePane = this.model().paneForSource(this);
+            this.model().recalculatePane(sourcePane);
+            this.model().updateSource(this);
+            this.model().updateCrosshair();
+            this.model().lightUpdate();
+        };
+        Series.prototype.palette = function () {
+            return this._palette;
+        };
+        Series.prototype.seriesType = function () {
+            return this._seriesType;
+        };
+        Series.prototype.firstValue = function () {
+            var bar = this.firstBar();
+            if (bar === null) {
+                return null;
+            }
+            return this._barFunction(bar.value);
+        };
+        Series.prototype.firstBar = function () {
+            var visibleBars = this.model().timeScale().visibleBars();
+            if (visibleBars === null) {
+                return null;
+            }
+            var startTimePoint = visibleBars.firstBar();
+            return this.data().search(startTimePoint, 1 /* NearestRight */);
+        };
+        Series.prototype.bars = function () {
+            return this._data.bars();
+        };
+        Series.prototype.nearestIndex = function (index, options) {
+            var res = this.nearestData(index, options);
+            return res ? res.index : null;
+        };
+        Series.prototype.nearestData = function (index, options) {
+            if (!isInteger(index)) {
+                return null;
+            }
+            return this.data().search(index, options);
+        };
+        Series.prototype.dataAt = function (time) {
+            var prices = this.data().valueAt(time);
+            if (prices === null) {
+                return null;
+            }
+            if (this._seriesType === 'Bar' || this._seriesType === 'Candlestick') {
+                return {
+                    open: prices.value[0 /* Open */],
+                    high: prices.value[1 /* High */],
+                    low: prices.value[2 /* Low */],
+                    close: prices.value[3 /* Close */],
+                };
+            }
+            else {
+                return this.barFunction()(prices.value);
+            }
+        };
+        Series.prototype.paneViews = function () {
+            var res = [];
+            if (this.priceScale() === this.model().mainPriceScale()) {
+                res.push(this._baseHorizontalLineView);
+            }
+            res.push(ensureNotNull(this._paneView));
+            res.push(this._priceLineView);
+            res.push(this._panePriceAxisView);
+            return res;
+        };
+        Series.prototype.priceAxisViews = function (pane, priceScale) {
+            return this._priceAxisViews;
+        };
+        Series.prototype.priceRange = function (startTimePoint, endTimePoint) {
+            if (!isInteger(startTimePoint)) {
+                return null;
+            }
+            if (!isInteger(endTimePoint)) {
+                return null;
+            }
+            if (this.data().isEmpty()) {
+                return null;
+            }
+            // TODO: refactor this
+            // series data is strongly hardcoded to keep bars
+            var priceSource = (this._seriesType === 'Line' || this._seriesType === 'Area' || this._seriesType === 'Histogram') ? 'close' : null;
+            var barsMinMax;
+            if (priceSource !== null) {
+                barsMinMax = this.data().bars().minMaxOnRangeCached(startTimePoint, endTimePoint, [{ name: priceSource, offset: 0 }]);
+            }
+            else {
+                barsMinMax = this.data().bars().minMaxOnRangeCached(startTimePoint, endTimePoint, [{ name: 'low', offset: 0 }, { name: 'high', offset: 0 }]);
+            }
+            var range = barsMinMax !== null ?
+                barsMinMax.min === barsMinMax.max ?
+                    new PriceRange(barsMinMax.min - 0.5, barsMinMax.max + 0.5) : // special case: range consists of the only point
+                    new PriceRange(barsMinMax.min, barsMinMax.max) :
+                new PriceRange(-0.5, 0.5);
+            if (this.seriesType() === 'Histogram') {
+                var base = this._options.base;
+                range = range.merge(new PriceRange(base, base));
+            }
+            return range;
+        };
+        Series.prototype.base = function () {
+            return Math.round(1 / this._options.priceFormat.minMove);
+        };
+        Series.prototype.formatter = function () {
+            return this._formatter;
+        };
+        Series.prototype.barFunction = function () {
+            return this._barFunction;
+        };
+        Series.prototype.updateAllViews = function () {
+            if (this._paneView === null) {
+                return;
+            }
+            this._paneView.update();
+            var priceAxisViewsLength = this._priceAxisViews.length;
+            for (var i = 0; i < priceAxisViewsLength; i++) {
+                this._priceAxisViews[i].update();
+            }
+            this._priceLineView.update();
+            this._baseHorizontalLineView.update();
+        };
+        Series.prototype.setPriceScale = function (priceScale) {
+            if (this._priceScale === priceScale) {
+                return;
+            }
+            this._priceScale = priceScale;
+        };
+        Series.prototype.priceScale = function () {
+            return ensureNotNull(this._priceScale);
+        };
+        Series.prototype.markerDataAtIndex = function (index) {
+            var getValue = (this._seriesType === 'Line' || this._seriesType === 'Area') &&
+                this._options.crosshairMarkerVisible;
+            if (!getValue) {
+                return null;
+            }
+            var bar = this._data.valueAt(index);
+            if (bar === null) {
+                return null;
+            }
+            var price = this._barFunction(bar.value);
+            var radius = this._markerRadius();
+            return { price: price, radius: radius };
+        };
+        Series.prototype.title = function () {
+            return this._options.title;
+        };
+        Series.prototype._markerRadius = function () {
+            switch (this._seriesType) {
+                case 'Line':
+                case 'Area':
+                    return this._options.crosshairMarkerRadius;
+            }
+            return 0;
+        };
+        Series.prototype._recreateFormatter = function () {
+            switch (this._options.priceFormat.type) {
+                case 'volume': {
+                    this._formatter = new VolumeFormatter(this._options.priceFormat.precision);
+                    break;
+                }
+                case 'percent': {
+                    this._formatter = new PercentageFormatter(this._options.priceFormat.precision);
+                    break;
+                }
+                default: {
+                    var priceScale = Math.pow(10, this._options.priceFormat.precision);
+                    this._formatter = new PriceFormatter(priceScale, this._options.priceFormat.minMove * priceScale, false, undefined);
+                }
+            }
+            if (this._priceScale !== null) {
+                this._priceScale.updateFormatter();
+            }
+        };
+        Series.prototype._updateBarFunction = function () {
+            var priceSource = 'close';
+            this._barFunction = barFunction(priceSource);
+        };
+        Series.prototype._createDefaultPalette = function () {
+            var res = new Palette();
+            if (this._seriesType === 'Histogram') {
+                res.addColor(this._options.color);
+            }
+            return res;
+        };
+        return Series;
+    }(PriceDataSource));
+
+    function sortSources(sources) {
+        return sources.slice().sort(function (s1, s2) {
+            return (ensureNotNull(s1.zorder()) - ensureNotNull(s2.zorder()));
+        });
+    }
+
+    /**
+     * Enum of possible price scale modes
+     * Normal mode displays original price values
+     * Logarithmic mode makes price scale show logarithms of series values instead of original values
+     * Percentage turns the percentage mode on.
+     * IndexedTo100 turns the "indexed to 100" mode on
+     */
+    var PriceScaleMode;
+    (function (PriceScaleMode) {
+        PriceScaleMode[PriceScaleMode["Normal"] = 0] = "Normal";
+        PriceScaleMode[PriceScaleMode["Logarithmic"] = 1] = "Logarithmic";
+        PriceScaleMode[PriceScaleMode["Percentage"] = 2] = "Percentage";
+        PriceScaleMode[PriceScaleMode["IndexedTo100"] = 3] = "IndexedTo100";
+    })(PriceScaleMode || (PriceScaleMode = {}));
+    var percentageFormatter = new PercentageFormatter();
+    var defaultPriceFormatter = new PriceFormatter(100, 1);
+    var PriceScale = /** @class */ (function () {
+        function PriceScale(options, layoutOptions, localizationOptions) {
+            this._height = 0;
+            this._internalHeightCache = null;
+            this._internalHeightChanged = new Delegate();
+            this._priceRange = null;
+            this._priceRangeSnapshot = null;
+            this._priceRangeChanged = new Delegate();
+            this._invalidatedForRange = { isValid: false, visibleBars: null };
+            this._onMarksChanged = new Delegate();
+            this._modeChanged = new Delegate();
+            this._dataSources = [];
+            this._cachedOrderedSources = null;
+            this._hasSeries = false;
+            this._mainSource = null;
+            this._marksCache = null;
+            this._scaleStartPoint = null;
+            this._scrollStartPoint = null;
+            this._formatter = defaultPriceFormatter;
+            this._optionsChanged = new Delegate();
+            this._options = options;
+            this._layoutOptions = layoutOptions;
+            this._localizationOptions = localizationOptions;
+            this._markBuilder = new PriceTickMarkBuilder(this, 100, this._coordinateToLogical.bind(this), this._logicalToCoordinate.bind(this));
+        }
+        PriceScale.prototype.options = function () {
+            return this._options;
+        };
+        PriceScale.prototype.applyOptions = function (options) {
+            merge(this._options, options);
+            this.updateFormatter();
+            if (options.mode !== undefined) {
+                this.setMode({ mode: options.mode });
+            }
+            this._optionsChanged.fire();
+            if (options.scaleMargins !== undefined) {
+                var top_1 = ensureDefined(options.scaleMargins.top);
+                var bottom = ensureDefined(options.scaleMargins.bottom);
+                if (top_1 < 0 || top_1 > 1) {
+                    throw new Error("Invalid top margin - expect value between 0 and 1, given=" + top_1);
+                }
+                if (bottom < 0 || bottom > 1 || top_1 + bottom > 1) {
+                    throw new Error("Invalid bottom margin - expect value between 0 and 1, given=" + bottom);
+                }
+                if (top_1 + bottom > 1) {
+                    throw new Error("Invalid margins - sum of margins must be less than 1, given=" + (top_1 + bottom));
+                }
+                this._invalidateInternalHeightCache();
+                this._marksCache = null;
+            }
+        };
+        PriceScale.prototype.optionsChanged = function () {
+            return this._optionsChanged;
+        };
+        PriceScale.prototype.isAutoScale = function () {
+            return this._options.autoScale;
+        };
+        PriceScale.prototype.isLog = function () {
+            return this._options.mode === 1 /* Logarithmic */;
+        };
+        PriceScale.prototype.isPercentage = function () {
+            return this._options.mode === 2 /* Percentage */;
+        };
+        PriceScale.prototype.isIndexedTo100 = function () {
+            return this._options.mode === 3 /* IndexedTo100 */;
+        };
+        PriceScale.prototype.mode = function () {
+            return {
+                autoScale: this._options.autoScale,
+                isInverted: this._options.invertScale,
+                mode: this._options.mode,
+            };
+        };
+        // tslint:disable-next-line:cyclomatic-complexity
+        PriceScale.prototype.setMode = function (newMode) {
+            var oldMode = this.mode();
+            var priceRange = null;
+            if (newMode.autoScale !== undefined) {
+                this._options.autoScale = newMode.autoScale;
+            }
+            if (newMode.mode !== undefined) {
+                this._options.mode = newMode.mode;
+                if (newMode.mode === 2 /* Percentage */ || newMode.mode === 3 /* IndexedTo100 */) {
+                    this._options.autoScale = true;
+                }
+                // TODO: Remove after making rebuildTickMarks lazy
+                this._invalidatedForRange.isValid = false;
+            }
+            // define which scale converted from
+            if (oldMode.mode === 1 /* Logarithmic */ && newMode.mode !== oldMode.mode) {
+                if (canConvertPriceRangeFromLog(this._priceRange)) {
+                    priceRange = convertPriceRangeFromLog(this._priceRange);
+                    if (priceRange !== null) {
+                        this.setPriceRange(priceRange);
+                    }
+                }
+                else {
+                    this._options.autoScale = true;
+                }
+            }
+            // define which scale converted to
+            if (newMode.mode === 1 /* Logarithmic */ && newMode.mode !== oldMode.mode) {
+                priceRange = convertPriceRangeToLog(this._priceRange);
+                if (priceRange !== null) {
+                    this.setPriceRange(priceRange);
+                }
+            }
+            var modeChanged = oldMode.mode !== this._options.mode;
+            if (modeChanged && (oldMode.mode === 2 /* Percentage */ || this.isPercentage())) {
+                this.updateFormatter();
+            }
+            if (modeChanged && (oldMode.mode === 3 /* IndexedTo100 */ || this.isIndexedTo100())) {
+                this.updateFormatter();
+            }
+            if (newMode.isInverted !== undefined && oldMode.isInverted !== newMode.isInverted) {
+                this._options.invertScale = newMode.isInverted;
+                this._onIsInvertedChanged();
+            }
+            this._modeChanged.fire(oldMode, this.mode());
+        };
+        PriceScale.prototype.modeChanged = function () {
+            return this._modeChanged;
+        };
+        PriceScale.prototype.fontSize = function () {
+            return this._layoutOptions.fontSize;
+        };
+        PriceScale.prototype.height = function () {
+            return this._height;
+        };
+        PriceScale.prototype.setHeight = function (value) {
+            if (this._height === value) {
+                return;
+            }
+            this._height = value;
+            this._invalidateInternalHeightCache();
+            this._marksCache = null;
+        };
+        PriceScale.prototype.topMargin = function () {
+            return this.isInverted() ?
+                this._options.scaleMargins.bottom : this._options.scaleMargins.top;
+        };
+        PriceScale.prototype.bottomMargin = function () {
+            return this.isInverted() ?
+                this._options.scaleMargins.top : this._options.scaleMargins.bottom;
+        };
+        PriceScale.prototype.internalHeight = function () {
+            if (this._internalHeightCache) {
+                return this._internalHeightCache;
+            }
+            var res = this.height() * (1 - this.topMargin() - this.bottomMargin());
+            this._internalHeightCache = res;
+            return res;
+        };
+        PriceScale.prototype.internalHeightChanged = function () {
+            return this._internalHeightChanged;
+        };
+        PriceScale.prototype.priceRange = function () {
+            this._makeSureItIsValid();
+            return this._priceRange;
+        };
+        PriceScale.prototype.priceRangeChanged = function () {
+            return this._priceRangeChanged;
+        };
+        PriceScale.prototype.setPriceRange = function (newPriceRange, isForceSetValue, onlyPriceScaleUpdate) {
+            var oldPriceRange = this._priceRange;
+            if (!isForceSetValue &&
+                !(oldPriceRange === null && newPriceRange !== null) &&
+                (oldPriceRange === null || oldPriceRange.equals(newPriceRange))) {
+                return;
+            }
+            this._marksCache = null;
+            this._priceRange = newPriceRange;
+            if (!onlyPriceScaleUpdate) {
+                this._priceRangeChanged.fire(oldPriceRange, newPriceRange);
+            }
+        };
+        PriceScale.prototype.isEmpty = function () {
+            this._makeSureItIsValid();
+            return this._height === 0 || !this._priceRange || this._priceRange.isEmpty();
+        };
+        PriceScale.prototype.invertedCoordinate = function (coordinate) {
+            return this.isInverted() ? coordinate : this.height() - 1 - coordinate;
+        };
+        PriceScale.prototype.priceToCoordinate = function (price, baseValue, keepItFloat) {
+            if (this.isPercentage()) {
+                price = toPercent(price, baseValue);
+            }
+            else if (this.isIndexedTo100()) {
+                price = toIndexedTo100(price, baseValue);
+            }
+            return this._logicalToCoordinate(price, baseValue, keepItFloat);
+        };
+        PriceScale.prototype.pointsArrayToCoordinates = function (points, baseValue, visibleRange) {
+            this._makeSureItIsValid();
+            var bh = this.bottomMargin() * this.height();
+            var range = ensureNotNull(this.priceRange());
+            var min = range.minValue();
+            var max = range.maxValue();
+            var ih = (this.internalHeight() - 1);
+            var isInverted = this.isInverted();
+            var hmm = ih / (max - min);
+            var fromIndex = (visibleRange === undefined) ? 0 : visibleRange.from;
+            var toIndex = (visibleRange === undefined) ? points.length : visibleRange.to;
+            var transformFn = this._getCoordinateTransformer();
+            for (var i = fromIndex; i < toIndex; i++) {
+                var point = points[i];
+                var price = point.price;
+                if (isNaN(price)) {
+                    continue;
+                }
+                var logical = price;
+                if (transformFn !== null) {
+                    logical = transformFn(point.price, baseValue);
+                }
+                var invCoordinate = bh + hmm * (logical - min);
+                var coordinate = isInverted ? invCoordinate : this._height - 1 - invCoordinate;
+                point.y = Math.round(coordinate);
+            }
+        };
+        PriceScale.prototype.barPricesToCoordinates = function (pricesList, baseValue, visibleRange) {
+            this._makeSureItIsValid();
+            var bh = this.bottomMargin() * this.height();
+            var range = ensureNotNull(this.priceRange());
+            var min = range.minValue();
+            var max = range.maxValue();
+            var ih = (this.internalHeight() - 1);
+            var isInverted = this.isInverted();
+            var hmm = ih / (max - min);
+            var fromIndex = (visibleRange === undefined) ? 0 : visibleRange.from;
+            var toIndex = (visibleRange === undefined) ? pricesList.length : visibleRange.to;
+            var transformFn = this._getCoordinateTransformer();
+            for (var i = fromIndex; i < toIndex; i++) {
+                var bar = pricesList[i];
+                var openLogical = bar.open;
+                var highLogical = bar.high;
+                var lowLogical = bar.low;
+                var closeLogical = bar.close;
+                if (transformFn !== null) {
+                    openLogical = transformFn(bar.open, baseValue);
+                    highLogical = transformFn(bar.high, baseValue);
+                    lowLogical = transformFn(bar.low, baseValue);
+                    closeLogical = transformFn(bar.close, baseValue);
+                }
+                var invCoordinate = bh + hmm * (openLogical - min);
+                var coordinate = isInverted ? invCoordinate : this._height - 1 - invCoordinate;
+                bar.openY = Math.round(coordinate);
+                invCoordinate = bh + hmm * (highLogical - min);
+                coordinate = isInverted ? invCoordinate : this._height - 1 - invCoordinate;
+                bar.highY = Math.round(coordinate);
+                invCoordinate = bh + hmm * (lowLogical - min);
+                coordinate = isInverted ? invCoordinate : this._height - 1 - invCoordinate;
+                bar.lowY = Math.round(coordinate);
+                invCoordinate = bh + hmm * (closeLogical - min);
+                coordinate = isInverted ? invCoordinate : this._height - 1 - invCoordinate;
+                bar.closeY = Math.round(coordinate);
+            }
+        };
+        PriceScale.prototype.coordinateToPrice = function (coordinate, baseValue) {
+            var logical = this._coordinateToLogical(coordinate, baseValue);
+            return this.logicalToPrice(logical, baseValue);
+        };
+        PriceScale.prototype.logicalToPrice = function (logical, baseValue) {
+            var value = logical;
+            if (this.isPercentage()) {
+                value = fromPercent(value, baseValue);
+            }
+            else if (this.isIndexedTo100()) {
+                value = fromIndexedTo100(value, baseValue);
+            }
+            return value;
+        };
+        PriceScale.prototype.dataSources = function () {
+            return this._dataSources;
+        };
+        PriceScale.prototype.orderedSources = function () {
+            if (this._cachedOrderedSources) {
+                return this._cachedOrderedSources;
+            }
+            var sources = [];
+            for (var i = 0; i < this._dataSources.length; i++) {
+                var ds = this._dataSources[i];
+                if (ds.zorder() === null) {
+                    ds.setZorder(i + 1);
+                }
+                sources.push(ds);
+            }
+            sources = sortSources(sources);
+            this._cachedOrderedSources = sources;
+            return this._cachedOrderedSources;
+        };
+        PriceScale.prototype.hasSeries = function () {
+            return this._hasSeries;
+        };
+        PriceScale.prototype.addDataSource = function (source) {
+            if (this._dataSources.indexOf(source) !== -1) {
+                return;
+            }
+            if ((source instanceof Series)) {
+                this._hasSeries = true;
+            }
+            this._dataSources.push(source);
+            this._mainSource = null;
+            this.updateFormatter();
+            this.invalidateSourcesCache();
+        };
+        PriceScale.prototype.removeDataSource = function (source) {
+            var index = this._dataSources.indexOf(source);
+            if (index === -1) {
+                throw new Error('source is not attached to scale');
+            }
+            this._dataSources.splice(index, 1);
+            if (source instanceof Series) {
+                this._hasSeries = false;
+            }
+            if (!this.mainSource()) {
+                this.setMode({
+                    autoScale: true,
+                });
+            }
+            this._mainSource = null;
+            this.updateFormatter();
+            this.invalidateSourcesCache();
+        };
+        PriceScale.prototype.mainSource = function () {
+            if (this._mainSource !== null) {
+                return this._mainSource;
+            }
+            var priceSource = null;
+            for (var i = 0; i < this._dataSources.length; i++) {
+                var source = this._dataSources[i];
+                if (source instanceof Series) {
+                    priceSource = source;
+                    break;
+                }
+                if ((priceSource === null) && (source instanceof PriceDataSource)) {
+                    priceSource = source;
+                }
+            }
+            this._mainSource = priceSource;
+            return this._mainSource;
+        };
+        PriceScale.prototype.isInverted = function () {
+            return this._options.invertScale;
+        };
+        PriceScale.prototype.marks = function () {
+            if (this._marksCache) {
+                return this._marksCache;
+            }
+            this._markBuilder.rebuildTickMarks();
+            this._marksCache = this._markBuilder.marks();
+            this._onMarksChanged.fire();
+            return this._marksCache;
+        };
+        PriceScale.prototype.onMarksChanged = function () {
+            return this._onMarksChanged;
+        };
+        PriceScale.prototype.startScale = function (x) {
+            if (this.isPercentage() || this.isIndexedTo100()) {
+                return;
+            }
+            if (this._scaleStartPoint !== null || this._priceRangeSnapshot !== null) {
+                return;
+            }
+            if (this.isEmpty()) {
+                return;
+            }
+            // invert x
+            this._scaleStartPoint = this._height - x;
+            this._priceRangeSnapshot = ensureNotNull(this.priceRange()).clone();
+        };
+        PriceScale.prototype.scaleTo = function (x) {
+            if (this.isPercentage() || this.isIndexedTo100()) {
+                return;
+            }
+            if (this._scaleStartPoint === null) {
+                return;
+            }
+            this.setMode({
+                autoScale: false,
+            });
+            // invert x
+            x = this._height - x;
+            if (x < 0) {
+                x = 0;
+            }
+            var scaleCoeff = (this._scaleStartPoint + (this._height - 1) * 0.2) / (x + (this._height - 1) * 0.2);
+            var newPriceRange = ensureNotNull(this._priceRangeSnapshot).clone();
+            scaleCoeff = Math.max(scaleCoeff, 0.1);
+            newPriceRange.scaleAroundCenter(scaleCoeff);
+            this.setPriceRange(newPriceRange);
+        };
+        PriceScale.prototype.endScale = function () {
+            if (this.isPercentage() || this.isIndexedTo100()) {
+                return;
+            }
+            this._scaleStartPoint = null;
+            this._priceRangeSnapshot = null;
+        };
+        PriceScale.prototype.startScroll = function (x) {
+            if (this.isAutoScale()) {
+                return;
+            }
+            if (this._scrollStartPoint !== null || this._priceRangeSnapshot !== null) {
+                return;
+            }
+            if (this.isEmpty()) {
+                return;
+            }
+            this._scrollStartPoint = x;
+            this._priceRangeSnapshot = ensureNotNull(this.priceRange()).clone();
+        };
+        PriceScale.prototype.scrollTo = function (x) {
+            if (this.isAutoScale()) {
+                return;
+            }
+            if (this._scrollStartPoint === null) {
+                return;
+            }
+            var priceUnitsPerPixel = ensureNotNull(this.priceRange()).length() / (this.height() - 1);
+            var pixelDelta = x - this._scrollStartPoint;
+            if (this.isInverted()) {
+                pixelDelta *= -1;
+            }
+            var priceDelta = pixelDelta * priceUnitsPerPixel;
+            var newPriceRange = ensureNotNull(this._priceRangeSnapshot).clone();
+            newPriceRange.shift(priceDelta);
+            this.setPriceRange(newPriceRange, true);
+            this._marksCache = null;
+        };
+        PriceScale.prototype.endScroll = function () {
+            if (this.isAutoScale()) {
+                return;
+            }
+            if (this._scrollStartPoint === null) {
+                return;
+            }
+            this._scrollStartPoint = null;
+            this._priceRangeSnapshot = null;
+        };
+        PriceScale.prototype.formatter = function () {
+            if (!this._formatter) {
+                this.updateFormatter();
+            }
+            return this._formatter;
+        };
+        PriceScale.prototype.formatPrice = function (price, firstValue) {
+            switch (this._options.mode) {
+                case 2 /* Percentage */:
+                    return this.formatter().format(toPercent(price, firstValue));
+                case 3 /* IndexedTo100 */:
+                    return this.formatter().format(toIndexedTo100(price, firstValue));
+                default:
+                    return this._formatPrice(price);
+            }
+        };
+        PriceScale.prototype.formatLogical = function (logical) {
+            switch (this._options.mode) {
+                case 2 /* Percentage */:
+                case 3 /* IndexedTo100 */:
+                    return this.formatter().format(logical);
+                default:
+                    return this._formatPrice(logical);
+            }
+        };
+        PriceScale.prototype.formatPriceAbsolute = function (price) {
+            return this._formatPrice(price, this._mainSourceFormatter());
+        };
+        PriceScale.prototype.formatPricePercentage = function (price, baseValue) {
+            price = toPercent(price, baseValue);
+            return percentageFormatter.format(price);
+        };
+        PriceScale.prototype.sourcesForAutoScale = function () {
+            function useSourceForAutoScale(source) {
+                return source instanceof PriceDataSource;
+            }
+            return this._dataSources.filter(useSourceForAutoScale);
+        };
+        PriceScale.prototype.recalculatePriceRange = function (visibleBars) {
+            this._invalidatedForRange = {
+                visibleBars: visibleBars,
+                isValid: false,
+            };
+        };
+        PriceScale.prototype.updateAllViews = function () {
+            this._dataSources.forEach(function (s) { return s.updateAllViews(); });
+        };
+        PriceScale.prototype.updateFormatter = function () {
+            this._marksCache = null;
+            var mainSource = this.mainSource();
+            var base = 100;
+            if (mainSource !== null) {
+                base = mainSource.base();
+            }
+            this._formatter = defaultPriceFormatter;
+            if (this.isPercentage()) {
+                this._formatter = percentageFormatter;
+                base = 100;
+            }
+            else if (this.isIndexedTo100()) {
+                this._formatter = new PriceFormatter(100, 1);
+                base = 100;
+            }
+            else {
+                if (mainSource !== null) {
+                    // user
+                    this._formatter = mainSource.formatter();
+                }
+            }
+            this._markBuilder = new PriceTickMarkBuilder(this, base, this._coordinateToLogical.bind(this), this._logicalToCoordinate.bind(this));
+            this._markBuilder.rebuildTickMarks();
+        };
+        PriceScale.prototype.invalidateSourcesCache = function () {
+            this._cachedOrderedSources = null;
+        };
+        PriceScale.prototype._makeSureItIsValid = function () {
+            if (!this._invalidatedForRange.isValid) {
+                this._invalidatedForRange.isValid = true;
+                this._recalculatePriceRangeImpl();
+            }
+        };
+        PriceScale.prototype._invalidateInternalHeightCache = function () {
+            this._internalHeightCache = null;
+            this._internalHeightChanged.fire();
+        };
+        PriceScale.prototype._logicalToCoordinate = function (logical, baseValue, keepItFloat) {
+            this._makeSureItIsValid();
+            if (this.isEmpty()) {
+                return 0;
+            }
+            logical = this.isLog() && logical ? toLog(logical) : logical;
+            var range = ensureNotNull(this.priceRange());
+            var invCoordinate = this.bottomMargin() * this.height() +
+                (this.internalHeight() - 1) * (logical - range.minValue()) / range.length();
+            var coordinate = this.invertedCoordinate(invCoordinate);
+            if (keepItFloat) {
+                return coordinate;
+            }
+            return Math.round(coordinate);
+        };
+        PriceScale.prototype._coordinateToLogical = function (coordinate, baseValue) {
+            this._makeSureItIsValid();
+            if (this.isEmpty()) {
+                return 0;
+            }
+            var invCoordinate = this.invertedCoordinate(coordinate);
+            var range = ensureNotNull(this.priceRange());
+            var logical = range.minValue() + range.length() *
+                ((invCoordinate - this.bottomMargin() * this.height()) / (this.internalHeight() - 1));
+            return this.isLog() ? fromLog(logical) : logical;
+        };
+        PriceScale.prototype._onIsInvertedChanged = function () {
+            this._marksCache = null;
+            this._markBuilder.rebuildTickMarks();
+        };
+        PriceScale.prototype._mainSourceFormatter = function () {
+            var mainSource = ensureNotNull(this.mainSource());
+            return mainSource.formatter();
+        };
+        PriceScale.prototype._recalculatePriceRangeImpl = function () {
+            var visibleBars = this._invalidatedForRange.visibleBars;
+            if (visibleBars === null) {
+                return;
+            }
+            var priceRange = null;
+            var sources = this.sourcesForAutoScale();
+            for (var i = 0; i < sources.length; i++) {
+                var source = sources[i];
+                var firstValue = source.firstValue();
+                if (firstValue === null) {
+                    continue;
+                }
+                var startBar = visibleBars.firstBar();
+                var endBar = visibleBars.lastBar();
+                var sourceRange = source.priceRange(startBar, endBar);
+                if (sourceRange !== null) {
+                    switch (this._options.mode) {
+                        case 1 /* Logarithmic */:
+                            sourceRange = convertPriceRangeToLog(sourceRange);
+                            break;
+                        case 2 /* Percentage */:
+                            sourceRange = toPercentRange(sourceRange, firstValue);
+                            break;
+                        case 3 /* IndexedTo100 */:
+                            sourceRange = toIndexedTo100Range(sourceRange, firstValue);
+                            break;
+                    }
+                    if (priceRange === null) {
+                        priceRange = sourceRange;
+                    }
+                    else {
+                        priceRange = priceRange.merge(ensureNotNull(sourceRange));
+                    }
+                }
+            }
+            if (priceRange) {
+                // keep current range is new is empty
+                if (priceRange.minValue() === priceRange.maxValue()) {
+                    priceRange = new PriceRange(priceRange.minValue() - 0.5, priceRange.maxValue() + 0.5);
+                }
+                this.setPriceRange(priceRange);
+            }
+            else {
+                // reset empty to default
+                if (this._priceRange === null) {
+                    this.setPriceRange(new PriceRange(-0.5, 0.5));
+                }
+            }
+            this._invalidatedForRange.isValid = true;
+        };
+        PriceScale.prototype._getCoordinateTransformer = function () {
+            if (this.isPercentage()) {
+                return toPercent;
+            }
+            else if (this.isIndexedTo100()) {
+                return toIndexedTo100;
+            }
+            else if (this.isLog()) {
+                return toLog;
+            }
+            return null;
+        };
+        PriceScale.prototype._formatPrice = function (price, fallbackFormatter) {
+            if (this._localizationOptions.priceFormatter === undefined) {
+                if (fallbackFormatter === undefined) {
+                    fallbackFormatter = this.formatter();
+                }
+                return fallbackFormatter.format(price);
+            }
+            return this._localizationOptions.priceFormatter(price);
+        };
+        return PriceScale;
+    }());
+
+    function isBusinessDay(time) {
+        return !isNumber(time);
+    }
+    function isUTCTimestamp(time) {
+        return isNumber(time);
+    }
+
+    var fontSizeRegex = /(\d+(?:\.\d+)?)(px|em|rem|pt)/g;
+    // tslint:disable-next-line:no-any
+    var context = document.createElement('canvas').getContext('2d') || {};
+    var backingStore = context.backingStorePixelRatio ||
+        context.webkitBackingStorePixelRatio ||
+        context.mozBackingStorePixelRatio ||
+        context.msBackingStorePixelRatio ||
+        context.oBackingStorePixelRatio ||
+        context.backingStorePixelRatio || 1;
+    var currentRatio = (window.devicePixelRatio || 1) / backingStore;
+    function getContext2d(canvasElement) {
+        if (canvasElement.width !== Math.floor(parseInt(ensureNotNull(canvasElement.style.width)) * currentRatio)) {
+            canvasElement.style.width = canvasElement.width + 'px';
+            canvasElement.width *= currentRatio;
+            canvasElement.height *= currentRatio;
+        }
+        var originalContext = canvasElement.getContext('2d');
+        return originalContext === null ? null : new CanvasWrapper(originalContext, currentRatio);
+    }
+    // BEWARE: it's important to call CanvasRenderingContext2D methods with proper arguments number
+    // it's not safe to call overloaded method with less arguments number using trailing undefined params
+    // in this case this method can do nothing at all
+    // see fillText as an example
+    var CanvasWrapper = /** @class */ (function () {
+        function CanvasWrapper(originalContext, ratio) {
+            this.canvas = originalContext.canvas;
+            this._ctx = originalContext;
+            this._rto = ratio;
+        }
+        CanvasWrapper.prototype.restore = function () {
+            this._ctx.restore();
+        };
+        CanvasWrapper.prototype.save = function () {
+            this._ctx.save();
+        };
+        CanvasWrapper.prototype.getTransform = function () {
+            return this._ctx.getTransform();
+        };
+        CanvasWrapper.prototype.resetTransform = function () {
+            this._ctx.resetTransform();
+        };
+        CanvasWrapper.prototype.rotate = function (angle) {
+            this._ctx.rotate(angle);
+        };
+        CanvasWrapper.prototype.scale = function (x, y) {
+            this._ctx.scale(x, y);
+        };
+        CanvasWrapper.prototype.setTransform = function (a, b, c, d, e, f) {
+            if (isNumber(a)) {
+                this._ctx.setTransform(a, b, c, d, e, f);
+            }
+            else {
+                this._ctx.setTransform(a);
+            }
+        };
+        CanvasWrapper.prototype.transform = function (a, b, c, d, e, f) {
+            this._ctx.transform(a, b, c, d, e, f);
+        };
+        CanvasWrapper.prototype.translate = function (x, y) {
+            this._ctx.translate(x * this._rto, y * this._rto);
+        };
+        Object.defineProperty(CanvasWrapper.prototype, "globalAlpha", {
+            get: function () {
+                return this._ctx.globalAlpha;
+            },
+            set: function (value) {
+                this._ctx.globalAlpha = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "globalCompositeOperation", {
+            get: function () {
+                return this._ctx.globalCompositeOperation;
+            },
+            set: function (value) {
+                this._ctx.globalCompositeOperation = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "imageSmoothingEnabled", {
+            get: function () {
+                return this._ctx.imageSmoothingEnabled;
+            },
+            set: function (value) {
+                this._ctx.imageSmoothingEnabled = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "imageSmoothingQuality", {
+            get: function () {
+                return this._ctx.imageSmoothingQuality;
+            },
+            set: function (value) {
+                this._ctx.imageSmoothingQuality = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "fillStyle", {
+            get: function () {
+                return this._ctx.fillStyle;
+            },
+            set: function (value) {
+                this._ctx.fillStyle = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "strokeStyle", {
+            get: function () {
+                return this._ctx.strokeStyle;
+            },
+            set: function (value) {
+                this._ctx.strokeStyle = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        CanvasWrapper.prototype.createLinearGradient = function (x0, y0, x1, y1) {
+            return this._ctx.createLinearGradient(x0 * this._rto, y0 * this._rto, x1 * this._rto, y1 * this._rto);
+        };
+        CanvasWrapper.prototype.createPattern = function (image, repetition) {
+            return this._ctx.createPattern(image, repetition);
+        };
+        CanvasWrapper.prototype.createRadialGradient = function (x0, y0, r0, x1, y1, r1) {
+            return this._ctx.createRadialGradient(x0 * this._rto, y0 * this._rto, r0 * this._rto, x1 * this._rto, y1 * this._rto, r1 * this._rto);
+        };
+        Object.defineProperty(CanvasWrapper.prototype, "shadowBlur", {
+            get: function () {
+                return this._ctx.shadowBlur;
+            },
+            set: function (value) {
+                this._ctx.shadowBlur = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "shadowColor", {
+            get: function () {
+                return this._ctx.shadowColor;
+            },
+            set: function (value) {
+                this._ctx.shadowColor = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "shadowOffsetX", {
+            get: function () {
+                return this._ctx.shadowOffsetX;
+            },
+            set: function (value) {
+                this._ctx.shadowOffsetX = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "shadowOffsetY", {
+            get: function () {
+                return this._ctx.shadowOffsetY;
+            },
+            set: function (value) {
+                this._ctx.shadowOffsetY = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "filter", {
+            get: function () {
+                return this._ctx.filter;
+            },
+            set: function (value) {
+                this._ctx.filter = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        CanvasWrapper.prototype.clearRect = function (x, y, w, h) {
+            this._ctx.clearRect(x * this._rto, y * this._rto, w * this._rto, h * this._rto);
+        };
+        CanvasWrapper.prototype.fillRect = function (x, y, w, h) {
+            this._ctx.fillRect(x * this._rto, y * this._rto, w * this._rto, h * this._rto);
+        };
+        CanvasWrapper.prototype.strokeRect = function (x, y, w, h) {
+            this._ctx.strokeRect(x * this._rto, y * this._rto, w * this._rto, h * this._rto);
+        };
+        CanvasWrapper.prototype.beginPath = function () {
+            this._ctx.beginPath();
+        };
+        CanvasWrapper.prototype.clip = function (path, fillRule) {
+            if (path === 'nonzero' || path === 'evenodd' || path === undefined) {
+                this._ctx.clip(path);
+            }
+            else {
+                this._ctx.clip(path, fillRule);
+            }
+        };
+        CanvasWrapper.prototype.fill = function (path, fillRule) {
+            if (path === 'nonzero' || path === 'evenodd' || path === undefined) {
+                this._ctx.fill(path);
+            }
+            else {
+                this._ctx.fill(path, fillRule);
+            }
+        };
+        CanvasWrapper.prototype.isPointInPath = function (path, x, y, fillRule) {
+            return isNumber(path) ?
+                this._ctx.isPointInPath(path * this._rto, x * this._rto, y) :
+                this._ctx.isPointInPath(path, x * this._rto, y * this._rto, fillRule);
+        };
+        CanvasWrapper.prototype.isPointInStroke = function (path, x, y) {
+            return isNumber(path) ?
+                this._ctx.isPointInStroke(path * this._rto, x * this._rto) :
+                this._ctx.isPointInStroke(path, x * this._rto, y * this._rto);
+        };
+        CanvasWrapper.prototype.stroke = function (path) {
+            if (path === undefined) {
+                this._ctx.stroke();
+                return;
+            }
+            this._ctx.stroke(path);
+        };
+        CanvasWrapper.prototype.drawFocusIfNeeded = function (path, element) {
+            if (element !== undefined) {
+                this._ctx.drawFocusIfNeeded(path, element);
+            }
+            else {
+                this._ctx.drawFocusIfNeeded(path);
+            }
+        };
+        CanvasWrapper.prototype.scrollPathIntoView = function (path) {
+            if (path !== undefined) {
+                this._ctx.scrollPathIntoView(path);
+            }
+            else {
+                this._ctx.scrollPathIntoView();
+            }
+        };
+        CanvasWrapper.prototype.fillText = function (text, x, y, maxWidth) {
+            var _this = this;
+            if (this._rto !== 1) {
+                this.font = this.font.replace(fontSizeRegex, function (w, m, u) {
+                    return (m * _this._rto) + u;
+                });
+            }
+            if (maxWidth === undefined) {
+                this._ctx.fillText(text, x * this._rto, y * this._rto);
+            }
+            else {
+                this._ctx.fillText(text, x * this._rto, y * this._rto, maxWidth * this._rto);
+            }
+            if (this._rto !== -1) {
+                this.font = this.font.replace(fontSizeRegex, function (w, m, u) {
+                    return (m / _this._rto) + u;
+                });
+            }
+        };
+        CanvasWrapper.prototype.measureText = function (text) {
+            return this._ctx.measureText(text);
+        };
+        CanvasWrapper.prototype.strokeText = function (text, x, y, maxWidth) {
+            var _this = this;
+            if (this._rto !== 1) {
+                this.font = this.font.replace(fontSizeRegex, function (w, m, u) {
+                    return (m * _this._rto) + u;
+                });
+            }
+            if (maxWidth === undefined) {
+                this._ctx.strokeText(text, x * this._rto, y * this._rto);
+            }
+            else {
+                this._ctx.strokeText(text, x * this._rto, y * this._rto, maxWidth * this._rto);
+            }
+            if (this._rto !== 1) {
+                this.font = this.font.replace(fontSizeRegex, function (w, m, u) {
+                    return (m / _this._rto) + u;
+                });
+            }
+        };
+        // tslint:disable-next-line:max-params
+        CanvasWrapper.prototype.drawImage = function (image, sx, sy, sw, sh, dx, dy, dw, dh) {
+            if (image instanceof HTMLCanvasElement) {
+                return this._drawImagePatchedSourceAndDest(image, sx, sy, sw, sh, dx, dy, dw, dh);
+            }
+            else {
+                return this._drawImagePatchedSource(image, sx, sy, sw, sh, dx, dy, dw, dh);
+            }
+        };
+        CanvasWrapper.prototype.createImageData = function (sw, sh) {
+            if (isNumber(sw)) {
+                return this._ctx.createImageData(sw, sh);
+            }
+            return this._ctx.createImageData(sw);
+        };
+        CanvasWrapper.prototype.getImageData = function (sx, sy, sw, sh) {
+            return this._ctx.getImageData(sx, sy, sw, sh);
+        };
+        // tslint:disable-next-line:max-params
+        CanvasWrapper.prototype.putImageData = function (imagedata, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight) {
+            if (dirtyX === undefined) {
+                this._ctx.putImageData(imagedata, dx, dy);
+            }
+            else {
+                this._ctx.putImageData(imagedata, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
+            }
+        };
+        Object.defineProperty(CanvasWrapper.prototype, "lineCap", {
+            get: function () {
+                return this._ctx.lineCap;
+            },
+            set: function (value) {
+                this._ctx.lineCap = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "lineDashOffset", {
+            get: function () {
+                return this._ctx.lineDashOffset;
+            },
+            set: function (value) {
+                this._ctx.lineDashOffset = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "lineJoin", {
+            get: function () {
+                return this._ctx.lineJoin;
+            },
+            set: function (value) {
+                this._ctx.lineJoin = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "lineWidth", {
+            get: function () {
+                return this._ctx.lineWidth;
+            },
+            set: function (value) {
+                this._ctx.lineWidth = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "miterLimit", {
+            get: function () {
+                return this._ctx.miterLimit;
+            },
+            set: function (value) {
+                this._ctx.miterLimit = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        CanvasWrapper.prototype.getLineDash = function () {
+            return this._ctx.getLineDash();
+        };
+        CanvasWrapper.prototype.setLineDash = function (segments) {
+            this._ctx.setLineDash(segments);
+        };
+        Object.defineProperty(CanvasWrapper.prototype, "direction", {
+            get: function () {
+                return this._ctx.direction;
+            },
+            set: function (value) {
+                this._ctx.direction = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "font", {
+            get: function () {
+                return this._ctx.font;
+            },
+            set: function (value) {
+                this._ctx.font = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "textAlign", {
+            get: function () {
+                return this._ctx.textAlign;
+            },
+            set: function (value) {
+                this._ctx.textAlign = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CanvasWrapper.prototype, "textBaseline", {
+            get: function () {
+                return this._ctx.textBaseline;
+            },
+            set: function (value) {
+                this._ctx.textBaseline = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        CanvasWrapper.prototype.arc = function (x, y, radius, startAngle, endAngle, anticlockwise) {
+            this._ctx.arc(x * this._rto, y * this._rto, radius * this._rto, startAngle, endAngle, anticlockwise);
+        };
+        CanvasWrapper.prototype.arcTo = function (x1, y1, x2, y2, radius) {
+            this._ctx.arcTo(x1 * this._rto, y1 * this._rto, x2 * this._rto, y2 * this._rto, radius * this._rto);
+        };
+        CanvasWrapper.prototype.bezierCurveTo = function (cp1x, cp1y, cp2x, cp2y, x, y) {
+            this._ctx.bezierCurveTo(cp1x * this._rto, cp1y * this._rto, cp2x * this._rto, cp2y * this._rto, x * this._rto, y * this._rto);
+        };
+        CanvasWrapper.prototype.closePath = function () {
+            this._ctx.closePath();
+        };
+        // tslint:disable-next-line:max-params
+        CanvasWrapper.prototype.ellipse = function (x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise) {
+            this._ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise);
+        };
+        CanvasWrapper.prototype.lineTo = function (x, y) {
+            this._ctx.lineTo(x * this._rto, y * this._rto);
+        };
+        CanvasWrapper.prototype.moveTo = function (x, y) {
+            this._ctx.moveTo(x * this._rto, y * this._rto);
+        };
+        CanvasWrapper.prototype.quadraticCurveTo = function (cpx, cpy, x, y) {
+            this._ctx.quadraticCurveTo(cpx * this._rto, cpy * this._rto, x * this._rto, y * this._rto);
+        };
+        CanvasWrapper.prototype.rect = function (x, y, w, h) {
+            this._ctx.rect(x * this._rto, y * this._rto, w * this._rto, h * this._rto);
+        };
+        // tslint:disable-next-line:max-params
+        CanvasWrapper.prototype._drawImageImpl = function (image, sx, sy, sw, sh, dx, dy, dw, dh) {
+            if (sw === undefined) {
+                this._ctx.drawImage(image, sx, sy);
+            }
+            else if (dx === undefined) {
+                this._ctx.drawImage(image, sx, sy, sw, sh);
+            }
+            else {
+                this._ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+            }
+        };
+        // there is a special case for retina
+        // if source argument is a canvas, we should not
+        // tslint:disable-next-line:max-params
+        CanvasWrapper.prototype._drawImagePatchedSource = function (image, sx, sy, sw, sh, dx, dy, dw, dh) {
+            this._drawImageImpl(image, sx * this._rto, sy * this._rto, sw === undefined ? sw : sw * this._rto, sh === undefined ? sh : sh * this._rto, dx === undefined ? dx : dx * this._rto, dy === undefined ? dy : dy * this._rto, dw === undefined ? dw : dw * this._rto, dh === undefined ? dh : dh * this._rto);
+        };
+        // tslint:disable-next-line:max-params
+        CanvasWrapper.prototype._drawImagePatchedSourceAndDest = function (image, sx, sy, sw, sh, dx, dy, dw, dh) {
+            // if it is 'long version' of drawImage
+            // see https://developer.mozilla.org/en/docs/Web/API/CanvasRenderingContext2D/drawImage
+            if (dx !== undefined) {
+                // then correct width and height of source image
+                // IE and Edge throw InvalidStateError if value is greater than width or height
+                // TODO: may be we should use first and second arguments too?
+                if ('width' in image) {
+                    sw = Math.min(image.width, Math.max(1, sw));
+                }
+                if ('height' in image) {
+                    sh = Math.min(image.height, Math.max(1, sh));
+                }
+            }
+            this._drawImageImpl(image, sx * this._rto, sy * this._rto, sw === undefined ? sw : sw * this._rto, sh === undefined ? sh : sh * this._rto, dx === undefined ? dx : dx * this._rto, dy === undefined ? dy : dy * this._rto, dw === undefined ? dw : dw * this._rto, dh === undefined ? dh : dh * this._rto);
+        };
+        return CanvasWrapper;
+    }());
+
+    /**
+     * Default font family.
+     * Must be used to generate font string when font is not specified.
+     */
+    var defaultFontFamily = "'Trebuchet MS', Roboto, Ubuntu, sans-serif";
+    /**
+     * Generates a font string, which can be used to set in canvas' font property.
+     * If no family provided, [defaultFontFamily] will be used.
+     */
+    function makeFont(size, family, style) {
+        if (style !== undefined) {
+            style = style + " ";
+        }
+        else {
+            style = '';
+        }
+        if (family === undefined) {
+            family = defaultFontFamily;
+        }
+        return "" + style + size + "px " + family;
+    }
+
+    var RendererConstants;
+    (function (RendererConstants) {
+        RendererConstants[RendererConstants["BorderSize"] = 1] = "BorderSize";
+        RendererConstants[RendererConstants["TickLength"] = 4] = "TickLength";
+        RendererConstants[RendererConstants["OffsetSize"] = 1] = "OffsetSize";
+    })(RendererConstants || (RendererConstants = {}));
+    var PriceAxisRendererOptionsProvider = /** @class */ (function () {
+        function PriceAxisRendererOptionsProvider(chartModel) {
+            this._rendererOptions = {
+                borderSize: 1 /* BorderSize */,
+                tickLength: 4 /* TickLength */,
+                offsetSize: 1 /* OffsetSize */,
+                fontSize: NaN,
+                font: '',
+                fontFamily: '',
+                color: '',
+                paddingBottom: 0,
+                paddingInner: 0,
+                paddingOuter: 0,
+                paddingTop: 0,
+                baselineOffset: 0,
+            };
+            this._chartModel = chartModel;
+        }
+        PriceAxisRendererOptionsProvider.prototype.options = function () {
+            var rendererOptions = this._rendererOptions;
+            var currentFontSize = this._fontSize();
+            var currentFontFamily = this._fontFamily();
+            if (rendererOptions.fontSize !== currentFontSize || rendererOptions.fontFamily !== currentFontFamily) {
+                rendererOptions.fontSize = currentFontSize;
+                rendererOptions.fontFamily = currentFontFamily;
+                rendererOptions.font = makeFont(currentFontSize, currentFontFamily);
+                rendererOptions.paddingTop = Math.floor(currentFontSize / 3.5);
+                rendererOptions.paddingBottom = rendererOptions.paddingTop;
+                rendererOptions.paddingInner = Math.max(Math.ceil(currentFontSize / 2 - rendererOptions.tickLength / 2), 0);
+                rendererOptions.paddingOuter = Math.ceil(currentFontSize / 2 + rendererOptions.tickLength / 2);
+                rendererOptions.baselineOffset = Math.round(currentFontSize / 5);
+            }
+            rendererOptions.color = this._textColor();
+            return this._rendererOptions;
+        };
+        PriceAxisRendererOptionsProvider.prototype._textColor = function () {
+            return this._chartModel.options().layout.textColor;
+        };
+        PriceAxisRendererOptionsProvider.prototype._fontSize = function () {
+            return this._chartModel.options().layout.fontSize;
+        };
+        PriceAxisRendererOptionsProvider.prototype._fontFamily = function () {
+            return this._chartModel.options().layout.fontFamily;
+        };
+        return PriceAxisRendererOptionsProvider;
+    }());
+
+    var GridRenderer = /** @class */ (function () {
+        function GridRenderer() {
+            this._data = null;
+        }
+        GridRenderer.prototype.setData = function (data) {
+            this._data = data;
+        };
+        GridRenderer.prototype.draw = function (ctx) {
+            if (this._data === null) {
+                return;
+            }
+            ctx.lineWidth = 1;
+            if (this._data.vertLinesVisible) {
+                ctx.strokeStyle = this._data.vertLinesColor;
+                setLineStyle(ctx, this._data.vertLineStyle);
+                ctx.beginPath();
+                for (var _i = 0, _a = this._data.timeMarks; _i < _a.length; _i++) {
+                    var timeMark = _a[_i];
+                    ctx.moveTo(timeMark.coord + 1, 0);
+                    ctx.lineTo(timeMark.coord + 1, this._data.h);
+                }
+                ctx.stroke();
+            }
+            if (this._data.horzLinesVisible) {
+                ctx.strokeStyle = this._data.horzLinesColor;
+                setLineStyle(ctx, this._data.horzLineStyle);
+                ctx.beginPath();
+                for (var _b = 0, _c = this._data.priceMarks; _b < _c.length; _b++) {
+                    var priceMark = _c[_b];
+                    ctx.moveTo(0, priceMark.coord);
+                    ctx.lineTo(this._data.w, priceMark.coord);
+                }
+                ctx.stroke();
+            }
+        };
+        return GridRenderer;
+    }());
+
+    var GridPaneView = /** @class */ (function () {
+        function GridPaneView(pane) {
+            this._renderer = new GridRenderer();
+            this._invalidated = true;
+            this._pane = pane;
+        }
+        GridPaneView.prototype.update = function () {
+            this._invalidated = true;
+        };
+        GridPaneView.prototype.renderer = function (height, width) {
+            if (this._invalidated) {
+                var gridOptions = this._pane.model().options().grid;
+                var data = {
+                    h: height,
+                    w: width,
+                    horzLinesVisible: gridOptions.horzLines.visible,
+                    vertLinesVisible: gridOptions.vertLines.visible,
+                    horzLinesColor: gridOptions.horzLines.color,
+                    vertLinesColor: gridOptions.vertLines.color,
+                    horzLineStyle: gridOptions.horzLines.style,
+                    vertLineStyle: gridOptions.vertLines.style,
+                    priceMarks: this._pane.defaultPriceScale().marks(),
+                    timeMarks: this._pane.model().timeScale().marks() || [],
+                };
+                this._renderer.setData(data);
+                this._invalidated = false;
+            }
+            return this._renderer;
+        };
+        return GridPaneView;
+    }());
+
+    var Grid = /** @class */ (function () {
+        function Grid() {
+            this._paneViews = new WeakMap();
+            this._invalidated = true;
+        }
+        Grid.prototype.paneViews = function (pane) {
+            var paneViews = this._paneViews.get(pane);
+            if (paneViews === undefined) {
+                paneViews = [new GridPaneView(pane)];
+                this._paneViews.set(pane, paneViews);
+            }
+            if (this._invalidated) {
+                paneViews.forEach(function (view) { return view.update(); });
+                this._invalidated = false;
+            }
+            return paneViews;
+        };
+        Grid.prototype.invalidate = function () {
+            this._invalidated = true;
+        };
+        return Grid;
+    }());
+
+    var InvalidationLevel;
+    (function (InvalidationLevel) {
+        InvalidationLevel[InvalidationLevel["None"] = 0] = "None";
+        InvalidationLevel[InvalidationLevel["Cursor"] = 1] = "Cursor";
+        InvalidationLevel[InvalidationLevel["Light"] = 2] = "Light";
+        InvalidationLevel[InvalidationLevel["Full"] = 3] = "Full";
+    })(InvalidationLevel || (InvalidationLevel = {}));
+    function mergePaneInvalidation(beforeValue, newValue) {
+        if (beforeValue === undefined) {
+            return newValue;
+        }
+        var level = Math.max(beforeValue.level, newValue.level);
+        var autoScale = beforeValue.autoScale || newValue.autoScale;
+        return { level: level, autoScale: autoScale };
+    }
+    var InvalidateMask = /** @class */ (function () {
+        function InvalidateMask(globalLevel) {
+            this._invalidatedPanes = new Map();
+            this._force = false;
+            this._fitContent = false;
+            this._targetTimeRange = null;
+            this._globalLevel = globalLevel;
+        }
+        InvalidateMask.prototype.invalidatePane = function (paneIndex, invalidation) {
+            var prevValue = this._invalidatedPanes.get(paneIndex);
+            var newValue = mergePaneInvalidation(prevValue, invalidation);
+            this._invalidatedPanes.set(paneIndex, newValue);
+        };
+        InvalidateMask.prototype.invalidateAll = function (level) {
+            this._globalLevel = Math.max(this._globalLevel, level);
+        };
+        InvalidateMask.prototype.fullInvalidation = function () {
+            return this._globalLevel;
+        };
+        InvalidateMask.prototype.invalidateForPane = function (paneIndex) {
+            var paneInvalidation = this._invalidatedPanes.get(paneIndex);
+            if (paneInvalidation === undefined) {
+                return {
+                    level: this._globalLevel,
+                };
+            }
+            return {
+                level: Math.max(this._globalLevel, paneInvalidation.level),
+                autoScale: paneInvalidation.autoScale,
+            };
+        };
+        InvalidateMask.prototype.setFitContent = function () {
+            this._fitContent = true;
+            this._targetTimeRange = null;
+        };
+        InvalidateMask.prototype.getFitContent = function () {
+            return this._fitContent;
+        };
+        InvalidateMask.prototype.setTargetTimeRange = function (range) {
+            this._targetTimeRange = range;
+            this._fitContent = false;
+        };
+        InvalidateMask.prototype.getTargetTimeRange = function () {
+            return this._targetTimeRange;
+        };
+        InvalidateMask.prototype.merge = function (other) {
+            var _this = this;
+            this._force = this._force || other._force;
+            if (other._fitContent) {
+                this.setFitContent();
+            }
+            if (other._targetTimeRange) {
+                this.setTargetTimeRange(other._targetTimeRange);
+            }
+            this._globalLevel = Math.max(this._globalLevel, other._globalLevel);
+            other._invalidatedPanes.forEach(function (invalidation, index) {
+                _this.invalidatePane(index, invalidation);
+            });
+        };
+        return InvalidateMask;
+    }());
+
+    var Magnet = /** @class */ (function () {
+        function Magnet(options) {
+            this._options = options;
+        }
+        Magnet.prototype.align = function (price, index, pane) {
+            var res = price;
+            if (this._options.mode === 0 /* Normal */) {
+                return res;
+            }
+            var defaultPriceScale = pane.defaultPriceScale();
+            // get the main source
+            var mainSource = defaultPriceScale.mainSource();
+            if (defaultPriceScale.isEmpty() || mainSource === null) {
+                return res;
+            }
+            var firstValue = mainSource.firstValue();
+            if (firstValue === null) {
+                return res;
+            }
+            var y = defaultPriceScale.priceToCoordinate(price, firstValue);
+            // get all serieses from the pane
+            var serieses = pane.dataSources().filter((function (ds) { return (ds instanceof Series); }));
+            var candidates = serieses.reduce(function (acc, series) {
+                if (pane.isOverlay(series)) {
+                    return acc;
+                }
+                var ps = series.priceScale();
+                var bars = series.bars();
+                if (ps.isEmpty() || !bars.contains(index)) {
+                    return acc;
+                }
+                var bar = bars.valueAt(index);
+                if (bar === null) {
+                    return acc;
+                }
+                var prices = [
+                    bar.value[3 /* Close */],
+                ];
+                // convert bar to pixels
+                var firstPrice = ensure(series.firstValue());
+                return acc.concat(prices.map(function (barPrice) { return ps.priceToCoordinate(barPrice, firstPrice, true); }));
+            }, []);
+            if (candidates.length === 0) {
+                return res;
+            }
+            candidates.sort(function (y1, y2) { return Math.abs(y1 - y) - Math.abs(y2 - y); });
+            var nearest = candidates[0];
+            res = defaultPriceScale.coordinateToPrice(nearest, firstValue);
+            return res;
+        };
+        return Magnet;
+    }());
+
+    var DEFAULT_STRETCH_FACTOR = 1000;
+    var Pane = /** @class */ (function () {
+        function Pane(timeScale, model) {
+            this._dataSources = [];
+            this._overlaySources = [];
+            this._height = 0;
+            this._width = 0;
+            this._stretchFactor = DEFAULT_STRETCH_FACTOR;
+            this._mainDataSource = null;
+            this._cachedOrderedSources = null;
+            this._destroyed = new Delegate();
+            this._timeScale = timeScale;
+            this._model = model;
+            this.model().mainPriceScaleOptionsChanged().subscribe(this.onPriceScaleOptionsChanged.bind(this), this);
+            this._defaultNonOverlayPriceScale = this._createPriceScale();
+        }
+        Pane.prototype.onPriceScaleOptionsChanged = function () {
+            this._defaultNonOverlayPriceScale.applyOptions(this._model.options().priceScale);
+        };
+        Pane.prototype.destroy = function () {
+            this.model().mainPriceScaleOptionsChanged().unsubscribeAll(this);
+            this._timeScale.barSpacingChanged().unsubscribeAll(this);
+            this._defaultNonOverlayPriceScale.modeChanged().unsubscribeAll(this);
+            this._dataSources.forEach(function (source) {
+                if (source.destroy) {
+                    source.destroy();
+                }
+            });
+            this._destroyed.fire();
+        };
+        Pane.prototype.stretchFactor = function () {
+            return this._stretchFactor;
+        };
+        Pane.prototype.setStretchFactor = function (factor) {
+            this._stretchFactor = factor;
+        };
+        Pane.prototype.model = function () {
+            return this._model;
+        };
+        Pane.prototype.width = function () {
+            return this._width;
+        };
+        Pane.prototype.height = function () {
+            return this._height;
+        };
+        Pane.prototype.setWidth = function (width) {
+            this._width = width;
+            this.updateAllViews();
+        };
+        Pane.prototype.setHeight = function (height) {
+            var _this = this;
+            this._height = height;
+            this._defaultNonOverlayPriceScale.setHeight(height);
+            // process overlays
+            this._dataSources.forEach(function (ds) {
+                if (_this.isOverlay(ds)) {
+                    var priceScale = ds.priceScale();
+                    if (priceScale !== null) {
+                        priceScale.setHeight(height);
+                    }
+                }
+            });
+            this.updateAllViews();
+        };
+        Pane.prototype.dataSources = function () {
+            return this._dataSources;
+        };
+        Pane.prototype.isOverlay = function (source) {
+            var priceScale = source.priceScale();
+            if (priceScale === null) {
+                return true;
+            }
+            return this._defaultNonOverlayPriceScale !== priceScale;
+        };
+        Pane.prototype.addDataSource = function (source, overlay, keepZorder) {
+            var zOrder = this._getZOrderMinMax().minZOrder - 1;
+            this._insertDataSource(source, overlay, zOrder);
+        };
+        Pane.prototype.removeDataSource = function (source) {
+            var index = this._dataSources.indexOf(source);
+            assert(index !== -1, 'removeDataSource: invalid data source');
+            this._dataSources.splice(index, 1);
+            if (source === this._mainDataSource) {
+                this._mainDataSource = null;
+            }
+            var overlayIndex = this._overlaySources.indexOf(source);
+            if (overlayIndex !== -1) {
+                this._overlaySources.splice(overlayIndex, 1);
+            }
+            var priceScale = source.priceScale();
+            // if source has owner, it returns owner's price scale
+            // and it does not have source in their list
+            if (priceScale && priceScale.dataSources().indexOf(source) >= 0) {
+                priceScale.removeDataSource(source);
+            }
+            if (priceScale && priceScale.mainSource() === null) {
+                var dataSourceCount = priceScale.dataSources().length;
+                assert(dataSourceCount === 0, 'Invalid priceScale state: empty mainSource but non-empty data sources=' + dataSourceCount);
+                if (priceScale !== this._defaultNonOverlayPriceScale) {
+                    priceScale.modeChanged().unsubscribeAll(this);
+                }
+            }
+            if (source instanceof PriceDataSource) {
+                this._processMainSourceChange();
+            }
+            if (priceScale && source instanceof PriceDataSource) {
+                priceScale.invalidateSourcesCache();
+                this.recalculatePriceScale(priceScale);
+            }
+            this._cachedOrderedSources = null;
+        };
+        Pane.prototype.priceScalePosition = function () {
+            var position = this._model.options().priceScale.position;
+            return position === 'none' ? 'overlay' : position;
+        };
+        Pane.prototype.startScalePrice = function (priceScale, x) {
+            priceScale.startScale(x);
+        };
+        Pane.prototype.scalePriceTo = function (priceScale, x) {
+            priceScale.scaleTo(x);
+            // TODO: be more smart and update only affected views
+            this.updateAllViews();
+        };
+        Pane.prototype.endScalePrice = function (priceScale) {
+            priceScale.endScale();
+        };
+        Pane.prototype.startScrollPrice = function (priceScale, x) {
+            priceScale.startScroll(x);
+        };
+        Pane.prototype.scrollPriceTo = function (priceScale, x) {
+            priceScale.scrollTo(x);
+            this.updateAllViews();
+        };
+        Pane.prototype.endScrollPrice = function (priceScale) {
+            priceScale.endScroll();
+        };
+        Pane.prototype.setPriceAutoScale = function (priceScale, autoScale) {
+            priceScale.setMode({
+                autoScale: autoScale,
+            });
+            if (this._timeScale.isEmpty()) {
+                priceScale.setPriceRange(null);
+                return;
+            }
+            this.recalculatePriceScale(priceScale);
+        };
+        Pane.prototype.updateAllViews = function () {
+            this._dataSources.forEach(function (source) {
+                source.updateAllViews();
+            });
+        };
+        Pane.prototype.defaultPriceScale = function () {
+            var mainDataSource = this.mainDataSource();
+            var res = mainDataSource !== null ? mainDataSource.priceScale() : null;
+            // Every Pane MUST have a price scale! This is mostly a fix of broken charts with empty panes...
+            if (res === null) {
+                res = this._defaultNonOverlayPriceScale;
+            }
+            return res;
+        };
+        Pane.prototype.mainDataSource = function () {
+            return this._mainDataSource;
+        };
+        Pane.prototype.recalculatePriceScale = function (priceScale) {
+            if (priceScale === null || !priceScale.isAutoScale()) {
+                return;
+            }
+            this._recalculatePriceScaleImpl(priceScale);
+        };
+        Pane.prototype.resetPriceScale = function (priceScale) {
+            var visibleBars = this._timeScale.visibleBars();
+            priceScale.setMode({ autoScale: true });
+            if (visibleBars !== null) {
+                priceScale.recalculatePriceRange(visibleBars);
+            }
+            this.updateAllViews();
+        };
+        Pane.prototype.momentaryAutoScale = function () {
+            this._recalculatePriceScaleImpl(this._defaultNonOverlayPriceScale);
+        };
+        Pane.prototype.recalculate = function () {
+            var _this = this;
+            this.recalculatePriceScale(this._defaultNonOverlayPriceScale);
+            this._dataSources.forEach(function (ds) {
+                if (_this.isOverlay(ds)) {
+                    _this.recalculatePriceScale(ds.priceScale());
+                }
+            });
+            this.updateAllViews();
+            this._model.updatePane(this);
+        };
+        Pane.prototype.isEmpty = function () {
+            return this._mainDataSource === null;
+        };
+        Pane.prototype.containsSeries = function () {
+            return this._dataSources.some(function (ds) { return ds instanceof Series; });
+        };
+        Pane.prototype.orderedSources = function () {
+            if (this._cachedOrderedSources === null) {
+                this._cachedOrderedSources = sortSources(this._dataSources);
+            }
+            return this._cachedOrderedSources;
+        };
+        Pane.prototype.onDestroyed = function () {
+            return this._destroyed;
+        };
+        Pane.prototype._findSuitableScale = function (source, preferredScale) {
+            if (preferredScale !== 'overlay') {
+                return this._defaultNonOverlayPriceScale;
+            }
+            return this._createPriceScale();
+        };
+        Pane.prototype._recalculatePriceScaleImpl = function (priceScale) {
+            // TODO: can use this checks
+            var sourceForAutoScale = priceScale.sourcesForAutoScale();
+            if (sourceForAutoScale && sourceForAutoScale.length > 0 && !this._timeScale.isEmpty()) {
+                var visibleBars = this._timeScale.visibleBars();
+                if (visibleBars !== null) {
+                    priceScale.recalculatePriceRange(visibleBars);
+                }
+            }
+            priceScale.updateAllViews();
+        };
+        Pane.prototype._getZOrderMinMax = function () {
+            var sources = this.orderedSources();
+            if (sources.length === 0) {
+                return { minZOrder: 0, maxZOrder: 0 };
+            }
+            var minZOrder = 0;
+            var maxZOrder = 0;
+            for (var j = 0; j < sources.length; j++) {
+                var ds = sources[j];
+                var zOrder = ds.zorder();
+                if (zOrder !== null) {
+                    if (zOrder < minZOrder) {
+                        minZOrder = zOrder;
+                    }
+                    if (zOrder > maxZOrder) {
+                        maxZOrder = zOrder;
+                    }
+                }
+            }
+            return { minZOrder: minZOrder, maxZOrder: maxZOrder };
+        };
+        Pane.prototype._insertDataSource = function (source, overlay, zOrder) {
+            var priceScalePosition = 'overlay';
+            var priceScale = null;
+            if (!overlay) {
+                var optionsPosition = this.model().options().priceScale.position;
+                priceScalePosition = optionsPosition === 'none' ? 'overlay' : optionsPosition;
+            }
+            if (source instanceof PriceDataSource) {
+                priceScale = this._findSuitableScale(source, priceScalePosition);
+            }
+            this._dataSources.push(source);
+            if (overlay) {
+                this._overlaySources.push(source);
+            }
+            if (priceScale !== null) {
+                priceScale.addDataSource(source);
+                source.setPriceScale(priceScale);
+            }
+            source.setZorder(zOrder);
+            this._processMainSourceChange();
+            if (source instanceof PriceDataSource) {
+                this.recalculatePriceScale(priceScale);
+            }
+            this._cachedOrderedSources = null;
+        };
+        Pane.prototype._onPriceScaleModeChanged = function (priceScale, oldMode, newMode) {
+            if (oldMode.mode === newMode.mode) {
+                return;
+            }
+            // momentary auto scale if we toggle percentage/indexedTo100 mode
+            this._recalculatePriceScaleImpl(priceScale);
+        };
+        Pane.prototype._processMainSourceChange = function () {
+            if (this._mainDataSource === null || this._overlaySources.indexOf(this._mainDataSource) !== -1) {
+                // first check non-overlay sources
+                for (var _i = 0, _a = this._dataSources; _i < _a.length; _i++) {
+                    var source = _a[_i];
+                    if (source instanceof PriceDataSource && !this.isOverlay(source)) {
+                        this._setMainSource(source);
+                        return;
+                    }
+                }
+                // then check overlay sources
+                for (var _b = 0, _c = this._overlaySources; _b < _c.length; _b++) {
+                    var source = _c[_b];
+                    if (source instanceof PriceDataSource) {
+                        this._setMainSource(source);
+                        return;
+                    }
+                }
+            }
+        };
+        Pane.prototype._setMainSource = function (source) {
+            var priceScale = ensureNotNull(source.priceScale());
+            this.defaultPriceScale().modeChanged().unsubscribeAll(this);
+            priceScale.modeChanged().subscribe(this._onPriceScaleModeChanged.bind(this, priceScale), this);
+            this._mainDataSource = source;
+        };
+        Pane.prototype._createPriceScale = function () {
+            var priceScale = new PriceScale(clone(this._model.options().priceScale), this._model.options().layout, this._model.options().localization);
+            priceScale.setHeight(this.height());
+            return priceScale;
+        };
+        return Pane;
+    }());
+
+    var getMonth = function (date) { return date.getUTCMonth() + 1; };
+    var getDay = function (date) { return date.getUTCDate(); };
+    var getYear = function (date) { return date.getUTCFullYear(); };
+    var dd = function (date) { return numberToStringWithLeadingZero(getDay(date), 2); };
+    var MMM = function (date, locale) { return new Date(date.getUTCFullYear(), date.getUTCMonth(), 1)
+        .toLocaleString(locale, { month: 'short' }); };
+    var MM = function (date) { return numberToStringWithLeadingZero(getMonth(date), 2); };
+    var yy = function (date) { return numberToStringWithLeadingZero(getYear(date) % 100, 2); };
+    var yyyy = function (date) { return numberToStringWithLeadingZero(getYear(date), 4); };
+    /*
+     Map of date formatting functions
+     */
+    var dateFormatFunctions = {
+        'dd MMM \'yy': function (date, locale) { return dd(date) + " " + MMM(date, locale) + " '" + yy(date); },
+        'yyyy-MM-dd': function (date, locale) { return yyyy(date) + "-" + MM(date) + "-" + dd(date); },
+        'yy-MM-dd': function (date, locale) { return yy(date) + "-" + MM(date) + "-" + dd(date); },
+        'yy/MM/dd': function (date, locale) { return yy(date) + "/" + MM(date) + "/" + dd(date); },
+        'yyyy/MM/dd': function (date, locale) { return yyyy(date) + "/" + MM(date) + "/" + dd(date); },
+        'dd-MM-yyyy': function (date, locale) { return dd(date) + "-" + MM(date) + "-" + yyyy(date); },
+        'dd-MM-yy': function (date, locale) { return dd(date) + "-" + MM(date) + "-" + yy(date); },
+        'dd/MM/yy': function (date, locale) { return dd(date) + "/" + MM(date) + "/" + yy(date); },
+        'dd/MM/yyyy': function (date, locale) { return dd(date) + "/" + MM(date) + "/" + yyyy(date); },
+        'MM/dd/yy': function (date, locale) { return MM(date) + "/" + dd(date) + "/" + yy(date); },
+        'MM/dd/yyyy': function (date, locale) { return MM(date) + "/" + dd(date) + "/" + yyyy(date); },
+    };
+
+    var DateFormatter = /** @class */ (function () {
+        function DateFormatter(dateFormat, locale) {
+            if (dateFormat === void 0) { dateFormat = 'yyyy-MM-dd'; }
+            if (locale === void 0) { locale = 'default'; }
+            this._dateFormatFunc = dateFormatFunctions[dateFormat];
+            this._locale = locale;
+        }
+        DateFormatter.prototype.format = function (date) {
+            return this._dateFormatFunc(date, this._locale);
+        };
+        return DateFormatter;
+    }());
+
+    var TimeFormatter = /** @class */ (function () {
+        function TimeFormatter(format) {
+            this._formatStr = format || '%h:%m:%s';
+        }
+        TimeFormatter.prototype.format = function (date) {
+            return this._formatStr.replace('%h', numberToStringWithLeadingZero(date.getUTCHours(), 2)).
+                replace('%m', numberToStringWithLeadingZero(date.getUTCMinutes(), 2)).
+                replace('%s', numberToStringWithLeadingZero(date.getUTCSeconds(), 2));
+        };
+        return TimeFormatter;
+    }());
+
+    var defaultParams = {
+        dateFormat: 'yyyy-MM-dd',
+        timeFormat: '%h:%m:%s',
+        dateTimeSeparator: ' ',
+        locale: 'default',
+    };
+    var DateTimeFormatter = /** @class */ (function () {
+        function DateTimeFormatter(params) {
+            if (params === void 0) { params = {}; }
+            var formatterParams = __assign({}, defaultParams, params);
+            this._dateFormatter = new DateFormatter(formatterParams.dateFormat, formatterParams.locale);
+            this._timeFormatter = new TimeFormatter(formatterParams.timeFormat);
+            this._separator = formatterParams.dateTimeSeparator;
+        }
+        DateTimeFormatter.prototype.format = function (dateTime) {
+            return "" + this._dateFormatter.format(dateTime) + this._separator + this._timeFormatter.format(dateTime);
+        };
+        return DateTimeFormatter;
+    }());
+
+    var BarsRange = /** @class */ (function () {
+        function BarsRange(firstBar, lastBar) {
+            assert(firstBar <= lastBar, 'The last bar in the bars range should be greater than or equal to the first bar');
+            this._firstBar = firstBar;
+            this._lastBar = lastBar;
+        }
+        BarsRange.prototype.firstBar = function () {
+            return this._firstBar;
+        };
+        BarsRange.prototype.lastBar = function () {
+            return this._lastBar;
+        };
+        BarsRange.prototype.count = function () {
+            return this._lastBar - this._firstBar + 1;
+        };
+        BarsRange.prototype.contains = function (index) {
+            return this._firstBar <= index && index <= this._lastBar;
+        };
+        BarsRange.prototype.equals = function (other) {
+            return this._firstBar === other.firstBar() && this._lastBar === other.lastBar();
+        };
+        return BarsRange;
+    }());
+
+    var FormattedLabelsCache = /** @class */ (function () {
+        function FormattedLabelsCache(format, size) {
+            if (size === void 0) { size = 50; }
+            this._actualSize = 0;
+            this._usageTick = 1;
+            this._oldestTick = 1;
+            this._cache = new Map();
+            this._tick2Labels = new Map();
+            this._format = format;
+            this._maxSize = size;
+        }
+        FormattedLabelsCache.prototype.format = function (value) {
+            var tick = this._cache.get(value.valueOf());
+            if (tick !== undefined) {
+                return tick.string;
+            }
+            if (this._actualSize === this._maxSize) {
+                var oldestValue = this._tick2Labels.get(this._oldestTick);
+                this._tick2Labels.delete(this._oldestTick);
+                this._cache.delete(ensureDefined(oldestValue));
+                this._oldestTick++;
+                this._actualSize--;
+            }
+            var str = this._format(value);
+            this._cache.set(value.valueOf(), { string: str, tick: this._usageTick });
+            this._tick2Labels.set(this._usageTick, value.valueOf());
+            this._actualSize++;
+            this._usageTick++;
+            return str;
+        };
+        return FormattedLabelsCache;
+    }());
+
+    function sortByIndexAsc(a, b) {
+        return a.index - b.index;
+    }
+    var TickMarks = /** @class */ (function () {
+        function TickMarks() {
+            this._minIndex = Infinity;
+            this._maxIndex = -Infinity;
+            // Hash of tick marks
+            this._marksByIndex = new Map();
+            // Sparse array with ordered arrays of tick marks
+            this._marksBySpan = [];
+            this._changed = new Delegate();
+            this._cache = null;
+            this._maxBar = NaN;
+        }
+        TickMarks.prototype.reset = function () {
+            this._marksByIndex.clear();
+            this._marksBySpan = [];
+            this._minIndex = Infinity;
+            this._maxIndex = -Infinity;
+            this._cache = null;
+            this._changed.fire();
+        };
+        // tslint:disable-next-line:cyclomatic-complexity
+        TickMarks.prototype.merge = function (tickMarks) {
+            var marksBySpan = this._marksBySpan;
+            var unsortedSpans = {};
+            for (var _i = 0, tickMarks_1 = tickMarks; _i < tickMarks_1.length; _i++) {
+                var tickMark = tickMarks_1[_i];
+                var index = tickMark.index;
+                var span = tickMark.span;
+                var existingTickMark = this._marksByIndex.get(tickMark.index);
+                if (existingTickMark) {
+                    if (existingTickMark.index === tickMark.index && existingTickMark.span === tickMark.span) {
+                        // We don't need to do anything, just update time (if it differs)
+                        existingTickMark.time = tickMark.time;
+                        continue;
+                    }
+                    // TickMark exists, but it differs. We need to remove it first
+                    this._removeTickMark(existingTickMark);
+                }
+                // Set into hash
+                this._marksByIndex.set(index, tickMark);
+                if (this._minIndex > index) { // It's not the same as `this.minIndex > index`, mind the NaN
+                    this._minIndex = index;
+                }
+                if (this._maxIndex < index) {
+                    this._maxIndex = index;
+                }
+                // Store it in span arrays
+                var marks = marksBySpan[span];
+                if (marks === undefined) {
+                    marks = [];
+                    marksBySpan[span] = marks;
+                }
+                marks.push(tickMark);
+                unsortedSpans[span] = true;
+            }
+            // Clean up and sort arrays
+            for (var span = marksBySpan.length; span--;) {
+                var marks = marksBySpan[span];
+                if (marks === undefined) {
+                    continue;
+                }
+                if (marks.length === 0) {
+                    delete marksBySpan[span];
+                }
+                if (unsortedSpans[span]) {
+                    marks.sort(sortByIndexAsc);
+                }
+            }
+            this._cache = null;
+            this._changed.fire();
+        };
+        TickMarks.prototype.indexToTime = function (index) {
+            var tickMark = this._marksByIndex.get(index);
+            if (tickMark === undefined) {
+                return null;
+            }
+            return tickMark.time;
+        };
+        TickMarks.prototype.nearestIndex = function (time) {
+            var left = this._minIndex;
+            var right = this._maxIndex;
+            while (right - left > 2) {
+                if (ensureDefined(this._marksByIndex.get(left)).time.timestamp * 1000 === time) {
+                    return left;
+                }
+                if (ensureDefined(this._marksByIndex.get(right)).time.timestamp * 1000 === time) {
+                    return right;
+                }
+                var center = Math.round((left + right) / 2);
+                if (ensureDefined(this._marksByIndex.get(center)).time.timestamp * 1000 > time) {
+                    right = center;
+                }
+                else {
+                    left = center;
+                }
+            }
+            return left;
+        };
+        TickMarks.prototype.build = function (spacing, maxWidth) {
+            var maxBar = Math.ceil(maxWidth / spacing);
+            if (this._maxBar === maxBar && this._cache) {
+                return this._cache;
+            }
+            this._maxBar = maxBar;
+            var marks = [];
+            for (var span = this._marksBySpan.length; span--;) {
+                if (!this._marksBySpan[span]) {
+                    continue;
+                }
+                // Built tickMarks are now prevMarks, and marks it as new array
+                var prevMarks = marks;
+                marks = [];
+                var prevMarksLength = prevMarks.length;
+                var prevMarksPointer = 0;
+                var currentSpan = ensureDefined(this._marksBySpan[span]);
+                var currentSpanLength = currentSpan.length;
+                var rightIndex = Infinity;
+                var leftIndex = -Infinity;
+                for (var i = 0; i < currentSpanLength; i++) {
+                    var mark = currentSpan[i];
+                    var currentIndex = mark.index;
+                    // Determine indexes with which current index will be compared
+                    // All marks to the right is moved to new array
+                    while (prevMarksPointer < prevMarksLength) {
+                        var lastMark = prevMarks[prevMarksPointer];
+                        var lastIndex = lastMark.index;
+                        if (lastIndex < currentIndex) {
+                            prevMarksPointer++;
+                            marks.push(lastMark);
+                            leftIndex = lastIndex;
+                            rightIndex = Infinity;
+                        }
+                        else {
+                            rightIndex = lastIndex;
+                            break;
+                        }
+                    }
+                    if (rightIndex - currentIndex >= maxBar && currentIndex - leftIndex >= maxBar) {
+                        // TickMark fits. Place it into new array
+                        marks.push(mark);
+                        leftIndex = currentIndex;
+                    }
+                }
+                // Place all unused tickMarks into new array;
+                for (; prevMarksPointer < prevMarksLength; prevMarksPointer++) {
+                    marks.push(prevMarks[prevMarksPointer]);
+                }
+            }
+            this._cache = marks;
+            return this._cache;
+        };
+        TickMarks.prototype._removeTickMark = function (tickMark) {
+            var index = tickMark.index;
+            if (this._marksByIndex.get(index) !== tickMark) {
+                return;
+            }
+            this._marksByIndex.delete(index);
+            if (index <= this._minIndex) {
+                this._minIndex++;
+            }
+            if (index >= this._maxIndex) {
+                this._maxIndex--;
+            }
+            if (this._maxIndex < this._minIndex) {
+                this._minIndex = Infinity;
+                this._maxIndex = -Infinity;
+            }
+            var spanArray = ensureDefined(this._marksBySpan[tickMark.span]);
+            var position = spanArray.indexOf(tickMark);
+            if (position !== -1) {
+                // Keeps array sorted
+                spanArray.splice(position, 1);
+            }
+        };
+        return TickMarks;
+    }());
+
+    /**
+     * This is the collection of time points, that allows to store and find the every time point using it's index.
+     */
+    var TimePoints = /** @class */ (function () {
+        function TimePoints() {
+            this._items = [];
+        }
+        TimePoints.prototype.clear = function () {
+            this._items = [];
+        };
+        TimePoints.prototype.size = function () {
+            return this._items.length;
+        };
+        TimePoints.prototype.firstIndex = function () {
+            return this._offsetToIndex(0);
+        };
+        TimePoints.prototype.lastIndex = function () {
+            return this._offsetToIndex(this._items.length - 1);
+        };
+        TimePoints.prototype.merge = function (index, values) {
+            if (values.length === 0) {
+                return;
+            }
+            // assume that 'values' contains at least one TimePoint
+            if (this._items.length === 0) {
+                this._items = values;
+                return;
+            }
+            var start = index;
+            if (start < 0) {
+                var n = Math.abs(start);
+                if (values.length < n) {
+                    return;
+                }
+                // tslint:disable-next-line:prefer-array-literal
+                this._items = new Array(n).concat(this._items);
+                // tslint:disable-next-line:no-shadowed-variable
+                for (var i_1 = 0; i_1 < values.length; ++i_1) {
+                    this._items[index + i_1] = values[i_1];
+                }
+                return;
+            }
+            var i = start;
+            for (; i < this._items.length && (i - start) < values.length; ++i) {
+                this._items[i] = values[i - start];
+            }
+            var end = start + values.length;
+            if (end > this._items.length) {
+                var n = end - this._items.length;
+                for (var j = i; j < i + n; ++j) {
+                    this._items.push(values[j - start]);
+                }
+            }
+        };
+        TimePoints.prototype.valueAt = function (index) {
+            var offset = this._indexToOffset(index);
+            if (offset !== null) {
+                return this._items[offset];
+            }
+            return null;
+        };
+        TimePoints.prototype.indexOf = function (time, findNearest) {
+            if (this._items.length < 1) {
+                // no time points available
+                return null;
+            }
+            if (time > this._items[this._items.length - 1].timestamp) {
+                // special case
+                return findNearest ? this._items.length - 1 : null;
+            }
+            for (var i = 0; i < this._items.length; ++i) {
+                if (time === this._items[i].timestamp) {
+                    return i;
+                }
+                if (time < this._items[i].timestamp) {
+                    return findNearest ? i : null;
+                }
+            }
+            // in fact, this code is unreachable because we already
+            // have special case for time > this._items[this._items.length - 1]
+            return null;
+        };
+        TimePoints.prototype.closestIndexLeft = function (time) {
+            var items = this._items;
+            if (!items.length) {
+                return null;
+            }
+            if (Number.isNaN(time.timestamp)) {
+                return null;
+            }
+            var maxOffset = items.length - 1;
+            var maxTime = items[maxOffset];
+            if (time >= maxTime) {
+                return maxOffset;
+            }
+            var minOffset = 0;
+            var minTime = items[minOffset];
+            if (time < minTime) {
+                return null;
+            }
+            else if (time === minTime) {
+                return minOffset;
+            }
+            // binary search
+            while (maxOffset > minOffset + 1) {
+                var testOffset = (minOffset + maxOffset) >> 1;
+                var testValue = items[testOffset];
+                if (testValue.timestamp > time.timestamp) {
+                    maxOffset = testOffset;
+                }
+                else if (testValue.timestamp < time.timestamp) {
+                    minOffset = testOffset;
+                }
+                else if (testValue.timestamp === time.timestamp) {
+                    return testOffset;
+                }
+                else {
+                    return null;
+                }
+            }
+            return minOffset;
+        };
+        TimePoints.prototype._offsetToIndex = function (offset) {
+            if (0 <= offset && offset < this.size()) {
+                return offset;
+            }
+            return null;
+        };
+        TimePoints.prototype._indexToOffset = function (index) {
+            if (0 <= index && index < this.size()) {
+                return index;
+            }
+            return null;
+        };
+        return TimePoints;
+    }());
+
+    var Constants$2;
+    (function (Constants) {
+        Constants[Constants["DefaultAnimationDuration"] = 400] = "DefaultAnimationDuration";
+        Constants[Constants["MaxBarSpacing"] = 50] = "MaxBarSpacing";
+        Constants[Constants["MinBarSpacing"] = 0.5] = "MinBarSpacing";
+        Constants[Constants["MinVisibleBarsCount"] = 5] = "MinVisibleBarsCount";
+    })(Constants$2 || (Constants$2 = {}));
+    var MarkSpanBorder;
+    (function (MarkSpanBorder) {
+        MarkSpanBorder[MarkSpanBorder["Minute"] = 20] = "Minute";
+        MarkSpanBorder[MarkSpanBorder["Hour"] = 30] = "Hour";
+        MarkSpanBorder[MarkSpanBorder["Day"] = 40] = "Day";
+        MarkSpanBorder[MarkSpanBorder["Week"] = 50] = "Week";
+        MarkSpanBorder[MarkSpanBorder["Month"] = 60] = "Month";
+        MarkSpanBorder[MarkSpanBorder["Year"] = 70] = "Year";
+    })(MarkSpanBorder || (MarkSpanBorder = {}));
+    var TimeScale = /** @class */ (function () {
+        function TimeScale(model, options, localizationOptions) {
+            this._width = 0;
+            this._baseIndexOrNull = null;
+            this._points = new TimePoints();
+            this._barSpacingChanged = new Delegate();
+            this._scrollStartPoint = null;
+            this._scaleStartPoint = null;
+            this._tickMarks = new TickMarks();
+            this._formattedBySpan = new Map();
+            this._visibleBars = null;
+            this._visibleBarsInvalidated = true;
+            this._visibleBarsChanged = new Delegate();
+            this._optionsApplied = new Delegate();
+            this._leftEdgeIndex = null;
+            this._commonTransitionStartState = null;
+            this._timeMarksCache = null;
+            this._labels = [];
+            this._options = options;
+            this._localizationOptions = localizationOptions;
+            this._rightOffset = options.rightOffset;
+            this._barSpacing = getValidBarSpacing(options.barSpacing);
+            this._model = model;
+            this._updateDateTimeFormatter();
+        }
+        TimeScale.prototype.options = function () {
+            return this._options;
+        };
+        TimeScale.prototype.applyLocalizationOptions = function (localizationOptions) {
+            merge(this._localizationOptions, localizationOptions);
+            this._invalidateTickMarks();
+            this._updateDateTimeFormatter();
+        };
+        TimeScale.prototype.applyOptions = function (options, localizationOptions) {
+            merge(this._options, options);
+            if (this._options.fixLeftEdge) {
+                var firstIndex = this._points.firstIndex();
+                if (firstIndex !== null) {
+                    this.setLeftEdgeFix(firstIndex);
+                }
+            }
+            else {
+                this._leftEdgeIndex = null;
+            }
+            if (options.rightOffset !== undefined) {
+                this.setRightOffset(options.rightOffset);
+            }
+            if (options.barSpacing !== undefined) {
+                this.setBarSpacing(options.barSpacing);
+            }
+            this._invalidateTickMarks();
+            this._updateDateTimeFormatter();
+            this._optionsApplied.fire();
+        };
+        TimeScale.prototype.isEmpty = function () {
+            return this._width === 0 || this._points.size() === 0;
+        };
+        TimeScale.prototype.visibleBars = function () {
+            if (this._visibleBarsInvalidated) {
+                this._visibleBarsInvalidated = false;
+                this._updateVisibleBars();
+            }
+            return this._visibleBars;
+        };
+        TimeScale.prototype.tickMarks = function () {
+            return this._tickMarks;
+        };
+        TimeScale.prototype.points = function () {
+            return this._points;
+        };
+        TimeScale.prototype.width = function () {
+            return this._width;
+        };
+        TimeScale.prototype.setWidth = function (width) {
+            if (!isFinite(width) || width <= 0) {
+                return;
+            }
+            if (this._width === width) {
+                return;
+            }
+            this._visibleBarsInvalidated = true;
+            if (this._options.lockVisibleTimeRangeOnResize && this._width) {
+                // recalculate bar spacing
+                var newBarSpacing = this._barSpacing * width / this._width;
+                this._setBarSpacing(newBarSpacing);
+            }
+            // if time scale is scrolled to the end of data and we have fixed right edge
+            // keep left edge instead of right
+            // we need it to avoid "shaking" if the last bar visibility affects time scale width
+            if (this._leftEdgeIndex !== null) {
+                var firstVisibleBar = ensureNotNull(this.visibleBars()).firstBar();
+                // firstVisibleBar could be less than this._leftEdgeIndex
+                // since index is a center of bar
+                if (firstVisibleBar <= this._leftEdgeIndex) {
+                    var delta = this._width - width;
+                    // reduce  _rightOffset means move right
+                    // we could move more than required - this will be fixed by _correctOffset()
+                    this._rightOffset -= Math.round(delta / this._barSpacing) + 1;
+                }
+            }
+            this._width = width;
+            this._correctOffset();
+        };
+        TimeScale.prototype.indexToCoordinate = function (index, keepFloat) {
+            if (this.isEmpty() || !isInteger(index)) {
+                return 0;
+            }
+            var baseIndex = this.baseIndex();
+            var deltaFromRight = baseIndex + this._rightOffset - index;
+            var coordinate = this._width - (deltaFromRight + 0.5) * this._barSpacing;
+            if (keepFloat) {
+                return coordinate;
+            }
+            return Math.round(coordinate);
+        };
+        TimeScale.prototype.indexesToCoordinates = function (points, visibleRange) {
+            var baseIndex = this.baseIndex();
+            var indexFrom = (visibleRange === undefined) ? 0 : visibleRange.from;
+            var indexTo = (visibleRange === undefined) ? points.length : visibleRange.to;
+            for (var i = indexFrom; i < indexTo; i++) {
+                var index = points[i].time;
+                var deltaFromRight = baseIndex + this._rightOffset - index;
+                var coordinate = this._width - (deltaFromRight + 0.5) * this._barSpacing;
+                points[i].x = Math.round(coordinate);
+            }
+        };
+        TimeScale.prototype.indexToUserTime = function (index) {
+            return this._tickMarks.indexToTime(index);
+        };
+        TimeScale.prototype.coordinateToIndex = function (x) {
+            return Math.ceil(this._coordinateToFloatIndex(x));
+        };
+        TimeScale.prototype.setRightOffset = function (offset) {
+            this._visibleBarsInvalidated = true;
+            this._rightOffset = offset;
+            this._correctOffset();
+            this._model.recalculateAllPanes();
+            this._model.lightUpdate();
+        };
+        TimeScale.prototype.barSpacing = function () {
+            return this._barSpacing;
+        };
+        TimeScale.prototype.setBarSpacing = function (newBarSpacing) {
+            this._setBarSpacing(newBarSpacing);
+            // do not allow scroll out of visible bars
+            this._correctOffset();
+        };
+        TimeScale.prototype.barSpacingChanged = function () {
+            return this._barSpacingChanged;
+        };
+        TimeScale.prototype.rightOffset = function () {
+            return this._rightOffset;
+        };
+        TimeScale.prototype.marks = function () {
+            if (this.isEmpty()) {
+                return null;
+            }
+            if (this._timeMarksCache !== null) {
+                return this._timeMarksCache;
+            }
+            var spacing = this._barSpacing;
+            var fontSize = this._model.options().layout.fontSize;
+            var maxLabelWidth = (fontSize + 4) * 5;
+            var indexPerLabel = Math.round(maxLabelWidth / spacing);
+            var visibleBars = ensureNotNull(this.visibleBars());
+            var firstBar = Math.max(visibleBars.firstBar(), visibleBars.firstBar() - indexPerLabel);
+            var lastBar = Math.max(visibleBars.lastBar(), visibleBars.lastBar() - indexPerLabel);
+            var items = this._tickMarks.build(spacing, maxLabelWidth);
+            var targetIndex = 0;
+            for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+                var tm = items_1[_i];
+                if (!(firstBar <= tm.index && tm.index <= lastBar)) {
+                    continue;
+                }
+                var time = this._tickMarks.indexToTime(tm.index);
+                if (time === null) {
+                    continue;
+                }
+                if (targetIndex < this._labels.length) {
+                    var label = this._labels[targetIndex];
+                    label.coord = this.indexToCoordinate(tm.index);
+                    label.label = this._formatLabel(time, tm.span);
+                    label.span = tm.span;
+                    label.major = false;
+                }
+                else {
+                    this._labels.push({
+                        coord: this.indexToCoordinate(tm.index),
+                        label: this._formatLabel(time, tm.span),
+                        span: tm.span,
+                        major: false,
+                    });
+                }
+                targetIndex++;
+            }
+            this._labels.length = targetIndex;
+            this._timeMarksCache = this._labels;
+            return this._labels;
+        };
+        TimeScale.prototype.reset = function () {
+            this._visibleBarsInvalidated = true;
+            this._points = new TimePoints();
+            this._scrollStartPoint = null;
+            this._scaleStartPoint = null;
+            this._clearCommonTransitionsStartState();
+            this._tickMarks.reset();
+            this._leftEdgeIndex = null;
+        };
+        TimeScale.prototype.restoreDefault = function () {
+            this._visibleBarsInvalidated = true;
+            this.setBarSpacing(this._options.barSpacing);
+            this.setRightOffset(this._options.rightOffset);
+        };
+        TimeScale.prototype.setLeftEdgeFix = function (index) {
+            this._leftEdgeIndex = index;
+            var delta = ensureNotNull(this.visibleBars()).firstBar() - index;
+            if (delta < 0) {
+                var leftEdgeOffset = this._rightOffset - delta - 1;
+                this.scrollToOffsetAnimated(leftEdgeOffset, 500);
+            }
+        };
+        TimeScale.prototype.fixLeftEdge = function () {
+            return this._options.fixLeftEdge;
+        };
+        TimeScale.prototype.setBaseIndex = function (baseIndex) {
+            this._visibleBarsInvalidated = true;
+            this._baseIndexOrNull = baseIndex;
+            this._correctOffset();
+        };
+        /**
+         * Zoom in/out the scale around a `zoomPoint` on `scale` value.
+         * @param zoomPoint - X coordinate of the point to apply the zoom.
+         *   If `rightBarStaysOnScroll` option is disabled, then will be used to restore right offset.
+         * @param scale - Zoom value (in 1/10 parts of current bar spacing).
+         *   Negative value means zoom out, positive - zoom in.
+         */
+        TimeScale.prototype.zoom = function (zoomPoint, scale) {
+            var floatIndexAtZoomPoint = this._coordinateToFloatIndex(zoomPoint);
+            var barSpacing = this.barSpacing();
+            var newBarSpacing = barSpacing + scale * (barSpacing / 10);
+            // zoom in/out bar spacing
+            this.setBarSpacing(newBarSpacing);
+            if (!this._options.rightBarStaysOnScroll) {
+                // and then correct right offset to move index under zoomPoint back to its coordinate
+                this.setRightOffset(this.rightOffset() + (floatIndexAtZoomPoint - this._coordinateToFloatIndex(zoomPoint)));
+            }
+        };
+        TimeScale.prototype.startScale = function (x) {
+            if (this._scrollStartPoint) {
+                this.endScroll();
+            }
+            if (this._scaleStartPoint !== null || this._commonTransitionStartState !== null) {
+                return;
+            }
+            if (this.isEmpty()) {
+                return;
+            }
+            this._scaleStartPoint = x;
+            this._saveCommonTransitionsStartState();
+        };
+        TimeScale.prototype.scaleTo = function (x) {
+            if (this._commonTransitionStartState === null) {
+                return;
+            }
+            var startLengthFromRight = clamp(this._width - x, 0, this._width);
+            var currentLengthFromRight = clamp(this._width - ensureNotNull(this._scaleStartPoint), 0, this._width);
+            if (startLengthFromRight === 0 || currentLengthFromRight === 0) {
+                return;
+            }
+            this.setBarSpacing(this._commonTransitionStartState.barSpacing * startLengthFromRight / currentLengthFromRight);
+        };
+        TimeScale.prototype.endScale = function () {
+            if (this._scaleStartPoint === null) {
+                return;
+            }
+            this._scaleStartPoint = null;
+            this._clearCommonTransitionsStartState();
+        };
+        TimeScale.prototype.startScroll = function (x) {
+            if (this._scrollStartPoint !== null || this._commonTransitionStartState !== null) {
+                return;
+            }
+            if (this.isEmpty()) {
+                return;
+            }
+            this._scrollStartPoint = x;
+            this._saveCommonTransitionsStartState();
+        };
+        TimeScale.prototype.scrollTo = function (x) {
+            this._visibleBarsInvalidated = true;
+            if (this._scrollStartPoint === null) {
+                return;
+            }
+            var shiftInLogical = (this._scrollStartPoint - x) / this.barSpacing();
+            this._rightOffset = ensureNotNull(this._commonTransitionStartState).rightOffset + shiftInLogical;
+            // do not allow scroll out of visible bars
+            this._correctOffset();
+        };
+        TimeScale.prototype.endScroll = function () {
+            if (this._scrollStartPoint === null) {
+                return;
+            }
+            this._scrollStartPoint = null;
+            this._clearCommonTransitionsStartState();
+        };
+        TimeScale.prototype.scrollToRealTime = function () {
+            this.scrollToOffsetAnimated(this._options.rightOffset);
+        };
+        TimeScale.prototype.scrollToOffsetAnimated = function (offset, animationDuration) {
+            var _this = this;
+            if (animationDuration === void 0) { animationDuration = 400 /* DefaultAnimationDuration */; }
+            if (!isFinite(offset)) {
+                throw new RangeError('offset is required and must be finite number');
+            }
+            if (!isFinite(animationDuration) || animationDuration <= 0) {
+                throw new RangeError('animationDuration (optional) must be finite positive number');
+            }
+            var source = this._rightOffset;
+            var animationStart = new Date().getTime();
+            var animationFn = function () {
+                var animationProgress = (new Date().getTime() - animationStart) / animationDuration;
+                var finishAnimation = animationProgress >= 1;
+                var rightOffset = finishAnimation ? offset : source + (offset - source) * animationProgress;
+                _this.setRightOffset(rightOffset);
+                if (!finishAnimation) {
+                    setTimeout(animationFn, 20);
+                }
+            };
+            animationFn();
+        };
+        TimeScale.prototype.update = function (index, values, marks) {
+            this._visibleBarsInvalidated = true;
+            if (values.length > 0) {
+                // we have some time points to merge
+                var oldSize = this._points.size();
+                this._points.merge(index, values);
+                if (this._rightOffset < 0 && (this._points.size() === oldSize + 1)) {
+                    this._rightOffset -= 1;
+                    this._visibleBarsInvalidated = true;
+                }
+            }
+            this._tickMarks.merge(marks);
+            this._correctOffset();
+        };
+        TimeScale.prototype.visibleBarsChanged = function () {
+            return this._visibleBarsChanged;
+        };
+        TimeScale.prototype.optionsApplied = function () {
+            return this._optionsApplied;
+        };
+        TimeScale.prototype.baseIndex = function () {
+            // null is used to known that baseIndex is not set yet
+            // so in methods which should known whether it is set or not
+            // we should check field `_baseIndexOrNull` instead of getter `baseIndex()`
+            // see minRightOffset for example
+            return this._baseIndexOrNull || 0;
+        };
+        TimeScale.prototype.setVisibleRange = function (range) {
+            var length = range.count();
+            this._setBarSpacing(this._width / length);
+            this._rightOffset = range.lastBar() - this.baseIndex();
+            this._correctOffset();
+            this._visibleBarsInvalidated = true;
+            this._model.recalculateAllPanes();
+            this._model.lightUpdate();
+        };
+        TimeScale.prototype.fitContent = function () {
+            var first = this._points.firstIndex();
+            var last = this._points.lastIndex();
+            if (first === null || last === null) {
+                return;
+            }
+            this.setVisibleRange(new BarsRange(first - 1, last + 1 + this._options.rightOffset));
+        };
+        TimeScale.prototype.setTimePointsRange = function (range) {
+            var points = this.points();
+            var firstIndex = points.firstIndex();
+            var lastIndex = points.lastIndex();
+            if (firstIndex === null || lastIndex === null) {
+                return;
+            }
+            var firstPoint = ensureNotNull(points.valueAt(firstIndex)).timestamp;
+            var lastPoint = ensureNotNull(points.valueAt(lastIndex)).timestamp;
+            var barRange = new BarsRange(ensureNotNull(points.indexOf(Math.max(firstPoint, range.from.timestamp), true)), ensureNotNull(points.indexOf(Math.min(lastPoint, range.to.timestamp), true)));
+            this.setVisibleRange(barRange);
+        };
+        TimeScale.prototype.formatDateTime = function (time) {
+            if (this._localizationOptions.timeFormatter !== undefined) {
+                return this._localizationOptions.timeFormatter(time.businessDay || time.timestamp);
+            }
+            return this._dateTimeFormatter.format(new Date(time.timestamp * 1000));
+        };
+        TimeScale.prototype._rightOffsetForCoordinate = function (x) {
+            return (this._width + 1 - x) / this._barSpacing;
+        };
+        TimeScale.prototype._coordinateToFloatIndex = function (x) {
+            var deltaFromRight = this._rightOffsetForCoordinate(x);
+            var baseIndex = this.baseIndex();
+            var index = baseIndex + this._rightOffset - deltaFromRight;
+            // JavaScript uses very strange rounding
+            // we need rounding to avoid problems with calculation errors
+            return Math.round(index * 1000000) / 1000000;
+        };
+        TimeScale.prototype._setBarSpacing = function (newBarSpacing) {
+            newBarSpacing = getValidBarSpacing(newBarSpacing);
+            var oldBarSpacing = this._barSpacing;
+            if (oldBarSpacing === newBarSpacing) {
+                return;
+            }
+            this._visibleBarsInvalidated = true;
+            this._barSpacing = newBarSpacing;
+            this._barSpacingChanged.fire(oldBarSpacing, newBarSpacing);
+            this._resetTimeMarksCache();
+        };
+        TimeScale.prototype._updateVisibleBars = function () {
+            if (this.isEmpty()) {
+                this._setVisibleBars(null);
+                return;
+            }
+            var baseIndex = this.baseIndex();
+            var newBarsLength = Math.ceil(this._width / this._barSpacing) - 1;
+            var rightIndex = Math.round(this._rightOffset + baseIndex);
+            var leftIndex = rightIndex - newBarsLength;
+            this._setVisibleBars(new BarsRange(leftIndex, rightIndex));
+        };
+        TimeScale.prototype._correctOffset = function () {
+            // block scrolling of to future
+            var maxRightOffset = this._maxRightOffset();
+            if (this._rightOffset > maxRightOffset) {
+                this._rightOffset = maxRightOffset;
+                this._visibleBarsInvalidated = true;
+            }
+            // block scrolling of to past
+            var minRightOffset = this._minRightOffset();
+            if (minRightOffset !== null && this._rightOffset < minRightOffset) {
+                this._rightOffset = minRightOffset;
+                this._visibleBarsInvalidated = true;
+            }
+        };
+        TimeScale.prototype._minRightOffset = function () {
+            var firstIndex = this._points.firstIndex();
+            var baseIndex = this._baseIndexOrNull;
+            if (firstIndex === null || baseIndex === null) {
+                return null;
+            }
+            if (this._leftEdgeIndex !== null) {
+                var barsEstimation = this._width / this._barSpacing;
+                return this._leftEdgeIndex - baseIndex + barsEstimation - 1;
+            }
+            return firstIndex - baseIndex - 1 + 5 /* MinVisibleBarsCount */;
+        };
+        TimeScale.prototype._maxRightOffset = function () {
+            return (this._width / this._barSpacing) - 5 /* MinVisibleBarsCount */;
+        };
+        TimeScale.prototype._saveCommonTransitionsStartState = function () {
+            this._commonTransitionStartState = {
+                barSpacing: this.barSpacing(),
+                rightOffset: this.rightOffset(),
+            };
+        };
+        TimeScale.prototype._clearCommonTransitionsStartState = function () {
+            this._commonTransitionStartState = null;
+        };
+        TimeScale.prototype._formatLabel = function (time, span) {
+            var _this = this;
+            var formatter = this._formattedBySpan.get(span);
+            if (formatter === undefined) {
+                formatter = new FormattedLabelsCache(function (date) {
+                    return _this._formatLabelImpl(date, span);
+                });
+                this._formattedBySpan.set(span, formatter);
+            }
+            if (time.businessDay === undefined) {
+                return formatter.format(new Date(time.timestamp * 1000));
+            }
+            else {
+                return formatter.format(new Date(Date.UTC(time.businessDay.year, time.businessDay.month - 1, time.businessDay.day)));
+            }
+        };
+        TimeScale.prototype._formatLabelImpl = function (d, span) {
+            var formatOptions = {};
+            var timeVisible = this._options.timeVisible;
+            if (span < 20 /* Minute */ && timeVisible) {
+                formatOptions.hour12 = false;
+                formatOptions.hour = '2-digit';
+                formatOptions.minute = '2-digit';
+                if (this._options.secondsVisible) {
+                    formatOptions.second = '2-digit';
+                }
+            }
+            else if (span < 40 /* Day */ && timeVisible) {
+                formatOptions.hour12 = false;
+                formatOptions.hour = '2-digit';
+                formatOptions.minute = '2-digit';
+            }
+            else if (span < 50 /* Week */) {
+                formatOptions.day = 'numeric';
+            }
+            else if (span < 60 /* Month */) {
+                formatOptions.day = 'numeric';
+            }
+            else if (span < 70 /* Year */) {
+                formatOptions.month = 'short';
+            }
+            else {
+                formatOptions.year = 'numeric';
+            }
+            // from given date we should use only as UTC date or timestamp
+            // but to format as locale date we can convert UTC date to local date
+            var localDateFromUtc = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(), d.getUTCMilliseconds());
+            return localDateFromUtc.toLocaleString(this._localizationOptions.locale, formatOptions);
+        };
+        TimeScale.prototype._setVisibleBars = function (visibleBars) {
+            if (visibleBars === null && this._visibleBars === null) {
+                return;
+            }
+            var oldVisibleBars = this._visibleBars;
+            this._visibleBars = visibleBars;
+            if (this._visibleBars === null || oldVisibleBars !== null && !this._visibleBars.equals(oldVisibleBars)) {
+                this._visibleBarsChanged.fire();
+            }
+            // TODO: reset only coords in case when this._visibleBars has not been changed
+            this._resetTimeMarksCache();
+        };
+        TimeScale.prototype._resetTimeMarksCache = function () {
+            this._timeMarksCache = null;
+        };
+        TimeScale.prototype._invalidateTickMarks = function () {
+            this._resetTimeMarksCache();
+            this._formattedBySpan.clear();
+        };
+        TimeScale.prototype._updateDateTimeFormatter = function () {
+            var dateFormat = this._localizationOptions.dateFormat;
+            if (this._options.timeVisible) {
+                this._dateTimeFormatter = new DateTimeFormatter({
+                    dateFormat: dateFormat,
+                    timeFormat: this._options.secondsVisible ? '%h:%m:%s' : '%h:%m',
+                    dateTimeSeparator: '   ',
+                    locale: this._localizationOptions.locale,
+                });
+            }
+            else {
+                this._dateTimeFormatter = new DateFormatter(dateFormat, this._localizationOptions.locale);
+            }
+        };
+        return TimeScale;
+    }());
+    function getValidBarSpacing(newBarSpacing) {
+        if (newBarSpacing < 0.5 /* MinBarSpacing */) {
+            return 0.5 /* MinBarSpacing */;
+        }
+        if (newBarSpacing > 50 /* MaxBarSpacing */) {
+            return 50 /* MaxBarSpacing */;
+        }
+        return newBarSpacing;
+    }
+
+    var WatermarkRenderer = /** @class */ (function () {
+        function WatermarkRenderer(data) {
+            this._metricsCache = new Map();
+            this._data = data;
+        }
+        WatermarkRenderer.prototype.draw = function (ctx) {
+        };
+        WatermarkRenderer.prototype.drawBackground = function (ctx) {
+            if (!this._data.visible) {
+                return;
+            }
+            ctx.save();
+            var textHeight = 0;
+            for (var _i = 0, _a = this._data.lines; _i < _a.length; _i++) {
+                var line = _a[_i];
+                if (line.text.length === 0) {
+                    continue;
+                }
+                ctx.font = line.font;
+                var textWidth = this._metrics(ctx, line.text);
+                if (textWidth > this._data.width) {
+                    line.zoom = this._data.width / textWidth;
+                }
+                else {
+                    line.zoom = 1;
+                }
+                textHeight += line.lineHeight * line.zoom;
+            }
+            var vertOffset = 0;
+            switch (this._data.vertAlign) {
+                case 'top':
+                    vertOffset = 0;
+                    break;
+                case 'center':
+                    vertOffset = Math.max((this._data.height - textHeight) / 2, 0);
+                    break;
+                case 'bottom':
+                    vertOffset = Math.max((this._data.height - textHeight), 0);
+                    break;
+            }
+            ctx.fillStyle = this._data.color;
+            for (var _b = 0, _c = this._data.lines; _b < _c.length; _b++) {
+                var line = _c[_b];
+                ctx.save();
+                var horzOffset = 0;
+                switch (this._data.horzAlign) {
+                    case 'left':
+                        ctx.textAlign = 'left';
+                        horzOffset = line.lineHeight / 2;
+                        break;
+                    case 'center':
+                        ctx.textAlign = 'center';
+                        horzOffset = this._data.width / 2;
+                        break;
+                    case 'right':
+                        ctx.textAlign = 'right';
+                        horzOffset = this._data.width - 1 - line.lineHeight / 2;
+                        break;
+                }
+                ctx.translate(horzOffset, vertOffset);
+                ctx.textBaseline = 'top';
+                ctx.font = line.font;
+                ctx.scale(line.zoom, line.zoom);
+                ctx.fillText(line.text, 0, line.vertOffset);
+                ctx.restore();
+                vertOffset += line.lineHeight * line.zoom;
+            }
+            ctx.restore();
+        };
+        WatermarkRenderer.prototype._metrics = function (ctx, text) {
+            var fontCache = this._fontCache(ctx.font);
+            var result = fontCache.get(text);
+            if (result === undefined) {
+                result = ctx.measureText(text).width;
+                fontCache.set(text, result);
+            }
+            return result;
+        };
+        WatermarkRenderer.prototype._fontCache = function (font) {
+            var fontCache = this._metricsCache.get(font);
+            if (fontCache === undefined) {
+                fontCache = new Map();
+                this._metricsCache.set(font, fontCache);
+            }
+            return fontCache;
+        };
+        return WatermarkRenderer;
+    }());
+
+    var WatermarkPaneView = /** @class */ (function () {
+        function WatermarkPaneView(source) {
+            this._invalidated = true;
+            this._rendererData = {
+                visible: false,
+                color: '',
+                height: 0,
+                width: 0,
+                lines: [],
+                vertAlign: 'center',
+                horzAlign: 'center',
+            };
+            this._renderer = new WatermarkRenderer(this._rendererData);
+            this._source = source;
+        }
+        WatermarkPaneView.prototype.update = function () {
+            this._invalidated = true;
+        };
+        WatermarkPaneView.prototype.renderer = function (height, width) {
+            if (this._invalidated) {
+                this._updateImpl(height, width);
+                this._invalidated = false;
+            }
+            return this._renderer;
+        };
+        WatermarkPaneView.prototype._updateImpl = function (height, width) {
+            var options = this._source.options();
+            var data = this._rendererData;
+            data.visible = options.visible;
+            if (!data.visible) {
+                return;
+            }
+            data.color = options.color;
+            data.width = width;
+            data.height = height;
+            data.horzAlign = options.horzAlign;
+            data.vertAlign = options.vertAlign;
+            data.lines = [
+                {
+                    text: options.text,
+                    font: makeFont(options.fontSize),
+                    lineHeight: options.fontSize * 1.2,
+                    vertOffset: 0,
+                    zoom: 0,
+                },
+            ];
+        };
+        return WatermarkPaneView;
+    }());
+
+    var Watermark = /** @class */ (function (_super) {
+        __extends(Watermark, _super);
+        function Watermark(model, options) {
+            var _this = _super.call(this) || this;
+            _this._options = options;
+            _this._paneView = new WatermarkPaneView(_this);
+            return _this;
+        }
+        Watermark.prototype.paneViews = function () {
+            return [this._paneView];
+        };
+        Watermark.prototype.options = function () {
+            return this._options;
+        };
+        Watermark.prototype.updateAllViews = function () {
+            this._paneView.update();
+        };
+        return Watermark;
+    }(DataSource));
+
+    var ChartModel = /** @class */ (function () {
+        function ChartModel(invalidateHandler, options) {
+            this._panes = [];
+            this._serieses = [];
+            this._width = 0;
+            this._initialTimeScrollPos = null;
+            this._hoveredSource = null;
+            this._mainPriceScaleOptionsChanged = new Delegate();
+            this._crosshairMoved = new Delegate();
+            this._invalidateHandler = invalidateHandler;
+            this._options = options;
+            this._rendererOptionsProvider = new PriceAxisRendererOptionsProvider(this);
+            this._timeScale = new TimeScale(this, options.timeScale, this._options.localization);
+            this._grid = new Grid();
+            this._crosshair = new Crosshair(this, options.crosshair);
+            this._magnet = new Magnet(options.crosshair);
+            this._watermark = new Watermark(this, options.watermark);
+            this.createPane();
+            this._panes[0].setStretchFactor(DEFAULT_STRETCH_FACTOR * 2);
+            this._panes[0].addDataSource(this._watermark, true, false);
+        }
+        ChartModel.prototype.updatePane = function (pane) {
+            var inv = this._paneInvalidationMask(pane, 0 /* None */);
+            this._invalidate(inv);
+        };
+        ChartModel.prototype.fullUpdate = function () {
+            this._invalidate(new InvalidateMask(3 /* Full */));
+        };
+        ChartModel.prototype.lightUpdate = function () {
+            this._invalidate(new InvalidateMask(2 /* Light */));
+        };
+        ChartModel.prototype.updateSource = function (source) {
+            var inv = this._invalidationMaskForSource(source);
+            this._invalidate(inv);
+        };
+        ChartModel.prototype.hoveredSource = function () {
+            return this._hoveredSource;
+        };
+        ChartModel.prototype.setHoveredSource = function (source) {
+            this._hoveredSource = source;
+        };
+        ChartModel.prototype.options = function () {
+            return this._options;
+        };
+        ChartModel.prototype.applyOptions = function (options) {
+            // TODO: implement this
+            merge(this._options, options);
+            if (options.priceScale !== undefined) {
+                this.mainPriceScale().applyOptions(options.priceScale);
+                this._mainPriceScaleOptionsChanged.fire();
+            }
+            if (options.timeScale !== undefined) {
+                this._timeScale.applyOptions(options.timeScale);
+            }
+            if (options.localization !== undefined) {
+                this._timeScale.applyLocalizationOptions(options.localization);
+                this.mainPriceScale().updateFormatter();
+            }
+            this.fullUpdate();
+        };
+        ChartModel.prototype.updateAllPaneViews = function () {
+            this._panes.forEach(function (p) { return p.updateAllViews(); });
+        };
+        ChartModel.prototype.timeScale = function () {
+            return this._timeScale;
+        };
+        ChartModel.prototype.panes = function () {
+            return this._panes;
+        };
+        ChartModel.prototype.gridSource = function () {
+            return this._grid;
+        };
+        ChartModel.prototype.watermarkSource = function () {
+            return this._watermark;
+        };
+        ChartModel.prototype.crosshairSource = function () {
+            return this._crosshair;
+        };
+        ChartModel.prototype.crosshairMoved = function () {
+            return this._crosshairMoved;
+        };
+        ChartModel.prototype.width = function () {
+            return this._width;
+        };
+        ChartModel.prototype.setPaneHeight = function (pane, height) {
+            pane.setHeight(height);
+            this.recalculateAllPanes();
+            this.lightUpdate();
+        };
+        ChartModel.prototype.setWidth = function (width) {
+            this._width = width;
+            this._timeScale.setWidth(this._width);
+            this._panes.forEach(function (pane) { return pane.setWidth(width); });
+            this.recalculateAllPanes();
+        };
+        ChartModel.prototype.createPane = function (index) {
+            var pane = new Pane(this._timeScale, this);
+            if (index !== undefined) {
+                this._panes.splice(index, 0, pane);
+            }
+            else {
+                // adding to the end - common case
+                this._panes.push(pane);
+            }
+            var actualIndex = (index === undefined) ? this._panes.length - 1 : index;
+            // we always do autoscaling on the creation
+            // if autoscale option is true, it is ok, just recalculate by invalidation mask
+            // if autoscale option is false, autoscale anyway on the first draw
+            // also there is a scenario when autoscale is true in constructor and false later on applyOptions
+            var mask = new InvalidateMask(3 /* Full */);
+            mask.invalidatePane(actualIndex, {
+                level: 0 /* None */,
+                autoScale: true,
+            });
+            this.invalidate(mask);
+            return pane;
+        };
+        ChartModel.prototype.startScalePrice = function (pane, priceScale, x) {
+            pane.startScalePrice(priceScale, x);
+        };
+        ChartModel.prototype.scalePriceTo = function (pane, priceScale, x) {
+            pane.scalePriceTo(priceScale, x);
+            this.updateCrosshair();
+            this._invalidate(this._paneInvalidationMask(pane, 2 /* Light */));
+        };
+        ChartModel.prototype.endScalePrice = function (pane, priceScale) {
+            pane.endScalePrice(priceScale);
+            this._invalidate(this._paneInvalidationMask(pane, 2 /* Light */));
+        };
+        ChartModel.prototype.startScrollPrice = function (pane, priceScale, x) {
+            if (priceScale.isAutoScale()) {
+                return;
+            }
+            pane.startScrollPrice(priceScale, x);
+        };
+        ChartModel.prototype.scrollPriceTo = function (pane, priceScale, x) {
+            if (priceScale.isAutoScale()) {
+                return;
+            }
+            pane.scrollPriceTo(priceScale, x);
+            this.updateCrosshair();
+            this._invalidate(this._paneInvalidationMask(pane, 2 /* Light */));
+        };
+        ChartModel.prototype.endScrollPrice = function (pane, priceScale) {
+            if (priceScale.isAutoScale()) {
+                return;
+            }
+            pane.endScrollPrice(priceScale);
+            this._invalidate(this._paneInvalidationMask(pane, 2 /* Light */));
+        };
+        ChartModel.prototype.setPriceAutoScale = function (pane, priceScale, autoScale) {
+            pane.setPriceAutoScale(priceScale, autoScale);
+            this._invalidate(this._paneInvalidationMask(pane, 2 /* Light */));
+        };
+        ChartModel.prototype.resetPriceScale = function (pane, priceScale) {
+            pane.resetPriceScale(priceScale);
+            this._invalidate(this._paneInvalidationMask(pane, 2 /* Light */));
+        };
+        ChartModel.prototype.startScaleTime = function (position) {
+            this._timeScale.startScale(position);
+        };
+        /**
+         * Zoom in/out the chart (depends on scale value).
+         * @param pointX - X coordinate of the point to apply the zoom (the point which should stay on its place)
+         * @param scale - Zoom value. Negative value means zoom out, positive - zoom in.
+         */
+        ChartModel.prototype.zoomTime = function (pointX, scale) {
+            var timeScale = this.timeScale();
+            if (timeScale.isEmpty() || scale === 0) {
+                return;
+            }
+            var timeScaleWidth = timeScale.width();
+            pointX = Math.max(1, Math.min(pointX, timeScaleWidth));
+            timeScale.zoom(pointX, scale);
+            this.updateCrosshair();
+            this.recalculateAllPanes();
+            this.lightUpdate();
+        };
+        ChartModel.prototype.scrollChart = function (x) {
+            this.startScrollTime(0);
+            this.scrollTimeTo(x);
+            this.endScrollTime();
+        };
+        ChartModel.prototype.scaleTimeTo = function (x) {
+            this._timeScale.scaleTo(x);
+            this.recalculateAllPanes();
+            this.updateCrosshair();
+            this.lightUpdate();
+        };
+        ChartModel.prototype.endScaleTime = function () {
+            this._timeScale.endScale();
+            this.lightUpdate();
+        };
+        ChartModel.prototype.startScrollTime = function (x) {
+            this._initialTimeScrollPos = x;
+            this._timeScale.startScroll(x);
+        };
+        ChartModel.prototype.scrollTimeTo = function (x) {
+            var res = false;
+            if (this._initialTimeScrollPos !== null && Math.abs(x - this._initialTimeScrollPos) > 20) {
+                this._initialTimeScrollPos = null;
+                res = true;
+            }
+            this._timeScale.scrollTo(x);
+            this.recalculateAllPanes();
+            this.updateCrosshair();
+            this.lightUpdate();
+            return res;
+        };
+        ChartModel.prototype.endScrollTime = function () {
+            this._timeScale.endScroll();
+            this.lightUpdate();
+            this._initialTimeScrollPos = null;
+        };
+        ChartModel.prototype.resetTimeScale = function () {
+            this._timeScale.restoreDefault();
+            this.recalculateAllPanes();
+            this.updateCrosshair();
+            this.lightUpdate();
+        };
+        ChartModel.prototype.invalidate = function (mask) {
+            if (this._invalidateHandler) {
+                this._invalidateHandler(mask);
+            }
+            this._grid.invalidate();
+            this.lightUpdate();
+        };
+        ChartModel.prototype.dataSources = function () {
+            return this._panes.reduce(function (arr, pane) { return arr.concat(pane.dataSources()); }, []);
+        };
+        ChartModel.prototype.serieses = function () {
+            return this._serieses;
+        };
+        ChartModel.prototype.setAndSaveCurrentPosition = function (x, y, pane) {
+            this._crosshair.saveOriginCoord(x, y);
+            var price = NaN;
+            var index = this._timeScale.coordinateToIndex(x);
+            var mainSource = pane.mainDataSource();
+            if (mainSource !== null) {
+                var priceScale = pane.defaultPriceScale();
+                if (!priceScale.isEmpty()) {
+                    var firstValue = ensureNotNull(mainSource.firstValue());
+                    price = priceScale.coordinateToPrice(y, firstValue);
+                }
+                price = this._magnet.align(price, index, pane);
+            }
+            this._crosshair.setPosition(index, price, pane);
+            this._cursorUpdate();
+            this._crosshairMoved.fire(this._crosshair.appliedIndex(), { x: x, y: y });
+        };
+        ChartModel.prototype.clearCurrentPosition = function () {
+            var crosshair = this.crosshairSource();
+            crosshair.clearPosition();
+            this._cursorUpdate();
+            this._crosshairMoved.fire(null, null);
+        };
+        ChartModel.prototype.updateCrosshair = function () {
+            // apply magnet
+            var pane = this._crosshair.pane();
+            if (pane !== null) {
+                var x = this._crosshair.originCoordX();
+                var y = this._crosshair.originCoordY();
+                this.setAndSaveCurrentPosition(x, y, pane);
+            }
+        };
+        ChartModel.prototype.updateTimeScale = function (index, values, marks, clearFlag) {
+            if (clearFlag) {
+                // refresh timescale
+                this._timeScale.reset();
+            }
+            this._timeScale.update(index, values, marks);
+        };
+        ChartModel.prototype.updateTimeScaleBaseIndex = function (earliestRowIndex) {
+            // get the latest series bar index
+            var lastSeriesBarIndex = this._serieses.reduce(function (currentRes, series) {
+                var seriesBars = series.bars();
+                if (seriesBars.isEmpty()) {
+                    return currentRes;
+                }
+                var currentLastIndex = ensureNotNull(seriesBars.lastIndex());
+                return (currentRes === undefined) ? currentLastIndex : Math.max(currentLastIndex, currentRes);
+            }, undefined);
+            if (lastSeriesBarIndex !== undefined) {
+                var timeScale = this._timeScale;
+                var currentBaseIndex = timeScale.baseIndex();
+                var visibleBars = timeScale.visibleBars();
+                // if time scale cannot return current visible bars range (e.g. time scale has zero-width)
+                // then we do not need to update right offset to shift visible bars range to have the same right offset as we have before new bar
+                // (and actually we cannot)
+                if (visibleBars !== null) {
+                    var isLastSeriesBarVisible = visibleBars.contains(currentBaseIndex);
+                    if (earliestRowIndex !== undefined && earliestRowIndex > 0 && !isLastSeriesBarVisible) {
+                        var compensationShift = lastSeriesBarIndex - currentBaseIndex;
+                        timeScale.setRightOffset(timeScale.rightOffset() - compensationShift);
+                    }
+                }
+                timeScale.setBaseIndex(lastSeriesBarIndex);
+            }
+            this.updateCrosshair();
+            this.recalculateAllPanes();
+            this.lightUpdate();
+        };
+        ChartModel.prototype.recalculatePane = function (pane) {
+            if (pane !== null) {
+                pane.recalculate();
+            }
+        };
+        ChartModel.prototype.paneForSource = function (source) {
+            var pane = this._panes.find(function (p) { return p.orderedSources().includes(source); });
+            return pane === undefined ? null : pane;
+        };
+        ChartModel.prototype.recalculateAllPanes = function () {
+            this._panes.forEach(function (p) { return p.recalculate(); });
+            this.updateAllPaneViews();
+        };
+        ChartModel.prototype.destroy = function () {
+            this._panes.forEach(function (p) { return p.destroy(); });
+            this._panes.length = 0;
+            // to avoid memleaks
+            this._options.localization.priceFormatter = undefined;
+            this._options.localization.timeFormatter = undefined;
+        };
+        ChartModel.prototype.setPriceAutoScaleForAllMainSources = function () {
+            this._panes.map(function (p) { return p.mainDataSource(); })
+                .forEach(function (s) {
+                if (s !== null) {
+                    var priceScale = ensureNotNull(s.priceScale());
+                    priceScale.setMode({
+                        autoScale: true,
+                    });
+                }
+            });
+        };
+        ChartModel.prototype.rendererOptionsProvider = function () {
+            return this._rendererOptionsProvider;
+        };
+        ChartModel.prototype.priceAxisRendererOptions = function () {
+            return this._rendererOptionsProvider.options();
+        };
+        ChartModel.prototype.mainPriceScaleOptionsChanged = function () {
+            return this._mainPriceScaleOptionsChanged;
+        };
+        ChartModel.prototype.mainPriceScale = function () {
+            return this._panes[0].defaultPriceScale();
+        };
+        ChartModel.prototype.createSeries = function (seriesType, options) {
+            var pane = this._panes[0];
+            var series = this._createSeries(options, seriesType, pane);
+            this._serieses.push(series);
+            this.lightUpdate();
+            return series;
+        };
+        ChartModel.prototype.removeSeries = function (series) {
+            var pane = this.paneForSource(series);
+            var seriesIndex = this._serieses.indexOf(series);
+            assert(seriesIndex !== -1, 'Series not found');
+            this._serieses.splice(seriesIndex, 1);
+            ensureNotNull(pane).removeDataSource(series);
+            if (series.destroy) {
+                series.destroy();
+            }
+        };
+        ChartModel.prototype.fitContent = function () {
+            var mask = new InvalidateMask(2 /* Light */);
+            mask.setFitContent();
+            this._invalidate(mask);
+        };
+        ChartModel.prototype.setTargetTimeRange = function (range) {
+            var mask = new InvalidateMask(2 /* Light */);
+            mask.setTargetTimeRange(range);
+            this._invalidate(mask);
+        };
+        ChartModel.prototype._paneInvalidationMask = function (pane, level) {
+            var inv = new InvalidateMask(level);
+            if (pane !== null) {
+                var index = this._panes.indexOf(pane);
+                inv.invalidatePane(index, {
+                    level: level,
+                });
+            }
+            return inv;
+        };
+        ChartModel.prototype._invalidationMaskForSource = function (source, invalidateType) {
+            if (invalidateType === undefined) {
+                invalidateType = 2 /* Light */;
+            }
+            return this._paneInvalidationMask(this.paneForSource(source), invalidateType);
+        };
+        ChartModel.prototype._invalidate = function (mask) {
+            if (this._invalidateHandler) {
+                this._invalidateHandler(mask);
+            }
+            this._grid.invalidate();
+        };
+        ChartModel.prototype._cursorUpdate = function () {
+            this._invalidate(new InvalidateMask(1 /* Cursor */));
+        };
+        ChartModel.prototype._createSeries = function (options, seriesType, pane) {
+            var series = new Series(this, options, seriesType);
+            pane.addDataSource(series, Boolean(options.overlay), false);
+            if (options.overlay) {
+                // let's apply that options again to apply margins
+                series.applyOptions(options);
+            }
+            return series;
+        };
+        return ChartModel;
+    }());
+
+    var Size = /** @class */ (function () {
+        function Size(w, h) {
+            this.w = w;
+            this.h = h;
+        }
+        Size.prototype.equals = function (size) {
+            return (this.w === size.w) && (this.h === size.h);
+        };
+        return Size;
+    }());
+    function resizeCanvas(canvas, newSize) {
+        canvas.width = newSize.w;
+        canvas.height = newSize.h;
+        var ctx = getContext2d(canvas);
+        if (ctx) {
+            ctx.translate(0.5, 0.5);
+        }
+    }
+    function clearRect(ctx, x, y, w, h, clearColor) {
+        ctx.save();
+        ctx.translate(-0.5, -0.5);
+        ctx.globalCompositeOperation = 'copy';
+        ctx.fillStyle = clearColor;
+        ctx.fillRect(x, y, w, h);
+        ctx.restore();
+    }
+    function addCanvasTo(element, size) {
+        var canvas = document.createElement('canvas');
+        element.appendChild(canvas);
+        resizeCanvas(canvas, size);
+        disableSelection(canvas);
+        return canvas;
+    }
+    function disableSelection(canvas) {
+        canvas.style.userSelect = 'none';
+        canvas.style.webkitUserSelect = 'none';
+        canvas.style.msUserSelect = 'none';
+        // tslint:disable-next-line:no-any
+        canvas.style.MozUserSelect = 'none';
+        canvas.style.webkitTapHighlightColor = 'transparent';
+    }
+
+    function checkTouchEvents() {
+        if ('ontouchstart' in window) {
+            return true;
+        }
+        // tslint:disable-next-line:no-any
+        return Boolean(window.DocumentTouch && document instanceof window.DocumentTouch);
+    }
+    var touch = !!navigator.maxTouchPoints || !!navigator.msMaxTouchPoints || checkTouchEvents();
+    var mobileTouch = 'onorientationchange' in window && touch;
+    // actually we shouldn't check that values
+    // we even don't need to know what browser/UA/etc is (in almost all cases, except special ones)
+    // so, in MouseEventHandler/PaneWidget we should check what event happened (touch or mouse)
+    // not check current UA to detect "mobile" device
+    var android = /Android/i.test(navigator.userAgent);
+    var iOS = /iPhone|iPad|iPod|AppleWebKit.+Mobile/i.test(navigator.userAgent);
+    var isMobile = android || iOS;
+
+    var mousePressed = false;
+    // we can use `const name = 500;` but with `const enum` this values will be inlined into code
+    // so we do not need to have it as variables
+    var Delay;
+    (function (Delay) {
+        Delay[Delay["ResetClick"] = 500] = "ResetClick";
+        Delay[Delay["LongTap"] = 240] = "LongTap";
+    })(Delay || (Delay = {}));
+    var MouseEventButton;
+    (function (MouseEventButton) {
+        MouseEventButton[MouseEventButton["Left"] = 0] = "Left";
+    })(MouseEventButton || (MouseEventButton = {}));
+    var MouseEventHandler = /** @class */ (function () {
+        function MouseEventHandler(target, handler, options) {
+            this._clickCount = 0;
+            this._clickTimeoutId = null;
+            this._longTapTimeoutId = null;
+            this._mouseMoveStartPosition = null;
+            this._moveExceededManhattanDistance = false;
+            this._cancelClick = false;
+            this._unsubscribeOutsideEvents = null;
+            this._unsubscribeMousemove = null;
+            this._unsubscribeRoot = null;
+            this._startPinchMiddlePoint = null;
+            this._startPinchDistance = 0;
+            this._pinchPrevented = false;
+            this._preventDragProcess = false;
+            this._target = target;
+            this._handler = handler;
+            this._options = options;
+            this._init();
+        }
+        MouseEventHandler.prototype.destroy = function () {
+            if (this._unsubscribeOutsideEvents !== null) {
+                this._unsubscribeOutsideEvents();
+                this._unsubscribeOutsideEvents = null;
+            }
+            if (this._unsubscribeMousemove !== null) {
+                this._unsubscribeMousemove();
+                this._unsubscribeMousemove = null;
+            }
+            if (this._unsubscribeRoot !== null) {
+                this._unsubscribeRoot();
+                this._unsubscribeRoot = null;
+            }
+            this._clearLongTapTimeout();
+            this._resetClickTimeout();
+        };
+        MouseEventHandler.prototype._mouseEnterHandler = function (enterEvent) {
+            var _this = this;
+            if (this._unsubscribeMousemove) {
+                this._unsubscribeMousemove();
+            }
+            {
+                var boundMouseMoveHandler_1 = this._mouseMoveHandler.bind(this);
+                this._unsubscribeMousemove = function () {
+                    _this._target.removeEventListener('mousemove', boundMouseMoveHandler_1);
+                };
+                this._target.addEventListener('mousemove', boundMouseMoveHandler_1);
+            }
+            if (mobileTouch) {
+                this._mouseMoveHandler(enterEvent);
+            }
+            var compatEvent = this._makeCompatEvent(enterEvent);
+            this._processEvent(compatEvent, this._handler.mouseEnterEvent);
+        };
+        MouseEventHandler.prototype._resetClickTimeout = function () {
+            if (this._clickTimeoutId !== null) {
+                clearTimeout(this._clickTimeoutId);
+            }
+            this._clickCount = 0;
+            this._clickTimeoutId = null;
+        };
+        MouseEventHandler.prototype._mouseMoveHandler = function (moveEvent) {
+            if (mousePressed && !mobileTouch) {
+                return;
+            }
+            var compatEvent = this._makeCompatEvent(moveEvent);
+            this._processEvent(compatEvent, this._handler.mouseMoveEvent);
+        };
+        // tslint:disable-next-line:cyclomatic-complexity
+        MouseEventHandler.prototype._mouseMoveWithDownHandler = function (moveEvent) {
+            if ('button' in moveEvent && moveEvent.button !== 0 /* Left */) {
+                return;
+            }
+            if (this._startPinchMiddlePoint !== null) {
+                return;
+            }
+            var isTouch = isTouchEvent(moveEvent);
+            if (this._preventDragProcess && isTouch) {
+                return;
+            }
+            // prevent pinch if move event comes faster than the second touch
+            this._pinchPrevented = true;
+            var compatEvent = this._makeCompatEvent(moveEvent);
+            var startMouseMovePos = ensure(this._mouseMoveStartPosition);
+            var xOffset = Math.abs(startMouseMovePos.x - compatEvent.pageX);
+            var yOffset = Math.abs(startMouseMovePos.y - compatEvent.pageY);
+            var moveExceededManhattanDistance = xOffset + yOffset > 5;
+            if (!moveExceededManhattanDistance && isTouch) {
+                return;
+            }
+            if (moveExceededManhattanDistance && !this._moveExceededManhattanDistance && isTouch) {
+                // vertical drag is more important than horizontal drag
+                // because we scroll the page vertically often than horizontally
+                var correctedXOffset = xOffset * 0.5;
+                // a drag can be only if touch page scroll isn't allowed
+                var isVertDrag = yOffset >= correctedXOffset && !this._options.treatVertTouchDragAsPageScroll;
+                var isHorzDrag = correctedXOffset > yOffset && !this._options.treatHorzTouchDragAsPageScroll;
+                // if drag event happened then we should revert preventDefault state to original one
+                // and try to process the drag event
+                // else we shouldn't prevent default of the event and ignore processing the drag event
+                if (!isVertDrag && !isHorzDrag) {
+                    this._preventDragProcess = true;
+                }
+            }
+            if (moveExceededManhattanDistance) {
+                this._moveExceededManhattanDistance = true;
+                // if manhattan distance is more that 5 - we should cancel click event
+                this._cancelClick = true;
+                if (isTouch) {
+                    this._clearLongTapTimeout();
+                }
+            }
+            if (!this._preventDragProcess) {
+                this._processEvent(compatEvent, this._handler.pressedMouseMoveEvent);
+                // we should prevent default in case of touch only
+                // to prevent scroll of the page
+                if (isTouch) {
+                    preventDefault(moveEvent);
+                }
+            }
+        };
+        MouseEventHandler.prototype._mouseUpHandler = function (mouseUpEvent) {
+            if ('button' in mouseUpEvent && mouseUpEvent.button !== 0 /* Left */) {
+                return;
+            }
+            var compatEvent = this._makeCompatEvent(mouseUpEvent);
+            var isTouch = mobileTouch || 'touches' in mouseUpEvent;
+            if (isTouch) {
+                this._clearLongTapTimeout();
+            }
+            this._mouseMoveStartPosition = null;
+            mousePressed = false;
+            if (this._unsubscribeRoot) {
+                this._unsubscribeRoot();
+                this._unsubscribeRoot = null;
+            }
+            if (isTouch) {
+                this._mouseLeaveHandler(mouseUpEvent);
+            }
+            this._processEvent(compatEvent, this._handler.mouseUpEvent);
+            ++this._clickCount;
+            if (this._clickTimeoutId && this._clickCount > 1) {
+                this._processEvent(compatEvent, this._handler.mouseDoubleClickEvent);
+                this._resetClickTimeout();
+            }
+            else {
+                if (!this._cancelClick) {
+                    this._processEvent(compatEvent, this._handler.mouseClickEvent);
+                }
+            }
+            // prevent safari's dblclick-to-zoom
+            // we handle mouseDoubleClickEvent here ourself
+            if (mouseUpEvent.type === 'touchend') {
+                preventDefault(mouseUpEvent);
+            }
+            if (mobileTouch) {
+                this._mouseLeaveHandler(mouseUpEvent);
+            }
+        };
+        MouseEventHandler.prototype._clearLongTapTimeout = function () {
+            if (this._longTapTimeoutId === null) {
+                return;
+            }
+            clearTimeout(this._longTapTimeoutId);
+            this._longTapTimeoutId = null;
+        };
+        MouseEventHandler.prototype._mouseDownHandler = function (downEvent) {
+            if ('button' in downEvent && downEvent.button !== 0 /* Left */) {
+                return;
+            }
+            var compatEvent = this._makeCompatEvent(downEvent);
+            this._cancelClick = false;
+            this._moveExceededManhattanDistance = false;
+            this._preventDragProcess = false;
+            var isTouch = isTouchEvent(downEvent);
+            if (isTouch) {
+                this._mouseEnterHandler(downEvent);
+            }
+            this._mouseMoveStartPosition = {
+                x: compatEvent.pageX,
+                y: compatEvent.pageY,
+            };
+            if (this._unsubscribeRoot) {
+                this._unsubscribeRoot();
+                this._unsubscribeRoot = null;
+            }
+            {
+                var boundMouseMoveWithDownHandler_1 = this._mouseMoveWithDownHandler.bind(this);
+                var boundMouseUpHandler_1 = this._mouseUpHandler.bind(this);
+                var rootElement_1 = this._target.ownerDocument.documentElement;
+                this._unsubscribeRoot = function () {
+                    rootElement_1.removeEventListener('touchmove', boundMouseMoveWithDownHandler_1);
+                    rootElement_1.removeEventListener('touchend', boundMouseUpHandler_1);
+                    rootElement_1.removeEventListener('mousemove', boundMouseMoveWithDownHandler_1);
+                    rootElement_1.removeEventListener('mouseup', boundMouseUpHandler_1);
+                };
+                rootElement_1.addEventListener('touchmove', boundMouseMoveWithDownHandler_1, { passive: false });
+                rootElement_1.addEventListener('touchend', boundMouseUpHandler_1, { passive: false });
+                if (mobileTouch) {
+                    this._clearLongTapTimeout();
+                    this._longTapTimeoutId = setTimeout(this._longTapHandler.bind(this, downEvent), 240 /* LongTap */);
+                }
+                else {
+                    rootElement_1.addEventListener('mousemove', boundMouseMoveWithDownHandler_1);
+                    rootElement_1.addEventListener('mouseup', boundMouseUpHandler_1);
+                }
+            }
+            mousePressed = true;
+            this._processEvent(compatEvent, this._handler.mouseDownEvent);
+            if (!this._clickTimeoutId) {
+                this._clickCount = 0;
+                this._clickTimeoutId = setTimeout(this._resetClickTimeout.bind(this), 500 /* ResetClick */);
+            }
+        };
+        MouseEventHandler.prototype._init = function () {
+            var _this = this;
+            this._target.addEventListener('mouseenter', this._mouseEnterHandler.bind(this));
+            this._target.addEventListener('touchcancel', this._clearLongTapTimeout.bind(this));
+            {
+                var doc_1 = this._target.ownerDocument;
+                var outsideHandler_1 = function (event) {
+                    if (!_this._handler.mouseDownOutsideEvent) {
+                        return;
+                    }
+                    if (event.target && _this._target.contains(event.target)) {
+                        return;
+                    }
+                    _this._handler.mouseDownOutsideEvent();
+                };
+                this._unsubscribeOutsideEvents = function () {
+                    doc_1.removeEventListener('mousedown', outsideHandler_1);
+                    doc_1.removeEventListener('touchstart', outsideHandler_1);
+                };
+                doc_1.addEventListener('mousedown', outsideHandler_1);
+                doc_1.addEventListener('touchstart', outsideHandler_1);
+            }
+            this._target.addEventListener('mouseleave', this._mouseLeaveHandler.bind(this));
+            this._target.addEventListener('touchstart', this._mouseDownHandler.bind(this));
+            if (!mobileTouch) {
+                this._target.addEventListener('mousedown', this._mouseDownHandler.bind(this));
+            }
+            this._initPinch();
+            // Hey mobile Safari, what's up?
+            // If mobile Safari doesn't have any touchmove handler with passive=false
+            // it treats a touchstart and the following touchmove events as cancelable=false,
+            // so we can't prevent them (as soon we subscribe on touchmove inside handler of touchstart).
+            // And we'll get scroll of the page along with chart's one instead of only chart's scroll.
+            this._target.addEventListener('touchmove', function () { }, { passive: false });
+        };
+        MouseEventHandler.prototype._initPinch = function () {
+            var _this = this;
+            if (this._handler.pinchStartEvent === undefined &&
+                this._handler.pinchEvent === undefined &&
+                this._handler.pinchEndEvent === undefined) {
+                return;
+            }
+            this._target.addEventListener('touchstart', function (event) {
+                _this._checkPinchState(event.touches);
+            });
+            this._target.addEventListener('touchmove', function (event) {
+                if (event.touches.length !== 2 || _this._startPinchMiddlePoint === null) {
+                    return;
+                }
+                if (_this._handler.pinchEvent !== undefined) {
+                    var currentDistance = getDistance(event.touches[0], event.touches[1]);
+                    var scale = currentDistance / _this._startPinchDistance;
+                    _this._handler.pinchEvent(_this._startPinchMiddlePoint, scale);
+                    preventDefault(event);
+                }
+            }, { passive: false });
+            this._target.addEventListener('touchend', function (event) {
+                _this._checkPinchState(event.touches);
+            });
+        };
+        MouseEventHandler.prototype._checkPinchState = function (touches) {
+            if (touches.length === 1) {
+                this._pinchPrevented = false;
+            }
+            if (touches.length !== 2 || this._pinchPrevented) {
+                this._stopPinch();
+            }
+            else {
+                this._startPinch(touches);
+            }
+        };
+        MouseEventHandler.prototype._startPinch = function (touches) {
+            var box = getBoundingClientRect(this._target);
+            this._startPinchMiddlePoint = {
+                x: ((touches[0].clientX - box.left) + (touches[1].clientX - box.left)) / 2,
+                y: ((touches[0].clientY - box.top) + (touches[1].clientY - box.top)) / 2,
+            };
+            this._startPinchDistance = getDistance(touches[0], touches[1]);
+            if (this._handler.pinchStartEvent !== undefined) {
+                this._handler.pinchStartEvent();
+            }
+            this._clearLongTapTimeout();
+        };
+        MouseEventHandler.prototype._stopPinch = function () {
+            if (this._startPinchMiddlePoint === null) {
+                return;
+            }
+            this._startPinchMiddlePoint = null;
+            if (this._handler.pinchEndEvent !== undefined) {
+                this._handler.pinchEndEvent();
+            }
+        };
+        MouseEventHandler.prototype._mouseLeaveHandler = function (event) {
+            if (this._unsubscribeMousemove) {
+                this._unsubscribeMousemove();
+            }
+            var compatEvent = this._makeCompatEvent(event);
+            this._processEvent(compatEvent, this._handler.mouseLeaveEvent);
+        };
+        MouseEventHandler.prototype._longTapHandler = function (event) {
+            var compatEvent = this._makeCompatEvent(event);
+            this._processEvent(compatEvent, this._handler.longTapEvent);
+            this._cancelClick = true;
+        };
+        MouseEventHandler.prototype._processEvent = function (event, callback) {
+            if (!callback) {
+                return;
+            }
+            callback.call(this._handler, event);
+        };
+        MouseEventHandler.prototype._makeCompatEvent = function (event) {
+            // TouchEvent has no clientX/Y coordinates:
+            // We have to use the last Touch instead
+            var eventLike;
+            if ('touches' in event && event.touches.length) {
+                eventLike = event.touches[0];
+            }
+            else if ('changedTouches' in event && event.changedTouches.length) {
+                eventLike = event.changedTouches[0];
+            }
+            else {
+                eventLike = event;
+            }
+            var box = getBoundingClientRect(this._target);
+            return {
+                clientX: eventLike.clientX,
+                clientY: eventLike.clientY,
+                pageX: eventLike.pageX,
+                pageY: eventLike.pageY,
+                screenX: eventLike.screenX,
+                screenY: eventLike.screenY,
+                localX: eventLike.clientX - box.left,
+                localY: eventLike.clientY - box.top,
+                ctrlKey: event.ctrlKey,
+                altKey: event.altKey,
+                shiftKey: event.shiftKey,
+                metaKey: event.metaKey,
+                type: event.type.startsWith('mouse') ? 'mouse' : 'touch',
+                target: eventLike.target,
+                view: event.view,
+            };
+        };
+        return MouseEventHandler;
+    }());
+    function getBoundingClientRect(element) {
+        return element.getBoundingClientRect() || { left: 0, top: 0 };
+    }
+    function getDistance(p1, p2) {
+        var xDiff = p1.clientX - p2.clientX;
+        var yDiff = p1.clientY - p2.clientY;
+        return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+    }
+    function isTouchEvent(event) {
+        return mobileTouch || Boolean(event.touches);
+    }
+    function preventDefault(event) {
+        if (event.cancelable) {
+            event.preventDefault();
+        }
+    }
+
+    var SEPARATOR_HEIGHT = 1;
+    var PaneSeparator = /** @class */ (function () {
+        function PaneSeparator(chartWidget, topPaneIndex, bottomPaneIndex, disableResize) {
+            this._startY = 0;
+            this._deltaY = 0;
+            this._totalHeight = 0;
+            this._totalStretch = 0;
+            this._minPaneHeight = 0;
+            this._maxPaneHeight = 0;
+            this._pixelStretchFactor = 0;
+            this._chartWidget = chartWidget;
+            this._paneA = chartWidget.paneWidgets()[topPaneIndex];
+            this._paneB = chartWidget.paneWidgets()[bottomPaneIndex];
+            this._rowElement = document.createElement('tr');
+            this._rowElement.style.height = SEPARATOR_HEIGHT + 'px';
+            this._cell = document.createElement('td');
+            this._cell.style.padding = '0';
+            this._cell.setAttribute('colspan', '3');
+            this._updateBorderColor();
+            this._rowElement.appendChild(this._cell);
+            if (disableResize) {
+                this._handle = null;
+                this._mouseEventHandler = null;
+            }
+            else {
+                this._handle = document.createElement('div');
+                this._handle.style.position = 'absolute';
+                this._handle.style.zIndex = '50';
+                this._handle.style.height = '5px';
+                this._handle.style.width = '100%';
+                this._handle.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
+                this._handle.style.cursor = 'ns-resize';
+                this._cell.appendChild(this._handle);
+                var handlers = {
+                    mouseDownEvent: this._mouseDownEvent.bind(this),
+                    pressedMouseMoveEvent: this._pressedMouseMoveEvent.bind(this),
+                    mouseUpEvent: this._mouseUpEvent.bind(this),
+                };
+                this._mouseEventHandler = new MouseEventHandler(this._handle, handlers, {
+                    treatVertTouchDragAsPageScroll: false,
+                    treatHorzTouchDragAsPageScroll: true,
+                });
+            }
+        }
+        PaneSeparator.prototype.destroy = function () {
+            if (this._mouseEventHandler !== null) {
+                this._mouseEventHandler.destroy();
+            }
+        };
+        PaneSeparator.prototype.getElement = function () {
+            return this._rowElement;
+        };
+        PaneSeparator.prototype.getImage = function () {
+            var res = document.createElement('canvas');
+            var width = this._paneA.getSize().w;
+            var height = SEPARATOR_HEIGHT;
+            resizeCanvas(res, new Size(width, height));
+            var ctx = ensureNotNull(getContext2d(res));
+            ctx.fillStyle = this._chartWidget.options().timeScale.borderColor;
+            ctx.fillRect(0, 0, width, height);
+            return res;
+        };
+        PaneSeparator.prototype.update = function () {
+            this._updateBorderColor();
+        };
+        PaneSeparator.prototype._updateBorderColor = function () {
+            this._cell.style.background = this._chartWidget.options().timeScale.borderColor;
+        };
+        PaneSeparator.prototype._mouseDownEvent = function (event) {
+            this._startY = event.pageY;
+            this._deltaY = 0;
+            this._totalHeight = this._paneA.getSize().h + this._paneB.getSize().h;
+            this._totalStretch = this._paneA.stretchFactor() + this._paneB.stretchFactor();
+            this._minPaneHeight = 30;
+            this._maxPaneHeight = this._totalHeight - this._minPaneHeight;
+            this._pixelStretchFactor = this._totalStretch / this._totalHeight;
+        };
+        PaneSeparator.prototype._pressedMouseMoveEvent = function (event) {
+            this._deltaY = (event.pageY - this._startY);
+            var upperHeight = this._paneA.getSize().h;
+            var newUpperPaneHeight = clamp(upperHeight + this._deltaY, this._minPaneHeight, this._maxPaneHeight);
+            var newUpperPaneStretch = newUpperPaneHeight * this._pixelStretchFactor;
+            var newLowerPaneStretch = this._totalStretch - newUpperPaneStretch;
+            this._paneA.setStretchFactor(newUpperPaneStretch);
+            this._paneB.setStretchFactor(newLowerPaneStretch);
+            this._chartWidget.adjustSize();
+            if (this._paneA.getSize().h !== upperHeight) {
+                this._startY = event.pageY;
+            }
+        };
+        PaneSeparator.prototype._mouseUpEvent = function (event) {
+            this._startY = 0;
+            this._deltaY = 0;
+            this._totalHeight = 0;
+            this._totalStretch = 0;
+            this._minPaneHeight = 0;
+            this._maxPaneHeight = 0;
+            this._pixelStretchFactor = 0;
+        };
+        return PaneSeparator;
+    }());
+
+    var MAX_COUNT = 200;
+    var LabelsImageCache = /** @class */ (function () {
+        function LabelsImageCache(fontSize, color, fontFamily, fontStyle) {
+            this._textWidthCache = new TextWidthCache(MAX_COUNT);
+            this._fontSize = 0;
+            this._color = '';
+            this._font = '';
+            this._keys = [];
+            this._hash = new Map();
+            this._fontSize = fontSize;
+            this._color = color;
+            this._font = makeFont(fontSize, fontFamily, fontStyle);
+        }
+        LabelsImageCache.prototype.destroy = function () {
+            delete this._textWidthCache;
+            this._keys = [];
+            this._hash.clear();
+        };
+        LabelsImageCache.prototype.paintTo = function (ctx, text, x, y, align) {
+            var label = this.getLabelImage(ctx, text);
+            if (align !== 'left') {
+                x -= label.textWidth;
+            }
+            y -= Math.floor(label.height / 2);
+            ctx.drawImage(label.canvas, x, y);
+        };
+        LabelsImageCache.prototype.getLabelImage = function (ctx, text) {
+            var item;
+            if (this._hash.has(text)) {
+                // Cache hit!
+                item = ensureDefined(this._hash.get(text));
+            }
+            else {
+                if (this._keys.length >= MAX_COUNT) {
+                    var key = ensureDefined(this._keys.shift());
+                    this._hash.delete(key);
+                }
+                // Allocate new
+                item = {
+                    text: text,
+                    textWidth: 0,
+                    width: 0,
+                    height: 0,
+                    canvas: document.createElement('canvas'),
+                };
+                var margin = Math.ceil(this._fontSize / 4.5);
+                var baselineOffset = Math.round(this._fontSize / 10);
+                var textWidth = Math.ceil(this._textWidthCache.measureText(ctx, text));
+                item.textWidth = Math.round(Math.max(1, textWidth));
+                item.width = Math.round(textWidth + margin * 2);
+                item.height = this._fontSize + margin * 2;
+                if (textWidth !== 0) {
+                    this._keys.push(item.text);
+                    this._hash.set(item.text, item);
+                }
+                item.canvas.width = item.width;
+                item.canvas.height = item.height;
+                ctx = ensureNotNull(getContext2d(item.canvas));
+                ctx.font = this._font;
+                ctx.fillStyle = this._color;
+                ctx.fillText(text, 0, item.height - margin - baselineOffset);
+            }
+            return item;
+        };
+        return LabelsImageCache;
+    }());
+
+    var CursorType;
+    (function (CursorType) {
+        CursorType[CursorType["Default"] = 0] = "Default";
+        CursorType[CursorType["NsResize"] = 1] = "NsResize";
+    })(CursorType || (CursorType = {}));
+    var PriceAxisWidget = /** @class */ (function () {
+        function PriceAxisWidget(pane, options, rendererOptionsProvider, side) {
+            this._priceScale = null;
+            this._size = null;
+            this._updateTimeout = null;
+            this._mousedown = false;
+            this._isVisible = true;
+            this._widthCache = new TextWidthCache(50);
+            this._tickMarksCache = new LabelsImageCache(11, '#000');
+            this._color = null;
+            this._font = null;
+            this._prevOptimalWidth = 0;
+            this._pane = pane;
+            this._options = options;
+            this._rendererOptionsProvider = rendererOptionsProvider;
+            this._isLeft = side === 'left';
+            this._cell = document.createElement('div');
+            this._cell.style.height = '100%';
+            this._cell.style.overflow = 'hidden';
+            this._cell.style.width = '25px';
+            this._cell.style.left = '0';
+            this._cell.style.position = 'relative';
+            this._canvas = addCanvasTo(this._cell, new Size(16, 16));
+            this._canvas.style.position = 'absolute';
+            this._canvas.style.zIndex = '1';
+            this._canvas.style.left = '0';
+            this._canvas.style.top = '0';
+            this._ctx = ensureNotNull(getContext2d(this._canvas));
+            this._topCanvas = addCanvasTo(this._cell, new Size(16, 16));
+            this._topCanvas.style.position = 'absolute';
+            this._topCanvas.style.zIndex = '2';
+            this._topCanvas.style.left = '0';
+            this._topCanvas.style.top = '0';
+            this._topCtx = ensureNotNull(getContext2d(this._topCanvas));
+            var handler = {
+                mouseDownEvent: this._mouseDownEvent.bind(this),
+                pressedMouseMoveEvent: this._pressedMouseMoveEvent.bind(this),
+                mouseDownOutsideEvent: this._mouseDownOutsideEvent.bind(this),
+                mouseUpEvent: this._mouseUpEvent.bind(this),
+                mouseDoubleClickEvent: this._mouseDoubleClickEvent.bind(this),
+                mouseEnterEvent: this._mouseEnterEvent.bind(this),
+                mouseLeaveEvent: this._mouseLeaveEvent.bind(this),
+            };
+            this._mouseEventHandler = new MouseEventHandler(this._topCanvas, handler, {
+                treatVertTouchDragAsPageScroll: false,
+                treatHorzTouchDragAsPageScroll: true,
+            });
+        }
+        PriceAxisWidget.prototype.destroy = function () {
+            this._mouseEventHandler.destroy();
+            if (this._priceScale !== null) {
+                this._priceScale.onMarksChanged().unsubscribeAll(this);
+                this._priceScale.optionsChanged().unsubscribeAll(this);
+            }
+            this._priceScale = null;
+            if (this._updateTimeout !== null) {
+                clearTimeout(this._updateTimeout);
+                this._updateTimeout = null;
+            }
+            this._tickMarksCache.destroy();
+        };
+        PriceAxisWidget.prototype.getElement = function () {
+            return this._cell;
+        };
+        PriceAxisWidget.prototype.backgroundColor = function () {
+            return this._options.backgroundColor;
+        };
+        PriceAxisWidget.prototype.lineColor = function () {
+            return this._pane.chart().options().priceScale.borderColor;
+        };
+        PriceAxisWidget.prototype.textColor = function () {
+            return this._options.textColor;
+        };
+        PriceAxisWidget.prototype.fontSize = function () {
+            return this._options.fontSize;
+        };
+        PriceAxisWidget.prototype.baseFont = function () {
+            return makeFont(this.fontSize(), this._options.fontFamily);
+        };
+        PriceAxisWidget.prototype.rendererOptions = function () {
+            var options = this._rendererOptionsProvider.options();
+            var isColorChanged = this._color !== options.color;
+            var isFontChanged = this._font !== options.font;
+            if (isColorChanged || isFontChanged) {
+                this._recreateTickMarksCache(options);
+                this._color = options.color;
+            }
+            if (isFontChanged) {
+                this._widthCache.reset();
+                this._font = options.font;
+            }
+            return options;
+        };
+        PriceAxisWidget.prototype.optimalWidth = function () {
+            if (!this.isVisible() || this._priceScale === null) {
+                return 0;
+            }
+            // need some reasonable value for scale while initialization
+            var tickMarkMaxWidth = 34;
+            var rendererOptions = this.rendererOptions();
+            var ctx = this._ctx;
+            var tickMarks = this._priceScale.marks();
+            ctx.font = this.baseFont();
+            if (tickMarks.length > 0) {
+                tickMarkMaxWidth = Math.max(this._widthCache.measureText(ctx, tickMarks[0].label), this._widthCache.measureText(ctx, tickMarks[tickMarks.length - 1].label));
+            }
+            var views = this._backLabels();
+            for (var j = views.length; j--;) {
+                var width = this._widthCache.measureText(ctx, views[j].text());
+                if (width > tickMarkMaxWidth) {
+                    tickMarkMaxWidth = width;
+                }
+            }
+            return Math.ceil(rendererOptions.offsetSize +
+                rendererOptions.borderSize +
+                rendererOptions.tickLength +
+                rendererOptions.paddingInner +
+                rendererOptions.paddingOuter +
+                tickMarkMaxWidth);
+        };
+        PriceAxisWidget.prototype.setSize = function (size) {
+            if (size.w < 0 || size.h < 0) {
+                throw new Error('Try to set invalid size to PriceAxisWidget ' + JSON.stringify(size));
+            }
+            if (this._size === null || !this._size.equals(size)) {
+                this._size = size;
+                resizeCanvas(this._canvas, size);
+                resizeCanvas(this._topCanvas, size);
+                this._cell.style.width = size.w + 'px';
+                // need this for IE11
+                this._cell.style.height = size.h + 'px';
+                this._cell.style.minWidth = size.w + 'px'; // for right calculate position of .pane-legend
+            }
+        };
+        PriceAxisWidget.prototype.getWidth = function () {
+            return ensureNotNull(this._size).w;
+        };
+        PriceAxisWidget.prototype.setPriceScale = function (priceScale) {
+            if (this._priceScale === priceScale) {
+                return;
+            }
+            if (this._priceScale !== null) {
+                this._priceScale.onMarksChanged().unsubscribeAll(this);
+                this._priceScale.optionsChanged().unsubscribeAll(this);
+            }
+            this._priceScale = priceScale;
+            priceScale.onMarksChanged().subscribe(this._onMarksChanged.bind(this), this);
+        };
+        PriceAxisWidget.prototype.priceScale = function () {
+            return this._priceScale;
+        };
+        PriceAxisWidget.prototype.isVisible = function () {
+            return this._isVisible;
+        };
+        PriceAxisWidget.prototype.setVisible = function (visible) {
+            if (visible === this._isVisible) {
+                return;
+            }
+            if (visible) {
+                this._cell.style.display = 'table-cell';
+            }
+            else {
+                this._cell.style.display = 'none';
+            }
+            this._isVisible = visible;
+        };
+        PriceAxisWidget.prototype.setAutoScale = function (on) {
+            var pane = this._pane.state();
+            var model = this._pane.chart().model();
+            model.setPriceAutoScale(pane, ensureNotNull(this.priceScale()), on);
+        };
+        PriceAxisWidget.prototype.reset = function () {
+            var pane = this._pane.state();
+            var model = this._pane.chart().model();
+            model.resetPriceScale(pane, ensureNotNull(this.priceScale()));
+        };
+        PriceAxisWidget.prototype.paint = function (type) {
+            if (!this._isVisible || this._size === null) {
+                return;
+            }
+            this._topCtx.clearRect(-0.5, -0.5, this._size.w, this._size.h);
+            if (type !== 1 /* Cursor */) {
+                this._alignLabels();
+                this._drawBackground(this._ctx);
+                this._drawBorder(this._ctx);
+                this._drawTickMarks(this._ctx);
+                this._drawBackLabels(this._ctx);
+            }
+            this._drawCrosshairLabel(this._topCtx);
+        };
+        PriceAxisWidget.prototype.getImage = function () {
+            return this._canvas;
+        };
+        PriceAxisWidget.prototype.isLeft = function () {
+            return this._isLeft;
+        };
+        PriceAxisWidget.prototype._mouseDownEvent = function (e) {
+            if (this._priceScale === null || this._priceScale.isEmpty() || !this._pane.chart().options().handleScale.axisPressedMouseMove) {
+                return;
+            }
+            var model = this._pane.chart().model();
+            var pane = this._pane.state();
+            this._mousedown = true;
+            model.startScalePrice(pane, this._priceScale, e.localY);
+        };
+        PriceAxisWidget.prototype._pressedMouseMoveEvent = function (e) {
+            if (this._priceScale === null || !this._pane.chart().options().handleScale.axisPressedMouseMove) {
+                return;
+            }
+            var model = this._pane.chart().model();
+            var pane = this._pane.state();
+            var priceScale = this._priceScale;
+            model.scalePriceTo(pane, priceScale, e.localY);
+        };
+        PriceAxisWidget.prototype._mouseDownOutsideEvent = function () {
+            if (this._priceScale === null || !this._pane.chart().options().handleScale.axisPressedMouseMove) {
+                return;
+            }
+            var model = this._pane.chart().model();
+            var pane = this._pane.state();
+            var priceScale = this._priceScale;
+            if (this._mousedown) {
+                this._mousedown = false;
+                model.endScalePrice(pane, priceScale);
+            }
+        };
+        PriceAxisWidget.prototype._mouseUpEvent = function (e) {
+            if (this._priceScale === null || !this._pane.chart().options().handleScale.axisPressedMouseMove) {
+                return;
+            }
+            var model = this._pane.chart().model();
+            var pane = this._pane.state();
+            this._mousedown = false;
+            model.endScalePrice(pane, this._priceScale);
+        };
+        PriceAxisWidget.prototype._mouseDoubleClickEvent = function (e) {
+            this.reset();
+        };
+        PriceAxisWidget.prototype._mouseEnterEvent = function (e) {
+            if (this._priceScale === null) {
+                return;
+            }
+            var model = this._pane.chart().model();
+            if (model.options().handleScale.axisPressedMouseMove && !this._priceScale.isPercentage() && !this._priceScale.isIndexedTo100()) {
+                this._setCursor(1 /* NsResize */);
+            }
+        };
+        PriceAxisWidget.prototype._mouseLeaveEvent = function (e) {
+            this._setCursor(0 /* Default */);
+        };
+        PriceAxisWidget.prototype._backLabels = function () {
+            var _this = this;
+            var res = [];
+            var priceScale = (this._priceScale === null) ? undefined : this._priceScale;
+            var addViewsForSources = function (sources) {
+                for (var i = 0; i < sources.length; ++i) {
+                    var source = sources[i];
+                    var views = source.priceAxisViews(_this._pane.state(), priceScale);
+                    for (var j = 0; j < views.length; j++) {
+                        res.push(views[j]);
+                    }
+                }
+            };
+            // calculate max and min coordinates for views on selection
+            // crosshair individually
+            addViewsForSources(this._pane.state().orderedSources());
+            return res;
+        };
+        PriceAxisWidget.prototype._drawBackground = function (ctx) {
+            if (this._size === null) {
+                return;
+            }
+            clearRect(ctx, 0, 0, this._size.w, this._size.h, this.backgroundColor());
+        };
+        PriceAxisWidget.prototype._drawBorder = function (ctx) {
+            if (this._size === null || this._priceScale === null || !this._priceScale.options().borderVisible) {
+                return;
+            }
+            ctx.save();
+            ctx.fillStyle = this.lineColor();
+            var borderSize = this.rendererOptions().borderSize;
+            var left;
+            if (this._isLeft) {
+                ctx.translate(-0.5, -0.5);
+                left = this._size.w - borderSize - 1;
+            }
+            else {
+                ctx.translate(0.5, -0.5);
+                left = 0;
+            }
+            ctx.fillRect(left, 0, borderSize, this._size.h);
+            ctx.restore();
+        };
+        PriceAxisWidget.prototype._drawTickMarks = function (ctx) {
+            if (this._size === null || this._priceScale === null) {
+                return;
+            }
+            ctx.save();
+            ctx.strokeStyle = this.lineColor();
+            var tickMarks = this._priceScale.marks();
+            ctx.font = this.baseFont();
+            ctx.translate(-0.5, -0.5);
+            ctx.fillStyle = this.lineColor();
+            var rendererOptions = this.rendererOptions();
+            var drawTicks = this._priceScale.options().borderVisible;
+            var tickMarkLeftX = this._isLeft ?
+                this._size.w - rendererOptions.offsetSize - rendererOptions.borderSize - rendererOptions.tickLength :
+                rendererOptions.borderSize + rendererOptions.offsetSize;
+            var textLeftX = this._isLeft ?
+                tickMarkLeftX - rendererOptions.paddingInner :
+                tickMarkLeftX + rendererOptions.tickLength + rendererOptions.paddingInner;
+            var textAlign = this._isLeft ? 'right' : 'left';
+            if (drawTicks) {
+                ctx.beginPath();
+                for (var _i = 0, tickMarks_1 = tickMarks; _i < tickMarks_1.length; _i++) {
+                    var tickMark = tickMarks_1[_i];
+                    ctx.rect(tickMarkLeftX, tickMark.coord, rendererOptions.tickLength, 1);
+                }
+                ctx.fill();
+            }
+            ctx.fillStyle = this.textColor();
+            for (var _a = 0, tickMarks_2 = tickMarks; _a < tickMarks_2.length; _a++) {
+                var tickMark = tickMarks_2[_a];
+                this._tickMarksCache.paintTo(ctx, tickMark.label, textLeftX, tickMark.coord, textAlign);
+            }
+            ctx.restore();
+        };
+        PriceAxisWidget.prototype._alignLabels = function () {
+            if (this._size === null || this._priceScale === null) {
+                return;
+            }
+            var center = this._size.h / 2;
+            var views = [];
+            var orderedSources = this._priceScale.orderedSources().slice(); // Copy of array
+            var pane = this._pane;
+            var paneState = pane.state();
+            var rendererOptions = this.rendererOptions();
+            // if we are default price scale, append labels from no-scale
+            var isDefault = this._priceScale === paneState.defaultPriceScale();
+            if (isDefault) {
+                this._pane.state().orderedSources().forEach(function (source) {
+                    if (paneState.isOverlay(source)) {
+                        orderedSources.push(source);
+                    }
+                });
+            }
+            var mainSource = this._priceScale.mainSource();
+            var priceScale = this._priceScale;
+            var updateForSources = function (sources) {
+                sources.forEach(function (source) {
+                    var sourceViews = source.priceAxisViews(paneState, priceScale);
+                    // never align selected sources
+                    sourceViews.forEach(function (view) {
+                        view.setFixedCoordinate(null);
+                        if (view.isVisible()) {
+                            views.push(view);
+                        }
+                    });
+                    if (mainSource === source && sourceViews.length > 0) {
+                        center = sourceViews[0].floatCoordinate();
+                    }
+                });
+            };
+            // crosshair individually
+            updateForSources(orderedSources);
+            // split into two parts
+            var top = views.filter(function (view) { return view.floatCoordinate() <= center; });
+            var bottom = views.filter(function (view) { return view.floatCoordinate() > center; });
+            // sort top from center to top
+            top.sort(function (l, r) { return r.floatCoordinate() - l.floatCoordinate(); });
+            // share center label
+            if (top.length && bottom.length) {
+                bottom.push(top[0]);
+            }
+            bottom.sort(function (l, r) { return l.floatCoordinate() - r.floatCoordinate(); });
+            views.forEach(function (view) { return view.setFixedCoordinate(view.coordinate()); });
+            var options = this._priceScale.options();
+            if (!options.alignLabels) {
+                return;
+            }
+            for (var i = 1; i < top.length; i++) {
+                var view = top[i];
+                var prev = top[i - 1];
+                var height = prev.height(rendererOptions, false);
+                var coordinate = view.coordinate();
+                var prevFixedCoordinate = prev.getFixedCoordinate();
+                if (coordinate > prevFixedCoordinate - height) {
+                    view.setFixedCoordinate(prevFixedCoordinate - height);
+                }
+            }
+            for (var j = 1; j < bottom.length; j++) {
+                var view = bottom[j];
+                var prev = bottom[j - 1];
+                var height = prev.height(rendererOptions, true);
+                var coordinate = view.coordinate();
+                var prevFixedCoordinate = prev.getFixedCoordinate();
+                if (coordinate < prevFixedCoordinate + height) {
+                    view.setFixedCoordinate(prevFixedCoordinate + height);
+                }
+            }
+        };
+        PriceAxisWidget.prototype._drawBackLabels = function (ctx) {
+            var _this = this;
+            if (this._size === null) {
+                return;
+            }
+            var size = this._size;
+            var views = this._backLabels();
+            var rendererOptions = this.rendererOptions();
+            var align = this._isLeft ? 'right' : 'left';
+            views.forEach(function (view) {
+                if (view.isAxisLabelVisible()) {
+                    var renderer = view.renderer();
+                    ctx.save();
+                    renderer.draw(ctx, rendererOptions, _this._widthCache, size.w, align);
+                    ctx.restore();
+                }
+            });
+        };
+        PriceAxisWidget.prototype._drawCrosshairLabel = function (ctx) {
+            var _this = this;
+            if (this._size === null || this._priceScale === null) {
+                return;
+            }
+            var size = this._size;
+            var model = this._pane.chart().model();
+            var views = []; // array of arrays
+            var pane = this._pane.state();
+            var v = model.crosshairSource().priceAxisViews(pane, this._priceScale);
+            if (v.length) {
+                views.push(v);
+            }
+            var ro = this.rendererOptions();
+            var align = this._isLeft ? 'right' : 'left';
+            views.forEach(function (arr) {
+                arr.forEach(function (view) {
+                    ctx.save();
+                    view.renderer().draw(ctx, ro, _this._widthCache, size.w, align);
+                    ctx.restore();
+                });
+            });
+        };
+        PriceAxisWidget.prototype._setCursor = function (type) {
+            this._cell.style.cursor = type === 1 /* NsResize */ ? 'ns-resize' : 'default';
+        };
+        PriceAxisWidget.prototype._onMarksChanged = function () {
+            var _this = this;
+            var width = this.optimalWidth();
+            if (this._prevOptimalWidth < width) {
+                // avoid price scale is shrunk
+                // using < instead !== to avoid infinite changes
+                var chart_1 = this._pane.chart();
+                if (this._updateTimeout === null) {
+                    this._updateTimeout = setTimeout(function () {
+                        if (chart_1) {
+                            chart_1.model().fullUpdate();
+                        }
+                        _this._updateTimeout = null;
+                    }, 100);
+                }
+            }
+            this._prevOptimalWidth = width;
+        };
+        PriceAxisWidget.prototype._recreateTickMarksCache = function (options) {
+            this._tickMarksCache.destroy();
+            this._tickMarksCache = new LabelsImageCache(options.fontSize, options.color, options.fontFamily);
+        };
+        return PriceAxisWidget;
+    }());
+
+    // actually we should check what event happened (touch or mouse)
+    // not check current UA to detect "mobile" device
+    var trackCrosshairOnlyAfterLongTap = isMobile;
+    var PaneWidget = /** @class */ (function () {
+        function PaneWidget(chart, state) {
+            this._size = new Size(0, 0);
+            this._priceAxisWidget = null;
+            this._startScrollingPos = null;
+            this._isScrolling = false;
+            this._priceAxisPosition = 'none';
+            this._clicked = new Delegate();
+            this._prevPinchScale = 0;
+            this._longTap = false;
+            this._startTrackPoint = null;
+            this._exitTrackingModeOnNextTry = false;
+            this._initCrosshairPosition = null;
+            this._chart = chart;
+            this._state = state;
+            this._state.onDestroyed().subscribe(this._onStateDestroyed.bind(this), this, true);
+            this._paneCell = document.createElement('td');
+            this._paneCell.style.padding = '0';
+            this._paneCell.style.position = 'relative';
+            var paneWrapper = document.createElement('div');
+            paneWrapper.style.width = '100%';
+            paneWrapper.style.height = '100%';
+            paneWrapper.style.position = 'relative';
+            paneWrapper.style.overflow = 'hidden';
+            this._leftAxisCell = document.createElement('td');
+            this._leftAxisCell.style.padding = '0';
+            this._rightAxisCell = document.createElement('td');
+            this._rightAxisCell.style.padding = '0';
+            this._paneCell.appendChild(paneWrapper);
+            this._canvas = addCanvasTo(paneWrapper, new Size(16, 16));
+            this._canvas.style.position = 'absolute';
+            this._canvas.style.zIndex = '1';
+            this._canvas.style.left = '0';
+            this._canvas.style.top = '0';
+            this._ctx = ensureNotNull(getContext2d(this._canvas));
+            this._topCanvas = addCanvasTo(paneWrapper, new Size(16, 16));
+            this._topCanvas.style.position = 'absolute';
+            this._topCanvas.style.zIndex = '2';
+            this._topCanvas.style.left = '0';
+            this._topCanvas.style.top = '0';
+            this._topCtx = ensureNotNull(getContext2d(this._topCanvas));
+            this._rowElement = document.createElement('tr');
+            this._rowElement.appendChild(this._leftAxisCell);
+            this._rowElement.appendChild(this._paneCell);
+            this._rowElement.appendChild(this._rightAxisCell);
+            this._recreatePriceAxisWidgetImpl();
+            chart.model().mainPriceScaleOptionsChanged().subscribe(this._recreatePriceAxisWidget.bind(this), this);
+            this.updatePriceAxisWidget();
+            var scrollOptions = this.chart().options().handleScroll;
+            this._mouseEventHandler = new MouseEventHandler(this._topCanvas, this, {
+                treatVertTouchDragAsPageScroll: !scrollOptions.vertTouchDrag,
+                treatHorzTouchDragAsPageScroll: !scrollOptions.horzTouchDrag,
+            });
+        }
+        PaneWidget.prototype.destroy = function () {
+            if (this._priceAxisWidget !== null) {
+                this._priceAxisWidget.destroy();
+            }
+            if (this._state !== null) {
+                this._state.onDestroyed().unsubscribeAll(this);
+            }
+            this._mouseEventHandler.destroy();
+        };
+        PaneWidget.prototype.state = function () {
+            return ensureNotNull(this._state);
+        };
+        PaneWidget.prototype.stateOrNull = function () {
+            return this._state;
+        };
+        PaneWidget.prototype.setState = function (pane) {
+            if (this._state !== null) {
+                this._state.onDestroyed().unsubscribeAll(this);
+            }
+            this._state = pane;
+            if (this._state !== null) {
+                this._state.onDestroyed().subscribe(PaneWidget.prototype._onStateDestroyed.bind(this), this, true);
+            }
+            this.updatePriceAxisWidget();
+        };
+        PaneWidget.prototype.chart = function () {
+            return this._chart;
+        };
+        PaneWidget.prototype.getElement = function () {
+            return this._rowElement;
+        };
+        PaneWidget.prototype.updatePriceAxisWidget = function () {
+            if (this._state === null || this._priceAxisWidget === null) {
+                return;
+            }
+            if (this._model().serieses().length === 0) {
+                return;
+            }
+            var priceScale = this._state.defaultPriceScale();
+            this._priceAxisWidget.setPriceScale(ensureNotNull(priceScale));
+        };
+        PaneWidget.prototype.stretchFactor = function () {
+            return this._state !== null ? this._state.stretchFactor() : 0;
+        };
+        PaneWidget.prototype.setStretchFactor = function (stretchFactor) {
+            if (this._state) {
+                this._state.setStretchFactor(stretchFactor);
+            }
+        };
+        PaneWidget.prototype.mouseEnterEvent = function (event) {
+            if (!this._state) {
+                return;
+            }
+            var x = event.localX;
+            var y = event.localY;
+            if (!mobileTouch) {
+                this._setCrosshairPosition(x, y);
+            }
+        };
+        PaneWidget.prototype.mouseDownEvent = function (event) {
+            this._longTap = false;
+            this._exitTrackingModeOnNextTry = this._startTrackPoint !== null;
+            if (!this._state) {
+                return;
+            }
+            if (document.activeElement !== document.body && document.activeElement !== document.documentElement) {
+                // If any focusable element except the page itself is focused, remove the focus
+                ensureNotNull(document.activeElement).blur();
+            }
+            else {
+                // Clear selection
+                var selection = document.getSelection();
+                if (selection !== null) {
+                    selection.removeAllRanges();
+                }
+            }
+            var model = this._model();
+            var priceScale = this._state.defaultPriceScale();
+            if (priceScale.isEmpty() || model.timeScale().isEmpty()) {
+                return;
+            }
+            if (this._startTrackPoint !== null) {
+                var crosshair = model.crosshairSource();
+                this._initCrosshairPosition = { x: crosshair.appliedX(), y: crosshair.appliedY() };
+                this._startTrackPoint = { x: event.localX, y: event.localY };
+            }
+            if (!mobileTouch) {
+                this._setCrosshairPosition(event.localX, event.localY);
+            }
+        };
+        PaneWidget.prototype.mouseMoveEvent = function (event) {
+            if (!this._state) {
+                return;
+            }
+            var x = event.localX;
+            var y = event.localY;
+            if (this._preventCrosshairMove()) {
+                this._clearCrosshairPosition();
+            }
+            if (!mobileTouch) {
+                this._setCrosshairPosition(x, y);
+                var hitTest = this.hitTest(x, y);
+                this._model().setHoveredSource(hitTest && hitTest.source);
+                if (hitTest !== null && hitTest.view.moveHandler !== undefined) {
+                    hitTest.view.moveHandler(x, y);
+                }
+            }
+        };
+        PaneWidget.prototype.mouseClickEvent = function (event) {
+            if (this._state === null) {
+                return;
+            }
+            var x = event.localX;
+            var y = event.localY;
+            var hitTest = this.hitTest(x, y);
+            if (hitTest !== null && hitTest.view.clickHandler !== undefined) {
+                hitTest.view.clickHandler(x, y);
+            }
+            if (this._clicked.hasListeners()) {
+                var currentTime = this._model().crosshairSource().appliedIndex();
+                this._clicked.fire(currentTime, { x: x, y: y });
+            }
+            this._tryExitTrackingMode();
+        };
+        // tslint:disable-next-line:cyclomatic-complexity
+        PaneWidget.prototype.pressedMouseMoveEvent = function (event) {
+            if (this._state === null) {
+                return;
+            }
+            var model = this._model();
+            var x = event.localX;
+            var y = event.localY;
+            if (this._startTrackPoint !== null) {
+                // tracking mode: move crosshair
+                this._exitTrackingModeOnNextTry = false;
+                var origPoint = ensureNotNull(this._initCrosshairPosition);
+                var newX = origPoint.x + (x - this._startTrackPoint.x);
+                var newY = origPoint.y + (y - this._startTrackPoint.y);
+                this._setCrosshairPosition(newX, newY);
+            }
+            else if (!this._preventCrosshairMove()) {
+                this._setCrosshairPosition(x, y);
+            }
+            if (model.timeScale().isEmpty()) {
+                return;
+            }
+            var scrollOptions = this._chart.options().handleScroll;
+            if ((!scrollOptions.pressedMouseMove || event.type === 'touch') &&
+                (!scrollOptions.horzTouchDrag && !scrollOptions.vertTouchDrag || event.type === 'mouse')) {
+                return;
+            }
+            var priceScale = this._state.defaultPriceScale();
+            if (this._startScrollingPos === null && !this._preventScroll()) {
+                this._startScrollingPos = {
+                    x: event.clientX,
+                    y: event.clientY,
+                };
+            }
+            if (this._startScrollingPos !== null &&
+                (this._startScrollingPos.x !== event.clientX || this._startScrollingPos.y !== event.clientY)) {
+                if (!this._isScrolling) {
+                    if (!priceScale.isEmpty()) {
+                        model.startScrollPrice(this._state, priceScale, event.localY);
+                    }
+                    model.startScrollTime(event.localX);
+                    this._isScrolling = true;
+                }
+            }
+            if (this._isScrolling) {
+                // this allows scrolling not default price scales
+                if (!priceScale.isEmpty()) {
+                    model.scrollPriceTo(this._state, priceScale, event.localY);
+                }
+                model.scrollTimeTo(event.localX);
+            }
+        };
+        PaneWidget.prototype.mouseUpEvent = function (event) {
+            if (this._state === null) {
+                return;
+            }
+            this._longTap = false;
+            var model = this._model();
+            if (this._isScrolling) {
+                var priceScale = this._state.defaultPriceScale();
+                // this allows scrolling not default price scales
+                model.endScrollPrice(this._state, priceScale);
+                model.endScrollTime();
+                this._startScrollingPos = null;
+                this._isScrolling = false;
+            }
+        };
+        PaneWidget.prototype.longTapEvent = function (event) {
+            this._longTap = true;
+            if (this._startTrackPoint === null && trackCrosshairOnlyAfterLongTap) {
+                var point = { x: event.localX, y: event.localY };
+                this._startTrackingMode(point, point);
+            }
+        };
+        PaneWidget.prototype.mouseLeaveEvent = function (event) {
+            if (this._state === null) {
+                return;
+            }
+            this._state.model().setHoveredSource(null);
+            if (!isMobile) {
+                this._clearCrosshairPosition();
+            }
+        };
+        PaneWidget.prototype.clicked = function () {
+            return this._clicked;
+        };
+        PaneWidget.prototype.pinchStartEvent = function () {
+            this._prevPinchScale = 1;
+        };
+        PaneWidget.prototype.pinchEvent = function (middlePoint, scale) {
+            if (!this._chart.options().handleScale.pinch) {
+                return;
+            }
+            var zoomScale = (scale - this._prevPinchScale) * 5;
+            this._prevPinchScale = scale;
+            this._model().zoomTime(middlePoint.x, zoomScale);
+        };
+        PaneWidget.prototype.hitTest = function (x, y) {
+            var state = this._state;
+            if (state === null) {
+                return null;
+            }
+            var sources = state.orderedSources();
+            for (var _i = 0, sources_1 = sources; _i < sources_1.length; _i++) {
+                var source = sources_1[_i];
+                var sourceResult = this._hitTestPaneView(source.paneViews(state), x, y);
+                if (sourceResult !== null) {
+                    return {
+                        source: source,
+                        view: sourceResult,
+                    };
+                }
+            }
+            return null;
+        };
+        PaneWidget.prototype.setPriceAxisSize = function (width) {
+            ensureNotNull(this._priceAxisWidget).setSize(new Size(width, this._size.h));
+        };
+        PaneWidget.prototype.getSize = function () {
+            return this._size;
+        };
+        PaneWidget.prototype.setSize = function (size) {
+            if (size.w < 0 || size.h < 0) {
+                throw new Error('Try to set invalid size to PaneWidget ' + JSON.stringify(size));
+            }
+            if (this._size.equals(size)) {
+                return;
+            }
+            this._size = size;
+            resizeCanvas(this._canvas, size);
+            resizeCanvas(this._topCanvas, size);
+            // This line is here for retina canvas shim to work
+            this._ctx = ensureNotNull(getContext2d(this._canvas));
+            this._paneCell.style.width = size.w + 'px';
+            this._paneCell.style.height = size.h + 'px';
+        };
+        PaneWidget.prototype.recalculatePriceScale = function () {
+            var pane = ensureNotNull(this._state);
+            pane.recalculatePriceScale(pane.defaultPriceScale());
+            for (var _i = 0, _a = pane.dataSources(); _i < _a.length; _i++) {
+                var source = _a[_i];
+                if (pane.isOverlay(source)) {
+                    var priceScale = source.priceScale();
+                    if (priceScale !== null) {
+                        pane.recalculatePriceScale(priceScale);
+                    }
+                    // for overlay drawings price scale is owner's price scale
+                    // however owner's price scale could not contain ds
+                    source.updateAllViews();
+                }
+            }
+        };
+        PaneWidget.prototype.getImage = function () {
+            return this._canvas;
+        };
+        PaneWidget.prototype.paint = function (type) {
+            if (type === 0) {
+                return;
+            }
+            if (this._state === null) {
+                return;
+            }
+            if (type > 1 /* Cursor */) {
+                this.recalculatePriceScale();
+            }
+            if (this._priceAxisWidget !== null) {
+                this._priceAxisWidget.paint(type);
+            }
+            this._topCtx.clearRect(-0.5, -0.5, this._size.w, this._size.h);
+            if (type !== 1 /* Cursor */) {
+                this._drawBackground(this._ctx, this._backgroundColor());
+                if (this._state) {
+                    this._drawGrid(this._ctx);
+                    this._drawWatermark(this._ctx);
+                    this._drawSources(this._ctx);
+                }
+            }
+            this._drawCrosshair(this._topCtx);
+        };
+        PaneWidget.prototype.priceAxisWidget = function () {
+            return this._priceAxisWidget;
+        };
+        PaneWidget.prototype._backgroundColor = function () {
+            return this._chart.options().layout.backgroundColor;
+        };
+        PaneWidget.prototype._onStateDestroyed = function () {
+            if (this._state !== null) {
+                this._state.onDestroyed().unsubscribeAll(this);
+            }
+            this._state = null;
+        };
+        PaneWidget.prototype._drawBackground = function (ctx, color) {
+            clearRect(ctx, 0, 0, this._size.w, this._size.h, color);
+        };
+        PaneWidget.prototype._drawGrid = function (ctx) {
+            var state = ensureNotNull(this._state);
+            var source = this._model().gridSource();
+            // NOTE: grid source requires Pane instance for paneViews (for the nonce)
+            var paneViews = source.paneViews(state);
+            var height = state.height();
+            var width = state.width();
+            for (var _i = 0, paneViews_1 = paneViews; _i < paneViews_1.length; _i++) {
+                var paneView = paneViews_1[_i];
+                ctx.save();
+                var renderer = paneView.renderer(height, width);
+                if (renderer !== null) {
+                    renderer.draw(ctx, false);
+                }
+                ctx.restore();
+            }
+        };
+        PaneWidget.prototype._drawWatermark = function (ctx) {
+            var source = this._model().watermarkSource();
+            if (source === null) {
+                return;
+            }
+            var state = ensureNotNull(this._state);
+            if (!state.containsSeries()) {
+                return;
+            }
+            var paneViews = source.paneViews();
+            var height = state.height();
+            var width = state.width();
+            for (var _i = 0, paneViews_2 = paneViews; _i < paneViews_2.length; _i++) {
+                var paneView = paneViews_2[_i];
+                ctx.save();
+                var renderer = paneView.renderer(height, width);
+                if (renderer !== null) {
+                    renderer.draw(ctx, false);
+                }
+                ctx.restore();
+            }
+        };
+        PaneWidget.prototype._drawCrosshair = function (ctx) {
+            this._drawSource(this._model().crosshairSource(), ctx);
+        };
+        PaneWidget.prototype._drawSources = function (ctx) {
+            var state = ensureNotNull(this._state);
+            var sources = state.orderedSources();
+            var crosshairSource = this._model().crosshairSource();
+            for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
+                var source = sources_2[_i];
+                this._drawSourceBackground(source, ctx);
+            }
+            for (var _a = 0, sources_3 = sources; _a < sources_3.length; _a++) {
+                var source = sources_3[_a];
+                if (source !== crosshairSource) {
+                    this._drawSource(source, ctx);
+                }
+            }
+        };
+        PaneWidget.prototype._drawSource = function (source, ctx) {
+            var state = ensureNotNull(this._state);
+            var paneViews = source.paneViews(state);
+            var height = state.height();
+            var width = state.width();
+            var isHovered = state.model().hoveredSource() === source;
+            for (var _i = 0, paneViews_3 = paneViews; _i < paneViews_3.length; _i++) {
+                var paneView = paneViews_3[_i];
+                var renderer = paneView.renderer(height, width);
+                if (renderer !== null) {
+                    ctx.save();
+                    renderer.draw(ctx, isHovered);
+                    ctx.restore();
+                }
+            }
+        };
+        PaneWidget.prototype._drawSourceBackground = function (source, ctx) {
+            var state = ensureNotNull(this._state);
+            var paneViews = source.paneViews(state);
+            var height = state.height();
+            var width = state.width();
+            var isHovered = state.model().hoveredSource() === source;
+            for (var _i = 0, paneViews_4 = paneViews; _i < paneViews_4.length; _i++) {
+                var paneView = paneViews_4[_i];
+                var renderer = paneView.renderer(height, width);
+                if (renderer !== null && renderer.drawBackground !== undefined) {
+                    ctx.save();
+                    renderer.drawBackground(ctx, isHovered);
+                    ctx.restore();
+                }
+            }
+        };
+        PaneWidget.prototype._hitTestPaneView = function (paneViews, x, y) {
+            for (var _i = 0, paneViews_5 = paneViews; _i < paneViews_5.length; _i++) {
+                var paneView = paneViews_5[_i];
+                var renderer = paneView.renderer(this._size.h, this._size.w);
+                if (renderer !== null && renderer.hitTest) {
+                    var result = renderer.hitTest(x, y);
+                    if (result) {
+                        return paneView;
+                    }
+                }
+            }
+            return null;
+        };
+        PaneWidget.prototype._recreatePriceAxisWidget = function () {
+            this._recreatePriceAxisWidgetImpl();
+            this._chart.adjustSize();
+        };
+        PaneWidget.prototype._recreatePriceAxisWidgetImpl = function () {
+            if (this._state === null) {
+                return;
+            }
+            var chart = this._chart;
+            var axisPosition = this._state.defaultPriceScale().options().position;
+            if (this._priceAxisPosition === axisPosition) {
+                return;
+            }
+            if (this._priceAxisWidget !== null) {
+                if (this._priceAxisWidget.isLeft()) {
+                    this._leftAxisCell.removeChild(this._priceAxisWidget.getElement());
+                }
+                else {
+                    this._rightAxisCell.removeChild(this._priceAxisWidget.getElement());
+                }
+                this._priceAxisWidget.destroy();
+                this._priceAxisWidget = null;
+            }
+            if (axisPosition !== 'none') {
+                var rendererOptionsProvider = chart.model().rendererOptionsProvider();
+                this._priceAxisWidget = new PriceAxisWidget(this, chart.options().layout, rendererOptionsProvider, axisPosition);
+                if (axisPosition === 'left') {
+                    this._leftAxisCell.appendChild(this._priceAxisWidget.getElement());
+                }
+                if (axisPosition === 'right') {
+                    this._rightAxisCell.appendChild(this._priceAxisWidget.getElement());
+                }
+            }
+            this._priceAxisPosition = axisPosition;
+        };
+        PaneWidget.prototype._preventCrosshairMove = function () {
+            return trackCrosshairOnlyAfterLongTap && this._startTrackPoint === null;
+        };
+        PaneWidget.prototype._preventScroll = function () {
+            return trackCrosshairOnlyAfterLongTap && this._longTap || this._startTrackPoint !== null;
+        };
+        PaneWidget.prototype._correctXCoord = function (x) {
+            return Math.max(0, Math.min(x, this._size.w - 1));
+        };
+        PaneWidget.prototype._correctYCoord = function (y) {
+            return Math.max(0, Math.min(y, this._size.h - 1));
+        };
+        PaneWidget.prototype._setCrosshairPosition = function (x, y) {
+            this._model().setAndSaveCurrentPosition(this._correctXCoord(x), this._correctYCoord(y), ensureNotNull(this._state));
+        };
+        PaneWidget.prototype._clearCrosshairPosition = function () {
+            this._model().clearCurrentPosition();
+        };
+        PaneWidget.prototype._tryExitTrackingMode = function () {
+            if (this._exitTrackingModeOnNextTry) {
+                this._startTrackPoint = null;
+                this._clearCrosshairPosition();
+            }
+        };
+        PaneWidget.prototype._startTrackingMode = function (startTrackPoint, crossHairPosition) {
+            this._startTrackPoint = startTrackPoint;
+            this._exitTrackingModeOnNextTry = false;
+            this._setCrosshairPosition(crossHairPosition.x, crossHairPosition.y);
+            var crosshair = this._model().crosshairSource();
+            this._initCrosshairPosition = { x: crosshair.appliedX(), y: crosshair.appliedY() };
+        };
+        PaneWidget.prototype._model = function () {
+            return this._chart.model();
+        };
+        return PaneWidget;
+    }());
+
+    var PriceAxisStub = /** @class */ (function () {
+        function PriceAxisStub(side, options, params, borderVisible) {
+            this._invalidated = true;
+            this._size = new Size(0, 0);
+            this._isLeft = side === 'left';
+            this._rendererOptionsProvider = params.rendererOptionsProvider;
+            this._options = options;
+            this._borderVisible = borderVisible;
+            this._cell = document.createElement('div');
+            this._cell.style.width = '25px';
+            this._cell.style.height = '100%';
+            this._cell.style.overflow = 'hidden';
+            this._canvas = addCanvasTo(this._cell, new Size(16, 16));
+            this._ctx = getContext2d(this._canvas);
+        }
+        PriceAxisStub.prototype.destroy = function () {
+        };
+        PriceAxisStub.prototype.update = function () {
+            this._invalidated = true;
+        };
+        PriceAxisStub.prototype.getElement = function () {
+            return this._cell;
+        };
+        PriceAxisStub.prototype.setSize = function (size) {
+            if (size.w < 0 || size.h < 0) {
+                throw new Error('Try to set invalid size to PriceAxisStub ' + JSON.stringify(size));
+            }
+            if (!this._size.equals(size)) {
+                this._size = size;
+                resizeCanvas(this._canvas, size);
+                this._cell.style.width = size.w + "px";
+                this._cell.style.minWidth = size.w + "px"; // for right calculate position of .pane-legend
+                this._cell.style.height = size.h + "px";
+                this._invalidated = true;
+            }
+        };
+        PriceAxisStub.prototype.paint = function (type) {
+            if (type < 3 /* Full */ && !this._invalidated) {
+                return;
+            }
+            if (this._size.w === 0 || this._size.h === 0) {
+                return;
+            }
+            this._invalidated = false;
+            this._drawBackground();
+            this._drawBorder();
+        };
+        PriceAxisStub.prototype.getImage = function () {
+            return this._canvas;
+        };
+        PriceAxisStub.prototype.getWidth = function () {
+            return this._size.w;
+        };
+        PriceAxisStub.prototype.isLeft = function () {
+            return this._isLeft;
+        };
+        PriceAxisStub.prototype._drawBorder = function () {
+            if (!this._borderVisible()) {
+                return;
+            }
+            var width = this._size.w;
+            this._ctx.save();
+            this._ctx.fillStyle = this._options.timeScale.borderColor;
+            var borderSize = this._rendererOptionsProvider.options().borderSize;
+            var left;
+            if (this._isLeft) {
+                this._ctx.translate(-0.5, -0.5);
+                left = width - borderSize - 1;
+            }
+            else {
+                this._ctx.translate(-0.5, -0.5);
+                left = 0;
+            }
+            // multiply to 2 because of we draw price scale border on the second pixel
+            this._ctx.fillRect(left, 0, borderSize * 2, 1);
+            this._ctx.restore();
+        };
+        PriceAxisStub.prototype._drawBackground = function () {
+            clearRect(this._ctx, 0, 0, this._size.w, this._size.h, this._options.layout.backgroundColor);
+        };
+        return PriceAxisStub;
+    }());
+
+    var Constants$3;
+    (function (Constants) {
+        Constants[Constants["BorderSize"] = 1] = "BorderSize";
+        Constants[Constants["TickLength"] = 3] = "TickLength";
+    })(Constants$3 || (Constants$3 = {}));
+    var CursorType$1;
+    (function (CursorType) {
+        CursorType[CursorType["Default"] = 0] = "Default";
+        CursorType[CursorType["EwResize"] = 1] = "EwResize";
+    })(CursorType$1 || (CursorType$1 = {}));
+    function markWithGreaterSpan(a, b) {
+        return a.span > b.span ? a : b;
+    }
+    var TimeAxisWidget = /** @class */ (function () {
+        function TimeAxisWidget(chartWidget) {
+            this._stub = null;
+            this._minVisibleSpan = 70 /* Year */;
+            this._rendererOptions = null;
+            this._mouseDown = false;
+            this._size = new Size(0, 0);
+            this._priceAxisPosition = 'none';
+            this._chart = chartWidget;
+            this._options = chartWidget.options().layout;
+            this._element = document.createElement('tr');
+            this._leftStubCell = document.createElement('td');
+            this._leftStubCell.style.padding = '0';
+            this._rightStubCell = document.createElement('td');
+            this._rightStubCell.style.padding = '0';
+            this._cell = document.createElement('td');
+            this._cell.style.height = '25px';
+            this._cell.style.padding = '0';
+            this._dv = document.createElement('div');
+            this._dv.style.width = '100%';
+            this._dv.style.height = '100%';
+            this._dv.style.position = 'relative';
+            this._dv.style.overflow = 'hidden';
+            this._cell.appendChild(this._dv);
+            this._canvas = addCanvasTo(this._dv, new Size(16, 16));
+            this._canvas.style.position = 'absolute';
+            this._canvas.style.zIndex = '1';
+            this._canvas.style.left = '0';
+            this._canvas.style.top = '0';
+            this._canvasContext = ensureNotNull(getContext2d(this._canvas));
+            this._topCanvas = addCanvasTo(this._dv, new Size(16, 16));
+            this._topCanvas.style.position = 'absolute';
+            this._topCanvas.style.zIndex = '2';
+            this._topCanvas.style.left = '0';
+            this._topCanvas.style.top = '0';
+            this._topCanvasContext = ensureNotNull(getContext2d(this._topCanvas));
+            this._element.appendChild(this._leftStubCell);
+            this._element.appendChild(this._cell);
+            this._element.appendChild(this._rightStubCell);
+            this._recreateStub();
+            this._chart.model().mainPriceScaleOptionsChanged().subscribe(this._recreateStub.bind(this), this);
+            this._mouseEventHandler = new MouseEventHandler(this._topCanvas, this, {
+                treatVertTouchDragAsPageScroll: true,
+                treatHorzTouchDragAsPageScroll: false,
+            });
+        }
+        TimeAxisWidget.prototype.destroy = function () {
+            this._mouseEventHandler.destroy();
+            if (this._stub !== null) {
+                this._stub.destroy();
+            }
+        };
+        TimeAxisWidget.prototype.getElement = function () {
+            return this._element;
+        };
+        TimeAxisWidget.prototype.stub = function () {
+            return this._stub;
+        };
+        TimeAxisWidget.prototype.mouseDownEvent = function (event) {
+            if (this._mouseDown) {
+                return;
+            }
+            this._mouseDown = true;
+            var model = this._chart.model();
+            if (model.timeScale().isEmpty() || !this._chart.options().handleScale.axisPressedMouseMove) {
+                return;
+            }
+            model.startScaleTime(event.localX);
+        };
+        TimeAxisWidget.prototype.mouseDownOutsideEvent = function () {
+            var model = this._chart.model();
+            if (!model.timeScale().isEmpty() && this._mouseDown) {
+                this._mouseDown = false;
+                if (this._chart.options().handleScale.axisPressedMouseMove) {
+                    model.endScaleTime();
+                }
+            }
+        };
+        TimeAxisWidget.prototype.pressedMouseMoveEvent = function (event) {
+            var model = this._chart.model();
+            if (model.timeScale().isEmpty() || !this._chart.options().handleScale.axisPressedMouseMove) {
+                return;
+            }
+            model.scaleTimeTo(event.localX);
+        };
+        TimeAxisWidget.prototype.mouseUpEvent = function (event) {
+            this._mouseDown = false;
+            var model = this._chart.model();
+            if (model.timeScale().isEmpty() && !this._chart.options().handleScale.axisPressedMouseMove) {
+                return;
+            }
+            model.endScaleTime();
+        };
+        TimeAxisWidget.prototype.mouseDoubleClickEvent = function () {
+            this._chart.model().resetTimeScale();
+        };
+        TimeAxisWidget.prototype.mouseEnterEvent = function (e) {
+            var model = this._chart.model();
+            if (model.options().handleScale.axisPressedMouseMove) {
+                this._setCursor(1 /* EwResize */);
+            }
+        };
+        TimeAxisWidget.prototype.mouseLeaveEvent = function (e) {
+            this._setCursor(0 /* Default */);
+        };
+        TimeAxisWidget.prototype.setSizes = function (timeAxisSize, stubWidth) {
+            if (!this._size || !this._size.equals(timeAxisSize)) {
+                this._size = timeAxisSize;
+                resizeCanvas(this._canvas, timeAxisSize);
+                resizeCanvas(this._topCanvas, timeAxisSize);
+                getContext2d(this._canvas); // Sync HiDpiCanvas metrics
+                getContext2d(this._topCanvas); // Sync HiDpiCanvas metrics
+                this._cell.style.width = timeAxisSize.w + 'px';
+                this._cell.style.height = timeAxisSize.h + 'px';
+            }
+            if (this._stub !== null) {
+                this._stub.setSize(new Size(stubWidth, timeAxisSize.h));
+            }
+        };
+        TimeAxisWidget.prototype.width = function () {
+            return this._size.w;
+        };
+        TimeAxisWidget.prototype.height = function () {
+            return this._size.h;
+        };
+        TimeAxisWidget.prototype.optimalHeight = function () {
+            var rendererOptions = this._getRendererOptions();
+            return Math.ceil(
+            // rendererOptions.offsetSize +
+            rendererOptions.borderSize +
+                rendererOptions.tickLength +
+                rendererOptions.fontSize +
+                rendererOptions.paddingTop +
+                rendererOptions.paddingBottom);
+        };
+        TimeAxisWidget.prototype.update = function () {
+            var _this = this;
+            var tickMarks = this._chart.model().timeScale().marks();
+            if (!tickMarks) {
+                return;
+            }
+            this._minVisibleSpan = 70 /* Year */;
+            tickMarks.forEach(function (tickMark) {
+                _this._minVisibleSpan = Math.min(tickMark.span, _this._minVisibleSpan);
+            });
+        };
+        TimeAxisWidget.prototype.getImage = function () {
+            return this._canvas;
+        };
+        TimeAxisWidget.prototype.paint = function (type) {
+            if (type === 0 /* None */) {
+                return;
+            }
+            if (type !== 1 /* Cursor */) {
+                var ctx = this._canvasContext;
+                this._drawBackground(ctx);
+                this._drawBorder(ctx);
+                this._drawTickMarks(ctx);
+                this._drawBackLabels(ctx);
+                if (this._stub !== null) {
+                    this._stub.paint(type);
+                }
+            }
+            this._drawCrosshairLabel(this._topCanvasContext);
+        };
+        TimeAxisWidget.prototype._drawBackground = function (ctx) {
+            clearRect(ctx, 0, 0, this._size.w, this._size.h, this._backgroundColor());
+        };
+        TimeAxisWidget.prototype._drawBorder = function (ctx) {
+            if (this._chart.options().timeScale.borderVisible) {
+                ctx.save();
+                ctx.fillStyle = this._lineColor();
+                ctx.translate(-0.5, -0.5);
+                ctx.fillRect(0, 0, this._size.w, 1);
+                ctx.restore();
+            }
+        };
+        TimeAxisWidget.prototype._drawTickMarks = function (ctx) {
+            var tickMarks = this._chart.model().timeScale().marks();
+            if (!tickMarks || tickMarks.length === 0) {
+                return;
+            }
+            // select max span
+            /*
+            5 * ?SEC -> 11;
+            15 * ?SEC -> 12;
+            30 * ?SEC -> 13;
+            ?MIN -> 20;
+            5 * ?MIN -> 21;
+            15 * ?MIN -> 21;
+            30 * ?MIN -> 22;
+            ?HOUR -> 30;
+            3 * ?HOUR -> 31;
+            6 * ?HOUR -> 32;
+            12 * ?HOUR -> 33;
+            ?DAY -> 40;
+            ?WEEK -> 50;
+            ?MONTH -> 60;
+            ?YEAR -> 70
+            */
+            var maxSpan = tickMarks.reduce(markWithGreaterSpan, tickMarks[0]).span;
+            // special case: it looks strange if 15:00 is bold but 14:00 is not
+            // so if maxSpan > 30 and < 40 reduce it to 30
+            if (maxSpan > 30 && maxSpan < 40) {
+                maxSpan = 30;
+            }
+            ctx.save();
+            ctx.strokeStyle = this._lineColor();
+            var rendererOptions = this._getRendererOptions();
+            var yText = (rendererOptions.borderSize +
+                rendererOptions.tickLength +
+                rendererOptions.paddingTop +
+                rendererOptions.fontSize -
+                rendererOptions.baselineOffset);
+            ctx.textAlign = 'center';
+            ctx.translate(0.5, -0.5);
+            ctx.fillStyle = this._lineColor();
+            if (this._chart.model().timeScale().options().borderVisible) {
+                ctx.beginPath();
+                for (var index = tickMarks.length; index--;) {
+                    ctx.rect(tickMarks[index].coord, 1, 1, rendererOptions.tickLength);
+                }
+                ctx.fill();
+            }
+            ctx.fillStyle = this._textColor();
+            // draw base marks
+            ctx.font = this._baseFont();
+            for (var _i = 0, tickMarks_1 = tickMarks; _i < tickMarks_1.length; _i++) {
+                var tickMark = tickMarks_1[_i];
+                if (tickMark.span < maxSpan) {
+                    ctx.fillText(tickMark.label, tickMark.coord, yText);
+                }
+            }
+            ctx.font = this._baseBoldFont();
+            for (var _a = 0, tickMarks_2 = tickMarks; _a < tickMarks_2.length; _a++) {
+                var tickMark = tickMarks_2[_a];
+                if (tickMark.span >= maxSpan) {
+                    ctx.fillText(tickMark.label, tickMark.coord, yText);
+                }
+            }
+            ctx.restore();
+        };
+        TimeAxisWidget.prototype._drawBackLabels = function (ctx) {
+            ctx.save();
+            var topLevelSources = new Set();
+            var model = this._chart.model();
+            var sources = model.dataSources();
+            topLevelSources.add(model.crosshairSource());
+            var rendererOptions = this._getRendererOptions();
+            for (var _i = 0, sources_1 = sources; _i < sources_1.length; _i++) {
+                var source = sources_1[_i];
+                if (topLevelSources.has(source)) {
+                    continue;
+                }
+                var views = source.timeAxisViews();
+                for (var _a = 0, views_1 = views; _a < views_1.length; _a++) {
+                    var view = views_1[_a];
+                    view.renderer().draw(ctx, rendererOptions);
+                }
+            }
+            ctx.restore();
+        };
+        TimeAxisWidget.prototype._drawCrosshairLabel = function (ctx) {
+            this._topCanvasContext.clearRect(-0.5, -0.5, this._size.w, this._size.h);
+            var model = this._chart.model();
+            var views = []; // array of arrays
+            var timeAxisViews = model.crosshairSource().timeAxisViews();
+            views.push(timeAxisViews);
+            var renderingOptions = this._getRendererOptions();
+            views.forEach(function (arr) {
+                arr.forEach(function (view) {
+                    ctx.save();
+                    view.renderer().draw(ctx, renderingOptions);
+                    ctx.restore();
+                });
+            });
+        };
+        TimeAxisWidget.prototype._backgroundColor = function () {
+            return this._options.backgroundColor;
+        };
+        TimeAxisWidget.prototype._lineColor = function () {
+            return this._chart.options().timeScale.borderColor;
+        };
+        TimeAxisWidget.prototype._textColor = function () {
+            return this._options.textColor;
+        };
+        TimeAxisWidget.prototype._fontSize = function () {
+            return this._options.fontSize;
+        };
+        TimeAxisWidget.prototype._baseFont = function () {
+            return makeFont(this._fontSize(), this._options.fontFamily);
+        };
+        TimeAxisWidget.prototype._baseBoldFont = function () {
+            return makeFont(this._fontSize(), this._options.fontFamily, 'bold');
+        };
+        TimeAxisWidget.prototype._getRendererOptions = function () {
+            if (this._rendererOptions === null) {
+                this._rendererOptions = {
+                    borderSize: 1 /* BorderSize */,
+                    baselineOffset: NaN,
+                    paddingTop: NaN,
+                    paddingBottom: NaN,
+                    paddingHorizontal: NaN,
+                    tickLength: 3 /* TickLength */,
+                    fontSize: NaN,
+                    font: '',
+                    widthCache: new TextWidthCache(),
+                };
+            }
+            var rendererOptions = this._rendererOptions;
+            var newFont = this._baseFont();
+            if (rendererOptions.font !== newFont) {
+                var fontSize = this._fontSize();
+                rendererOptions.fontSize = fontSize;
+                rendererOptions.font = newFont;
+                rendererOptions.paddingTop = Math.ceil(fontSize / 2.5);
+                rendererOptions.paddingBottom = rendererOptions.paddingTop;
+                rendererOptions.paddingHorizontal = Math.ceil(fontSize / 2);
+                rendererOptions.baselineOffset = Math.round(this._fontSize() / 5);
+                rendererOptions.widthCache.reset();
+            }
+            return this._rendererOptions;
+        };
+        TimeAxisWidget.prototype._setCursor = function (type) {
+            this._cell.style.cursor = type === 1 /* EwResize */ ? 'ew-resize' : 'default';
+        };
+        TimeAxisWidget.prototype._recreateStub = function () {
+            var priceAxisPosition = this._chart.model().mainPriceScale().options().position;
+            if (priceAxisPosition === this._priceAxisPosition) {
+                return;
+            }
+            if (this._stub !== null) {
+                if (this._stub.isLeft()) {
+                    this._leftStubCell.removeChild(this._stub.getElement());
+                }
+                else {
+                    this._rightStubCell.removeChild(this._stub.getElement());
+                }
+                this._stub.destroy();
+                this._stub = null;
+            }
+            if (priceAxisPosition !== 'none') {
+                var rendererOptionsProvider = this._chart.model().rendererOptionsProvider();
+                var params = {
+                    rendererOptionsProvider: rendererOptionsProvider,
+                };
+                var model_1 = this._chart.model();
+                var borderVisibleGetter = function () {
+                    return model_1.mainPriceScale().options().borderVisible && model_1.timeScale().options().borderVisible;
+                };
+                this._stub = new PriceAxisStub(priceAxisPosition, this._chart.options(), params, borderVisibleGetter);
+                var stubCell = priceAxisPosition === 'left' ? this._leftStubCell : this._rightStubCell;
+                stubCell.appendChild(this._stub.getElement());
+            }
+            this._priceAxisPosition = priceAxisPosition;
+        };
+        return TimeAxisWidget;
+    }());
+
+    var ChartWidget = /** @class */ (function () {
+        function ChartWidget(container, options) {
+            var _this = this;
+            this._paneWidgets = [];
+            this._paneSeparators = [];
+            this._drawRafId = 0;
+            this._priceAxisWidthChanged = new Delegate();
+            this._height = 0;
+            this._width = 0;
+            this._priceAxisWidth = 0;
+            this._invalidateMask = null;
+            this._drawPlanned = false;
+            this._clicked = new Delegate();
+            this._crosshairMoved = new Delegate();
+            this._options = options;
+            this._element = document.createElement('div');
+            this._element.classList.add('tv-lightweight-charts');
+            this._element.style.overflow = 'hidden';
+            this._element.style.width = '100%';
+            this._element.style.height = '100%';
+            this._tableElement = document.createElement('table');
+            this._tableElement.setAttribute('cellspacing', '0');
+            this._element.appendChild(this._tableElement);
+            this._onWheelBound = this._onMousewheel.bind(this);
+            this._element.addEventListener('wheel', this._onWheelBound, { passive: false });
+            this._model = new ChartModel(this._invalidateHandler.bind(this), this._options);
+            this.model().crosshairMoved().subscribe(this._onPaneWidgetCrosshairMoved.bind(this), this);
+            this._timeAxisWidget = new TimeAxisWidget(this);
+            this._tableElement.appendChild(this._timeAxisWidget.getElement());
+            var width = this._options.width;
+            var height = this._options.height;
+            if (width === 0 && height === 0) {
+                var containerRect = container.getBoundingClientRect();
+                width = containerRect.width;
+                height = containerRect.height;
+            }
+            width = Math.max(70, width);
+            height = Math.max(50, height);
+            // BEWARE: resize must be called BEFORE _syncGuiWithModel (in constructor only)
+            // or after but with adjustSize to properly update time scale
+            this.resize(height, width);
+            this._syncGuiWithModel();
+            container.appendChild(this._element);
+            this._updateTimeAxisVisibility();
+            this._model.timeScale().optionsApplied().subscribe(function () {
+                _this._updateTimeAxisVisibility();
+                _this.adjustSize();
+            }, this);
+        }
+        ChartWidget.prototype.model = function () {
+            return this._model;
+        };
+        ChartWidget.prototype.options = function () {
+            return this._options;
+        };
+        ChartWidget.prototype.paneWidgets = function () {
+            return this._paneWidgets;
+        };
+        ChartWidget.prototype.destroy = function () {
+            this._element.removeEventListener('wheel', this._onWheelBound);
+            if (this._drawRafId !== 0) {
+                window.cancelAnimationFrame(this._drawRafId);
+            }
+            this._model.crosshairMoved().unsubscribeAll(this);
+            this._model.timeScale().optionsApplied().unsubscribeAll(this);
+            this._model.destroy();
+            for (var _i = 0, _a = this._paneWidgets; _i < _a.length; _i++) {
+                var paneWidget = _a[_i];
+                this._tableElement.removeChild(paneWidget.getElement());
+                paneWidget.clicked().unsubscribeAll(this);
+                paneWidget.destroy();
+            }
+            this._paneWidgets = [];
+            for (var _b = 0, _c = this._paneSeparators; _b < _c.length; _b++) {
+                var paneSeparator = _c[_b];
+                this._destroySeparator(paneSeparator);
+            }
+            this._paneSeparators = [];
+            ensureNotNull(this._timeAxisWidget).destroy();
+            if (this._element.parentElement !== null) {
+                this._element.parentElement.removeChild(this._element);
+            }
+            this._crosshairMoved.destroy();
+            this._clicked.destroy();
+            delete this._element;
+        };
+        ChartWidget.prototype.resize = function (height, width, forceRepaint) {
+            if (forceRepaint === void 0) { forceRepaint = false; }
+            if (this._height === height && this._width === width) {
+                return;
+            }
+            this._height = height;
+            this._width = width;
+            var heightStr = height + 'px';
+            var widthStr = width + 'px';
+            ensureNotNull(this._element).style.height = heightStr;
+            ensureNotNull(this._element).style.width = widthStr;
+            this._tableElement.style.height = heightStr;
+            this._tableElement.style.width = widthStr;
+            if (forceRepaint) {
+                this._drawImpl(new InvalidateMask(3 /* Full */));
+            }
+            else {
+                this._model.fullUpdate();
+            }
+        };
+        ChartWidget.prototype.paint = function (invalidateMask) {
+            if (invalidateMask === undefined) {
+                invalidateMask = new InvalidateMask(3 /* Full */);
+            }
+            for (var i = 0; i < this._paneWidgets.length; i++) {
+                this._paneWidgets[i].paint(invalidateMask.invalidateForPane(i).level);
+            }
+            this._timeAxisWidget.paint(invalidateMask.fullInvalidation());
+        };
+        ChartWidget.prototype.adjustSize = function () {
+            this._adjustSizeImpl();
+            this._model.fullUpdate();
+        };
+        ChartWidget.prototype.applyOptions = function (options) {
+            this._model.applyOptions(options);
+            this._updateTimeAxisVisibility();
+            var width = options.width || this._width;
+            var height = options.height || this._height;
+            this.resize(height, width);
+        };
+        ChartWidget.prototype.clicked = function () {
+            return this._clicked;
+        };
+        ChartWidget.prototype.crosshairMoved = function () {
+            return this._crosshairMoved;
+        };
+        ChartWidget.prototype.takeScreenshot = function () {
+            var _this = this;
+            if (this._invalidateMask !== null) {
+                this._drawImpl(this._invalidateMask);
+                this._invalidateMask = null;
+            }
+            // calculate target size
+            var firstPane = this._paneWidgets[0];
+            var targetWidth = this._width;
+            var targetHeight = this._height;
+            var targetCanvas = document.createElement('canvas');
+            resizeCanvas(targetCanvas, new Size(targetWidth, targetHeight));
+            var ctx = ensureNotNull(getContext2d(targetCanvas));
+            // we need this actually because of resizeCanvas does translate, but we do not need it
+            ctx.translate(-0.5, -0.5);
+            var targetX = 0;
+            var targetY = 0;
+            var drawPriceAxises = function () {
+                for (var paneIndex = 0; paneIndex < _this._paneWidgets.length; paneIndex++) {
+                    var paneWidget = _this._paneWidgets[paneIndex];
+                    var image = ensureNotNull(paneWidget.priceAxisWidget()).getImage();
+                    ctx.drawImage(image, targetX, targetY);
+                    targetY += paneWidget.getSize().h;
+                    if (paneIndex < _this._paneWidgets.length - 1) {
+                        targetY += SEPARATOR_HEIGHT;
+                    }
+                }
+            };
+            // draw left price scale if exists
+            if (this._options.priceScale.position === 'left') {
+                drawPriceAxises();
+                targetX = ensureNotNull(firstPane.priceAxisWidget()).getWidth();
+            }
+            targetY = 0;
+            for (var paneIndex = 0; paneIndex < this._paneWidgets.length; paneIndex++) {
+                var paneWidget = this._paneWidgets[paneIndex];
+                var image = paneWidget.getImage();
+                ctx.drawImage(image, targetX, targetY);
+                targetY += paneWidget.getSize().h;
+                if (paneIndex < this._paneWidgets.length - 1) {
+                    var separator = this._paneSeparators[paneIndex];
+                    var separatorImage = separator.getImage();
+                    ctx.drawImage(separatorImage, targetX, targetY);
+                    targetY += SEPARATOR_HEIGHT;
+                }
+            }
+            targetX += firstPane.getSize().w;
+            if (this._options.priceScale.position === 'right') {
+                targetY = 0;
+                drawPriceAxises();
+            }
+            var drawStub = function () {
+                var image = ensureNotNull(_this._timeAxisWidget.stub()).getImage();
+                ctx.drawImage(image, targetX, targetY);
+            };
+            // draw time scale
+            if (this._options.timeScale.visible) {
+                targetX = 0;
+                if (this._options.priceScale.position === 'left') {
+                    drawStub();
+                    targetX = ensureNotNull(firstPane.priceAxisWidget()).getWidth();
+                }
+                var image = this._timeAxisWidget.getImage();
+                ctx.drawImage(image, targetX, targetY);
+                if (this._options.priceScale.position === 'right') {
+                    targetX = firstPane.getSize().w;
+                    drawStub();
+                    ctx.restore();
+                }
+            }
+            return targetCanvas;
+        };
+        ChartWidget.prototype._adjustSizeImpl = function () {
+            var totalStretch = 0;
+            var priceAxisWidth = 0;
+            for (var _i = 0, _a = this._paneWidgets; _i < _a.length; _i++) {
+                var paneWidget = _a[_i];
+                if (this._options.priceScale.position !== 'none') {
+                    priceAxisWidth = Math.max(priceAxisWidth, ensureNotNull(paneWidget.priceAxisWidget()).optimalWidth());
+                }
+                totalStretch += paneWidget.stretchFactor();
+            }
+            var width = this._width;
+            var height = this._height;
+            var paneWidth = Math.max(width - priceAxisWidth, 0);
+            var separatorCount = this._paneSeparators.length;
+            var separatorHeight = SEPARATOR_HEIGHT;
+            var separatorsHeight = separatorHeight * separatorCount;
+            var timeAxisHeight = this._options.timeScale.visible ? this._timeAxisWidget.optimalHeight() : 0;
+            var otherWidgetHeight = separatorsHeight + timeAxisHeight;
+            var totalPaneHeight = height < otherWidgetHeight ? 0 : height - otherWidgetHeight;
+            var stretchPixels = totalPaneHeight / totalStretch;
+            var accumulatedHeight = 0;
+            for (var paneIndex = 0; paneIndex < this._paneWidgets.length; ++paneIndex) {
+                var paneWidget = this._paneWidgets[paneIndex];
+                paneWidget.setState(this._model.panes()[paneIndex]);
+                var paneHeight = 0;
+                var calculatePaneHeight = 0;
+                if (paneIndex === this._paneWidgets.length - 1) {
+                    calculatePaneHeight = totalPaneHeight - accumulatedHeight;
+                }
+                else {
+                    calculatePaneHeight = Math.round(paneWidget.stretchFactor() * stretchPixels);
+                }
+                paneHeight = Math.max(calculatePaneHeight, 2);
+                accumulatedHeight += paneHeight;
+                paneWidget.setSize(new Size(paneWidth, paneHeight));
+                if (this._options.priceScale.position !== 'none') {
+                    paneWidget.setPriceAxisSize(priceAxisWidth);
+                }
+                if (paneWidget.state()) {
+                    this._model.setPaneHeight(paneWidget.state(), paneHeight);
+                }
+            }
+            this._timeAxisWidget.setSizes(new Size(paneWidth, timeAxisHeight), priceAxisWidth);
+            this._model.setWidth(paneWidth);
+            if (this._priceAxisWidth !== priceAxisWidth) {
+                this._priceAxisWidth = priceAxisWidth;
+                this._priceAxisWidthChanged.fire(priceAxisWidth);
+            }
+        };
+        ChartWidget.prototype._onMousewheel = function (event) {
+            var deltaX = event.deltaX / 100;
+            var deltaY = -(event.deltaY / 100);
+            if ((deltaX === 0 || !this._options.handleScroll.mouseWheel) &&
+                (deltaY === 0 || !this._options.handleScale.mouseWheel)) {
+                return;
+            }
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+            switch (event.deltaMode) {
+                case event.DOM_DELTA_PAGE:
+                    // one screen at time scroll mode
+                    deltaX *= 120;
+                    deltaY *= 120;
+                    break;
+                case event.DOM_DELTA_LINE:
+                    // one line at time scroll mode
+                    deltaX *= 32;
+                    deltaY *= 32;
+                    break;
+            }
+            if (deltaY !== 0 && this._options.handleScale.mouseWheel) {
+                var zoomScale = Math.sign(deltaY) * Math.min(1, Math.abs(deltaY));
+                var scrollPosition = event.clientX - this._element.getBoundingClientRect().left;
+                this.model().zoomTime(scrollPosition, zoomScale);
+            }
+            if (deltaX !== 0 && this._options.handleScroll.mouseWheel) {
+                this.model().scrollChart(deltaX * -80); // 80 is a made up coefficient, and minus is for the "natural" scroll
+            }
+        };
+        ChartWidget.prototype._drawImpl = function (invalidateMask) {
+            var invalidationType = invalidateMask.fullInvalidation();
+            // actions for full invalidation ONLY (not shared with light)
+            if (invalidationType === 3 /* Full */) {
+                this._updateGui();
+            }
+            // light or full invalidate actions
+            if (invalidationType === 3 /* Full */ ||
+                invalidationType === 2 /* Light */) {
+                var panes = this._model.panes();
+                for (var i = 0; i < panes.length; i++) {
+                    if (invalidateMask.invalidateForPane(i).autoScale) {
+                        panes[i].momentaryAutoScale();
+                    }
+                }
+                if (invalidateMask.getFitContent()) {
+                    this._model.timeScale().fitContent();
+                }
+                var targetTimeRange = invalidateMask.getTargetTimeRange();
+                if (targetTimeRange !== null) {
+                    this._model.timeScale().setTimePointsRange(targetTimeRange);
+                }
+                this._timeAxisWidget.update();
+            }
+            this.paint(invalidateMask);
+        };
+        ChartWidget.prototype._invalidateHandler = function (invalidateMask) {
+            var _this = this;
+            if (this._invalidateMask !== null) {
+                this._invalidateMask.merge(invalidateMask);
+            }
+            else {
+                this._invalidateMask = invalidateMask;
+            }
+            if (!this._drawPlanned) {
+                this._drawPlanned = true;
+                this._drawRafId = window.requestAnimationFrame(function () {
+                    _this._drawPlanned = false;
+                    _this._drawRafId = 0;
+                    if (_this._invalidateMask !== null) {
+                        _this._drawImpl(_this._invalidateMask);
+                        _this._invalidateMask = null;
+                    }
+                });
+            }
+        };
+        ChartWidget.prototype._updateGui = function () {
+            this._syncGuiWithModel();
+        };
+        ChartWidget.prototype._destroySeparator = function (separator) {
+            this._tableElement.removeChild(separator.getElement());
+            separator.destroy();
+        };
+        ChartWidget.prototype._syncGuiWithModel = function () {
+            var panes = this._model.panes();
+            var targetPaneWidgetsCount = panes.length;
+            var actualPaneWidgetsCount = this._paneWidgets.length;
+            // Remove (if needed) pane widgets and separators
+            for (var i = targetPaneWidgetsCount; i < actualPaneWidgetsCount; i++) {
+                var paneWidget = ensureDefined(this._paneWidgets.pop());
+                this._tableElement.removeChild(paneWidget.getElement());
+                paneWidget.clicked().unsubscribeAll(this);
+                paneWidget.destroy();
+                var paneSeparator = this._paneSeparators.pop();
+                if (paneSeparator !== undefined) {
+                    this._destroySeparator(paneSeparator);
+                }
+            }
+            // Create (if needed) new pane widgets and separators
+            for (var i = actualPaneWidgetsCount; i < targetPaneWidgetsCount; i++) {
+                var paneWidget = new PaneWidget(this, panes[i]);
+                paneWidget.clicked().subscribe(this._onPaneWidgetClicked.bind(this), this);
+                this._paneWidgets.push(paneWidget);
+                // create and insert separator
+                if (i > 1) {
+                    var paneSeparator = new PaneSeparator(this, i - 1, i, true);
+                    this._paneSeparators.push(paneSeparator);
+                    this._tableElement.insertBefore(paneSeparator.getElement(), this._timeAxisWidget.getElement());
+                }
+                // insert paneWidget
+                this._tableElement.insertBefore(paneWidget.getElement(), this._timeAxisWidget.getElement());
+            }
+            for (var i = 0; i < targetPaneWidgetsCount; i++) {
+                var state = panes[i];
+                var paneWidget = this._paneWidgets[i];
+                if (paneWidget.state() !== state) {
+                    paneWidget.setState(state);
+                }
+                else {
+                    paneWidget.updatePriceAxisWidget();
+                }
+            }
+            this._updateTimeAxisVisibility();
+            this._adjustSizeImpl();
+        };
+        ChartWidget.prototype._getMouseEventParamsImpl = function (time, point) {
+            var seriesPrices = new Map();
+            if (time !== null) {
+                var serieses = this._model.serieses();
+                serieses.forEach(function (s) {
+                    // TODO: replace with search left
+                    var prices = s.dataAt(time);
+                    if (prices !== null) {
+                        seriesPrices.set(s, prices);
+                    }
+                });
+            }
+            var clientTime;
+            if (time !== null) {
+                var timePoint = this._model.timeScale().indexToUserTime(time);
+                if (timePoint !== null) {
+                    clientTime = timePoint;
+                }
+            }
+            return {
+                time: clientTime,
+                point: point || undefined,
+                seriesPrices: seriesPrices,
+            };
+        };
+        ChartWidget.prototype._onPaneWidgetClicked = function (time, point) {
+            var _this = this;
+            this._clicked.fire(function () { return _this._getMouseEventParamsImpl(time, point); });
+        };
+        ChartWidget.prototype._onPaneWidgetCrosshairMoved = function (time, point) {
+            var _this = this;
+            this._crosshairMoved.fire(function () { return _this._getMouseEventParamsImpl(time, point); });
+        };
+        ChartWidget.prototype._updateTimeAxisVisibility = function () {
+            var display = this._options.timeScale.visible ? '' : 'none';
+            this._timeAxisWidget.getElement().style.display = display;
+        };
+        return ChartWidget;
+    }());
+
+    function fillUpDownCandlesticksColors(options) {
+        if (options.borderColor !== undefined) {
+            options.borderUpColor = options.borderColor;
+            options.borderDownColor = options.borderColor;
+        }
+        if (options.wickColor !== undefined) {
+            options.wickUpColor = options.wickColor;
+            options.wickDownColor = options.wickColor;
+        }
+    }
+    function precisionByMinMove(minMove) {
+        if (minMove >= 1) {
+            return 0;
+        }
+        var i = 0;
+        for (; i < 8; i++) {
+            var intPart = Math.round(minMove);
+            var fractPart = Math.abs(intPart - minMove);
+            if (fractPart < 1e-8) {
+                return i;
+            }
+            minMove = minMove * 10;
+        }
+        return i;
+    }
+    var PriceAxisLastValueMode;
+    (function (PriceAxisLastValueMode) {
+        PriceAxisLastValueMode[PriceAxisLastValueMode["LastPriceAndPercentageValue"] = 0] = "LastPriceAndPercentageValue";
+        PriceAxisLastValueMode[PriceAxisLastValueMode["LastValueAccordingToScale"] = 1] = "LastValueAccordingToScale";
+    })(PriceAxisLastValueMode || (PriceAxisLastValueMode = {}));
+
+    var SeriesApi = /** @class */ (function () {
+        function SeriesApi(series, dataUpdatesConsumer) {
+            this._series = series;
+            this._dataUpdatesConsumer = dataUpdatesConsumer;
+        }
+        SeriesApi.prototype.destroy = function () {
+            delete this._series;
+            delete this._dataUpdatesConsumer;
+        };
+        SeriesApi.prototype.priceFormatter = function () {
+            return this._series.formatter();
+        };
+        SeriesApi.prototype.series = function () {
+            return this._series;
+        };
+        SeriesApi.prototype.priceToCoordinate = function (price) {
+            var firstValue = this._series.firstValue();
+            if (firstValue === null) {
+                return null;
+            }
+            return this._series.priceScale().priceToCoordinate(price, firstValue);
+        };
+        SeriesApi.prototype.setData = function (data) {
+            this._dataUpdatesConsumer.applyNewData(this._series, data);
+        };
+        SeriesApi.prototype.update = function (bar) {
+            this._dataUpdatesConsumer.updateData(this._series, bar);
+        };
+        SeriesApi.prototype.applyOptions = function (options) {
+            this._series.applyOptions(options);
+        };
+        SeriesApi.prototype.options = function () {
+            return clone(this._series.options());
+        };
+        return SeriesApi;
+    }());
+
+    var CandlestickSeriesApi = /** @class */ (function (_super) {
+        __extends(CandlestickSeriesApi, _super);
+        function CandlestickSeriesApi() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        CandlestickSeriesApi.prototype.applyOptions = function (options) {
+            fillUpDownCandlesticksColors(options);
+            _super.prototype.applyOptions.call(this, options);
+        };
+        return CandlestickSeriesApi;
+    }(SeriesApi));
+
+    /// <reference types="_build-time-constants" />
+    function newSeriesUpdatePacket() {
+        return {
+            update: [],
+        };
+    }
+    function businessDayConverter(time) {
+        if (!isBusinessDay(time)) {
+            throw new Error('time must be of type BusinessDay');
+        }
+        var date = new Date(Date.UTC(time.year, time.month - 1, time.day, 0, 0, 0, 0));
+        return {
+            timestamp: Math.round(date.getTime() / 1000),
+            businessDay: time,
+        };
+    }
+    function timestampConverter(time) {
+        if (!isUTCTimestamp(time)) {
+            throw new Error('time must be of type isUTCTimestamp');
+        }
+        return {
+            timestamp: time,
+        };
+    }
+    function selectTimeConverter(data) {
+        if (data.length === 0) {
+            return null;
+        }
+        if (isBusinessDay(data[0].time)) {
+            return businessDayConverter;
+        }
+        return timestampConverter;
+    }
+    function convertTime(time) {
+        if (isBusinessDay(time)) {
+            return businessDayConverter(time);
+        }
+        return timestampConverter(time);
+    }
+    function getItemValues(item, palette) {
+        if ('value' in item) {
+            var val = item.value;
+            // default value
+            var color = 0;
+            if ('color' in item) {
+                var histItem = item;
+                if (histItem.color !== undefined) {
+                    color = ensureDefined(palette).addColor(histItem.color);
+                }
+            }
+            return [val, val, val, val, color];
+        }
+        else {
+            var bar = item;
+            return [bar.open, bar.high, bar.low, bar.close, 0];
+        }
+    }
+    function hours(count) {
+        return count * 60 * 60 * 1000;
+    }
+    function minutes(count) {
+        return count * 60 * 1000;
+    }
+    function seconds(count) {
+        return count * 1000;
+    }
+    var spanDivisors = [
+        {
+            divisor: 1, span: 20,
+        },
+        {
+            divisor: seconds(1), span: 19,
+        },
+        {
+            divisor: minutes(1), span: 20,
+        },
+        {
+            divisor: minutes(5), span: 21,
+        },
+        {
+            divisor: minutes(30), span: 22,
+        },
+        {
+            divisor: hours(1), span: 30,
+        },
+        {
+            divisor: hours(3), span: 31,
+        },
+        {
+            divisor: hours(6), span: 32,
+        },
+        {
+            divisor: hours(12), span: 33,
+        },
+    ];
+    function spanByTime(time, previousTime) {
+        // function days(count) { return count * 24 * 60 * 60 * 1000; }
+        if (previousTime !== null) {
+            var lastTime = new Date(previousTime.timestamp * 1000);
+            var currentTime = new Date(time.timestamp * 1000);
+            if (currentTime.getUTCFullYear() !== lastTime.getUTCFullYear()) {
+                return 70;
+            }
+            else if (currentTime.getUTCMonth() !== lastTime.getUTCMonth()) {
+                return 60;
+            }
+            else if (currentTime.getUTCDate() !== lastTime.getUTCDate()) {
+                return 50;
+            }
+            for (var i = spanDivisors.length - 1; i >= 0; --i) {
+                if (Math.floor(lastTime.getTime() / spanDivisors[i].divisor) !== Math.floor(currentTime.getTime() / spanDivisors[i].divisor)) {
+                    return spanDivisors[i].span;
+                }
+            }
+        }
+        return 20;
+    }
+    function compareTimePoints(a, b) {
+        return a.timestamp < b.timestamp;
+    }
+    var validDateRegex = /^\d\d\d\d-\d\d\-\d\d$/;
+    function stringToBusinessDay(value) {
+        {
+            // in some browsers (I look at your Chrome) the Date constructor may accept invalid date string
+            // but parses them in "implementation specific" way
+            // for example 2019-1-1 isn't the same as 2019-01-01 (for Chrome both are "valid" date strings)
+            // see https://bugs.chromium.org/p/chromium/issues/detail?id=968939
+            // so, we need to be sure that date has valid format to avoid strange behavior and hours of debugging
+            // but let's do this in development build only because of perf
+            if (!validDateRegex.test(value)) {
+                throw new Error("Invalid date string=" + value + ", expected format=yyyy-mm-dd");
+            }
+        }
+        var d = new Date(value);
+        if (isNaN(d.getTime())) {
+            throw new Error("Invalid date string=" + value + ", expected format=yyyy-mm-dd");
+        }
+        return {
+            day: d.getUTCDate(),
+            month: d.getUTCMonth() + 1,
+            year: d.getUTCFullYear(),
+        };
+    }
+    function convertStringToBusinessDay(value) {
+        if (isString(value.time)) {
+            value.time = stringToBusinessDay(value.time);
+        }
+    }
+    function convertStringsToBusinessDays(data) {
+        return data.forEach(convertStringToBusinessDay);
+    }
+    var DataLayer = /** @class */ (function () {
+        function DataLayer() {
+            this._pointDataByTimePoint = new Map();
+            this._timePointsByIndex = new Map();
+            this._sortedTimePoints = [];
+        }
+        DataLayer.prototype.destroy = function () {
+            this._pointDataByTimePoint.clear();
+            this._timePointsByIndex.clear();
+            this._sortedTimePoints = [];
+        };
+        DataLayer.prototype.setSeriesData = function (series, data, palette) {
+            var _this = this;
+            convertStringsToBusinessDays(data);
+            this._pointDataByTimePoint.forEach(function (value) { return value.mapping.delete(series); });
+            var timeConverter = selectTimeConverter(data);
+            if (timeConverter !== null) {
+                data.forEach(function (item) {
+                    var time = timeConverter(item.time);
+                    var timePointData = _this._pointDataByTimePoint.get(time.timestamp) ||
+                        { index: 0, mapping: new Map(), timePoint: time };
+                    timePointData.mapping.set(series, item);
+                    _this._pointDataByTimePoint.set(time.timestamp, timePointData);
+                });
+            }
+            // remove from points items without series
+            var newPoints = new Map();
+            this._pointDataByTimePoint.forEach(function (pointData, key) {
+                if (pointData.mapping.size > 0) {
+                    newPoints.set(key, pointData);
+                }
+            });
+            return this._setNewPoints(series, newPoints, palette);
+        };
+        DataLayer.prototype.removeSeries = function (series) {
+            return this.setSeriesData(series, []);
+        };
+        DataLayer.prototype.updateSeriesData = function (series, data, palette) {
+            // check types
+            convertStringToBusinessDay(data);
+            var bars = series.data().bars();
+            if (bars.size() > 0) {
+                var lastTime = ensureNotNull(bars.last()).time;
+                if (lastTime.businessDay !== undefined) {
+                    // time must be BusinessDay
+                    if (!isBusinessDay(data.time)) {
+                        throw new Error('time must be of type BusinessDay');
+                    }
+                }
+                else {
+                    if (!isUTCTimestamp(data.time)) {
+                        throw new Error('time must be of type isUTCTimestamp');
+                    }
+                }
+            }
+            var changedTimePointTime = ensureNotNull(selectTimeConverter([data]))(data.time);
+            var pointData = this._pointDataByTimePoint.get(changedTimePointTime.timestamp) ||
+                { index: 0, mapping: new Map(), timePoint: changedTimePointTime };
+            var newPoint = pointData.mapping.size === 0;
+            pointData.mapping.set(series, data);
+            var updateAllSeries = false;
+            if (newPoint) {
+                var index = this._pointDataByTimePoint.size;
+                if (this._sortedTimePoints.length > 0 && this._sortedTimePoints[this._sortedTimePoints.length - 1].timestamp > changedTimePointTime.timestamp) {
+                    // new point in the middle
+                    index = upperbound(this._sortedTimePoints, changedTimePointTime, compareTimePoints);
+                    this._sortedTimePoints.splice(index, 0, changedTimePointTime);
+                    this._incrementIndicesFrom(index);
+                    updateAllSeries = true;
+                }
+                else {
+                    // new point in the end
+                    this._sortedTimePoints.push(changedTimePointTime);
+                }
+                pointData.index = index;
+                this._timePointsByIndex.set(pointData.index, changedTimePointTime);
+            }
+            this._pointDataByTimePoint.set(changedTimePointTime.timestamp, pointData);
+            var seriesUpdates = new Map();
+            var _loop_1 = function (index) {
+                var timePoint = ensureDefined(this_1._timePointsByIndex.get(index));
+                var currentIndexData = ensureDefined(this_1._pointDataByTimePoint.get(timePoint.timestamp));
+                currentIndexData.mapping.forEach(function (currentData, currentSeries) {
+                    if (!updateAllSeries && currentSeries !== series) {
+                        return;
+                    }
+                    var packet = seriesUpdates.get(currentSeries) || newSeriesUpdatePacket();
+                    var seriesUpdate = {
+                        index: index,
+                        time: timePoint,
+                        value: getItemValues(currentData, palette),
+                    };
+                    packet.update.push(seriesUpdate);
+                    seriesUpdates.set(currentSeries, packet);
+                });
+            };
+            var this_1 = this;
+            for (var index = pointData.index; index < this._pointDataByTimePoint.size; ++index) {
+                _loop_1(index);
+            }
+            var marks = newPoint ? this._generateMarksSinceIndex(pointData.index) : [];
+            var timePointChanges = newPoint ? this._sortedTimePoints.slice(pointData.index) : [];
+            var timeScaleUpdate = {
+                seriesUpdates: seriesUpdates,
+                changes: timePointChanges,
+                index: pointData.index,
+                marks: marks,
+            };
+            return {
+                timeScaleUpdate: timeScaleUpdate,
+            };
+        };
+        DataLayer.prototype._setNewPoints = function (seriesBeingUpdated, newPoints, palette) {
+            var _this = this;
+            this._pointDataByTimePoint = newPoints;
+            this._sortedTimePoints = Array.from(this._pointDataByTimePoint.values()).map(function (d) { return d.timePoint; });
+            this._sortedTimePoints.sort(function (t1, t2) { return t1.timestamp - t2.timestamp; });
+            var seriesUpdates = new Map();
+            this._sortedTimePoints.forEach(function (time, index) {
+                var pointData = ensureDefined(_this._pointDataByTimePoint.get(time.timestamp));
+                pointData.index = index;
+                pointData.mapping.forEach(function (targetData, targetSeries) {
+                    // add point to series
+                    var packet = seriesUpdates.get(targetSeries) || newSeriesUpdatePacket();
+                    var seriesPalette = (seriesBeingUpdated === targetSeries) ? palette : targetSeries.palette();
+                    var seriesUpdate = {
+                        index: index,
+                        time: time,
+                        value: getItemValues(targetData, seriesPalette),
+                    };
+                    packet.update.push(seriesUpdate);
+                    seriesUpdates.set(targetSeries, packet);
+                });
+            });
+            var prevTime = null;
+            var marks = this._sortedTimePoints.map(function (time, index) {
+                var span = spanByTime(time, prevTime);
+                prevTime = time;
+                return {
+                    span: span,
+                    time: time,
+                    index: index,
+                };
+            });
+            var timeScaleUpdate = {
+                seriesUpdates: seriesUpdates,
+                changes: this._sortedTimePoints.slice(),
+                index: 0,
+                marks: marks,
+            };
+            this._rebuildTimePointsByIndex();
+            return {
+                timeScaleUpdate: timeScaleUpdate,
+            };
+        };
+        DataLayer.prototype._incrementIndicesFrom = function (index) {
+            for (var indexToUpdate = this._timePointsByIndex.size - 1; indexToUpdate >= index; --indexToUpdate) {
+                var timePoint = ensureDefined(this._timePointsByIndex.get(indexToUpdate));
+                var updatedData = ensureDefined(this._pointDataByTimePoint.get(timePoint.timestamp));
+                var newIndex = indexToUpdate + 1;
+                updatedData.index = newIndex;
+                this._timePointsByIndex.delete(indexToUpdate);
+                this._timePointsByIndex.set(newIndex, timePoint);
+            }
+        };
+        DataLayer.prototype._rebuildTimePointsByIndex = function () {
+            var _this = this;
+            this._timePointsByIndex.clear();
+            this._pointDataByTimePoint.forEach(function (data, timePoint) {
+                _this._timePointsByIndex.set(data.index, data.timePoint);
+            });
+        };
+        DataLayer.prototype._generateMarksSinceIndex = function (startIndex) {
+            var result = [];
+            var prevTime = this._timePointsByIndex.get(startIndex - 1) || null;
+            for (var index = startIndex; index < this._timePointsByIndex.size; ++index) {
+                var time = ensureDefined(this._timePointsByIndex.get(index));
+                var span = spanByTime(time, prevTime);
+                prevTime = time;
+                result.push({
+                    span: span,
+                    time: time,
+                    index: index,
+                });
+            }
+            return result;
+        };
+        return DataLayer;
+    }());
+
+    function generatePalette(points, defaultColor) {
+        var res = new Palette();
+        res.addColor(defaultColor);
+        points.forEach(function (point) {
+            if (point.color !== undefined) {
+                res.addColor(point.color);
+            }
+        });
+        return res;
+    }
+    var HistogramSeriesApi = /** @class */ (function (_super) {
+        __extends(HistogramSeriesApi, _super);
+        function HistogramSeriesApi() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        HistogramSeriesApi.prototype.setData = function (data) {
+            var palette = generatePalette(data, this._series.options().color);
+            this._dataUpdatesConsumer.applyNewData(this._series, data, palette);
+        };
+        return HistogramSeriesApi;
+    }(SeriesApi));
+
+    var candlestickStyleDefaults = {
+        upColor: '#26a69a',
+        downColor: '#ef5350',
+        wickVisible: true,
+        borderVisible: true,
+        borderColor: '#378658',
+        borderUpColor: '#26a69a',
+        borderDownColor: '#ef5350',
+        wickColor: '#737375',
+        wickUpColor: '#26a69a',
+        wickDownColor: '#ef5350',
+    };
+    var barStyleDefaults = {
+        upColor: '#26a69a',
+        downColor: '#ef5350',
+        openVisible: true,
+        thinBars: true,
+    };
+    var lineStyleDefaults = {
+        color: '#2196f3',
+        lineStyle: 0 /* Solid */,
+        lineWidth: 3,
+        crosshairMarkerVisible: true,
+        crosshairMarkerRadius: 4,
+    };
+    var areaStyleDefaults = {
+        topColor: 'rgba( 46, 220, 135, 0.4)',
+        bottomColor: 'rgba( 40, 221, 100, 0)',
+        lineColor: '#33D778',
+        lineStyle: 0 /* Solid */,
+        lineWidth: 3,
+        crosshairMarkerVisible: true,
+        crosshairMarkerRadius: 4,
+    };
+    var histogramStyleDefaults = {
+        color: '#26a69a',
+        base: 0,
+        lineWidth: 2,
+    };
+    var seriesOptionsDefaults = {
+        title: '',
+        lastValueVisible: true,
+        priceLineVisible: true,
+        priceLineWidth: 1,
+        priceLineColor: '',
+        priceLineStyle: 1 /* Dotted */,
+        baseLineVisible: true,
+        baseLineWidth: 1,
+        baseLineColor: '#B2B5BE',
+        baseLineStyle: 0 /* Solid */,
+        priceFormat: {
+            type: 'price',
+            precision: 2,
+            minMove: 0.01,
+        },
+    };
+
+    var PriceScaleApi = /** @class */ (function () {
+        function PriceScaleApi(model) {
+            this._chartModel = model;
+        }
+        PriceScaleApi.prototype.destroy = function () {
+            delete this._chartModel;
+        };
+        PriceScaleApi.prototype.applyOptions = function (options) {
+            this._chartModel.applyOptions({ priceScale: options });
+        };
+        PriceScaleApi.prototype.options = function () {
+            return this._priceScale().options();
+        };
+        PriceScaleApi.prototype._priceScale = function () {
+            return this._chartModel.mainPriceScale();
+        };
+        return PriceScaleApi;
+    }());
+
+    var Constants$4;
+    (function (Constants) {
+        Constants[Constants["AnimationDurationMs"] = 1000] = "AnimationDurationMs";
+    })(Constants$4 || (Constants$4 = {}));
+    var TimeScaleApi = /** @class */ (function () {
+        function TimeScaleApi(model) {
+            this._model = model;
+        }
+        TimeScaleApi.prototype.destroy = function () {
+            delete this._model;
+        };
+        TimeScaleApi.prototype.scrollPosition = function () {
+            return this._timeScale().rightOffset();
+        };
+        TimeScaleApi.prototype.scrollToPosition = function (position, animated) {
+            if (!animated) {
+                this._timeScale().setRightOffset(position);
+                return;
+            }
+            this._timeScale().scrollToOffsetAnimated(position, 1000 /* AnimationDurationMs */);
+        };
+        TimeScaleApi.prototype.scrollToRealTime = function () {
+            this._timeScale().scrollToRealTime();
+        };
+        TimeScaleApi.prototype.getVisibleRange = function () {
+            var visibleBars = this._timeScale().visibleBars();
+            if (visibleBars === null) {
+                return null;
+            }
+            var points = this._model.timeScale().points();
+            var firstIndex = ensureNotNull(points.firstIndex());
+            var lastIndex = ensureNotNull(points.lastIndex());
+            return {
+                from: timePointToTime(ensureNotNull(points.valueAt(Math.max(firstIndex, visibleBars.firstBar())))),
+                to: timePointToTime(ensureNotNull(points.valueAt(Math.min(lastIndex, visibleBars.lastBar())))),
+            };
+        };
+        TimeScaleApi.prototype.setVisibleRange = function (range) {
+            var convertedRange = {
+                from: convertTime(range.from),
+                to: convertTime(range.to),
+            };
+            this._model.setTargetTimeRange(convertedRange);
+        };
+        TimeScaleApi.prototype.resetTimeScale = function () {
+            this._model.resetTimeScale();
+        };
+        TimeScaleApi.prototype.fitContent = function () {
+            this._model.fitContent();
+        };
+        TimeScaleApi.prototype.applyOptions = function (options) {
+            this._timeScale().applyOptions(options);
+        };
+        TimeScaleApi.prototype.options = function () {
+            return clone(this._timeScale().options());
+        };
+        TimeScaleApi.prototype._timeScale = function () {
+            return this._model.timeScale();
+        };
+        return TimeScaleApi;
+    }());
+    function timePointToTime(point) {
+        return point.businessDay || point.timestamp;
+    }
+
+    function patchPriceFormat(priceFormat) {
+        if (priceFormat === undefined) {
+            return;
+        }
+        if (priceFormat.minMove !== undefined && priceFormat.precision === undefined) {
+            priceFormat.precision = precisionByMinMove(priceFormat.minMove);
+        }
+    }
+    var ChartApi = /** @class */ (function () {
+        function ChartApi(container, options) {
+            var _this = this;
+            this._dataLayer = new DataLayer();
+            this._timeRangeChanged = new Delegate();
+            this._seriesMap = new Map();
+            this._seriesMapReversed = new Map();
+            this._clickedDelegate = new Delegate();
+            this._crosshairMovedDelegate = new Delegate();
+            this._chartWidget = new ChartWidget(container, options);
+            this._chartWidget.model().timeScale().visibleBarsChanged().subscribe(this._onVisibleBarsChanged.bind(this));
+            this._chartWidget.clicked().subscribe(function (paramSupplier) {
+                if (_this._clickedDelegate.hasListeners()) {
+                    _this._clickedDelegate.fire(_this._convertMouseParams(paramSupplier()));
+                }
+            }, this);
+            this._chartWidget.crosshairMoved().subscribe(function (paramSupplier) {
+                if (_this._crosshairMovedDelegate.hasListeners()) {
+                    _this._crosshairMovedDelegate.fire(_this._convertMouseParams(paramSupplier()));
+                }
+            }, this);
+            var model = this._chartWidget.model();
+            this._priceScaleApi = new PriceScaleApi(model);
+            this._timeScaleApi = new TimeScaleApi(model);
+        }
+        ChartApi.prototype.remove = function () {
+            this._chartWidget.model().timeScale().visibleBarsChanged().unsubscribeAll(this);
+            this._chartWidget.clicked().unsubscribeAll(this);
+            this._chartWidget.crosshairMoved().unsubscribeAll(this);
+            this._priceScaleApi.destroy();
+            this._timeScaleApi.destroy();
+            this._chartWidget.destroy();
+            delete this._chartWidget;
+            this._seriesMap.forEach(function (series, api) {
+                api.destroy();
+            });
+            this._seriesMap.clear();
+            this._seriesMapReversed.clear();
+            this._timeRangeChanged.destroy();
+            this._clickedDelegate.destroy();
+            this._crosshairMovedDelegate.destroy();
+            this._dataLayer.destroy();
+            delete this._dataLayer;
+        };
+        ChartApi.prototype.resize = function (height, width, forceRepaint) {
+            this._chartWidget.resize(height, width, forceRepaint);
+        };
+        ChartApi.prototype.addAreaSeries = function (options) {
+            if (options === void 0) { options = {}; }
+            patchPriceFormat(options.priceFormat);
+            var strictOptions = merge(clone(seriesOptionsDefaults), areaStyleDefaults, options);
+            var series = this._chartWidget.model().createSeries('Area', strictOptions);
+            var res = new SeriesApi(series, this);
+            this._seriesMap.set(res, series);
+            this._seriesMapReversed.set(series, res);
+            return res;
+        };
+        ChartApi.prototype.addBarSeries = function (options) {
+            if (options === void 0) { options = {}; }
+            patchPriceFormat(options.priceFormat);
+            var strictOptions = merge(clone(seriesOptionsDefaults), barStyleDefaults, options);
+            var series = this._chartWidget.model().createSeries('Bar', strictOptions);
+            var res = new SeriesApi(series, this);
+            this._seriesMap.set(res, series);
+            this._seriesMapReversed.set(series, res);
+            return res;
+        };
+        ChartApi.prototype.addCandlestickSeries = function (options) {
+            if (options === void 0) { options = {}; }
+            fillUpDownCandlesticksColors(options);
+            patchPriceFormat(options.priceFormat);
+            var strictOptions = merge(clone(seriesOptionsDefaults), candlestickStyleDefaults, options);
+            var series = this._chartWidget.model().createSeries('Candlestick', strictOptions);
+            var res = new CandlestickSeriesApi(series, this);
+            this._seriesMap.set(res, series);
+            this._seriesMapReversed.set(series, res);
+            return res;
+        };
+        ChartApi.prototype.addHistogramSeries = function (options) {
+            if (options === void 0) { options = {}; }
+            patchPriceFormat(options.priceFormat);
+            var strictOptions = merge(clone(seriesOptionsDefaults), histogramStyleDefaults, options);
+            var series = this._chartWidget.model().createSeries('Histogram', strictOptions);
+            var res = new HistogramSeriesApi(series, this);
+            this._seriesMap.set(res, series);
+            this._seriesMapReversed.set(series, res);
+            return res;
+        };
+        ChartApi.prototype.addLineSeries = function (options) {
+            if (options === void 0) { options = {}; }
+            patchPriceFormat(options.priceFormat);
+            var strictOptions = merge(clone(seriesOptionsDefaults), lineStyleDefaults, options);
+            var series = this._chartWidget.model().createSeries('Line', strictOptions);
+            var res = new SeriesApi(series, this);
+            this._seriesMap.set(res, series);
+            this._seriesMapReversed.set(series, res);
+            return res;
+        };
+        ChartApi.prototype.removeSeries = function (seriesApi) {
+            var seriesObj = seriesApi;
+            var series = ensureDefined(this._seriesMap.get(seriesObj));
+            var update = this._dataLayer.removeSeries(series);
+            var model = this._chartWidget.model();
+            model.removeSeries(series);
+            var timeScaleUpdate = update.timeScaleUpdate;
+            model.updateTimeScale(timeScaleUpdate.index, timeScaleUpdate.changes, timeScaleUpdate.marks, true);
+            timeScaleUpdate.seriesUpdates.forEach(function (value, key) {
+                key.setData(value.update, false);
+            });
+            model.updateTimeScaleBaseIndex(0);
+            this._seriesMap.delete(seriesObj);
+            this._seriesMapReversed.delete(series);
+        };
+        ChartApi.prototype.applyNewData = function (series, data, palette) {
+            var update = this._dataLayer.setSeriesData(series, data, palette);
+            var model = this._chartWidget.model();
+            var timeScaleUpdate = update.timeScaleUpdate;
+            model.updateTimeScale(timeScaleUpdate.index, timeScaleUpdate.changes, timeScaleUpdate.marks, true);
+            timeScaleUpdate.seriesUpdates.forEach(function (value, key) {
+                key.setData(value.update, series === key, palette);
+            });
+            model.updateTimeScaleBaseIndex(0);
+        };
+        ChartApi.prototype.updateData = function (series, data) {
+            var palette = series.palette();
+            var update = this._dataLayer.updateSeriesData(series, data, palette);
+            var model = this._chartWidget.model();
+            var timeScaleUpdate = update.timeScaleUpdate;
+            model.updateTimeScale(timeScaleUpdate.index, timeScaleUpdate.changes, timeScaleUpdate.marks, false);
+            timeScaleUpdate.seriesUpdates.forEach(function (value, key) {
+                key.updateData(value.update);
+            });
+            model.updateTimeScaleBaseIndex(0);
+        };
+        ChartApi.prototype.subscribeClick = function (handler) {
+            this._clickedDelegate.subscribe(handler);
+        };
+        ChartApi.prototype.unsubscribeClick = function (handler) {
+            this._clickedDelegate.unsubscribe(handler);
+        };
+        ChartApi.prototype.subscribeCrosshairMove = function (handler) {
+            this._crosshairMovedDelegate.subscribe(handler);
+        };
+        ChartApi.prototype.unsubscribeCrosshairMove = function (handler) {
+            this._crosshairMovedDelegate.unsubscribe(handler);
+        };
+        ChartApi.prototype.subscribeVisibleTimeRangeChange = function (handler) {
+            this._timeRangeChanged.subscribe(handler);
+        };
+        ChartApi.prototype.unsubscribeVisibleTimeRangeChange = function (handler) {
+            this._timeRangeChanged.unsubscribe(handler);
+        };
+        // TODO: add more subscriptions
+        ChartApi.prototype.priceScale = function () {
+            return this._priceScaleApi;
+        };
+        ChartApi.prototype.timeScale = function () {
+            return this._timeScaleApi;
+        };
+        ChartApi.prototype.applyOptions = function (options) {
+            this._chartWidget.applyOptions(options);
+        };
+        ChartApi.prototype.options = function () {
+            return this._chartWidget.options();
+        };
+        ChartApi.prototype.takeScreenshot = function () {
+            return this._chartWidget.takeScreenshot();
+        };
+        ChartApi.prototype._onVisibleBarsChanged = function () {
+            if (this._timeRangeChanged.hasListeners()) {
+                this._timeRangeChanged.fire(this.timeScale().getVisibleRange());
+            }
+        };
+        ChartApi.prototype._mapSeriesToApi = function (series) {
+            return ensureDefined(this._seriesMapReversed.get(series));
+        };
+        ChartApi.prototype._convertMouseParams = function (param) {
+            var _this = this;
+            var seriesPrices = new Map();
+            param.seriesPrices.forEach(function (price, series) {
+                seriesPrices.set(_this._mapSeriesToApi(series), price);
+            });
+            return {
+                time: param.time && (param.time.businessDay || param.time.timestamp),
+                point: param.point,
+                seriesPrices: seriesPrices,
+            };
+        };
+        return ChartApi;
+    }());
+
+    var crosshairOptionsDefaults = {
+        vertLine: {
+            color: '#758696',
+            width: 1,
+            style: 2 /* Dashed */,
+            visible: true,
+            labelVisible: true,
+            labelBackgroundColor: '#4c525e',
+        },
+        horzLine: {
+            color: '#758696',
+            width: 1,
+            style: 2 /* Dashed */,
+            visible: true,
+            labelVisible: true,
+            labelBackgroundColor: '#4c525e',
+        },
+        mode: 1 /* Magnet */,
+    };
+
+    var gridOptionsDefaults = {
+        vertLines: {
+            color: '#D6DCDE',
+            style: 0 /* Solid */,
+            visible: true,
+        },
+        horzLines: {
+            color: '#D6DCDE',
+            style: 0 /* Solid */,
+            visible: true,
+        },
+    };
+
+    var layoutOptionsDefaults = {
+        backgroundColor: '#FFFFFF',
+        textColor: '#191919',
+        fontSize: 11,
+        fontFamily: defaultFontFamily,
+    };
+
+    var priceScaleOptionsDefaults = {
+        autoScale: true,
+        mode: 0 /* Normal */,
+        invertScale: false,
+        alignLabels: true,
+        position: 'right',
+        borderVisible: true,
+        borderColor: '#2B2B43',
+        entireTextOnly: false,
+        scaleMargins: {
+            bottom: 0.1,
+            top: 0.2,
+        },
+    };
+
+    var timeScaleOptionsDefaults = {
+        rightOffset: 0,
+        barSpacing: 6,
+        fixLeftEdge: false,
+        lockVisibleTimeRangeOnResize: false,
+        rightBarStaysOnScroll: false,
+        borderVisible: true,
+        borderColor: '#2B2B43',
+        visible: true,
+        timeVisible: false,
+        secondsVisible: true,
+    };
+
+    var watermarkOptionsDefaults = {
+        color: 'rgba(0, 0, 0, 0)',
+        visible: false,
+        fontSize: 48,
+        text: '',
+        horzAlign: 'center',
+        vertAlign: 'center',
+    };
+
+    var chartOptionsDefaults = {
+        width: 0,
+        height: 0,
+        layout: layoutOptionsDefaults,
+        crosshair: crosshairOptionsDefaults,
+        grid: gridOptionsDefaults,
+        priceScale: priceScaleOptionsDefaults,
+        timeScale: timeScaleOptionsDefaults,
+        watermark: watermarkOptionsDefaults,
+        localization: {
+            locale: navigator.language,
+            dateFormat: 'dd MMM \'yy',
+        },
+        handleScroll: {
+            mouseWheel: true,
+            pressedMouseMove: true,
+            horzTouchDrag: true,
+            vertTouchDrag: true,
+        },
+        handleScale: {
+            axisPressedMouseMove: true,
+            mouseWheel: true,
+            pinch: true,
+        },
+    };
+
+    /**
+     * This function is the main entry point of the Lightweight Charting Library
+     * @param container - id of HTML element or element itself
+     * @param options - any subset of ChartOptions to be applied at start.
+     * @returns an interface to the created chart
+     */
+    function createChart(container, options) {
+        var htmlElement = ensureNotNull(isString(container) ? document.getElementById(container) : container);
+        var chartOptions = (options === undefined) ?
+            clone(chartOptionsDefaults) :
+            merge(clone(chartOptionsDefaults), options);
+        return new ChartApi(htmlElement, chartOptions);
+    }
+
+    /// <reference types="_build-time-constants" />
+    function version() {
+        return "1.0.2";
+    }
+
+    var LightweightChartsModule = /*#__PURE__*/Object.freeze({
+        version: version,
+        get LineStyle () { return LineStyle; },
+        get LineType () { return LineType; },
+        get CrosshairMode () { return CrosshairMode; },
+        get PriceScaleMode () { return PriceScaleMode; },
+        isBusinessDay: isBusinessDay,
+        isUTCTimestamp: isUTCTimestamp,
+        createChart: createChart
+    });
+
+    // put all exports from package to window.LightweightCharts object
+    // tslint:disable-next-line:no-any
+    window.LightweightCharts = LightweightChartsModule;
+
+}());
