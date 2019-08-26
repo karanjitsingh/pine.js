@@ -18,7 +18,7 @@ export class Chart extends React.Component<ChartProps> {
     private chartContainerRef: React.RefObject<HTMLDivElement>;
     private chart: LightweightCharts.IChartApi;
 
-    private series: LightweightCharts.ISeriesApi<any>[]
+    private appliedSeries: Series;
 
     public constructor(props: ChartProps) {
         super(props);
@@ -26,21 +26,42 @@ export class Chart extends React.Component<ChartProps> {
     }
 
     public componentDidMount() {
-        if(this.chartContainerRef.current) {
-            this.chartContainerRef.current.onresize = this.chartResize.bind(this);
+        const container = this.chartContainerRef.current;
+        
+        if (container && !this.chart) {
+            container.onresize = this.chartResize.bind(this);
 
-            this.chart = LightweightCharts.createChart(this.chartContainerRef.current)
-            var series = this.chart.addAreaSeries({
 
+            
+            this.chart = LightweightCharts.createChart(container, {
+                width: container.offsetWidth,
+                height: container.offsetHeight,
+                priceScale: {
+                    scaleMargins: {
+                        top: 0.1,
+                        bottom: 0.25,
+                    },
+                    borderVisible: false,
+                },
+                layout: {
+                    backgroundColor: '#131722',
+                    textColor: '#d1d4dc',
+                },
             })
 
-            // this.chart.priceScale().
+            this.props.data.Data
+
+            this.appliedSeries.mainSeries = this.chart.addCandlestickSeries()
+
+            // var series = this.chart.addAreaSeries({
+
+            // })
         }
     }
 
     public shouldComponentUpdate(nextProps: ChartProps) {
-        if(this.chart) {
-            
+        if (this.chart) {
+
             return false;
         }
 
@@ -56,6 +77,11 @@ export class Chart extends React.Component<ChartProps> {
     }
 
     private chartResize() {
-
+        if(this.chart && this.chartContainerRef.current) {
+            this.chart.applyOptions({
+                width: this.chartContainerRef.current.offsetWidth,
+                height: this.chartContainerRef.current.offsetHeight
+            })
+        }
     }
 }
