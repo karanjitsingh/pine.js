@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outFile": "../../../out/Reporters/browser.js",
+        "outFile": "../../../out/Reporters/Browser/browser.js",
         "sourceMap": true,
         "module": "amd",
         "target": "es2018",

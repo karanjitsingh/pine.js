@@ -7,9 +7,9 @@
             "type": "npm",
             "script": "build:watch",
             "problemMatcher": [
-                "$tsc-watch"
+                "$tsc"
             ],
-            "group": "build"
+            "group": "build",
         }
     ]
 }

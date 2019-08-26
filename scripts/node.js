@@ -53,11 +53,12 @@ function buildWatcher() {
         const child_process = cp.exec(command);
 
         child_process.stdout.on('data', (data) => {
-            console.log(data);
+            process.stderr.write(data);
         });
 
         child_process.stderr.on('data', (data) => {
-            console.error(data);
+            process.stderr.write(data);
+
         });
 
         child_process.on('error', (error) => {
