@@ -5,7 +5,6 @@ import { ReporterData } from "Model/Contracts";
 
 export interface TradeViewProps {
     data: ReporterData,
-    // update:
 }
 
 export class TradeView extends React.Component<TradeViewProps> {

@@ -4,10 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:tsc:Platform": "./node_modules/.bin/tsc -p ./src/tsconfig.json",
-    "build:tsc:Browser": "./node_modules/.bin/tsc -p ./src/Reporters/Browser/tsconfig.json",
-    "build:scss": "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/style.scss -o ./out/Reporters/Browser/style.css",
-    "build:scss:watch": "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/style.scss -o ./out/Reporters/Browser/style.css"
+    "build:watch": "node ./scripts/node.js watch"
   },
   "repository": {
     "type": "git",

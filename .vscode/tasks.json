@@ -4,24 +4,12 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "platform_build",
-            "type": "typescript",
-            "tsconfig": "./src/tsconfig.json",
-            "option": "watch"
-        },
-        {
-            "task": "reporter_build",
-            ""
-        },
-        {
-            "label": "build",
-            "dependsOn": [
-                "reporter_build"
-            ],
-            "group": "build",
+            "type": "npm",
+            "script": "build:watch",
             "problemMatcher": [
                 "$tsc-watch"
             ],
+            "group": "build"
         }
     ]
 }

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const npm = require('npm');
+const cp = require('child_process');
 
 const projectDir = path.dirname(path.dirname(__filename));
 const command = process.argv[2].toLowerCase();
@@ -29,7 +30,7 @@ switch (command) {
         deleteFolder(bin);
         break;
     case "watch":
-        npm.load(() => buildWatcher());
+        buildWatcher();
         break;
     case "build":
         npm.load(() => build());
@@ -39,14 +40,36 @@ switch (command) {
 }
 
 function buildWatcher() {
-    fs.watch("./src/pine", {
-        recursive: true
-    }, (e, file) => {
-        const b = file.endsWith("tsconfig.json") || file.endsWith(".ts") || file.endsWith(".tsx") || file.endsWith(".scss");
-        if(b) {
-            build();
-        }
-    });
+    
+    const paths = [
+        "./node_modules/.bin/tsc --watch -p ./src/tsconfig.json",
+        "./node_modules/.bin/tsc --watch -p ./src/Reporters/Browser/tsconfig.json",
+        "node ./node_modules/node-sass/bin/node-sass -rw ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser"
+    ]
+    
+    const commands = paths.map((value) => (value.replace(/\//g, path.sep)));
+
+    commands.forEach(command => {
+        const child_process = cp.exec(command);
+
+        child_process.stdout.on('data', (data) => {
+            console.log(data);
+        });
+
+        child_process.stderr.on('data', (data) => {
+            console.error(data);
+        });
+
+        child_process.on('error', (error) => {
+            console.error(error);
+        })
+    })
+
+    endless();
+}
+
+function endless() {
+    setTimeout(endless, 1000);
 }
 
 function build() {
