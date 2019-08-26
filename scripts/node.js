@@ -24,7 +24,7 @@ switch (command) {
     case undefined:
         console.log("No command supplied");
     case "clean":
-        const bin = path.join(projectDir, "pine", "bin");
+        const bin = path.join(projectDir, "out");
         console.log("Deleting", bin);
         deleteFolder(bin);
         break;

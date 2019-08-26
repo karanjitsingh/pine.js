@@ -2,12 +2,12 @@ import * as https from 'https';
 import { URL } from 'url';
 import { INetwork, NetworkResponse } from 'Model/Platform/Network';
 
-export class NodeNetwork implements INetwork {
+export class Network implements INetwork {
     private static requestId: number = 0;
 
     public async get(url: string): Promise<NetworkResponse> {
 
-        const requestId = NodeNetwork.requestId++;
+        const requestId = Network.requestId++;
         const urlObj = new URL(url);
 
         return new Promise((resolve, reject) => {

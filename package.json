@@ -7,8 +7,9 @@
     "clean": "node ./scripts/node.js clean",
     "watch": "node ./scripts/node.js watch",
     "build": "npm run clean && npm run build:tsc && npm run build:scss",
-    "build:tsc": "./node_modules/.bin/tsc -p ./src/pine/tsconfig.json",
-    "build:scss": "node ./node_modules/node-sass/bin/node-sass -rw ./src/pine -o ./src/pine/bin/"
+    "build:tsc": "./node_modules/.bin/tsc -p ./tsconfig.json",
+    "build:scss": "node ./node_modules/node-sass/bin/node-sass -r ./src/ -o ./out/",
+    "build:scss:watch": "node ./node_modules/node-sass/bin/node-sass -rw ./src/ -o ./out/"
   },
   "repository": {
     "type": "git",

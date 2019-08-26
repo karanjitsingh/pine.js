@@ -8,11 +8,10 @@ import { Exchange } from "Model/Exchange/Exchange";
 import { DataController } from "Model/Exchange/DataController";
 import { MarketDataMap, ChartIndicator } from "Model/Platform/Contracts";
 import { Plot } from "Model/Data/Trading";
+import { Network } from "./Network";
 
-export abstract class PlatformBase {
-    protected abstract readonly Network: INetwork;
-    protected abstract readonly Reporter: IReporter;
-
+export class Platform {
+    protected readonly Network: INetwork;
     protected readonly MessageLogger: MessageLogger;
 
     private currentStrategy: Strategy;
@@ -20,15 +19,18 @@ export abstract class PlatformBase {
 
     public constructor() {
         this.MessageLogger = new MessageLogger();
+        this.Network = new Network();
     }
 
-    public init(): void {
-        this._init(Strategy.GetRegisteredStrategies(), Exchange.GetRegisteredExchanges());
-    }
+    // public init(): void {
+    //     this._init(Strategy.GetRegisteredStrategies(), Exchange.GetRegisteredExchanges());
+    // }
 
-    protected abstract _init(availableStrategies: string[], availableExchanges: string[]): void;
+    // protected _init(availableStrategies: string[], availableExchanges: string[]): void {
 
-    protected setConfig(config: BotConfiguration): void {
+    // }
+
+    public setConfig(config: BotConfiguration): void {
         const exchangeCtor = Exchange.GetExchangeCtor(config.Exchange);
         const exchange = new exchangeCtor(this.Network, config.BacktestSettings ? new BacktestBroker() : null);
         let rawData: MarketDataMap;
@@ -55,7 +57,7 @@ export abstract class PlatformBase {
 
         const plot = this.currentStrategy.init(stratData);
 
-        this.Reporter.init(this.getReporterData(plot, rawData));
+        // this.Reporter.init(this.getReporterData(plot, rawData));
     }
 
     private getReporterData(plot: Plot[], rawData: MarketDataMap): ReporterData {

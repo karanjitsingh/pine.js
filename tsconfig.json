@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
-        "outDir": "./bin",
+        "outDir": "./out",
         "module": "amd",
         "sourceMap": true,
         "removeComments": true,
         "target": "es2018",
         "lib": ["es2016", "dom"],
-        "baseUrl": "./",
+        "baseUrl": "./src",
         "paths": {
             "Model/*": [ "./Model/*" ],
             "Network/*": [ "./Network/*" ],

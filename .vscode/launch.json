@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/src/web/index.js"
+            "program": "${workspaceFolder}/out/Main.js"
         },
         {
             "name": "Python: Current File (Integrated Terminal)",
