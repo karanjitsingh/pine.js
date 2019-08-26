@@ -1,5 +1,4 @@
 import { INetwork, NetworkResponse } from "Model/Platform/Network";
-import { promises } from "dns";
 
 export class BrowserNetwork implements INetwork {
 
