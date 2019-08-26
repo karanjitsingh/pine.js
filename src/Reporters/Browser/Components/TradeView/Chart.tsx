@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as LightweightCharts from '../../lib/lightweight-charts';
-import { Plot } from 'Model/Data/Trading';
-import { ChartData } from 'Model/Platform/Contracts';
+import { ChartData } from 'Model/Contracts';
 
 export class ChartProps {
     data: ChartData;

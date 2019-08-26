@@ -4,12 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "node ./scripts/node.js clean",
-    "watch": "node ./scripts/node.js watch",
-    "build": "npm run clean && npm run build:tsc && npm run build:scss",
-    "build:tsc": "./node_modules/.bin/tsc -p ./tsconfig.json",
-    "build:scss": "node ./node_modules/node-sass/bin/node-sass -r ./src/ -o ./out/",
-    "build:scss:watch": "node ./node_modules/node-sass/bin/node-sass -rw ./src/ -o ./out/"
+    "build:tsc:Platform": "./node_modules/.bin/tsc -p ./src/tsconfig.json",
+    "build:tsc:Browser": "./node_modules/.bin/tsc -p ./src/Reporters/Browser/tsconfig.json",
+    "build:scss": "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/style.scss -o ./out/Reporters/Browser/style.css",
+    "build:scss:watch": "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/style.scss -o ./out/Reporters/Browser/style.css"
   },
   "repository": {
     "type": "git",
@@ -26,6 +24,7 @@
     "@types/node": "^12.7.1",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.8.5",
+    "concurrently": "^4.1.2",
     "node-sass": "^4.12.0",
     "npm": "^6.10.3",
     "react-bootstrap": "^1.0.0-beta.11",

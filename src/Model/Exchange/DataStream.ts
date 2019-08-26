@@ -1,7 +1,5 @@
-import { Resolution, Candle } from "../Data/Data";
-import { SimpleSeries, RawSeries } from "../Data/Series";
-import { Subscribable } from "../Events";
-
+import { Candle, Resolution } from "Model/Contracts";
+import { Subscribable } from "Model/Events";
 
 export interface StreamData {
     Candle: Candle;

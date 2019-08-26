@@ -4,28 +4,24 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Run pine server",
-            "type": "shell",
-            "command": "node ./src/web/index.js",
-            "group": "build",
-            "problemMatcher": [],
+            "label": "platform_build",
+            "type": "typescript",
+            "tsconfig": "./src/tsconfig.json",
+            "option": "watch"
         },
         {
-            "type": "typescript",
-            "tsconfig": "src/pine/tsconfig.json",
-            "option": "watch",
+            "task": "reporter_build",
+            ""
+        },
+        {
+            "label": "build",
+            "dependsOn": [
+                "reporter_build"
+            ],
+            "group": "build",
             "problemMatcher": [
                 "$tsc-watch"
             ],
-            "group": "build",
-        },
-        {
-            "type": "npm",
-            "script": "build:scss",
-            "problemMatcher": [
-                "$node-sass"
-            ],
-            "group": "build",
         }
     ]
 }

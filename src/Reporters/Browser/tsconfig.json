@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "outFile": "../../../out/Reporters/browser.js",
+        "sourceMap": true,
+        "module": "amd",
+        "target": "es2018",
+        "lib": ["es2018", "dom"],
+        "baseUrl": "./",
+        "paths": {
+            "Model/Contracts": [ "../../Model/Contracts.ts" ],
+            "Components/*": [ "./Components/*" ]
+        },
+        "moduleResolution": "node",
+        "jsx": "react"
+    },
+    "include": [
+        "**/*.tsx"
+    ],
+    "compileOnSave": true,
+}

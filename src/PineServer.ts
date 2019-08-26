@@ -2,9 +2,8 @@ import * as http from 'http';
 import * as fs from 'fs';
 import { Platform } from 'Platform/Platform';
 import * as path from 'path';
-import { BotConfiguration } from 'Model/BotConfiguration';
+import { BotConfiguration } from 'Model/Contracts';
 import { URL } from 'url';
-import { number } from 'prop-types';
 
 
 type RestMethods = {

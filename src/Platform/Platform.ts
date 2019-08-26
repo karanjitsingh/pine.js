@@ -1,14 +1,14 @@
-import { INetwork } from "Model/Platform/Network";
+import { INetwork } from "Model/Network";
 import { MessageLogger } from "./MessageLogger";
-import { IReporter, ReporterData } from "Model/Platform/Reporter";
-import { BotConfiguration } from "Model/BotConfiguration";
+import { BotConfiguration, ReporterData } from "Model/Contracts";
 import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { BacktestBroker } from "Exchange/BacktestBroker";
 import { Exchange } from "Model/Exchange/Exchange";
 import { DataController } from "Model/Exchange/DataController";
-import { MarketDataMap, ChartIndicator } from "Model/Platform/Contracts";
+import { ChartIndicator } from "Model/Contracts";
 import { Plot } from "Model/Data/Trading";
 import { Network } from "./Network";
+import { MarketDataMap } from "Model/Data/Data";
 
 export class Platform {
     protected readonly Network: INetwork;

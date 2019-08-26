@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BotConfiguration } from 'Model/BotConfiguration';
+import { BotConfiguration } from 'Model/Contracts';
 import { Carousel, CarouselItem, CarouselProps, Button, ListGroup, Form } from 'react-bootstrap'
 
 export interface StrategyConfigurationProps {

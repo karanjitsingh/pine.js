@@ -1,7 +1,7 @@
 import { IBroker } from "Model/Exchange/IBroker";
-import { Resolution, Candle } from "Model/Data/Data";
 import { DataStream } from "Model/Exchange/DataStream";
-import { INetwork } from "Model/Platform/Network";
+import { INetwork } from "Model/Network";
+import { Resolution, Candle } from "Model/Contracts";
 
 export type ExchangeCtor = new (network: INetwork, broker: IBroker) => Exchange;
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import SplitWrapper from '../../lib/react-split';
 import { TradeLog } from './TradeLog';
-import { ReporterData } from 'Model/Platform/Reporter';
+import { ReporterData } from "Model/Contracts";
 
 export interface TradeViewProps {
     data: ReporterData,

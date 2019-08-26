@@ -1,11 +1,9 @@
 import { Plot } from "Model/Data/Trading";
 import { Trader } from "./Trader";
 import { MessageLogger } from "Platform/MessageLogger";
-import { DataController } from "Model/Exchange/DataController";
 import { IBroker } from "Model/Exchange/IBroker";
-import { Resolution, Candle } from "Model/Data/Data";
-import { RawSeries } from "Model/Data/Series";
-import { MarketDataMap } from "Model/Platform/Contracts";
+import { Resolution } from "Model/Contracts";
+import { MarketDataMap } from "Model/Data/Data";
 
 export type StrategyCtor = new (broker: IBroker, messageLogger: MessageLogger) => Strategy;
 

@@ -1,5 +1,4 @@
-import { Subscribable } from "../Events";
-import { Resolution, Candle } from "./Data";
+import { Subscribable } from "Model/Events";
 
 export type SeriesData<T> = (lookback: number) => T;
 

@@ -1,10 +1,7 @@
 import * as React from 'react';
-import { Strategy } from 'Model/Strategy/Strategy';
 import { TradeView, TradeViewProps } from './TradeView/TradeView';
-import { BotConfiguration } from 'Model/BotConfiguration';
-import { PlatformEventEmitter } from 'Model/Events';
+import { BotConfiguration, ReporterData } from 'Model/Contracts';
 import { StrategyConfigurationProps, StrategyConfiguration } from './StrategyConfiguration';
-import { ReporterData } from 'Model/Platform/Reporter';
 import { Spinner } from './Spinner';
 
 interface SetConfigProps {
@@ -33,13 +30,11 @@ export enum PageActions {
 }
 
 export class Page extends React.Component<PageProps, PageState> {
-    private selectedStrategy: Strategy;
+    // private static PageEvents: PlatformEventEmitter<PageActions> = new PlatformEventEmitter<PageActions>();
 
-    private static PageEvents: PlatformEventEmitter<PageActions> = new PlatformEventEmitter<PageActions>();
-
-    public static EmitAction(action: PageActions, args: any) {
-        this.PageEvents.emit(action, args);
-    }
+    // public static EmitAction(action: PageActions, args: any) {
+    //     this.PageEvents.emit(action, args);
+    // }
 
     public constructor(props) {
         super(props);
@@ -48,7 +43,7 @@ export class Page extends React.Component<PageProps, PageState> {
             Mode: PageMode.Configuration
         };
 
-        Page.PageEvents.subscribe(PageActions.RenderCharts, this.RenderCharts, this);
+        // Page.PageEvents.subscribe(PageActions.RenderCharts, this.RenderCharts, this);
 
     }
 

@@ -1,26 +1,23 @@
 {
     "compilerOptions": {
-        "outDir": "./out",
-        "module": "amd",
+        "outDir": "../out/",
         "sourceMap": true,
-        "removeComments": true,
         "target": "es2018",
-        "lib": ["es2016", "dom"],
-        "baseUrl": "./src",
+        "lib": ["es2018"],
+        "baseUrl": "./",
         "paths": {
             "Model/*": [ "./Model/*" ],
             "Network/*": [ "./Network/*" ],
             "Exchange/*": [ "./Exchange/*" ],
             "Platform/*": [ "./Platform/*" ]
         },
-        "jsx": "react",
         "moduleResolution": "node",
     },
     "include": [
-        "**/*.ts", "**/*.tsx", "Platform/Browser/lib/react-split.jsx"
+        "**/*.ts"
     ],
     "exclude": [
-        "./bin/*"
+        "./Reporters/*"
     ],
     "compileOnSave": true,
 }

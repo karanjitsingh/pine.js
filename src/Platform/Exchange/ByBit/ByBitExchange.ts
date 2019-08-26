@@ -1,8 +1,8 @@
-import { INetwork } from "Model/Network";
-import { DataStream } from "Model/Exchange/DataStream";
-import { IBroker } from "Model/Exchange/IBroker";
 import { Exchange } from "Model/Exchange/Exchange";
-import { Resolution, Candle, Tick } from "Model/Contracts";
+import { IBroker } from "Model/Exchange/IBroker";
+import { DataStream } from "Model/Exchange/DataStream";
+import { INetwork } from "Model/Network";
+import { Candle, Resolution, Tick } from "Model/Contracts";
 
 interface CandleResult {
     id: number,

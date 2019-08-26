@@ -2,8 +2,8 @@ import { Subscribable } from "Model/Events";
 import { Exchange } from "Model/Exchange/Exchange";
 import { SimpleSeries, RawSeries, Series } from "Model/Data/Series";
 import { StreamData } from "./DataStream";
-import { Resolution, Candle, Tick } from "Model/Data/Data";
-import { MarketData } from "Model/Platform/Contracts";
+import { Resolution, Candle, Tick } from "Model/Contracts";
+import { MarketData } from "Model/Data/Data";
 
 export interface TickUpdate {
     updatedResolutions: Resolution[],
