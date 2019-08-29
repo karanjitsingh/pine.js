@@ -1,23 +1,26 @@
 {
     "compilerOptions": {
-        "outFile": "../../../out/Reporters/Browser/browser.js",
+        "outDir": "../../../out/Reporters/Browser",
         "sourceMap": true,
         "module": "amd",
         "target": "es2018",
         "lib": ["es2018", "dom"],
         "baseUrl": "./",
         "paths": {
-            "Model/Contracts": [ "../../Model/Contracts.ts" ],
+            "Model/Contracts": [ "../../Model/Contracts.d.ts" ],
             "Components/*": [ "./Components/*" ]
         },
         "moduleResolution": "node",
         "jsx": "react",
         "types": [
             "react"
-        ]
+        ],
+        "allowJs": true,
+        "listEmittedFiles": true
     },
     "include": [
-        "**/*.tsx"
+        "**/*.tsx",
+        "**/*.ts", "lib/*.js", "index.html"
     ],
-    "compileOnSave": true,
+    "compileOnSave": true
 }

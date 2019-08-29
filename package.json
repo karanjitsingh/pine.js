@@ -7,7 +7,7 @@
     "build:platform": "./node_modules/.bin/tsc -p ./src/tsconfig.json",
     "build:reporter": "./node_modules/.bin/tsc -p ./src/Reporters/Browser/tsconfig.json",
     "build:scss": "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser",
-    "watch:scss": "node ./node_modules/node-sass/bin/node-sass -rw ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser",
+    "watch:scss": "node ./node_modules/node-sass/bin/node-sass -rw ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser/lib",
     "build": "npm run build:platform && npm run build:reporter && npm run build:scss"
   },
   "repository": {

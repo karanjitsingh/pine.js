@@ -32,7 +32,7 @@
         {
             "label": "Run Platform Server",
             "type": "shell",
-            "command": "node ./out/Main.js",
+            "command": "node ./out/index.js",
             "problemMatcher": [],
             "group": "build"
         }

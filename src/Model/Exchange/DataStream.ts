@@ -1,5 +1,6 @@
-import { Candle, Resolution } from "Model/Contracts";
+import { Candle } from "Model/Contracts";
 import { Subscribable } from "Model/Events";
+import { Resolution } from "Model/Data/Data";
 
 export interface StreamData {
     Candle: Candle;

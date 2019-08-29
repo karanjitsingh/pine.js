@@ -3,8 +3,7 @@ import { Plot } from "Model/Data/Trading";
 import { Trader } from "Model/Strategy/Trader";
 import { IBroker } from "Model/Exchange/IBroker";
 import { MessageLogger } from "Platform/MessageLogger";
-import { Resolution } from "Model/Contracts";
-import { MarketDataMap } from "Model/Data/Data";
+import { MarketDataMap, Resolution } from "Model/Data/Data";
 
 export class StochasticStrategy extends Strategy {
     protected StrategyConfig: StrategyConfig;

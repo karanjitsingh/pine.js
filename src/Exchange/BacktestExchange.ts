@@ -1,5 +1,6 @@
 import { Exchange } from "Model/Exchange/Exchange";
-import { Candle, Resolution } from "Model/Contracts";
+import { Candle } from "Model/Contracts";
+import { Resolution } from "Model/Data/Data";
 
 export class BacktestExchange<T extends Exchange> extends Exchange {
     public getData(startTime: number, endTime: number, resolution: Resolution): Promise<Candle[]> {

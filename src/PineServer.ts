@@ -4,24 +4,22 @@ import { Platform } from 'Platform/Platform';
 import * as path from 'path';
 import { BotConfiguration } from 'Model/Contracts';
 import { URL, Url } from 'url';
+import { Strategy } from 'Model/Strategy/Strategy';
+import { Exchange } from 'Model/Exchange/Exchange';
 
 type RestMethods = {
-    'post': { [pattern: string]: PostMethod },
-    'get': { [pattern: string]: GetMethod }
+    'post': { [path: string]: PostMethod },
+    'get': { [path: string]: GetMethod }
 }
 
-type Response = {
-    status: number,
-    headers?: { [key: string]: string }
-}
+type PostReply = Promise<number>;
+type GetReply = Promise<number>;
 
-type PostReply = Promise<Response>;
-type GetReply = [Promise<Response>, Promise<string>];
+type PostMethod = (url: URL, body: any, res: http.ServerResponse) => PostReply;
+type GetMethod = (url: URL, res: http.ServerResponse) => GetReply;
 
-type PostMethod = (url: URL, body: any) => PostReply;
-type GetMethod = (url: URL) => GetReply;
-
-const pineBin = path.join(path.dirname(__dirname), "pine", "bin");
+const pineBin = path.join(path.dirname(__dirname), "out");
+const browserBin = path.join(path.dirname(__dirname), "out", "Reporters", "Browser")
 
 function getContentType(file) {
     const ext = path.extname(file);
@@ -49,8 +47,6 @@ export class PineServer {
             PineServer.methodPatternMap[method] = Object.keys(PineServer.rest[method]);
         });
 
-        console.log(PineServer.methodPatternMap);
-
         var server = http.createServer(PineServer.listener);
         server.listen(3000);
     }
@@ -59,20 +55,24 @@ export class PineServer {
 
 
         const url = new URL(req.url, "protocol://host");
-        console.log(req.method, url.pathname, url.searchParams);
 
 
         const resolver = getResolver(req.method.toLowerCase(), url.pathname, PineServer.methodPatternMap);
         if (!resolver) {
+            console.log(req.method, url.pathname, url.searchParams, 404);
+
+
             res.writeHead(404);
             res.end();
         }
         else {
             const method: GetMethod | PostMethod = PineServer.rest[req.method.toLowerCase()][resolver];
 
+            console.log(req.method, url.pathname, url.searchParams, req.method.toLowerCase(), resolver);
+
             switch (req.method.toLowerCase()) {
                 case 'get':
-                    method.call(null, [url]);
+                    (method as GetMethod)(url, res);
                     break;
                 case 'post':
                     let body: any = [];
@@ -86,14 +86,14 @@ export class PineServer {
                         let data = null;
 
                         try {
-                            data = JSON.parse(body)
+                            data = JSON.parse(body);
                         } catch (e) {
                             res.writeHead(400);
                             res.end();
                         }
-
+                        
                         if (data) {
-                            method(url, data);
+                            (method as PostMethod)(url, data, res);
                         }
 
                     });
@@ -108,72 +108,93 @@ export class PineServer {
 
     private static rest: RestMethods = {
         'post': {
-            '/config': (url: URL, config: BotConfiguration): PostReply => {
-
+            '/api/config': (url: URL, config: BotConfiguration, res: http.ServerResponse): PostReply => {
                 if (!Validations.ValidateBotConfig(config)) {
-                    return Promise.resolve({
-                        status: 400
-                    });
+                    res.writeHead(400);
+                    res.end();
+                    return Promise.resolve(400);
                 }
 
                 platform.setConfig(config);
 
-                return Promise.resolve({
-                    status: 200
-                });
+                res.writeHead(200);
+                res.end();
+                return Promise.resolve(200);
             }
         },
         'get': {
-            '/pine': (url: URL): GetReply => {
+            '/api/init': (url: URL, res: http.ServerResponse): GetReply => {
+                res.writeHead(200);
+                res.end(JSON.stringify({
+                    availableStrategies: Strategy.GetRegisteredStrategies(),
+                    availableExchanges: Exchange.GetRegisteredExchanges()
+                }))
+
+                return Promise.resolve(200);
+            },
+            '/pine': (url: URL, res: http.ServerResponse): GetReply => {
                 const file = path.join(pineBin, url.pathname.replace("/pine", ""));
-
-                let setContent;
-                let setHeaders;
-
-                const response = new Promise<string>((resolve) => { setContent = resolve; });
-                const headers = new Promise<Response>((resolve) => { setHeaders = resolve; });
 
                 if (fs.existsSync(file)) {
                     fs.readFile(file, (err, content) => {
                         if (err) {
-
-                            setHeaders({
-                                status: 500,
-                                headers: {
-                                    "Content-Type": "text/HTML"
-                                }
-                            })
-
-                            setContent(err.toString());
-                        }
-                        else {
-                            setHeaders({
-                                status: 200,
-                                headers: {
-                                    "Content-Type": getContentType(file)
-                                }
+                            res.writeHead(500, {
+                                "Content-Type": "text/HTML"
                             });
 
-                            setContent(content);
+                            res.end(err.toString());
+                            return Promise.resolve(500);
+                        }
+                        else {
+                            res.writeHead(200, {
+                                "Content-Type": getContentType(file)
+                            });
+
+                            res.end(content);
+                            return Promise.resolve(200);
                         }
                     });
                 }
                 else {
-                    setHeaders({
-                        status: 400
-                    });
-                    setContent("");
+                    res.writeHead(404)
+                    res.end();
+                    return Promise.resolve(404);
                 }
-
-                return [headers, response];
             },
 
-            '/': (url: URL): GetReply => {
-                return [Promise.resolve({ status: 200 }), Promise.resolve(fs.readFileSync(path.join(__dirname, "Reporters", "Browser", "index.html")).toString())]
-            }
+            '/': browserGet,
+            '/lib': browserGet
         }
     }
 }
+
+
+function browserGet(url: URL, res: http.ServerResponse): GetReply {
+
+    let content;
+    let file;
+
+    if(url.pathname == '/') {
+        file = path.join(browserBin, "index.html");
+    } else {
+        file = path.join(browserBin, url.pathname)
+    }
+
+    try {
+        content = fs.readFileSync(file).toString()
+    }
+    catch(ex) {
+        res.writeHead(404);
+        res.end();
+        return Promise.resolve(404);
+    }
+
+    res.writeHead(200);
+    res.end(content);
+    return Promise.resolve(200);
+};
+
+
 const Validations = {
     ValidateBotConfig: (config: BotConfiguration) => {
         if (!config) {

@@ -4,32 +4,27 @@ import { BotConfiguration, ReporterData } from 'Model/Contracts';
 import { StrategyConfigurationProps, StrategyConfiguration } from './StrategyConfiguration';
 import { Spinner } from './Spinner';
 
-interface SetConfigProps {
-    strategySelectCallback: (config: BotConfiguration) => void;
-    availableStrategies: string[];
-    availableExchanges: string[];
+export interface PageState {
+    configProps?: {
+        strategySelectCallback: (config: BotConfiguration) => void;
+        availableStrategies: string[];
+        availableExchanges: string[];
+    };
+    tradeViewProps?: TradeViewProps;
+    pageMode: PageMode;
 }
 
-export interface PageProps {
-    configProps: SetConfigProps;
-}
-
-enum PageMode {
+export enum PageMode {
     Configuration,
     Loading,
     View
-}
-
-interface PageState {
-    Mode: PageMode,
-    TradeViewProps?: TradeViewProps;
 }
 
 export enum PageActions {
     RenderCharts = "render-charts"
 }
 
-export class Page extends React.Component<PageProps, PageState> {
+export class Page extends React.Component<{}, PageState> {
     // private static PageEvents: PlatformEventEmitter<PageActions> = new PlatformEventEmitter<PageActions>();
 
     // public static EmitAction(action: PageActions, args: any) {
@@ -40,7 +35,7 @@ export class Page extends React.Component<PageProps, PageState> {
         super(props);
 
         this.state = {
-            Mode: PageMode.Configuration
+            pageMode: PageMode.Loading
         };
 
         // Page.PageEvents.subscribe(PageActions.RenderCharts, this.RenderCharts, this);
@@ -48,41 +43,30 @@ export class Page extends React.Component<PageProps, PageState> {
     }
 
     public render() {
-        const configSelectorProps: StrategyConfigurationProps = {
-            availableExchanges: this.props.configProps.availableExchanges,
-            availableStrategies: this.props.configProps.availableStrategies,
-            submitCallback: this.strategySelected.bind(this),
-        }
 
-        switch(this.state.Mode) {
+        switch (this.state.pageMode) {
             case PageMode.Configuration:
+
+                const configSelectorProps: StrategyConfigurationProps = {
+                    availableExchanges: this.state.configProps.availableExchanges,
+                    availableStrategies: this.state.configProps.availableStrategies,
+                    submitCallback: this.strategySelected.bind(this),
+                }
+                
                 return <StrategyConfiguration {...configSelectorProps} />
             case PageMode.Loading:
                 return <Spinner />
             case PageMode.View:
-                return <TradeView {...this.state.TradeViewProps}/>
-        }
-
-        if (this.state.Mode === PageMode.Configuration) {
-        } else {
-            return <TradeView {...this.state.TradeViewProps}></TradeView>
+                return <TradeView {...this.state.tradeViewProps} />
         }
     }
 
     private strategySelected(config: BotConfiguration) {
 
         this.setState({
-            Mode: PageMode.Loading
+            pageMode: PageMode.Loading
         });
 
-        this.props.configProps.strategySelectCallback(config);
-    }
-
-    private RenderCharts(data: ReporterData) {
-        this.setState({
-            Mode: PageMode.View,
-            TradeViewProps: { data }
-        });
+        this.state.configProps.strategySelectCallback(config);
     }
 }
-

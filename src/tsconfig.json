@@ -15,7 +15,7 @@
         "types": ["node"]
     },
     "include": [
-        "**/*.ts"
+        "**/*.ts", "Reporters/Browser/lib/require.js", "Reporters/Browser/lib/split.js"
     ],
     "exclude": [
         "./Reporters/**/*"
