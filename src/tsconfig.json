@@ -12,7 +12,7 @@
             "Exchange/*": [ "./Exchange/*" ],
             "Platform/*": [ "./Platform/*" ]
         },
-        "types": ["node"]
+        "types": ["node", "ws"]
     },
     "include": [
         "**/*.ts", "Reporters/Browser/lib/require.js", "Reporters/Browser/lib/split.js"

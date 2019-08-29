@@ -1,4 +1,4 @@
-import { Page, PageProps, PageMode } from "Components/Page";
+import { Page, PageMode } from "Components/Page";
 import React = require("react");
 import ReactDOM = require("react-dom");
 import { BotConfiguration } from "Model/Contracts";
@@ -43,7 +43,7 @@ export class Network {
             };
 
             try {
-                xhttp.open(method, url);
+                xhttp.open(method, url + this.paramsToString(params));
 
                 Object.keys(headers).forEach((header) => {
                     xhttp.setRequestHeader(header, headers[header]);
@@ -55,6 +55,12 @@ export class Network {
             }
         })
     }
+
+    private paramsToString(params: {[key: string]: string}): string {
+        return Object.keys(params).reduce((acc: string, current: string) => {
+            return (acc != '?' ? (acc + "&") : acc) + `${current}=${params[current]}`;
+        }, '?');
+    }
 }
 
 const network = new Network();
@@ -63,6 +69,7 @@ const network = new Network();
 class Reporter {
 
     private readonly page: Page;
+    private socket: WebSocket;
 
     constructor() {
         this.page = ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
@@ -102,13 +109,55 @@ class Reporter {
             if(res.status!=200) {
                 console.error('/api/config', res.status);
             } else {
+
+                const id = res.responseText;
+
                 this.page.setState({
                     pageMode: PageMode.Loading
                 });
+
+                if(!id) {
+                    console.error('platform id was empty');
+                }
+
+                this.subscribeWebSocket(id);
             }
         }, (why) => {
             console.error('failed', 'api/config', why);
-        })
+        });
+    }
+
+    private subscribeWebSocket(platformId: string) {
+        network.get('/api/datastream', { id: platformId }).then((res: XMLHttpRequest) =>{
+            if(res.status!=200) {
+                console.error('/api/datastream?id=' + platformId, res.status);
+            } else {
+                const connection = res.responseText;
+
+                console.log(connection);
+                this.subsribe(connection);
+            }
+        }, (why) => {
+            console.error('failed', 'api/config', why);
+        });
+    }
+
+    private subsribe(connection: string) {
+        const ws = this.socket = new WebSocket(connection);
+        ws.onmessage = function(ev) {
+            console.log(1);
+        }
+
+        ws.onerror = function(ev) {
+            console.log(ev);
+          };
+          ws.onopen = function() {
+            // showMessage('WebSocket connection established');
+          };
+          ws.onclose = function() {
+            // showMessage('WebSocket connection closed');
+            // ws = null;
+          };
     }
 }
 

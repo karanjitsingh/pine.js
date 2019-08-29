@@ -17,33 +17,26 @@ export class Platform {
     private currentStrategy: Strategy;
     private dataController: DataController;
 
-    public constructor() {
+    public constructor(config: BotConfiguration) {
         this.MessageLogger = new MessageLogger();
         this.Network = new Network();
+        this.setConfig(config);
     }
 
-    // public init(): void {
-    //     this._init(Strategy.GetRegisteredStrategies(), Exchange.GetRegisteredExchanges());
-    // }
-
-    // protected _init(availableStrategies: string[], availableExchanges: string[]): void {
-
-    // }
-
-    public setConfig(config: BotConfiguration): void {
+    private setConfig(config: BotConfiguration): void {
         const exchangeCtor = Exchange.GetExchangeCtor(config.Exchange);
         const exchange = new exchangeCtor(this.Network, config.BacktestSettings ? new BacktestBroker() : null);
-        let rawData: MarketDataMap;
 
         this.currentStrategy = new (Strategy.GetStartegyCtor(config.Strategy))(exchange.Broker, this.MessageLogger);
 
         const stratConfig = this.currentStrategy.getConfig();
 
         this.dataController = new DataController(exchange, stratConfig.resolutionSet);
-        this.dataController.getBaseData().then((data) => {
-            rawData = data;
+    }
 
-            this.fixStrategy(stratConfig, rawData);
+    public start() {
+        this.dataController.getBaseData().then((data) => {
+            this.fixStrategy(this.currentStrategy.getConfig(), data);
         });
     }
     
@@ -56,8 +49,6 @@ export class Platform {
         })
 
         const plot = this.currentStrategy.init(stratData);
-
-        // this.Reporter.init(this.getReporterData(plot, rawData));
     }
 
     private getReporterData(plot: Plot[], rawData: MarketDataMap): ReporterData {

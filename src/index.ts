@@ -11,8 +11,7 @@ const roots = [
    "Exchange/",
    "PineServer",
    "Main"
-]
-
+];
 
 Module.prototype.require = function (path: string) {
 

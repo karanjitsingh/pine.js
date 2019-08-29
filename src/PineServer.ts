@@ -3,9 +3,12 @@ import * as fs from 'fs';
 import { Platform } from 'Platform/Platform';
 import * as path from 'path';
 import { BotConfiguration } from 'Model/Contracts';
-import { URL, Url } from 'url';
+import { URL } from 'url';
 import { Strategy } from 'Model/Strategy/Strategy';
 import { Exchange } from 'Model/Exchange/Exchange';
+import * as uuid from 'uuid/v4';
+
+import * as WebSocket from 'ws';
 
 type RestMethods = {
     'post': { [path: string]: PostMethod },
@@ -21,21 +24,13 @@ type GetMethod = (url: URL, res: http.ServerResponse) => GetReply;
 const pineBin = path.join(path.dirname(__dirname), "out");
 const browserBin = path.join(path.dirname(__dirname), "out", "Reporters", "Browser")
 
-function getContentType(file) {
-    const ext = path.extname(file);
-    switch (ext) {
-        case ".js":
-            return "script/typescript";
-        case ".ts":
-            return "script/javascript";
-        case ".map":
-            return "text/json";
-        case ".html":
-            return "text/html";
-    }
+interface PlatformConnection {
+    key: string,
+    platform: Platform,
+    connections: {[key:string]: WebSocket.Server}
 }
 
-const platform = new Platform();
+const platformCollection: {[key: string]: PlatformConnection } = {};
 
 export class PineServer {
 
@@ -59,7 +54,7 @@ export class PineServer {
 
         const resolver = getResolver(req.method.toLowerCase(), url.pathname, PineServer.methodPatternMap);
         if (!resolver) {
-            console.log(req.method, url.pathname, url.searchParams, 404);
+            console.log(req.method, req,url, 404);
 
 
             res.writeHead(404);
@@ -68,7 +63,7 @@ export class PineServer {
         else {
             const method: GetMethod | PostMethod = PineServer.rest[req.method.toLowerCase()][resolver];
 
-            console.log(req.method, url.pathname, url.searchParams, req.method.toLowerCase(), resolver);
+            console.log(req.method, req,url, req.method.toLowerCase(), resolver);
 
             switch (req.method.toLowerCase()) {
                 case 'get':
@@ -115,10 +110,15 @@ export class PineServer {
                     return Promise.resolve(400);
                 }
 
-                platform.setConfig(config);
+                const platFormKey = uuid();
+                platformCollection[platFormKey] = {
+                    key: platFormKey,
+                    platform: new Platform(config),
+                    connections: {}
+                };
 
                 res.writeHead(200);
-                res.end();
+                res.end(platFormKey);
                 return Promise.resolve(200);
             }
         },
@@ -162,12 +162,63 @@ export class PineServer {
                 }
             },
 
+            '/api/datastream': (url:URL, res:http.ServerResponse): GetReply => {
+
+                const id = url.searchParams.get('id');
+
+                
+                if(!id || !platformCollection[id]) {
+                    res.writeHead(400);
+                    res.end();
+                    return Promise.resolve(400);
+                }
+                
+                const platformConnection = platformCollection[id];
+
+                const address = getSocket(platformConnection);
+
+                res.writeHead(200);
+                res.end(address);
+                return Promise.resolve(200);
+            },
+
             '/': browserGet,
             '/lib': browserGet
         }
     }
 }
 
+function getSocket(platformConnection: PlatformConnection): string {
+    const socketId = uuid();
+    const address = `ws://localhost:3001`;
+    const path = `/${platformConnection.key}/${socketId}`;
+
+    const websocket = platformConnection.connections[socketId] = new WebSocket.Server({
+        host: 'localhost',
+        path,
+        port: 3001
+    });
+
+    websocket.on('connection', function(socket: WebSocket) {
+        socket.send(Array(1000000).fill('a').join(''));
+    });
+
+    return address + path;
+}
+
+function getContentType(file) {
+    const ext = path.extname(file);
+    switch (ext) {
+        case ".js":
+            return "script/typescript";
+        case ".ts":
+            return "script/javascript";
+        case ".map":
+            return "text/json";
+        case ".html":
+            return "text/html";
+    }
+}
 
 function browserGet(url: URL, res: http.ServerResponse): GetReply {
 
