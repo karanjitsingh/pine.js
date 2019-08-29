@@ -2,8 +2,9 @@
     "compilerOptions": {
         "outDir": "../out/",
         "sourceMap": true,
-        "target": "es2018",
-        "lib": ["es2018"],
+        "module": "commonjs",
+        "target": "es2015",
+        "lib": ["es2015"],
         "baseUrl": "./",
         "paths": {
             "Model/*": [ "./Model/*" ],
@@ -11,13 +12,13 @@
             "Exchange/*": [ "./Exchange/*" ],
             "Platform/*": [ "./Platform/*" ]
         },
-        "moduleResolution": "node",
+        "types": ["node"]
     },
     "include": [
         "**/*.ts"
     ],
     "exclude": [
-        "./Reporters/*"
+        "./Reporters/**/*"
     ],
     "compileOnSave": true,
 }

@@ -3,8 +3,7 @@ import * as fs from 'fs';
 import { Platform } from 'Platform/Platform';
 import * as path from 'path';
 import { BotConfiguration } from 'Model/Contracts';
-import { URL } from 'url';
-
+import { URL, Url } from 'url';
 
 type RestMethods = {
     'post': { [pattern: string]: PostMethod },
@@ -20,9 +19,7 @@ type PostReply = Promise<Response>;
 type GetReply = [Promise<Response>, Promise<string>];
 
 type PostMethod = (url: URL, body: any) => PostReply;
-type GetMethod = (url: URL, params: { [key: string]: string }) => GetReply;
-
-
+type GetMethod = (url: URL) => GetReply;
 
 const pineBin = path.join(path.dirname(__dirname), "pine", "bin");
 
@@ -44,23 +41,67 @@ const platform = new Platform();
 
 export class PineServer {
 
+    private static methodPatternMap: { [method: string]: string[] } = {};
 
     public static start() {
+
+        Object.keys(PineServer.rest).forEach(method => {
+            PineServer.methodPatternMap[method] = Object.keys(PineServer.rest[method]);
+        });
+
+        console.log(PineServer.methodPatternMap);
+
         var server = http.createServer(PineServer.listener);
         server.listen(3000);
     }
 
     private static listener(req: http.IncomingMessage, res: http.ServerResponse) {
-        switch(req.method.toLowerCase()) {
-            case 'get':
-                
-                break;
-            case 'post':
 
-                break;
-            default:
-                res.writeHead(405);
-                res.end();
+
+        const url = new URL(req.url, "protocol://host");
+        console.log(req.method, url.pathname, url.searchParams);
+
+
+        const resolver = getResolver(req.method.toLowerCase(), url.pathname, PineServer.methodPatternMap);
+        if (!resolver) {
+            res.writeHead(404);
+            res.end();
+        }
+        else {
+            const method: GetMethod | PostMethod = PineServer.rest[req.method.toLowerCase()][resolver];
+
+            switch (req.method.toLowerCase()) {
+                case 'get':
+                    method.call(null, [url]);
+                    break;
+                case 'post':
+                    let body: any = [];
+                    req.on('error', (err) => {
+                        console.error(err);
+                    }).on('data', (chunk) => {
+                        body.push(chunk);
+                    }).on('end', () => {
+                        body = Buffer.concat(body).toString();
+
+                        let data = null;
+
+                        try {
+                            data = JSON.parse(body)
+                        } catch (e) {
+                            res.writeHead(400);
+                            res.end();
+                        }
+
+                        if (data) {
+                            method(url, data);
+                        }
+
+                    });
+                    break;
+                default:
+                    res.writeHead(405);
+                    res.end();
+            }
         }
     }
 
@@ -83,7 +124,7 @@ export class PineServer {
             }
         },
         'get': {
-            '/pine/(.*)': (url: URL, params: { [key: string]: string }): GetReply => {
+            '/pine': (url: URL): GetReply => {
                 const file = path.join(pineBin, url.pathname.replace("/pine", ""));
 
                 let setContent;
@@ -125,6 +166,10 @@ export class PineServer {
                 }
 
                 return [headers, response];
+            },
+
+            '/': (url: URL): GetReply => {
+                return [Promise.resolve({ status: 200 }), Promise.resolve(fs.readFileSync(path.join(__dirname, "Reporters", "Browser", "index.html")).toString())]
             }
         }
     }
@@ -141,4 +186,18 @@ const Validations = {
 
         return true;
     }
+}
+
+const getResolver = (method: string, pathname: string, map: { [key: string]: string[] }) => {
+    const paths = map[method];
+
+    if (paths) {
+        for (let i = 0; i < paths.length; i++) {
+            if (pathname.startsWith(paths[i])) {
+                return paths[i];
+            }
+        }
+    }
+
+    return null;
 }

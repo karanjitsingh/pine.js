@@ -11,7 +11,10 @@
             "Components/*": [ "./Components/*" ]
         },
         "moduleResolution": "node",
-        "jsx": "react"
+        "jsx": "react",
+        "types": [
+            "react"
+        ]
     },
     "include": [
         "**/*.tsx"

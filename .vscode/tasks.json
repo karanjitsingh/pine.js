@@ -1,15 +1,40 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "npm",
-            "script": "build:watch",
+            "label": "Build reporters",
+            "type": "typescript",
+            "tsconfig": "src/Reporters/Browser/tsconfig.json",
+            "option": "watch",
             "problemMatcher": [
-                "$tsc"
+                "$tsc-watch"
             ],
-            "group": "build",
+            "group": "build"
+        },
+        {
+            "label": "Build platform",
+            "type": "typescript",
+            "tsconfig": "src/tsconfig.json",
+            "option": "watch",
+            "problemMatcher": [
+                "$tsc-watch"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "npm",
+            "script": "watch:scss",
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Run Platform Server",
+            "type": "shell",
+            "command": "node ./out/Main.js",
+            "problemMatcher": [],
+            "group": "build"
         }
     ]
 }
