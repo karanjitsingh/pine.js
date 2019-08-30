@@ -26,7 +26,8 @@ export const rest: RestMethods = {
             Server.platformCollection[platFormKey] = {
                 key: platFormKey,
                 platform,
-                connection: null
+                server: null,
+                connections: {}
             };
 
             res.writeHead(200);

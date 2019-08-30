@@ -3,26 +3,48 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
 import { URL } from 'url';
+import * as uuid from 'uuid';
 import * as WebSocket from 'ws';
 import { Constants, GetReply, PlatformConnection } from './ServerContracts';
+import { ReporterData } from 'Model/Contracts';
+import { Server } from 'Server/Server';
 
 export function getSocket(platformConnection: PlatformConnection): string {
     const address = `ws://localhost:3001`;
     const path = `/${platformConnection.key}`;
 
-    if (!platformConnection.connection) {
-        const websocket = platformConnection.connection = new WebSocket.Server({
+    if (!platformConnection.server) {
+        const websocket = platformConnection.server = new WebSocket.Server({
             host: 'localhost',
             path,
             port: 3001
         });
 
         websocket.on('connection', function (socket: WebSocket) {
+            const key = uuid();
 
+            if(!platformConnection.platform.isRunning) {
+                platformConnection.platform.start();
+                platformConnection.platform.subscribe((data: ReporterData) => {
+                    updateData(data, platformConnection.key);
+                }, null);
+            }
+            
+            platformConnection.connections[key] = socket;
+
+            socket.onclose = () => {
+                delete platformConnection.connections[key];
+            }
         });
     }
 
     return address + path;
+}
+
+function updateData(data: ReporterData, key: string) {
+    Object.values(Server.platformCollection[key].connections).forEach((socket: WebSocket) => {
+        socket.send(JSON.stringify(data));
+    });
 }
 
 export function getContentType(file) {

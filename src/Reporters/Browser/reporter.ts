@@ -19,7 +19,6 @@ export class Network {
         return await this.send('post', url, data, {}, {});
     }
 
-
     private send(method: string, url: string, data: string, headers: { [key: string]: string }, params: { [key: string]: string }): Promise<XMLHttpRequest> {
         const xhttp = new XMLHttpRequest();
 
@@ -128,7 +127,7 @@ class Reporter {
             console.error('failed', 'api/config', why);
         });
     }
-
+    
     private subscribeWebSocket(platformId: string) {
         network.get('/api/datastream', { id: platformId }).then((res: XMLHttpRequest) => {
             if (res.status != 200) {
@@ -137,7 +136,6 @@ class Reporter {
                 const connection = res.responseText;
 
                 console.log(connection);
-                this.subsribe(connection);
                 this.subsribe(connection);
             }
         }, (why) => {

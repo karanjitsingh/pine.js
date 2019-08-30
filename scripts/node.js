@@ -33,7 +33,7 @@ switch (command) {
         buildWatcher();
         break;
     case "build":
-        npm.load(() => build());
+        build();
         break;
     default:
         console.error("Unknown command:", command);
@@ -73,9 +73,39 @@ function endless() {
     setTimeout(endless, 1000);
 }
 
+
 function build() {
-    npm.commands["run-script"](["build"], (err) => {
-        if(err)
-            console.error(err)
+
+    const paths = [
+        "./node_modules/.bin/tsc -p ./src/tsconfig.json",
+        "./node_modules/.bin/tsc -p ./src/Reporters/Browser/tsconfig.json",
+        "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser"
+    ]
+    
+    const commands = paths.map((value) => (value.replace(/\//g, path.sep)));
+
+    const promises = []
+
+    commands.forEach(command => {
+        const child_process = cp.exec(command);
+        let resolver;
+        promises.push(new Promise((r) => {resolver = r}));
+
+        child_process.on('exit', () => {
+            resolver(0);
+        });
+
+        child_process.stdout.on('data', (data) => {
+            data.split('\n').forEach(elem => {
+                if(elem.trim().match(/^([^\s].*)[\(:](\d+)[,:](\d+)(?:\):\s+|\s+-\s+)(error|warning|info)\s+TS(\d+)\s*:\s*(.*)$/))
+                    console.log(elem);
+            });
+        });
+    })
+
+
+    return Promise.all(promises).then((r) => {
+        fs.copyFileSync(path.join(projectDir, "src", "Reporters", "Browser", "index.html"), path.join(projectDir, "out", "Reporters", "Browser", "index.html"));
+        return '';
     });
 }

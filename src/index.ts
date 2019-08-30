@@ -9,6 +9,7 @@ const roots = [
    "Platform/",
    "Strategy/",
    "Exchange/",
+   "Server/",
    "PineServer",
    "Main"
 ];

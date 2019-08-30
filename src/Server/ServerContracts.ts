@@ -16,12 +16,13 @@ export type PostMethod = (url: URL, body: any, res: http.ServerResponse) => Post
 export type GetMethod = (url: URL, res: http.ServerResponse) => GetReply;
 
 export const Constants = {
-    pineBin: path.join(path.dirname(__dirname), "out"),
-    browserBin: path.join(path.dirname(__dirname), "out", "Reporters", "Browser")
+    pineBin: path.join(path.dirname(path.dirname(__dirname))),
+    browserBin: path.join(path.dirname(__dirname), "Reporters", "Browser")
 }
 
 export interface PlatformConnection {
     key: string,
     platform: Platform,
-    connection: WebSocket.Server
+    server: WebSocket.Server,
+    connections: {[key: string]: WebSocket}
 }

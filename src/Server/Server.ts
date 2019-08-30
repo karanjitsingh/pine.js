@@ -3,7 +3,6 @@ import { GetMethod, PlatformConnection, PostMethod } from 'Server/ServerContract
 import { URL } from 'url';
 import { rest } from './Rest';
 
-
 export class Server {
 
     public static platformCollection: { [key: string]: PlatformConnection } = {};
@@ -29,15 +28,12 @@ export class Server {
             this.methodPatternMap[method] = Object.keys(rest[method]);
         });
 
-        var server = http.createServer(this.listener);
+        var server = http.createServer(this.listener.bind(this));
         server.listen(3000);
     }
 
     private listener(req: http.IncomingMessage, res: http.ServerResponse) {
-
-
         const url = new URL(req.url, "protocol://host");
-
 
         const resolver = this.getResolver(req.method.toLowerCase(), url.pathname, this.methodPatternMap);
         if (!resolver) {

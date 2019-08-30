@@ -1,26 +1,44 @@
-import { INetwork } from "Model/Network";
-import { MessageLogger } from "./MessageLogger";
-import { BotConfiguration, ReporterData } from "Model/Contracts";
-import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { BacktestBroker } from "Exchange/BacktestBroker";
-import { Exchange } from "Model/Exchange/Exchange";
-import { DataController } from "Model/Exchange/DataController";
-import { ChartIndicator } from "Model/Contracts";
-import { Plot } from "Model/Data/Trading";
-import { Network } from "./Network";
+import { BotConfiguration, ChartIndicator, ReporterData } from "Model/Contracts";
 import { MarketDataMap } from "Model/Data/Data";
+import { Plot } from "Model/Data/Trading";
+import { DataController } from "Model/Exchange/DataController";
+import { Exchange } from "Model/Exchange/Exchange";
+import { INetwork } from "Model/Network";
+import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
+import { MessageLogger } from "./MessageLogger";
+import { Network } from "./Network";
+import { Subscribable } from "Model/Events";
 
-export class Platform {
+export class Platform extends Subscribable<ReporterData> {
     protected readonly Network: INetwork;
     protected readonly MessageLogger: MessageLogger;
 
     private currentStrategy: Strategy;
     private dataController: DataController;
+    private _isRunning: boolean = false;
+    private plot: Plot[];
 
     public constructor(config: BotConfiguration) {
+        super();
         this.MessageLogger = new MessageLogger();
         this.Network = new Network();
         this.setConfig(config);
+    }
+
+    public get isRunning(): boolean {
+        return this._isRunning;
+    }
+
+    public getStrategyConfig(): StrategyConfig {
+        return this.currentStrategy.getConfig();
+    }
+
+    public start() {
+        this._isRunning = true;
+        this.dataController.getBaseData().then((data) => {
+            this.fixStrategy(this.currentStrategy.getConfig(), data);
+        });
     }
 
     private setConfig(config: BotConfiguration) {
@@ -32,31 +50,20 @@ export class Platform {
         const stratConfig = this.currentStrategy.getConfig();
 
         this.dataController = new DataController(exchange, stratConfig.resolutionSet);
-
     }
 
-    public getStrategyConfig(): StrategyConfig {
-        return this.currentStrategy.getConfig();
-    }
-
-    public start() {
-        this.dataController.getBaseData().then((data) => {
-            this.fixStrategy(this.currentStrategy.getConfig(), data);
-        });
-    }
-    
     private fixStrategy(config: StrategyConfig, rawData: MarketDataMap) {
-
         const stratData: MarketDataMap = {}
 
         config.resolutionSet.forEach((res) => {
-            stratData[res] = rawData[res]; 
+            stratData[res] = rawData[res];
         })
 
-        const plot = this.currentStrategy.init(stratData);
+        this.plot = this.currentStrategy.init(stratData);
+        
+        const reporterData = this.getReporterData(this.plot, rawData);
+        this.notifyAll(reporterData);
     }
-
-
 
     private getReporterData(plot: Plot[], rawData: MarketDataMap): ReporterData {
         const reporterData: ReporterData = {
