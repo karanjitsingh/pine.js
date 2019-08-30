@@ -11,7 +11,7 @@ interface InitInfo {
 export class Network {
     private static requestId: number = 0;
 
-    public async get(url: string, params: {[key:string]: string}): Promise<XMLHttpRequest> {
+    public async get(url: string, params: { [key: string]: string }): Promise<XMLHttpRequest> {
         return await this.send('get', url, "", {}, params);
     }
 
@@ -20,7 +20,7 @@ export class Network {
     }
 
 
-    private send(method: string, url: string, data: string, headers: { [key: string]: string }, params: {[key: string]: string}): Promise<XMLHttpRequest> {
+    private send(method: string, url: string, data: string, headers: { [key: string]: string }, params: { [key: string]: string }): Promise<XMLHttpRequest> {
         const xhttp = new XMLHttpRequest();
 
         return new Promise((resolve, reject) => {
@@ -56,7 +56,7 @@ export class Network {
         })
     }
 
-    private paramsToString(params: {[key: string]: string}): string {
+    private paramsToString(params: { [key: string]: string }): string {
         return Object.keys(params).reduce((acc: string, current: string) => {
             return (acc != '?' ? (acc + "&") : acc) + `${current}=${params[current]}`;
         }, '?');
@@ -77,7 +77,7 @@ class Reporter {
 
     public init() {
         network.get('/api/init', {}).then((res: XMLHttpRequest) => {
-            if(res.status != 200) {
+            if (res.status != 200) {
                 console.error('/api/init', res.status);
             } else {
                 try {
@@ -85,7 +85,7 @@ class Reporter {
                     this.loadConfigForm(info as InitInfo);
                     console.log(info);
                 }
-                catch(ex) {
+                catch (ex) {
                     console.error('failed', '/api/init', ex);
                 }
 
@@ -106,21 +106,23 @@ class Reporter {
 
     private strategySelected(config: BotConfiguration) {
         network.post('/api/config', JSON.stringify(config)).then((res: XMLHttpRequest) => {
-            if(res.status!=200) {
+            if (res.status != 200) {
                 console.error('/api/config', res.status);
             } else {
 
-                const id = res.responseText;
+                const {key, config} = JSON.parse(res.responseText);
 
                 this.page.setState({
                     pageMode: PageMode.Loading
                 });
 
-                if(!id) {
+                if (!key) {
                     console.error('platform id was empty');
                 }
 
-                this.subscribeWebSocket(id);
+                console.log(key, config);
+
+                this.subscribeWebSocket(key);
             }
         }, (why) => {
             console.error('failed', 'api/config', why);
@@ -128,13 +130,14 @@ class Reporter {
     }
 
     private subscribeWebSocket(platformId: string) {
-        network.get('/api/datastream', { id: platformId }).then((res: XMLHttpRequest) =>{
-            if(res.status!=200) {
+        network.get('/api/datastream', { id: platformId }).then((res: XMLHttpRequest) => {
+            if (res.status != 200) {
                 console.error('/api/datastream?id=' + platformId, res.status);
             } else {
                 const connection = res.responseText;
 
                 console.log(connection);
+                this.subsribe(connection);
                 this.subsribe(connection);
             }
         }, (why) => {
@@ -144,20 +147,20 @@ class Reporter {
 
     private subsribe(connection: string) {
         const ws = this.socket = new WebSocket(connection);
-        ws.onmessage = function(ev) {
-            console.log(1);
+        ws.onmessage = function (ev) {
+            console.log(ev.data);
         }
 
-        ws.onerror = function(ev) {
+        ws.onerror = function (ev) {
             console.log(ev);
-          };
-          ws.onopen = function() {
+        };
+        ws.onopen = function () {
             // showMessage('WebSocket connection established');
-          };
-          ws.onclose = function() {
+        };
+        ws.onclose = function () {
             // showMessage('WebSocket connection closed');
             // ws = null;
-          };
+        };
     }
 }
 

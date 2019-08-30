@@ -23,7 +23,7 @@ export class Platform {
         this.setConfig(config);
     }
 
-    private setConfig(config: BotConfiguration): void {
+    private setConfig(config: BotConfiguration) {
         const exchangeCtor = Exchange.GetExchangeCtor(config.Exchange);
         const exchange = new exchangeCtor(this.Network, config.BacktestSettings ? new BacktestBroker() : null);
 
@@ -32,6 +32,11 @@ export class Platform {
         const stratConfig = this.currentStrategy.getConfig();
 
         this.dataController = new DataController(exchange, stratConfig.resolutionSet);
+
+    }
+
+    public getStrategyConfig(): StrategyConfig {
+        return this.currentStrategy.getConfig();
     }
 
     public start() {
@@ -50,6 +55,8 @@ export class Platform {
 
         const plot = this.currentStrategy.init(stratData);
     }
+
+
 
     private getReporterData(plot: Plot[], rawData: MarketDataMap): ReporterData {
         const reporterData: ReporterData = {

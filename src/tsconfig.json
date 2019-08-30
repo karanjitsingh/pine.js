@@ -10,12 +10,13 @@
             "Model/*": [ "./Model/*" ],
             "Network/*": [ "./Network/*" ],
             "Exchange/*": [ "./Exchange/*" ],
-            "Platform/*": [ "./Platform/*" ]
+            "Platform/*": [ "./Platform/*" ],
+            "Server/*": [ "./Server/*" ],
         },
         "types": ["node", "ws"]
     },
     "include": [
-        "**/*.ts", "Reporters/Browser/lib/require.js", "Reporters/Browser/lib/split.js"
+        "**/*.ts"
     ],
     "exclude": [
         "./Reporters/**/*"
