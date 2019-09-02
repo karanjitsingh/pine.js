@@ -1,6 +1,6 @@
 import { BacktestBroker } from "Exchange/BacktestBroker";
-import { BotConfiguration, ChartIndicator, ReporterData } from "Model/Contracts";
-import { MarketDataMap } from "Model/Data/Data";
+import { PlatformConfiguration, ChartIndicator, ReporterData } from "Model/Contracts";
+import { ResolutionMapped, MarketData } from "Model/Data/Data";
 import { Plot } from "Model/Data/Trading";
 import { DataController } from "Model/Exchange/DataController";
 import { Exchange } from "Model/Exchange/Exchange";
@@ -19,7 +19,7 @@ export class Platform extends Subscribable<ReporterData> {
     private _isRunning: boolean = false;
     private plot: Plot[];
 
-    public constructor(config: BotConfiguration) {
+    public constructor(config: PlatformConfiguration) {
         super();
         this.MessageLogger = new MessageLogger();
         this.Network = new Network();
@@ -36,12 +36,13 @@ export class Platform extends Subscribable<ReporterData> {
 
     public start() {
         this._isRunning = true;
-        this.dataController.getBaseData().then((data) => {
-            this.fixStrategy(this.currentStrategy.getConfig(), data);
-        });
+        this.fixStrategy(this.currentStrategy.getConfig(), this.dataController.MarketDataMap);
+        // this.dataController.getBaseData().then((data) => {
+        //     this.fixStrategy(this.currentStrategy.getConfig(), data);
+        // });
     }
 
-    private setConfig(config: BotConfiguration) {
+    private setConfig(config: PlatformConfiguration) {
         const exchangeCtor = Exchange.GetExchangeCtor(config.Exchange);
         const exchange = new exchangeCtor(this.Network, config.BacktestSettings ? new BacktestBroker() : null);
 
@@ -52,8 +53,8 @@ export class Platform extends Subscribable<ReporterData> {
         this.dataController = new DataController(exchange, stratConfig.resolutionSet);
     }
 
-    private fixStrategy(config: StrategyConfig, rawData: MarketDataMap) {
-        const stratData: MarketDataMap = {}
+    private fixStrategy(config: StrategyConfig, rawData: ResolutionMapped<MarketData>) {
+        const stratData: ResolutionMapped<MarketData> = {}
 
         config.resolutionSet.forEach((res) => {
             stratData[res] = rawData[res];
@@ -62,10 +63,9 @@ export class Platform extends Subscribable<ReporterData> {
         this.plot = this.currentStrategy.init(stratData);
         
         const reporterData = this.getReporterData(this.plot, rawData);
-        this.notifyAll(reporterData);
     }
 
-    private getReporterData(plot: Plot[], rawData: MarketDataMap): ReporterData {
+    private getReporterData(plot: Plot[], rawData: ResolutionMapped<MarketData>): ReporterData {
         const reporterData: ReporterData = {
             Charts: [],
             TradeData: []

@@ -1,4 +1,4 @@
-import { SeriesData, Series, EvaluatedSeries } from "../Data/Series";
+import { SeriesData, Series, EvaluatedSeries } from "Model/Data/Series";
 
 export const Expression = (expr: (...args: SeriesData<number>[]) => number, ...args: Series<any>[]): EvaluatedSeries<number> => {
     const minlength = Math.min(...args.map(x => x.getLength()));

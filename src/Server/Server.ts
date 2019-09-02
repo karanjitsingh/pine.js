@@ -1,11 +1,13 @@
 import * as http from 'http';
-import { GetMethod, PlatformConnection, PostMethod } from 'Server/ServerContracts';
+import { GetMethod, PlatformInstance, PostMethod } from 'Server/ServerContracts';
 import { URL } from 'url';
 import { rest } from './Rest';
+import { PlatformConfiguration } from 'Model/Contracts';
+import { PlatformControl } from 'Platform/PlatformControl';
 
 export class Server {
 
-    public static platformCollection: { [key: string]: PlatformConnection } = {};
+    public static platformControl: PlatformControl = new PlatformControl();
     private static _instance: Server;
 
     public static getInstance(): Server {

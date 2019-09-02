@@ -8,7 +8,6 @@ export class Network implements INetwork {
     public async get(url: string): Promise<NetworkResponse> {
 
         const requestId = Network.requestId++;
-        const urlObj = new URL(url);
 
         return new Promise((resolve, reject) => {
             let status;

@@ -1,9 +1,9 @@
 import { INetwork } from "Model/Network";
-import { DataStream } from "Model/Exchange/DataStream";
 import { IBroker } from "Model/Exchange/IBroker";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Candle } from "Model/Contracts";
 import { Tick, Resolution } from "Model/Data/Data";
+import * as WebSocket from 'ws';
 
 interface CandleResult {
     id: number,
@@ -30,10 +30,106 @@ interface SymbolResponse {
 export class ByBitExchange extends Exchange {
 
     public readonly Broker: IBroker;
-    public readonly DataStream: DataStream;
-
+    
+    private readonly LiveSupportedResolutions: string[] = Object.keys(Resolution);
+    private _isLive: boolean = false;;
+    private webSocket: WebSocket;
+    
     constructor(protected network: INetwork, private broker: IBroker) {
         super(network, broker);
+    }
+
+    public isLive(): boolean {
+        return this._isLive;
+    }
+
+    public start(resolutionSet: Resolution[]) {
+        const unsupportedResolutions = resolutionSet.filter(val => !this.LiveSupportedResolutions.includes(val));
+
+        if(unsupportedResolutions.length > 0) {
+            throw new Error("Unsupported resolution(s): " + JSON.stringify(unsupportedResolutions));
+        }
+
+        
+        this.webSocket = new WebSocket('wss://stream.bybit.com/realtime');
+        
+        this.webSocket.onopen = () => {
+            const symbol = "BTCUSD";
+            console.log('Bybit: Connection opened');
+            
+            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + resolutionSet.join('|')]}));
+            
+            this._isLive = true;
+        }
+
+        
+        this.webSocket.onmessage = (event) => {
+            if (event.type === 'message') {
+                let data = JSON.parse(event.data.toString());
+
+                if ('success' in data && data.success === false) {
+                    console.error('Bybit: error ' + event.data)
+                } else if ('success' in data && data.success === true) {
+                    if (data.request && data.request.op === 'auth') {
+                        // me.logger.info('Bybit: Auth successful')
+
+                        // ws.send(JSON.stringify({'op': 'subscribe', 'args': ['order']}))
+                        // ws.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))
+                        // ws.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
+                    }
+                } else if (data.topic && data.topic.startsWith('kline.')) {
+                    let candle = data.data
+
+                    // let candleStick = new ExchangeCandlestick(
+                    //     me.getName(),
+                    //     candle['symbol'],
+                    //     candle['interval'],
+                    //     candle['open_time'],
+                    //     candle['open'],
+                    //     candle['high'],
+                    //     candle['low'],
+                    //     candle['close'],
+                    //     candle['volume'],
+                    // )
+
+                    // await me.candleImporter.insertThrottledCandles([candleStick])
+                    // update data controller
+                } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
+                    // let orders = data.data;
+
+                    // Bybit.createOrders(orders).forEach(order => {
+                    //     me.triggerOrder(order)
+                    // })
+                } else if (data.data && data.topic && data.topic.toLowerCase() === 'position') {
+                    // let positionsRaw = data.data;
+                    // let positions = []
+
+                    // positionsRaw.forEach(positionRaw => {
+                    //     if (!['buy', 'sell'].includes(positionRaw['side'].toLowerCase())) {
+                    //         delete me.positions[positionRaw.symbol]
+                    //     } else {
+                    //         positions.push(positionRaw)
+                    //     }
+                    // })
+
+                    // Bybit.createPositionsWithOpenStateOnly(positions).forEach(position => {
+                    //     me.positions[position.symbol] = position
+                    // })
+                }
+            }
+        };
+
+        this.webSocket.onclose = () => {
+            console.log('Bybit: Connection closed.')
+
+            this._isLive = false;
+
+            // retry connecting after some second to not bothering on high load
+            setTimeout(() => {
+                this.start(resolutionSet);
+            }, 500);
+        };
+        
     }
 
     public async getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]> {
@@ -80,37 +176,32 @@ export class ByBitExchange extends Exchange {
             console.error(err);
             return Promise.reject({})
         }
-
-    }
-
-    public subscribe(handle: (candle: Candle) => void) {
-
     }
 
     private resolutionMap(resolution: Resolution): [string, number] {
         switch (resolution) {
-            case Resolution._1m:
+            case Resolution.$1m:
                 return ["1", Tick.Minute * 1];
-            case Resolution._3m:
+            case Resolution.$3m:
                 return ["3", Tick.Minute * 3];
-            case Resolution._5m:
+            case Resolution.$5m:
                 return ["5", Tick.Minute * 5];
-            case Resolution._15m:
+            case Resolution.$15m:
                 return ["15", Tick.Minute * 15];
-            case Resolution._30m:
+            case Resolution.$30m:
                 return ["30", Tick.Minute * 30];
-            case Resolution._1h:
+            case Resolution.$1h:
                 return ["60", Tick.Minute * 60];
-            case Resolution._2h:
+            case Resolution.$2h:
                 return ["120", Tick.Minute * 120];
-            case Resolution._4h:
+            case Resolution.$4h:
                 return ["240", Tick.Minute * 240];
-            case Resolution._12h:
+            case Resolution.$12h:
                 return ["720", Tick.Minute * 720];
-            case Resolution._d:
+            case Resolution.$1d:
                 return ["D", Tick.Day];
             default:
-                throw new Error("Resolution not defined");
+                throw new Error("Unsupported resolution for getting base data");
         }
     }
 }

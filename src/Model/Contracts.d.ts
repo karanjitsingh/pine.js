@@ -16,7 +16,7 @@ export interface ChartData {
 }
 
 
-export interface BotConfiguration {
+export interface PlatformConfiguration {
     Strategy: string,
     Exchange: string,
     TradeSettings?: {

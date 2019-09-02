@@ -17,10 +17,11 @@ export type GetMethod = (url: URL, res: http.ServerResponse) => GetReply;
 
 export const Constants = {
     pineBin: path.join(path.dirname(path.dirname(__dirname))),
-    browserBin: path.join(path.dirname(__dirname), "Reporters", "Browser")
+    browserBin: path.join(path.dirname(__dirname), "Reporters", "Browser"),
+    pine: path.dirname(path.dirname(__dirname))
 }
 
-export interface PlatformConnection {
+export interface PlatformInstance {
     key: string,
     platform: Platform,
     server: WebSocket.Server,

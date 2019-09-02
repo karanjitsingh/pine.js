@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { BotConfiguration } from 'Model/Contracts';
+import { PlatformConfiguration } from 'Model/Contracts';
 import { Carousel, CarouselItem, CarouselProps, Button, ListGroup, Form } from 'react-bootstrap'
 
 export interface StrategyConfigurationProps {
-    submitCallback: (config: BotConfiguration) => void;
+    submitCallback: (config: PlatformConfiguration) => void;
     availableStrategies: string[],
     availableExchanges: string[]
 }
@@ -111,7 +111,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
         const config = {
             Strategy: this.state.selectedStrategy,
             Exchange: this.state.selectedExchange
-        } as BotConfiguration
+        } as PlatformConfiguration
 
         if(this.state.selectedExec === "Trade") {
             config.TradeSettings = {

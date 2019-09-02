@@ -1,81 +1,27 @@
 import { Page, PageMode } from "Components/Page";
 import React = require("react");
 import ReactDOM = require("react-dom");
-import { BotConfiguration } from "Model/Contracts";
+import { PlatformConfiguration, ReporterData } from "Model/Contracts";
+import { Network } from "Network";
 
 interface InitInfo {
     availableExchanges: string[];
     availableStrategies: string[];
 }
 
-export class Network {
-    private static requestId: number = 0;
-
-    public async get(url: string, params: { [key: string]: string }): Promise<XMLHttpRequest> {
-        return await this.send('get', url, "", {}, params);
-    }
-
-    public async post(url: string, data: string): Promise<XMLHttpRequest> {
-        return await this.send('post', url, data, {}, {});
-    }
-
-    private send(method: string, url: string, data: string, headers: { [key: string]: string }, params: { [key: string]: string }): Promise<XMLHttpRequest> {
-        const xhttp = new XMLHttpRequest();
-
-        return new Promise((resolve, reject) => {
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4) {
-                    resolve(this);
-                }
-            }
-
-            xhttp.onabort = () => {
-                reject('abort');
-            };
-
-            xhttp.ontimeout = () => {
-                reject('timeout');
-            };
-
-            xhttp.onerror = () => {
-                reject('error');
-            };
-
-            try {
-                xhttp.open(method, url + this.paramsToString(params));
-
-                Object.keys(headers).forEach((header) => {
-                    xhttp.setRequestHeader(header, headers[header]);
-                })
-
-                xhttp.send(data);
-            } catch (ex) {
-                reject(ex);
-            }
-        })
-    }
-
-    private paramsToString(params: { [key: string]: string }): string {
-        return Object.keys(params).reduce((acc: string, current: string) => {
-            return (acc != '?' ? (acc + "&") : acc) + `${current}=${params[current]}`;
-        }, '?');
-    }
-}
-
-const network = new Network();
-
-
 class Reporter {
 
     private readonly page: Page;
     private socket: WebSocket;
+    private network: Network;
 
     constructor() {
         this.page = ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
+        this.network = new Network();
     }
 
     public init() {
-        network.get('/api/init', {}).then((res: XMLHttpRequest) => {
+        this.network.get('/api/init', {}).then((res: XMLHttpRequest) => {
             if (res.status != 200) {
                 console.error('/api/init', res.status);
             } else {
@@ -103,8 +49,8 @@ class Reporter {
         })
     }
 
-    private strategySelected(config: BotConfiguration) {
-        network.post('/api/config', JSON.stringify(config)).then((res: XMLHttpRequest) => {
+    private strategySelected(config: PlatformConfiguration) {
+        this.network.post('/api/config', JSON.stringify(config)).then((res: XMLHttpRequest) => {
             if (res.status != 200) {
                 console.error('/api/config', res.status);
             } else {
@@ -127,26 +73,26 @@ class Reporter {
             console.error('failed', 'api/config', why);
         });
     }
-    
+
     private subscribeWebSocket(platformId: string) {
-        network.get('/api/datastream', { id: platformId }).then((res: XMLHttpRequest) => {
+        this.network.get('/api/datastream', { id: platformId }).then((res: XMLHttpRequest) => {
             if (res.status != 200) {
                 console.error('/api/datastream?id=' + platformId, res.status);
             } else {
                 const connection = res.responseText;
 
                 console.log(connection);
-                this.subsribe(connection);
+                this.subscribeToSocket(connection);
             }
         }, (why) => {
             console.error('failed', 'api/config', why);
         });
     }
 
-    private subsribe(connection: string) {
+    private subscribeToSocket(connection: string) {
         const ws = this.socket = new WebSocket(connection);
         ws.onmessage = function (ev) {
-            console.log(ev.data);
+            JSON.parse(ev.data) as ReporterData;
         }
 
         ws.onerror = function (ev) {

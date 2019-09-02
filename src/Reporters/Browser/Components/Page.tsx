@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { TradeView, TradeViewProps } from './TradeView/TradeView';
-import { BotConfiguration, ReporterData } from 'Model/Contracts';
+import { PlatformConfiguration, ReporterData } from 'Model/Contracts';
 import { StrategyConfigurationProps, StrategyConfiguration } from './StrategyConfiguration';
 import { Spinner } from './Spinner';
 
 export interface PageState {
     configProps?: {
-        strategySelectCallback: (config: BotConfiguration) => void;
+        strategySelectCallback: (config: PlatformConfiguration) => void;
         availableStrategies: string[];
         availableExchanges: string[];
     };
@@ -25,11 +25,6 @@ export enum PageActions {
 }
 
 export class Page extends React.Component<{}, PageState> {
-    // private static PageEvents: PlatformEventEmitter<PageActions> = new PlatformEventEmitter<PageActions>();
-
-    // public static EmitAction(action: PageActions, args: any) {
-    //     this.PageEvents.emit(action, args);
-    // }
 
     public constructor(props) {
         super(props);
@@ -37,9 +32,6 @@ export class Page extends React.Component<{}, PageState> {
         this.state = {
             pageMode: PageMode.Loading
         };
-
-        // Page.PageEvents.subscribe(PageActions.RenderCharts, this.RenderCharts, this);
-
     }
 
     public render() {
@@ -61,7 +53,7 @@ export class Page extends React.Component<{}, PageState> {
         }
     }
 
-    private strategySelected(config: BotConfiguration) {
+    private strategySelected(config: PlatformConfiguration) {
 
         this.setState({
             pageMode: PageMode.Loading
