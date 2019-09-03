@@ -26,7 +26,7 @@ export class PlatformControl {
         return this.platformCollection[platformKey];
     }
 
-    public startPlatform(platformKey: string): string {
+    public createSocketStream(platformKey: string): string {
         const instance = this.platformCollection[platformKey];
 
         if (instance) {

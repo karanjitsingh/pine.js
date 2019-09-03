@@ -37,6 +37,8 @@ export class Platform extends Subscribable<ReporterData> {
     public start() {
         this._isRunning = true;
         this.fixStrategy(this.currentStrategy.getConfig(), this.dataController.MarketDataMap);
+
+        this.dataController.startStream();
         // this.dataController.getBaseData().then((data) => {
         //     this.fixStrategy(this.currentStrategy.getConfig(), data);
         // });

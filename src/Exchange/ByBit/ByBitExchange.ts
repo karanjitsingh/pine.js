@@ -31,7 +31,13 @@ export class ByBitExchange extends Exchange {
 
     public readonly Broker: IBroker;
     
-    private readonly LiveSupportedResolutions: string[] = Object.keys(Resolution);
+    private readonly LiveSupportedResolutions: string[] = [
+        "1m", "3m", "5m", "15m", "30m",
+        "1h", "2h", "3h", "4h", "6h",
+        "1d", "3d",
+        "1w", "2w",
+        "1M"
+    ];
     private _isLive: boolean = false;;
     private webSocket: WebSocket;
     
@@ -57,7 +63,7 @@ export class ByBitExchange extends Exchange {
             const symbol = "BTCUSD";
             console.log('Bybit: Connection opened');
             
-            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + resolutionSet.join('|')]}));
+            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + resolutionSet.join("|")]}));
             
             this._isLive = true;
         }
@@ -79,7 +85,7 @@ export class ByBitExchange extends Exchange {
                     }
                 } else if (data.topic && data.topic.startsWith('kline.')) {
                     let candle = data.data
-
+                    console.log(candle.interval, candle.open_time, candle.close);
                     // let candleStick = new ExchangeCandlestick(
                     //     me.getName(),
                     //     candle['symbol'],

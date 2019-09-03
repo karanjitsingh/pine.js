@@ -4,13 +4,10 @@ import { PlatformConfiguration } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Strategy } from "Model/Strategy/Strategy";
 import * as path from 'path';
-import { Platform } from "Platform/Platform";
 import { Server } from "Server/Server";
 import { Constants, GetReply, PostReply, RestMethods } from "Server/ServerContracts";
 import * as ServerUtils from 'Server/ServerUtils';
 import { URL } from "url";
-import * as uuid from 'uuid/v4';
-import { promises } from 'dns';
 
 export const rest: RestMethods = {
     'post': {
@@ -112,7 +109,7 @@ export const rest: RestMethods = {
                 return Promise.resolve(400);
             }
 
-            const address = Server.platformControl.startPlatform(id);
+            const address = Server.platformControl.createSocketStream(id);
 
             if(address) {
                 res.writeHead(200);

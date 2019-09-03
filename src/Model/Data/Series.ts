@@ -111,8 +111,6 @@ export class EvaluatedSeries<T> extends Series<T> {
 
         this.notifyAll(offset);
     }
-
-    public 
 }
 
 export class OffsettedSeries<T> extends Series<T> {

@@ -12,7 +12,6 @@ export interface MarketData {
 
 export type ResolutionMapped<T> = {[resolution: string]: T}; 
 
-
 export enum Resolution {
     $1m = "1m",
     $3m = "3m",

@@ -14,7 +14,7 @@ export class StochasticStrategy extends Strategy {
         super(broker, messageLogger);
         this.StrategyConfig = {
             resolutionSet: [
-                Resolution.$12h,
+                Resolution.$1d,
                 Resolution.$30m
             ]
         }

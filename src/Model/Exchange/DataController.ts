@@ -25,7 +25,7 @@ export class DataController extends Subscribable<number> {
     public startStream() {
         this.getBaseData().then((dataMap) => {
             this.updateData(dataMap);
-            // this.exchange.subscribe
+            this.exchange.subscribe(this.updateData, this);
             this.exchange.start(this.resolutionSet);
         })
     }
@@ -63,6 +63,7 @@ export class DataController extends Subscribable<number> {
     // }
 
     private updateData(resolutionDataMap: ResolutionMapped<Candle[]>) {
+        console.log(resolutionDataMap);
         // check for offsets and update data
 
         // const resolutions = Object.keys(resolutionDataMap);
