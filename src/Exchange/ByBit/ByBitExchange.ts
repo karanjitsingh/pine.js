@@ -101,7 +101,15 @@ export class ByBitExchange extends Exchange {
                         // ws.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
                     }
                 } else if (data.topic && data.topic.startsWith('kline.')) {
-                    let candle = data.data
+                    const candle: Candle = {
+                        startTick: data.data.open_time * 1000,
+                        endTick: null,
+                        high: data.data.high,
+                        open: data.data.open,
+                        close: data.data.close,
+                        low: data.data.low,
+                        volume: data.data.volume    
+                    }
                     this.dataQueue.push(candle);
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
                     // let orders = data.data;
