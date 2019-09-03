@@ -6,7 +6,7 @@ export class PlatformEventEmitter<TEvent extends string> {
     private once: { [id: string]: Array<any>; } = {};
 
     public subsribeOnce(event: TEvent): Promise<any> {
-        let resolution;
+        let resolution: (value: any) => void;
         const promise = new Promise((resolve) => { resolution = resolution});
 
         if(!this.once[event]) {

@@ -28,7 +28,9 @@ export class DataController extends Subscribable<number> {
         this.getBaseData().then((dataMap) => {
             this.updateData(dataMap);
             // this.exchange.subscribe(this.updateData, this);
-            this.dataQueue = this.exchange.start(this.resolutionSet);
+            this.exchange.start(this.resolutionSet).then((queue: DataQueue) => {
+                this.dataQueue = queue;
+            });
         })
     }
 

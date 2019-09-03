@@ -41,6 +41,8 @@ export const rest: RestMethods = {
         },
         '/pine': (url: URL, res: http.ServerResponse): GetReply => {
             const file = path.join(Constants.pineBin, url.pathname.replace("/pine", ""));
+            let resolver: (code: number) => void;
+            const promise = new Promise<number>((resolve) => resolver = resolve);
 
             if (fs.existsSync(file)) {
                 fs.readFile(file, (err, content) => {
@@ -50,7 +52,7 @@ export const rest: RestMethods = {
                         });
 
                         res.end(err.toString());
-                        return Promise.resolve(500);
+                        resolver(500);
                     }
                     else {
                         res.writeHead(200, {
@@ -58,19 +60,23 @@ export const rest: RestMethods = {
                         });
 
                         res.end(content);
-                        return Promise.resolve(200);
+                        resolver(200);
                     }
                 });
             }
             else {
                 res.writeHead(404)
                 res.end();
-                return Promise.resolve(404);
+                resolver(404);
             }
+
+            return promise;
         },
 
         '/remote': (url: URL, res: http.ServerResponse): GetReply => {
             const file = path.join(Constants.pine, url.pathname);
+            let resolver: (code: number) => void;
+            const promise = new Promise<number>((resolve) => resolver = resolve);
 
             if (fs.existsSync(file)) {
                 fs.readFile(file, (err, content) => {
@@ -80,7 +86,7 @@ export const rest: RestMethods = {
                         });
 
                         res.end(err.toString());
-                        return Promise.resolve(500);
+                        resolver(500);
                     }
                     else {
                         res.writeHead(200, {
@@ -88,15 +94,17 @@ export const rest: RestMethods = {
                         });
 
                         res.end(content);
-                        return Promise.resolve(200);
+                        resolver(200);
                     }
                 });
             }
             else {
                 res.writeHead(404)
                 res.end();
-                return Promise.resolve(404);
+                resolver(404);
             }
+
+            return promise;
         },
 
         '/api/datastream': (url: URL, res: http.ServerResponse): GetReply => {

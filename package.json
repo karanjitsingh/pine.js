@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/karanjitsingh/pine#readme",
   "dependencies": {
+    "@types/uuid": "^3.4.5",
     "@types/ws": "^6.0.3",
     "crypto": "^1.0.1",
     "requirejs": "^2.3.6",

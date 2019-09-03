@@ -1,4 +1,5 @@
 import { Subscribable } from "Model/Events";
+import { Candle } from "Model/Contracts";
 
 export type SeriesData<T> = (lookback: number) => T;
 
@@ -8,7 +9,7 @@ export abstract class Series<T> extends Subscribable<number> {
         super();
     }
 
-    protected abstract update(offset: number);
+    protected abstract update(offset: number): void;
 
     public lookBack(offset: number): SeriesData<T> {
         return (x: number) => {
@@ -26,11 +27,11 @@ export abstract class Series<T> extends Subscribable<number> {
         return this.data.length;
     }
 
-    public getData(offset?:number) {
+    public getData(offset?:number): T[] {
         if(!offset) {
             return this.data;
         } else {
-            this.data.slice(this.data.length - offset, this.data.length);
+            return this.data.slice(this.data.length - offset, this.data.length);
         }
     }
 }
@@ -144,9 +145,9 @@ export class OffsettedSeries<T> extends Series<T> {
     }
 }
 
-export class SimpleSeries extends Series<number> {
+export class SimpleSeries<T = Candle> extends Series<number> {
 
-    public constructor(private parentSeries: Series<any>, private resolver: (data) => number) {
+    public constructor(private parentSeries: Series<T>, private resolver: (data: T) => number) {
         super(null);
 
         this.parentSeries = parentSeries;

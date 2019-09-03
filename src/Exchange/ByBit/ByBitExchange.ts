@@ -55,7 +55,7 @@ export class ByBitExchange extends Exchange {
     }
 
     public start(resolutionSet: Resolution[]): Promise<DataQueue> {
-        let resolver;
+        let resolver: (value: DataQueue) => void;
         const promise = new Promise<DataQueue>((resolve) => {
             resolver = resolve;
         })

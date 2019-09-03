@@ -78,13 +78,13 @@ export class Platform extends Subscribable<ReporterData> {
                 Data: rawData[p.Resolution].Candles.getData(),
                 Name: "",
                 Resolution: p.Resolution,
-                Indicators: []
+                Indicators: [] as ChartIndicator[]
             };
 
             p.Indicators.forEach((i) => {
                 chartData.Indicators.push({
-                    PlotType: p[0],
-                    Data: p[1].getData()
+                    PlotType: i[0],
+                    Data: i[1].getData()
                 } as ChartIndicator)
             })
             reporterData.Charts.push(chartData);

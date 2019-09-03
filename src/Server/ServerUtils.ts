@@ -3,13 +3,9 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
 import { URL } from 'url';
-import * as uuid from 'uuid';
-import * as WebSocket from 'ws';
-import { Constants, GetReply, PlatformInstance } from 'Server/ServerContracts';
-import { ReporterData } from 'Model/Contracts';
-import { Server } from 'Server/Server';
+import { Constants, GetReply } from 'Server/ServerContracts';
 
-export function getContentType(file) {
+export function getContentType(file: string) {
     const ext = path.extname(file);
     switch (ext) {
         case ".js":
@@ -22,6 +18,8 @@ export function getContentType(file) {
             return "text/html";
         case ".css":
             return "text/stylesheet"
+        default:
+            return "text"
     }
 }
 

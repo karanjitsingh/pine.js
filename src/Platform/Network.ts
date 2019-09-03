@@ -1,6 +1,7 @@
 import * as https from 'https';
 import { URL } from 'url';
 import { INetwork, NetworkResponse } from 'Model/Network';
+import { IncomingHttpHeaders } from 'http';
 
 export class Network implements INetwork {
     private static requestId: number = 0;
@@ -10,8 +11,8 @@ export class Network implements INetwork {
         const requestId = Network.requestId++;
 
         return new Promise((resolve, reject) => {
-            let status;
-            let headers;
+            let status: number;
+            let headers: IncomingHttpHeaders;
             let data = "";
                         
             var req = https.get(new URL(url), resp => {

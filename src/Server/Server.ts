@@ -26,9 +26,8 @@ export class Server {
 
     public start() {
 
-        Object.keys(rest).forEach(method => {
-            this.methodPatternMap[method] = Object.keys(rest[method]);
-        });
+        this.methodPatternMap['post'] = Object.keys(rest.post);
+        this.methodPatternMap['get'] = Object.keys(rest.get);
 
         var server = http.createServer(this.listener.bind(this));
         server.listen(3000);
@@ -46,13 +45,11 @@ export class Server {
             res.end();
         }
         else {
-            const method: GetMethod | PostMethod = rest[req.method.toLowerCase()][resolver];
-
             console.log(req.method, req, url, req.method.toLowerCase(), resolver);
 
             switch (req.method.toLowerCase()) {
                 case 'get':
-                    (method as GetMethod)(url, res);
+                    rest.get[resolver](url, res);
                     break;
                 case 'post':
                     let body: any = [];
@@ -73,7 +70,7 @@ export class Server {
                         }
 
                         if (data) {
-                            (method as PostMethod)(url, data, res);
+                            rest.post[resolver](url, data, res);
                         }
 
                     });

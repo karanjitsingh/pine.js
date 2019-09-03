@@ -1,10 +1,8 @@
 import { IBroker } from "Model/Exchange/IBroker";
 import { INetwork } from "Model/Network";
 import { Candle } from "Model/Contracts";
-import { Resolution, ResolutionMapped } from "Model/Data/Data";
-import { Subscribable } from "Model/Events";
+import { Resolution } from "Model/Data/Data";
 import { DataQueue } from "./DataQueue";
-import { Data } from "ws";
 
 export type ExchangeCtor = new (network: INetwork, broker: IBroker) => Exchange;
 
@@ -13,7 +11,7 @@ interface IExchange {
     
     getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]>;
     isLive(): boolean;
-    start(resolutionSet: Resolution[]): Promise<Data>;
+    start(resolutionSet: Resolution[]): Promise<DataQueue>;
 
 }
 
@@ -42,7 +40,7 @@ export abstract class Exchange implements IExchange {
     
     public abstract isLive(): boolean;
 
-    public abstract start(resolutionSet: Resolution[]);
+    public abstract start(resolutionSet: Resolution[]): Promise<DataQueue>;
 
     constructor(protected network: INetwork, broker: IBroker) {
         this.Broker = broker;

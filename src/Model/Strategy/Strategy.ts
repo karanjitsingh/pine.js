@@ -36,7 +36,7 @@ export abstract class Strategy {
 
     public abstract init(input: ResolutionMapped<MarketData>): Plot[];
     
-    public abstract tick(offset: ResolutionMapped<number>);
+    public abstract tick(offset: ResolutionMapped<number>): void;
 
     public getConfig() {
         return this.StrategyConfig;
