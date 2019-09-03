@@ -13,7 +13,9 @@
             "Platform/*": [ "./Platform/*" ],
             "Server/*": [ "./Server/*" ],
         },
-        "types": ["node", "ws"]
+        "types": ["node", "ws"],
+        "noImplicitAny": true,
+        "noImplicitReturns": true
     },
     "include": [
         "**/*.ts"

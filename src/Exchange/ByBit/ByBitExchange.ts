@@ -2,8 +2,9 @@ import { INetwork } from "Model/Network";
 import { IBroker } from "Model/Exchange/IBroker";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Candle } from "Model/Contracts";
-import { Tick, Resolution } from "Model/Data/Data";
+import { Tick, Resolution, ResolutionMapped } from "Model/Data/Data";
 import * as WebSocket from 'ws';
+import { DataQueue } from "Model/Exchange/DataQueue";
 
 interface CandleResult {
     id: number,
@@ -30,6 +31,9 @@ interface SymbolResponse {
 export class ByBitExchange extends Exchange {
 
     public readonly Broker: IBroker;
+
+    private subscribedResolutions: Resolution[];
+    private dataQueue: DataQueue;
     
     private readonly LiveSupportedResolutions: string[] = [
         "1m", "3m", "5m", "15m", "30m",
@@ -38,6 +42,7 @@ export class ByBitExchange extends Exchange {
         "1w", "2w",
         "1M"
     ];
+    
     private _isLive: boolean = false;;
     private webSocket: WebSocket;
     
@@ -49,13 +54,23 @@ export class ByBitExchange extends Exchange {
         return this._isLive;
     }
 
-    public start(resolutionSet: Resolution[]) {
+    public start(resolutionSet: Resolution[]): Promise<DataQueue> {
+        let resolver;
+        const promise = new Promise<DataQueue>((resolve) => {
+            resolver = resolve;
+        })
+
+        if(this._isLive) {
+            throw new Error("Already connected to exchange");
+        }
+
         const unsupportedResolutions = resolutionSet.filter(val => !this.LiveSupportedResolutions.includes(val));
 
         if(unsupportedResolutions.length > 0) {
             throw new Error("Unsupported resolution(s): " + JSON.stringify(unsupportedResolutions));
         }
 
+        this.subscribedResolutions;
         
         this.webSocket = new WebSocket('wss://stream.bybit.com/realtime');
         
@@ -64,10 +79,12 @@ export class ByBitExchange extends Exchange {
             console.log('Bybit: Connection opened');
             
             this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + resolutionSet.join("|")]}));
-            
-            this._isLive = true;
-        }
+            this.webSocket.send('{"op":"subscribe","args":["instrument.BTCUSD"]}')
 
+            this._isLive = true;
+
+            resolver(this.dataQueue = new DataQueue());
+        }
         
         this.webSocket.onmessage = (event) => {
             if (event.type === 'message') {
@@ -85,21 +102,7 @@ export class ByBitExchange extends Exchange {
                     }
                 } else if (data.topic && data.topic.startsWith('kline.')) {
                     let candle = data.data
-                    console.log(candle.interval, candle.open_time, candle.close);
-                    // let candleStick = new ExchangeCandlestick(
-                    //     me.getName(),
-                    //     candle['symbol'],
-                    //     candle['interval'],
-                    //     candle['open_time'],
-                    //     candle['open'],
-                    //     candle['high'],
-                    //     candle['low'],
-                    //     candle['close'],
-                    //     candle['volume'],
-                    // )
-
-                    // await me.candleImporter.insertThrottledCandles([candleStick])
-                    // update data controller
+                    this.dataQueue.push(candle);
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
                     // let orders = data.data;
 
@@ -121,6 +124,8 @@ export class ByBitExchange extends Exchange {
                     // Bybit.createPositionsWithOpenStateOnly(positions).forEach(position => {
                     //     me.positions[position.symbol] = position
                     // })
+                } else {
+                    // console.log('unknown', data.data);
                 }
             }
         };
@@ -135,7 +140,8 @@ export class ByBitExchange extends Exchange {
                 this.start(resolutionSet);
             }, 500);
         };
-        
+
+        return promise;
     }
 
     public async getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]> {

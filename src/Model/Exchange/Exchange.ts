@@ -3,6 +3,8 @@ import { INetwork } from "Model/Network";
 import { Candle } from "Model/Contracts";
 import { Resolution, ResolutionMapped } from "Model/Data/Data";
 import { Subscribable } from "Model/Events";
+import { DataQueue } from "./DataQueue";
+import { Data } from "ws";
 
 export type ExchangeCtor = new (network: INetwork, broker: IBroker) => Exchange;
 
@@ -11,11 +13,11 @@ interface IExchange {
     
     getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]>;
     isLive(): boolean;
-    start(resolutionSet: Resolution[]): void;
+    start(resolutionSet: Resolution[]): Promise<Data>;
 
 }
 
-export abstract class Exchange extends Subscribable<ResolutionMapped<Candle[]>> implements IExchange{
+export abstract class Exchange implements IExchange {
     public readonly Broker: IBroker;
 
     private static registeredExchanges: {[id:string]: ExchangeCtor} = {};
@@ -43,7 +45,6 @@ export abstract class Exchange extends Subscribable<ResolutionMapped<Candle[]>> 
     public abstract start(resolutionSet: Resolution[]);
 
     constructor(protected network: INetwork, broker: IBroker) {
-        super();
         this.Broker = broker;
         this.network = network;
     }

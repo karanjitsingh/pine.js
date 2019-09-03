@@ -16,7 +16,9 @@
             "react"
         ],
         "allowJs": true,
-        "listEmittedFiles": true
+        "listEmittedFiles": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true
     },
     "include": [
         "**/*.tsx",

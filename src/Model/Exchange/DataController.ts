@@ -3,6 +3,7 @@ import { Exchange } from "Model/Exchange/Exchange";
 import { SimpleSeries, RawSeries, Series } from "Model/Data/Series";
 import { Candle } from "Model/Contracts";
 import { MarketData, Tick, Resolution, ResolutionMapped } from "Model/Data/Data";
+import { DataQueue } from "./DataQueue";
 
 export interface TickUpdate {
     updatedResolutions: Resolution[],
@@ -13,6 +14,7 @@ export interface TickUpdate {
 export class DataController extends Subscribable<number> {
 
     public readonly MarketDataMap: ResolutionMapped<MarketData> = {};
+    private dataQueue: DataQueue;
 
     public constructor(private exchange: Exchange, private resolutionSet: Resolution[]) {
         super();
@@ -25,8 +27,8 @@ export class DataController extends Subscribable<number> {
     public startStream() {
         this.getBaseData().then((dataMap) => {
             this.updateData(dataMap);
-            this.exchange.subscribe(this.updateData, this);
-            this.exchange.start(this.resolutionSet);
+            // this.exchange.subscribe(this.updateData, this);
+            this.dataQueue = this.exchange.start(this.resolutionSet);
         })
     }
 
