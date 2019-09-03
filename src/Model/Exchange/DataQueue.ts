@@ -1,15 +1,15 @@
 import { Candle } from "Model/Contracts";
+import { Resolution } from "Model/Data/Data";
 
 export class DataQueue {
 
-    private messageQueue: Candle[] = [];
+    private messageQueue: [Resolution, Candle][] = [];
 
-    public push(candle: Candle) {
-        this.messageQueue.push(candle);
-        console.log(JSON.stringify(candle));
+    public push(res: Resolution, candle: Candle) {
+        this.messageQueue.push([res, candle]);
     }
 
-    public flush(): Candle[] {
+    public flush(): [Resolution, Candle][] {
         if (this.messageQueue.length > 0) {
             return this.messageQueue.splice(0, this.messageQueue.length);
         }

@@ -110,7 +110,8 @@ export class ByBitExchange extends Exchange {
                         low: data.data.low,
                         volume: data.data.volume    
                     }
-                    this.dataQueue.push(candle);
+
+                    this.dataQueue.push(data.data.interval, candle);
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
                     // let orders = data.data;
 

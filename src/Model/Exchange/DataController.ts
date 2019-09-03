@@ -15,6 +15,7 @@ export class DataController extends Subscribable<number> {
 
     public readonly MarketDataMap: ResolutionMapped<MarketData> = {};
     private dataQueue: DataQueue;
+    private isRunning: boolean = false;
 
     public constructor(private exchange: Exchange, private resolutionSet: Resolution[]) {
         super();
@@ -26,12 +27,26 @@ export class DataController extends Subscribable<number> {
 
     public startStream() {
         this.getBaseData().then((dataMap) => {
-            this.updateData(dataMap);
-            // this.exchange.subscribe(this.updateData, this);
+            this.initData(dataMap);
+
             this.exchange.start(this.resolutionSet).then((queue: DataQueue) => {
                 this.dataQueue = queue;
+                this.isRunning = true;
+                this.update();
             });
         })
+    }
+
+    private update() {
+        const data = this.dataQueue.flush();
+        
+        if(data.length > 0) {
+            console.log(JSON.stringify(data), "asdf");
+        }
+
+        if(this.isRunning) {
+            setTimeout(this.update.bind(this), 1);
+        }
     }
 
     private getBaseData(): Promise<ResolutionMapped<Candle[]>> {
@@ -45,7 +60,7 @@ export class DataController extends Subscribable<number> {
             promise.then((candleData: Candle[]) => {
                 resolutionDataMap[res] = candleData
             }, () => {
-                
+                // todo handle rejections
             }).catch(() => {
                 
             })
@@ -62,30 +77,17 @@ export class DataController extends Subscribable<number> {
         });
     }
 
-    // private onDataStream(data: StreamData) {
-    //     // fault check and update series;
-    // }
-
-    private updateData(resolutionDataMap: ResolutionMapped<Candle[]>) {
+    private initData(resolutionDataMap: ResolutionMapped<Candle[]>) {
         console.log(resolutionDataMap);
-        // check for offsets and update data
 
-        // const resolutions = Object.keys(resolutionDataMap);
-        // let lastTick: number = 0;
+        const resolutions = Object.keys(resolutionDataMap);
 
-        // if(resolutions.length) {
-        
-        //     resolutions.forEach((res) => {
-        //         const update = resolutionDataMap[res];
-        //         this.MarketDataMap[res].Candles.updateData(update.offset, update.candles);
-
-        //         const tick = update.candles[update.candles.length - 1].startTick;
-
-        //         lastTick = tick > lastTick ? tick : lastTick;
-        //     });
-
-        //     this.notifyAll(lastTick);
-        // }
+        if(resolutions.length) {
+            resolutions.forEach((res) => {
+                const update = resolutionDataMap[res];
+                this.MarketDataMap[res].Candles.append(update);
+            });
+        }
     }
 
     private createMarketDataSeries(): MarketData {
