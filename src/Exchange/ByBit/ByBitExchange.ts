@@ -2,7 +2,7 @@ import { INetwork } from "Model/Network";
 import { IBroker } from "Model/Exchange/IBroker";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Candle } from "Model/Contracts";
-import { Tick, Resolution, ResolutionMapped } from "Model/Data/Data";
+import { Tick, Resolution, ResolutionMapped, GetResolutionTick } from "Model/Data/Data";
 import * as WebSocket from 'ws';
 import { DataQueue } from "Model/Exchange/DataQueue";
 
@@ -201,26 +201,26 @@ export class ByBitExchange extends Exchange {
     }
 
     private resolutionMap(resolution: Resolution): [string, number] {
+        const tickValue = GetResolutionTick(resolution);
+        
         switch (resolution) {
             case Resolution.$1m:
-                return ["1", Tick.Minute * 1];
+                return ["1", tickValue];
             case Resolution.$3m:
-                return ["3", Tick.Minute * 3];
+                return ["3", tickValue];
             case Resolution.$5m:
-                return ["5", Tick.Minute * 5];
+                return ["5", tickValue];
             case Resolution.$15m:
-                return ["15", Tick.Minute * 15];
+                return ["15", tickValue];
             case Resolution.$30m:
-                return ["30", Tick.Minute * 30];
+                return ["30", tickValue];
             case Resolution.$1h:
-                return ["60", Tick.Minute * 60];
+                return ["60", tickValue];
             case Resolution.$2h:
-                return ["120", Tick.Minute * 120];
+                return ["120", tickValue];
             case Resolution.$4h:
-                return ["240", Tick.Minute * 240];
-            case Resolution.$12h:
-                return ["720", Tick.Minute * 720];
-            case Resolution.$1d:
+                return ["240", tickValue];
+             case Resolution.$1d:
                 return ["D", Tick.Day];
             default:
                 throw new Error("Unsupported resolution for getting base data");
