@@ -1,23 +1,30 @@
 import { Candle } from "Model/Contracts";
-import { Resolution } from "Model/Data/Data";
+import { Resolution, ResolutionMapped } from "Model/Data/Data";
 
 export class DataQueue {
-
-    private messageQueue: [Resolution, Candle][] = [];
+    private updateQueue: ResolutionMapped<Candle>[] = [];
+    private lastUpdate: ResolutionMapped<Candle> = {};
+    
+    public constructor(private resolutionSet: Resolution[]) {}
 
     public push(res: Resolution, candle: Candle) {
-        this.messageQueue.push([res, candle]);
+        this.lastUpdate[res] = candle;
+
+        if(Object.keys(this.lastUpdate).length == this.resolutionSet.length) {
+            this.updateQueue.push(this.lastUpdate);
+            this.lastUpdate = {};
+        }
     }
 
-    public flush(): [Resolution, Candle][] {
-        if (this.messageQueue.length > 0) {
-            return this.messageQueue.splice(0, this.messageQueue.length);
+    public flush(): ResolutionMapped<Candle>[] {
+        if (this.updateQueue.length > 0) {
+            return this.updateQueue.splice(0, this.updateQueue.length);
         }
 
         return [];
     }
 
     public reset() {
-        this.messageQueue = [];
+        this.updateQueue = [];
     }
 }

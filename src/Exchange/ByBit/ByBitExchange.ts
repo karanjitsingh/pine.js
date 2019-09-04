@@ -70,7 +70,8 @@ export class ByBitExchange extends Exchange {
             throw new Error("Unsupported resolution(s): " + JSON.stringify(unsupportedResolutions));
         }
 
-        this.subscribedResolutions;
+        // this.subscribedResolutions = resolutionSet;
+        this.subscribedResolutions = resolutionSet;
         
         this.webSocket = new WebSocket('wss://stream.bybit.com/realtime');
         
@@ -78,12 +79,12 @@ export class ByBitExchange extends Exchange {
             const symbol = "BTCUSD";
             console.log('Bybit: Connection opened');
             
-            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + resolutionSet.join("|")]}));
+            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + this.subscribedResolutions.join("|")]}));
             this.webSocket.send('{"op":"subscribe","args":["instrument.BTCUSD"]}')
 
             this._isLive = true;
 
-            resolver(this.dataQueue = new DataQueue());
+            resolver(this.dataQueue = new DataQueue(this.subscribedResolutions));
         }
         
         this.webSocket.onmessage = (event) => {
