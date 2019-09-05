@@ -1,12 +1,17 @@
 import { PlatformConfiguration, ReporterData } from "Model/Contracts";
 import { Platform } from "Platform/Platform";
-import * as uuid from 'uuid/v4';
+import { MessageSender } from "Platform/MessageSender";
 import { PlatformInstance } from "Server/ServerContracts";
+import * as uuid from 'uuid/v4';
 import * as WebSocket from 'ws';
-import { Server } from "Server/Server";
 
 export class PlatformControl {
     private platformCollection: { [key: string]: PlatformInstance } = {};
+    private reporterProtocol: MessageSender;
+
+    public constructor() {
+        this.reporterProtocol = new MessageSender();
+    }
 
     public addPlatform(config: PlatformConfiguration) {
         const platformKey = uuid();
@@ -44,10 +49,14 @@ export class PlatformControl {
                     const key = uuid();
 
                     if (!instance.platform.isRunning) {
-                        instance.platform.start();
+
                         instance.platform.subscribe((data: ReporterData) => {
                             this.updateData(data, instance.key);
                         }, null);
+
+                        const plot = instance.platform.start();
+
+                        this.reporterProtocol.SendReporterInit(plot.length, [socket]);
                     }
 
                     instance.connections[key] = socket;
@@ -66,8 +75,7 @@ export class PlatformControl {
     }
 
     private updateData(data: ReporterData, platformKey: string) {
-        Object.values(this.platformCollection[platformKey].connections).forEach((socket: WebSocket) => {
-            socket.send(JSON.stringify(data));
-        });
+        const sockets = Object.values(this.platformCollection[platformKey].connections);
+        this.reporterProtocol.SendReporterData(data, sockets);
     }
 }

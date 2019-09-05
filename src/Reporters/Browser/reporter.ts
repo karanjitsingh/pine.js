@@ -1,7 +1,7 @@
 import { Page, PageMode } from "Components/Page";
 import React = require("react");
 import ReactDOM = require("react-dom");
-import { PlatformConfiguration, ReporterData } from "Model/Contracts";
+import { PlatformConfiguration, ProtocolMessage, ReporterDataMessage, MessageType } from "Model/Contracts";
 import { Network } from "Network";
 
 interface InitInfo {
@@ -91,8 +91,9 @@ class Reporter {
 
     private subscribeToSocket(connection: string) {
         const ws = this.socket = new WebSocket(connection);
-        ws.onmessage = function (ev) {
-            JSON.parse(ev.data) as ReporterData;
+        ws.onmessage = (ev) => {
+            // JSON.parse(ev.data);
+            this.processMessage(ev.data);
         }
 
         ws.onerror = function (ev) {
@@ -105,6 +106,20 @@ class Reporter {
             // showMessage('WebSocket connection closed');
             // ws = null;
         };
+    }
+
+    private processMessage(rawMessage: string) {
+        const message: ProtocolMessage<MessageType> = JSON.parse(rawMessage);
+
+        switch(message.type) {
+            case 'ReporterData':
+                const reportData = (message as ProtocolMessage<'ReporterData'>).data;
+                break;
+
+            case 'ReporterInit':
+                const chartCount = (message as ProtocolMessage<'ReporterInit'>).chartCount;
+                break;
+        }
     }
 }
 

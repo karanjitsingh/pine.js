@@ -34,12 +34,14 @@ export class Platform extends Subscribable<ReporterData> {
         return this.currentStrategy.getConfig();
     }
 
-    public start() {
+    public start(): Plot[] {
         this._isRunning = true;
         this.fixStrategy(this.currentStrategy.getConfig(), this.dataController.MarketDataMap);
 
         this.dataController.subscribe(this.updateCallback, this);
         this.dataController.startStream();
+
+        return this.plot;
     }
 
     private setConfig(config: PlatformConfiguration) {
@@ -61,8 +63,6 @@ export class Platform extends Subscribable<ReporterData> {
         })
 
         this.plot = this.currentStrategy.init(stratData);
-        
-        const reporterData = this.getReporterData(this.plot, rawData);
     }
 
     private getReporterData(plot: Plot[], rawData: ResolutionMapped<MarketData>, update?: ResolutionMapped<number>): ReporterData {

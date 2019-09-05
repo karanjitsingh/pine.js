@@ -57,3 +57,25 @@ export interface ReporterData {
     Charts: ChartData[],
     TradeData: Trade[]
 }
+
+export type MessageType = "ReporterData" | "ReporterInit" ;
+
+export type ReporterDataMessage = {
+    data: ReporterData;
+}
+
+export type ReporterInitMessage = {
+    count: number;
+}
+
+export type ProtocolMessage<T extends MessageType> = { type: T } & MessageContract[T];
+
+export interface MessageContract {
+    ReporterData: {
+        data: ReporterData
+    };
+
+    ReporterInit: {
+        chartCount: number
+    };
+}
