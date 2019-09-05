@@ -58,6 +58,19 @@ export class PlatformEventEmitter<TEvent extends string> {
         }
     }
 
+    public subscriberCount(event: string) {
+        let count = 0;
+        if(this.once[event]) {
+            count += this.once[event].length;
+        }
+
+        if(this.events[event]) {
+            count += this.events[event].length;
+        }
+
+        return count;
+    }
+
 }
 
 export abstract class Subscribable<TArgs> {
@@ -65,6 +78,10 @@ export abstract class Subscribable<TArgs> {
 
     constructor() {
         this.emitter = new PlatformEventEmitter();
+    }
+    
+    public get subscriberCount(): number {
+        return this.emitter.subscriberCount("event");
     }
 
     public subscribeOnce(): Promise<TArgs> {

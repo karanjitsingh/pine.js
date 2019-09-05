@@ -1,5 +1,5 @@
 import { Candle } from "Model/Contracts";
-import { RawSeries, SimpleSeries } from "./Series";
+import { RawSeries, SimpleSeries } from "Model/Data/Series";
 
 export interface MarketData {
     Candles: RawSeries<Candle>;
@@ -39,7 +39,7 @@ export enum Tick
 }
 
 export const GetResolutionTick = (resolution: Resolution): number => {
-    const match = resolution.match(/^([1-9]+)(.)$/);
+    const match = resolution.match(/^([0-9]+)(.)$/);
     if(!match) {
         throw new Error(`Invalid resolution '${resolution}'`);
     }

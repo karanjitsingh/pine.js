@@ -1,15 +1,7 @@
-import { SeriesData, Series, EvaluatedSeries } from "Model/Data/Series";
+import { EvaluatedSeries, Series, SeriesData } from "Model/Data/Series";
 
-export const Expression = (expr: (...args: SeriesData<number>[]) => number, ...args: Series<any>[]): EvaluatedSeries<number> => {
-    const minlength = Math.min(...args.map(x => x.getLength()));
-
-    var data: number[] = new Array(minlength);
-
-    for(let i =0; i < minlength; i++) {
-        data.push(expr(...args.map(x => x.lookBack(minlength - 1 - i))));
-    }
-
-    return new EvaluatedSeries(data, expr, args);
+export const Expression = (expr: (...args: SeriesData<number>[]) => number, ...deps: Series<any>[]): EvaluatedSeries<number> => {
+    return new EvaluatedSeries(expr, deps);
 }
 
 export const Min = (s: Series<number> | SeriesData<number>, length: number) => {

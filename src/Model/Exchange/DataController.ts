@@ -1,8 +1,8 @@
+import { Candle } from "Model/Contracts";
+import { GetResolutionTick, MarketData, Resolution, ResolutionMapped, Tick } from "Model/Data/Data";
+import { RawSeries, SimpleSeries } from "Model/Data/Series";
 import { Subscribable } from "Model/Events";
 import { Exchange } from "Model/Exchange/Exchange";
-import { SimpleSeries, RawSeries, Series, EvaluatedSeries } from "Model/Data/Series";
-import { Candle } from "Model/Contracts";
-import { MarketData, Tick, Resolution, ResolutionMapped, GetResolutionTick } from "Model/Data/Data";
 import { DataQueue } from "./DataQueue";
 
 export interface TickUpdate {
@@ -11,7 +11,7 @@ export interface TickUpdate {
     currentTick: number
 }
 
-export class DataController extends Subscribable<number> {
+export class DataController extends Subscribable<ResolutionMapped<number>> {
 
     public readonly MarketDataMap: ResolutionMapped<MarketData> = {};
     private dataQueue: DataQueue;
@@ -21,7 +21,7 @@ export class DataController extends Subscribable<number> {
         super();
 
         resolutionSet.forEach(res => {
-            this.MarketDataMap[res] = this.createMarketDataSeries();
+            this.MarketDataMap[res] = this.createMarketDataSeries(res);
         });
     }
 
@@ -128,11 +128,11 @@ export class DataController extends Subscribable<number> {
         });
 
         // how to issue what updates went in; and how to issue the new updates to the reporter
-        EvaluatedSeries.evaluteUpdates()
+        // EvaluatedSeries.evaluteUpdates()
     }
 
-    private createMarketDataSeries(): MarketData {
-        const series = new RawSeries<Candle>([]);
+    private createMarketDataSeries(resolution: Resolution): MarketData {
+        const series = new RawSeries<Candle>([], resolution);
 
         return {
             Candles: series,
