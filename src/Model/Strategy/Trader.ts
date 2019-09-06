@@ -1,7 +1,7 @@
-import { IBroker } from "Model/Exchange/IBroker";
-import { OpenTrade } from "Model/Data/Trading";
-import { Series } from "Model/Data/Series";
 import { Trade } from "Model/Contracts";
+import { Series } from "Model/Data/Series";
+import { OpenTrade } from "Model/Data/Trading";
+import { IBroker } from "Model/Exchange/IBroker";
 
 export class Trader {
     public readonly openTrade: OpenTrade;

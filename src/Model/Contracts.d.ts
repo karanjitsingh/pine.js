@@ -3,18 +3,10 @@ export enum PlotType {
     Line
 }
 
-export interface ChartIndicator {
-    PlotType: PlotType,
-    Data: number[]
-}
-
 export interface ChartData {
-    Data: Array<Candle>;
-    Name: string;
-    Resolution: string;
-    Indicators: ChartIndicator[];
+    Data: Candle[];
+    IndicatorData: number[][];
 }
-
 
 export interface PlatformConfiguration {
     Strategy: string,
@@ -24,13 +16,6 @@ export interface PlatformConfiguration {
     }
     BacktestSettings?: {}
 }
-
-
-export interface ReporterData {
-    Charts: ChartData[],
-    TradeData: Trade[]
-}
-
 
 export interface Candle {
     startTick: number;
@@ -54,11 +39,11 @@ export interface Trade {
 }
 
 export interface ReporterData {
-    Charts: ChartData[],
+    Plots: {[id: string]: ChartData},
     TradeData: Trade[]
 }
 
-export type MessageType = "ReporterData" | "ReporterInit" ;
+export type MessageType = "ReporterData" | "ReporterConfig" ;
 
 export type ReporterDataMessage = {
     data: ReporterData;
@@ -68,14 +53,32 @@ export type ReporterInitMessage = {
     count: number;
 }
 
-export type ProtocolMessage<T extends MessageType> = { type: T } & MessageContract[T];
+export type ProtocolMessage<T extends MessageType> = { Type: T } & MessageContract[T];
 
 export interface MessageContract {
     ReporterData: {
-        data: ReporterData
+        Data: ReporterData
     };
 
-    ReporterInit: {
-        chartCount: number
+    ReporterConfig: {
+        PlotConfig: PlotConfigMap
     };
 }
+
+export interface IndicatorConfig {
+    Title?: string;
+    PlotType: PlotType;
+}
+
+export interface ChartConfig {
+    Title?: string;
+    Resolution: Resolution;
+}
+
+export type PlotConfig = ChartConfig & {
+    IndicatorConfigs: IndicatorConfig[];
+}
+
+export type PlotConfigMap = {[id: string]: PlotConfig};
+
+export type Resolution = "1m" | "3m" | "5m" | "15m" | "30m" | "1h" | "2h" | "3h" | "4h" | "6h" | "1d" | "3d" | "1w" | "2w";

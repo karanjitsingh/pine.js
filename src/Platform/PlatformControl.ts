@@ -1,6 +1,6 @@
-import { PlatformConfiguration, ReporterData } from "Model/Contracts";
-import { Platform } from "Platform/Platform";
+import { IndicatorConfig, PlatformConfiguration, PlotConfigMap, ReporterData } from "Model/Contracts";
 import { MessageSender } from "Platform/MessageSender";
+import { Platform } from "Platform/Platform";
 import { PlatformInstance } from "Server/ServerContracts";
 import * as uuid from 'uuid/v4';
 import * as WebSocket from 'ws';
@@ -54,9 +54,24 @@ export class PlatformControl {
                             this.updateData(data, instance.key);
                         }, null);
 
-                        const plot = instance.platform.start();
+                        const plots = instance.platform.start();
 
-                        this.reporterProtocol.SendReporterInit(plot.length, [socket]);
+                        const plotConfigs: PlotConfigMap = Object.keys(plots).reduce<PlotConfigMap>((map, id) => {
+                            const plot = plots[id];
+
+                            map[id] = {
+                                Title: plot.Title,
+                                Resolution: plot.Resolution,
+                                IndicatorConfigs: plot.Indicators.map<IndicatorConfig>(indicator => ({
+                                    Title: indicator.Title,
+                                    PlotType: indicator.PlotType
+                                }))
+                            }
+
+                            return map;
+                        }, {});
+
+                        this.reporterProtocol.SendReporterInit(plotConfigs, [socket]);
                     }
 
                     instance.connections[key] = socket;

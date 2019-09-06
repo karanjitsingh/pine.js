@@ -11,7 +11,7 @@
             "Network/*": [ "./Network/*" ],
             "Exchange/*": [ "./Exchange/*" ],
             "Platform/*": [ "./Platform/*" ],
-            "Server/*": [ "./Server/*" ],
+            "Server/*": [ "./Server/*" ]
         },
         "types": ["node", "ws"],
         "noImplicitAny": true,
@@ -23,5 +23,5 @@
     "exclude": [
         "./Reporters/**/*"
     ],
-    "compileOnSave": true,
+    "compileOnSave": true
 }

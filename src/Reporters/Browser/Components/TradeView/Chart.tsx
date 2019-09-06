@@ -1,10 +1,6 @@
-import * as React from 'react';
-import * as LightweightCharts from '../../lib/lightweight-charts';
+import * as LightweightCharts from 'lib/lightweight-charts';
 import { ChartData } from 'Model/Contracts';
-
-export class ChartProps {
-    data: ChartData;
-}
+import * as React from 'react';
 
 interface Series {
     mainSeries: LightweightCharts.ISeriesApi<'Candlestick'>;
@@ -12,15 +8,15 @@ interface Series {
     indicators: LightweightCharts.ISeriesApi<'Line' | 'Area'>[];
 }
 
-export class Chart extends React.Component<ChartProps> {
+export class Chart extends React.Component {
 
     private chartContainerRef: React.RefObject<HTMLDivElement>;
     private chart: LightweightCharts.IChartApi;
 
     private appliedSeries: Series;
 
-    public constructor(props: ChartProps) {
-        super(props);
+    public constructor() {
+        super({});
         this.chartContainerRef = React.createRef<HTMLDivElement>();
     }
 
@@ -49,7 +45,7 @@ export class Chart extends React.Component<ChartProps> {
                 },
             })
 
-            this.props.data.Data
+            // this.props.data.Data
 
             this.appliedSeries.mainSeries = this.chart.addCandlestickSeries()
 
@@ -59,14 +55,14 @@ export class Chart extends React.Component<ChartProps> {
         }
     }
 
-    public shouldComponentUpdate(nextProps: ChartProps) {
-        if (this.chart) {
+    // public shouldComponentUpdate(nextProps: ChartProps) {
+    //     if (this.chart) {
 
-            return false;
-        }
+    //         return false;
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     public render() {
         return <div ref={this.chartContainerRef}></div>;

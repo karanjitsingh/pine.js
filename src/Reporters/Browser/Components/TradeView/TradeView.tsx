@@ -1,23 +1,26 @@
 import * as React from 'react';
 import SplitWrapper from '../../lib/react-split';
 import { TradeLog } from './TradeLog';
-import { ReporterData } from "Model/Contracts";
+import { ReporterData, PlotConfigMap } from "Model/Contracts";
 import { DataStream } from 'DataStream';
 import { Spinner } from 'Components/Spinner';
 import { Chart } from './Chart';
 
 export interface TradeViewProps {
     dataStream: DataStream<ReporterData>,
+    Plot: PlotConfigMap
 }
 
 interface TradeViewState {
     dataInit: boolean
 }
 
+type MappedChart = {[id: string]: React.RefObject<Chart>};
+
 export class TradeView extends React.Component<TradeViewProps, TradeViewState> {
 
     private chartSplit: JSX.Element;
-    private chartRefs: React.RefObject<Chart>[];
+    private chartRefMap: MappedChart;
 
     public shouldComponentUpdate() {
         return false;
@@ -34,12 +37,12 @@ export class TradeView extends React.Component<TradeViewProps, TradeViewState> {
     }
 
     public dataListener() {
-        this.chartSplit = this.getChartSplit(this.props.dataStream.pop());
+        // this.chartSplit = this.getChartSplit(this.props.dataStream.pop());
     }
 
     public render() {
         if(!this.chartSplit && this.state.dataInit) {
-            this.chartSplit = this.getChartSplit(this.props.dataStream.pop());
+            this.chartSplit = this.getChartSplit(this.props.Plot);
         }
 
         return (
@@ -52,17 +55,21 @@ export class TradeView extends React.Component<TradeViewProps, TradeViewState> {
         )
     }
 
-    private getChartSplit(reporterData: ReporterData): JSX.Element {
-        const chartCount = reporterData.Charts.length;
+    private getChartSplit(plotConfig: PlotConfigMap): JSX.Element {
+        const plots = Object.keys(plotConfig);
+        const chartCount = plots.length;
         
         const sizes = new Array(chartCount).fill(Math.floor(100/chartCount));
         const sum = sizes.reduce((total, value) => (total + value));
 
         sizes[0] += 100 - sum;
 
-        this.chartRefs = reporterData.Charts.map((chartData) => React.createRef<Chart>());
+        this.chartRefMap = plots.reduce<MappedChart>((map, id) => {
+            map[id] = React.createRef<Chart>();
+            return map;
+        }, {});
         
-        const charts = reporterData.Charts.map((chartData, index) => (<Chart ref={this.chartRefs[index]} data={chartData}></Chart>));
+        const charts = plots.map((id) => (<Chart ref={this.chartRefMap[id]}></Chart>));
 
         return (
             <SplitWrapper sizes={sizes} minSize={100} dragInterval={1} gutterSize={5} direction={"vertical"}>

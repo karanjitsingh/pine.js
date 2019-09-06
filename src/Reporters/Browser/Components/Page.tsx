@@ -1,8 +1,8 @@
+import { PlatformConfiguration } from 'Model/Contracts';
 import * as React from 'react';
-import { TradeView, TradeViewProps } from './TradeView/TradeView';
-import { PlatformConfiguration, ReporterData } from 'Model/Contracts';
-import { StrategyConfigurationProps, StrategyConfiguration } from './StrategyConfiguration';
 import { Spinner } from './Spinner';
+import { StrategyConfiguration, StrategyConfigurationProps } from './StrategyConfiguration';
+import { TradeView, TradeViewProps } from './TradeView/TradeView';
 
 export interface PageState {
     configProps?: {

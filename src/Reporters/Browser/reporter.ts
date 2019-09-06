@@ -111,13 +111,15 @@ class Reporter {
     private processMessage(rawMessage: string) {
         const message: ProtocolMessage<MessageType> = JSON.parse(rawMessage);
 
-        switch(message.type) {
+        switch(message.Type) {
             case 'ReporterData':
-                const reportData = (message as ProtocolMessage<'ReporterData'>).data;
+                const reporterData = (message as ProtocolMessage<'ReporterData'>).Data;
+                console.log(reporterData);
                 break;
 
-            case 'ReporterInit':
-                const chartCount = (message as ProtocolMessage<'ReporterInit'>).chartCount;
+            case 'ReporterConfig':
+                const plotConfigs = (message as ProtocolMessage<'ReporterConfig'>).PlotConfig;
+                console.log(plotConfigs);
                 break;
         }
     }

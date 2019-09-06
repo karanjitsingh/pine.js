@@ -1,7 +1,6 @@
-import { Exchange } from "Model/Exchange/Exchange";
-import { Candle } from "Model/Contracts";
-import { Resolution } from "Model/Data/Data";
+import { Candle, Resolution } from "Model/Contracts";
 import { DataQueue } from "Model/Exchange/DataQueue";
+import { Exchange } from "Model/Exchange/Exchange";
 
 export class BacktestExchange<T extends Exchange> extends Exchange {
     public start(resolutionSet: Resolution[]): Promise<DataQueue> {

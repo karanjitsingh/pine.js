@@ -1,11 +1,11 @@
 import { BacktestBroker } from "Exchange/BacktestBroker";
-import { ChartIndicator, PlatformConfiguration, ReporterData } from "Model/Contracts";
+import { Candle, ChartData, PlatformConfiguration, ReporterData, Trade } from "Model/Contracts";
 import { MarketData, ResolutionMapped } from "Model/Data/Data";
-import { Plot } from "Model/Data/Trading";
 import { Subscribable } from "Model/Events";
 import { DataController } from "Model/Exchange/DataController";
 import { Exchange } from "Model/Exchange/Exchange";
 import { INetwork } from "Model/Network";
+import { PlotMap } from "Model/Strategy/Contracts";
 import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { MessageLogger } from "./MessageLogger";
 import { Network } from "./Network";
@@ -17,7 +17,7 @@ export class Platform extends Subscribable<ReporterData> {
     private currentStrategy: Strategy;
     private dataController: DataController;
     private _isRunning: boolean = false;
-    private plot: Plot[];
+    private plots: PlotMap;
 
     public constructor(config: PlatformConfiguration) {
         super();
@@ -34,14 +34,14 @@ export class Platform extends Subscribable<ReporterData> {
         return this.currentStrategy.getConfig();
     }
 
-    public start(): Plot[] {
+    public start(): PlotMap {
         this._isRunning = true;
         this.fixStrategy(this.currentStrategy.getConfig(), this.dataController.MarketDataMap);
 
         this.dataController.subscribe(this.updateCallback, this);
         this.dataController.startStream();
 
-        return this.plot;
+        return this.plots;
     }
 
     private setConfig(config: PlatformConfiguration) {
@@ -55,41 +55,43 @@ export class Platform extends Subscribable<ReporterData> {
         this.dataController = new DataController(exchange, stratConfig.resolutionSet);
     }
 
-    private fixStrategy(config: StrategyConfig, rawData: ResolutionMapped<MarketData>) {
+    private fixStrategy(config: StrategyConfig, dataSeries: ResolutionMapped<MarketData>) {
         const stratData: ResolutionMapped<MarketData> = {}
 
         config.resolutionSet.forEach((res) => {
-            stratData[res] = rawData[res];
+            stratData[res] = dataSeries[res];
         })
 
-        this.plot = this.currentStrategy.init(stratData);
+        this.plots = this.currentStrategy.init(stratData);
     }
 
-    private getReporterData(plot: Plot[], rawData: ResolutionMapped<MarketData>, update?: ResolutionMapped<number>): ReporterData {
+    private getReporterData(plot: PlotMap, rawData: ResolutionMapped<MarketData>, update?: ResolutionMapped<number>): ReporterData {
         const reporterData: ReporterData = {
-            Charts: [],
-            TradeData: []
-        }
+            Plots: {},
+            TradeData: [] as Trade[]
+        };
 
-        plot.forEach(p => {
+        const rawDataUpdate = Object.keys(update).reduce<ResolutionMapped<Candle[]>>((map, res) => {
+            map[res] = rawData[res].Candles.getData(update[res]);
+            return map;
+        }, {});
 
-            const length = update ? (update[p.Resolution] ? update[p.Resolution] : 0) : undefined  
+        Object.keys(plot).reduce<{[id: string]: ChartData}>((map, id) => {
+            const res = plot[id].Resolution;
+            const indicators = plot[id].Indicators;
+            const updateLength = update[res];
 
-            const chartData = {
-                Data: rawData[p.Resolution].Candles.getData(length),
-                Name: "",
-                Resolution: p.Resolution,
-                Indicators: [] as ChartIndicator[]
-            };
+            if(updateLength) {
+                map[id] = {
+                    Data: rawDataUpdate[res],
+                    IndicatorData: indicators.map<number[]>((i) => (
+                        i.Series.getData(updateLength)
+                    ))
+                };
+            }
 
-            p.Indicators.forEach((i) => {
-                chartData.Indicators.push({
-                    PlotType: i[0],
-                    Data: i[1].getData(length)
-                } as ChartIndicator)
-            })
-            reporterData.Charts.push(chartData);
-        });
+            return map;
+        }, {});
 
         return reporterData;
     }
@@ -97,7 +99,7 @@ export class Platform extends Subscribable<ReporterData> {
     private updateCallback(update: ResolutionMapped<number>) {
         this.currentStrategy.tick(update);
         if(this.subscriberCount) {
-            this.notifyAll(this.getReporterData(this.plot, this.dataController.MarketDataMap, update));
+            this.notifyAll(this.getReporterData(this.plots, this.dataController.MarketDataMap, update));
         }
     }
 }

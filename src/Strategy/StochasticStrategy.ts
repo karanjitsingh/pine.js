@@ -1,6 +1,6 @@
-import { MarketData, Resolution, ResolutionMapped } from "Model/Data/Data";
-import { Plot } from "Model/Data/Trading";
+import { MarketData, ResolutionMapped } from "Model/Data/Data";
 import { IBroker } from "Model/Exchange/IBroker";
+import { PlotMap } from "Model/Strategy/Contracts";
 import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { Trader } from "Model/Strategy/Trader";
 import { MessageLogger } from "Platform/MessageLogger";
@@ -14,8 +14,8 @@ export class StochasticStrategy extends Strategy {
         super(broker, messageLogger);
         this.StrategyConfig = {
             resolutionSet: [
-                Resolution.$1d,
-                Resolution.$30m
+                '1d',
+                '30m'
             ]
         }
     }
@@ -24,11 +24,11 @@ export class StochasticStrategy extends Strategy {
         // throw new Error("Method not implemented.");
     }
 
-    public init(input: ResolutionMapped<MarketData>): Plot[] {
+    public init(input: ResolutionMapped<MarketData>): PlotMap {
 
-        return this.StrategyConfig.resolutionSet.map((res) => ({
-            Resolution: res,
-            Indicators: []
-        } as Plot))
+        return this.StrategyConfig.resolutionSet.reduce<PlotMap>((map ,res) => {
+            map[res].Indicators = [];
+            return map;
+        }, {})
     }   
 }
