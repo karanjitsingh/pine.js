@@ -54,22 +54,7 @@ export class PlatformControl {
                             this.updateData(data, instance.key);
                         }, null);
 
-                        const plots = instance.platform.start();
-
-                        const plotConfigs: PlotConfigMap = Object.keys(plots).reduce<PlotConfigMap>((map, id) => {
-                            const plot = plots[id];
-
-                            map[id] = {
-                                Title: plot.Title,
-                                Resolution: plot.Resolution,
-                                IndicatorConfigs: plot.Indicators.map<IndicatorConfig>(indicator => ({
-                                    Title: indicator.Title,
-                                    PlotType: indicator.PlotType
-                                }))
-                            }
-
-                            return map;
-                        }, {});
+                        const plotConfigs = instance.platform.start();
 
                         this.reporterProtocol.SendReporterInit(plotConfigs, [socket]);
                     }

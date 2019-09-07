@@ -19,7 +19,7 @@ export enum Tick
     Week = Day * 7
 }
 
-export type ResolutionMapped<T> = {[resolution: string]: T}; 
+export type ResolutionMapped<T> = {[resolution in Resolution]?: T}; 
 
 export const GetResolutionTick = (resolution: Resolution): number => {
     const match = resolution.match(/^([0-9]+)(.)$/);

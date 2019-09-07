@@ -78,12 +78,10 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
     }
 
     private initData(resolutionDataMap: ResolutionMapped<Candle[]>) {
-        console.log(resolutionDataMap);
-
         const resolutions = Object.keys(resolutionDataMap);
 
         if(resolutions.length) {
-            resolutions.forEach((res) => {
+            resolutions.forEach((res: Resolution) => {
                 const update = resolutionDataMap[res];
                 this.MarketDataMap[res].Candles.append(update);
             });

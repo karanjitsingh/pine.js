@@ -70,12 +70,9 @@ export interface IndicatorConfig {
     PlotType: PlotType;
 }
 
-export interface ChartConfig {
+export interface PlotConfig {
     Title?: string;
     Resolution: Resolution;
-}
-
-export type PlotConfig = ChartConfig & {
     IndicatorConfigs: IndicatorConfig[];
 }
 

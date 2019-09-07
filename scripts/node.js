@@ -44,7 +44,7 @@ function buildWatcher() {
     const paths = [
         "./node_modules/.bin/tsc --watch -p ./src/tsconfig.json",
         "./node_modules/.bin/tsc --watch -p ./src/Reporters/Browser/tsconfig.json",
-        "node ./node_modules/node-sass/bin/node-sass -rw ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser"
+        "node ./node_modules/node-sass/bin/node-sass -rw ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser/lib"
     ]
     
     const commands = paths.map((value) => (value.replace(/\//g, path.sep)));
@@ -79,7 +79,7 @@ function build() {
     const paths = [
         "./node_modules/.bin/tsc -p ./src/tsconfig.json",
         "./node_modules/.bin/tsc -p ./src/Reporters/Browser/tsconfig.json",
-        "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser"
+        "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser/lib"
     ]
     
     const commands = paths.map((value) => (value.replace(/\//g, path.sep)));

@@ -1,10 +1,10 @@
+import { Spinner } from 'Components/Spinner';
+import { DataStream } from 'DataStream';
+import { PlotConfigMap, ReporterData } from "Model/Contracts";
 import * as React from 'react';
 import SplitWrapper from '../../lib/react-split';
-import { TradeLog } from './TradeLog';
-import { ReporterData, PlotConfigMap } from "Model/Contracts";
-import { DataStream } from 'DataStream';
-import { Spinner } from 'Components/Spinner';
 import { Chart } from './Chart';
+import { TradeLog } from './TradeLog';
 
 export interface TradeViewProps {
     dataStream: DataStream<ReporterData>,

@@ -1,5 +1,5 @@
 import { BacktestBroker } from "Exchange/BacktestBroker";
-import { Candle, ChartData, PlatformConfiguration, ReporterData, Trade } from "Model/Contracts";
+import { Candle, ChartData, PlatformConfiguration, PlotConfigMap, ReporterData, Trade, IndicatorConfig, Resolution } from "Model/Contracts";
 import { MarketData, ResolutionMapped } from "Model/Data/Data";
 import { Subscribable } from "Model/Events";
 import { DataController } from "Model/Exchange/DataController";
@@ -7,8 +7,9 @@ import { Exchange } from "Model/Exchange/Exchange";
 import { INetwork } from "Model/Network";
 import { PlotMap } from "Model/Strategy/Contracts";
 import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
-import { MessageLogger } from "./MessageLogger";
-import { Network } from "./Network";
+import { MessageLogger } from "Platform/MessageLogger";
+import { Network } from "Platform/Network";
+import * as uuid from 'uuid/v4';
 
 export class Platform extends Subscribable<ReporterData> {
     protected readonly Network: INetwork;
@@ -17,12 +18,14 @@ export class Platform extends Subscribable<ReporterData> {
     private currentStrategy: Strategy;
     private dataController: DataController;
     private _isRunning: boolean = false;
-    private plots: PlotMap;
+    private plotMap: PlotMap;
+    private plotConfigMap: PlotConfigMap;
 
     public constructor(config: PlatformConfiguration) {
         super();
         this.MessageLogger = new MessageLogger();
         this.Network = new Network();
+        
         this.setConfig(config);
     }
 
@@ -34,14 +37,14 @@ export class Platform extends Subscribable<ReporterData> {
         return this.currentStrategy.getConfig();
     }
 
-    public start(): PlotMap {
+    public start(): PlotConfigMap {
         this._isRunning = true;
-        this.fixStrategy(this.currentStrategy.getConfig(), this.dataController.MarketDataMap);
+        this.initStrategy(this.currentStrategy.getConfig(), this.dataController.MarketDataMap);
 
         this.dataController.subscribe(this.updateCallback, this);
         this.dataController.startStream();
 
-        return this.plots;
+        return this.plotConfigMap;
     }
 
     private setConfig(config: PlatformConfiguration) {
@@ -55,14 +58,37 @@ export class Platform extends Subscribable<ReporterData> {
         this.dataController = new DataController(exchange, stratConfig.resolutionSet);
     }
 
-    private fixStrategy(config: StrategyConfig, dataSeries: ResolutionMapped<MarketData>) {
+    private initStrategy(config: StrategyConfig, dataSeries: ResolutionMapped<MarketData>) {
         const stratData: ResolutionMapped<MarketData> = {}
 
         config.resolutionSet.forEach((res) => {
             stratData[res] = dataSeries[res];
         })
 
-        this.plots = this.currentStrategy.init(stratData);
+        const rawPlots = this.currentStrategy.init(stratData);
+
+        this.plotMap = {};
+        this.plotConfigMap = {};
+
+        // set plot and plotconfig
+        rawPlots.forEach((rawPlot) => {
+            const id = uuid();
+            const resolution = rawPlot.MarketData.Candles.Resolution;
+
+            this.plotMap[id] = {
+                Resolution: resolution,
+                Indicators: rawPlot.Indicators
+            };
+
+            this.plotConfigMap[id] = {
+                Title: rawPlot.Title,
+                Resolution: resolution,
+                IndicatorConfigs: rawPlot.Indicators.map<IndicatorConfig>((indicator) => ({
+                    Title: indicator.Title,
+                    PlotType: indicator.PlotType
+                }))
+            }
+        })
     }
 
     private getReporterData(plot: PlotMap, rawData: ResolutionMapped<MarketData>, update?: ResolutionMapped<number>): ReporterData {
@@ -71,7 +97,7 @@ export class Platform extends Subscribable<ReporterData> {
             TradeData: [] as Trade[]
         };
 
-        const rawDataUpdate = Object.keys(update).reduce<ResolutionMapped<Candle[]>>((map, res) => {
+        const rawDataUpdate = Object.keys(update).reduce<ResolutionMapped<Candle[]>>((map, res: Resolution) => {
             map[res] = rawData[res].Candles.getData(update[res]);
             return map;
         }, {});
@@ -99,7 +125,7 @@ export class Platform extends Subscribable<ReporterData> {
     private updateCallback(update: ResolutionMapped<number>) {
         this.currentStrategy.tick(update);
         if(this.subscriberCount) {
-            this.notifyAll(this.getReporterData(this.plots, this.dataController.MarketDataMap, update));
+            this.notifyAll(this.getReporterData(this.plotMap, this.dataController.MarketDataMap, update));
         }
     }
 }

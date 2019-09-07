@@ -1,6 +1,6 @@
 import { MarketData, ResolutionMapped } from "Model/Data/Data";
 import { IBroker } from "Model/Exchange/IBroker";
-import { PlotMap } from "Model/Strategy/Contracts";
+import { PlotMap, RawPlot } from "Model/Strategy/Contracts";
 import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { Trader } from "Model/Strategy/Trader";
 import { MessageLogger } from "Platform/MessageLogger";
@@ -17,18 +17,34 @@ export class StochasticStrategy extends Strategy {
                 '1d',
                 '30m'
             ]
-        }
+        };
     }
 
     public tick(currentTick: any) {
         // throw new Error("Method not implemented.");
     }
 
-    public init(input: ResolutionMapped<MarketData>): PlotMap {
+    public init(input: ResolutionMapped<MarketData>): RawPlot[] {
 
-        return this.StrategyConfig.resolutionSet.reduce<PlotMap>((map ,res) => {
-            map[res].Indicators = [];
-            return map;
-        }, {})
-    }   
+
+        return [
+            {
+                MarketData: input['30m'],
+                Indicators: []
+            },
+            {
+                MarketData: input['1d'],
+                Indicators: []
+            }
+        ]
+        // return this.StrategyConfig.resolutionSet.reduce<PlotMap>((map ,res) => {
+        //     map[res] = {
+        //         Resolution: 
+        //     };
+        //     map[res].Indicators  = [];
+        //     return map;
+        // }, {})
+    }
+
+
 }

@@ -1,8 +1,8 @@
-import { Resolution } from "Model/Contracts";
+import { Resolution, Candle } from "Model/Contracts";
 import { MarketData, ResolutionMapped } from "Model/Data/Data";
 import { IBroker } from "Model/Exchange/IBroker";
 import { MessageLogger } from "Platform/MessageLogger";
-import { PlotMap } from "./Contracts";
+import { RawPlot } from "./Contracts";
 import { Trader } from "./Trader";
 
 export type StrategyCtor = new (broker: IBroker, messageLogger: MessageLogger) => Strategy;
@@ -35,7 +35,7 @@ export abstract class Strategy {
         return this.registeredStrategies[strategy];
     }
 
-    public abstract init(input: ResolutionMapped<MarketData>): PlotMap;
+    public abstract init(input: ResolutionMapped<MarketData>): RawPlot[];
     
     public abstract tick(offset: ResolutionMapped<number>): void;
 
