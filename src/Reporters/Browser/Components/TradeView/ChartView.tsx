@@ -8,7 +8,7 @@ interface Series {
     indicators: LightweightCharts.ISeriesApi<'Line' | 'Area'>[];
 }
 
-export class Chart extends React.Component {
+export class ChartView extends React.Component {
 
     private chartContainerRef: React.RefObject<HTMLDivElement>;
     private chart: LightweightCharts.IChartApi;
@@ -26,43 +26,8 @@ export class Chart extends React.Component {
         if (container && !this.chart) {
             container.onresize = this.chartResize.bind(this);
 
-
-            // https://jsfiddle.net/noq980ds/6/
-            
-            this.chart = LightweightCharts.createChart(container, {
-                width: container.offsetWidth,
-                height: container.offsetHeight,
-                priceScale: {
-                    scaleMargins: {
-                        top: 0.1,
-                        bottom: 0.25,
-                    },
-                    borderVisible: false,
-                },
-                layout: {
-                    backgroundColor: '#131722',
-                    textColor: '#d1d4dc',
-                },
-            })
-
-            // this.props.data.Data
-
-            this.appliedSeries.mainSeries = this.chart.addCandlestickSeries()
-
-            // var series = this.chart.addAreaSeries({
-
-            // })
         }
     }
-
-    // public shouldComponentUpdate(nextProps: ChartProps) {
-    //     if (this.chart) {
-
-    //         return false;
-    //     }
-
-    //     return true;
-    // }
 
     public render() {
         return <div ref={this.chartContainerRef}></div>;

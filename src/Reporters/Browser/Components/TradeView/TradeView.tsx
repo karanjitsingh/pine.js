@@ -3,7 +3,7 @@ import { DataStream } from 'DataStream';
 import { PlotConfigMap, ReporterData } from "Model/Contracts";
 import * as React from 'react';
 import SplitWrapper from '../../lib/react-split';
-import { Chart } from './Chart';
+import { ChartView } from './ChartView';
 import { TradeLog } from './TradeLog';
 
 export interface TradeViewProps {
@@ -15,7 +15,7 @@ interface TradeViewState {
     dataInit: boolean
 }
 
-type MappedChart = {[id: string]: React.RefObject<Chart>};
+type MappedChart = {[id: string]: React.RefObject<ChartView>};
 
 export class TradeView extends React.Component<TradeViewProps, TradeViewState> {
 
@@ -65,11 +65,11 @@ export class TradeView extends React.Component<TradeViewProps, TradeViewState> {
         sizes[0] += 100 - sum;
 
         this.chartRefMap = plots.reduce<MappedChart>((map, id) => {
-            map[id] = React.createRef<Chart>();
+            map[id] = React.createRef<ChartView>();
             return map;
         }, {});
         
-        const charts = plots.map((id) => (<Chart ref={this.chartRefMap[id]}></Chart>));
+        const charts = plots.map((id) => (<ChartView ref={this.chartRefMap[id]}></ChartView>));
 
         return (
             <SplitWrapper sizes={sizes} minSize={100} dragInterval={1} gutterSize={5} direction={"vertical"}>

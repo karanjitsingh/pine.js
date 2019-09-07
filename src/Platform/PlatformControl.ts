@@ -1,4 +1,4 @@
-import { IndicatorConfig, PlatformConfiguration, PlotConfigMap, ReporterData } from "Model/Contracts";
+import { PlatformConfiguration, ReporterData } from "Model/Contracts";
 import { MessageSender } from "Platform/MessageSender";
 import { Platform } from "Platform/Platform";
 import { PlatformInstance } from "Server/ServerContracts";
