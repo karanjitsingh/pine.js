@@ -1,12 +1,11 @@
-import { BacktestBroker } from "Exchange/BacktestBroker";
+import { BacktestBroker } from "Exchange/Backtest/BacktestBroker";
 import { Candle, ChartData, Dictionary, IndicatorConfig, PlatformConfiguration, PlotConfig, ReporterData, Resolution, ResolutionMapped, Trade } from "Model/Contracts";
-import { MarketData } from "Model/Data/Data";
-import { Subscribable } from "Model/Events";
 import { DataController } from "Model/Exchange/DataController";
 import { ExchangeStore } from "Model/Exchange/Exchange";
+import { MarketData } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
-import { Indicator } from "Model/Strategy/Contracts";
-import { Strategy, StrategyConfig, StrategyStore } from "Model/Strategy/Strategy";
+import { Indicator, Strategy, StrategyConfig, StrategyStore } from "Model/Strategy/Strategy";
+import { Subscribable } from "Model/Utils/Events";
 import { MessageLogger } from "Platform/MessageLogger";
 import { Network } from "Platform/Network";
 import * as uuid from 'uuid/v4';
@@ -39,12 +38,12 @@ export class Platform extends Subscribable<ReporterData> {
     }
 
     public getStrategyConfig(): StrategyConfig {
-        return this.currentStrategy.getConfig();
+        return this.currentStrategy.StrategyConfig;
     }
 
     public start(): Dictionary<PlotConfig> {
         this._isRunning = true;
-        const stratConfig = this.currentStrategy.getConfig();
+        const stratConfig = this.currentStrategy.StrategyConfig;
 
         this.initStrategy(stratConfig, this.dataController.MarketDataMap);
 
@@ -60,7 +59,7 @@ export class Platform extends Subscribable<ReporterData> {
 
         this.currentStrategy = new (StrategyStore.get(config.Strategy))(exchange.Broker, this.MessageLogger);
 
-        const stratConfig = this.currentStrategy.getConfig();
+        const stratConfig = this.currentStrategy.StrategyConfig;
 
         this.dataController = new DataController(exchange, stratConfig.resolutionSet);
     }

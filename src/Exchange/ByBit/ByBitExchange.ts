@@ -1,9 +1,9 @@
 import { Candle, Resolution } from "Model/Contracts";
-import { GetResolutionTick, Tick } from "Model/Data/Data";
-import { DataQueue } from "Model/Exchange/DataQueue";
 import { Exchange } from "Model/Exchange/Exchange";
 import { IBroker } from "Model/Exchange/IBroker";
+import { GetResolutionTick, Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
+import { CandleQueue } from "Model/Utils/CandleQueue";
 import * as WebSocket from 'ws';
 
 interface CandleResult {
@@ -33,7 +33,7 @@ export class ByBitExchange extends Exchange {
     public readonly Broker: IBroker;
 
     private subscribedResolutions: Resolution[];
-    private dataQueue: DataQueue;
+    private dataQueue: CandleQueue;
     
     private readonly LiveSupportedResolutions: string[] = [
         "1m", "3m", "5m", "15m", "30m",
@@ -50,13 +50,13 @@ export class ByBitExchange extends Exchange {
         super(network, broker);
     }
 
-    public isLive(): boolean {
+    public get isLive(): boolean {
         return this._isLive;
     }
 
-    public start(resolutionSet: Resolution[]): Promise<DataQueue> {
-        let resolver: (value: DataQueue) => void;
-        const promise = new Promise<DataQueue>((resolve) => {
+    public start(resolutionSet: Resolution[]): Promise<CandleQueue> {
+        let resolver: (value: CandleQueue) => void;
+        const promise = new Promise<CandleQueue>((resolve) => {
             resolver = resolve;
         })
 
@@ -84,7 +84,7 @@ export class ByBitExchange extends Exchange {
 
             this._isLive = true;
 
-            resolver(this.dataQueue = new DataQueue(this.subscribedResolutions));
+            resolver(this.dataQueue = new CandleQueue(this.subscribedResolutions));
         }
         
         this.webSocket.onmessage = (event) => {

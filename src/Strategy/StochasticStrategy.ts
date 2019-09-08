@@ -1,15 +1,11 @@
 import { ResolutionMapped } from "Model/Contracts";
-import { MarketData } from "Model/Data/Data";
 import { IBroker } from "Model/Exchange/IBroker";
-import { RawPlot } from "Model/Strategy/Contracts";
-import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
-import { Trader } from "Model/Strategy/Trader";
+import { MarketData } from "Model/InternalContracts";
+import { RawPlot, Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { MessageLogger } from "Platform/MessageLogger";
 
 export class StochasticStrategy extends Strategy {
-    protected StrategyConfig: StrategyConfig;
-
-    protected readonly Trader: Trader;
+    public readonly StrategyConfig: StrategyConfig;
 
     constructor(broker: IBroker, messageLogger: MessageLogger) {
         super(broker, messageLogger);

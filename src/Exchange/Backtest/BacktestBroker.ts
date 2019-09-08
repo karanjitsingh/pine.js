@@ -1,5 +1,5 @@
 import { IBroker } from "Model/Exchange/IBroker";
-import { OpenTrade } from "Model/Data/Trading";
+import { OpenTrade } from "Model/InternalContracts";
 
 export class BacktestBroker implements IBroker {
     enterLong(leverage: number, qty: number): Promise<OpenTrade> {

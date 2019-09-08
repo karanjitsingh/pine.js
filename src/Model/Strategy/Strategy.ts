@@ -1,10 +1,17 @@
-import { Resolution, ResolutionMapped } from "Model/Contracts";
-import { CtorStore } from "Model/CtorStore";
-import { MarketData } from "Model/Data/Data";
+import { IndicatorConfig, Resolution, ResolutionMapped } from "Model/Contracts";
 import { IBroker } from "Model/Exchange/IBroker";
+import { MarketData } from "Model/InternalContracts";
+import { Series } from "Model/Series/Series";
+import { CtorStore } from "Model/Utils/CtorStore";
 import { MessageLogger } from "Platform/MessageLogger";
-import { RawPlot } from "./Contracts";
-import { Trader } from "./Trader";
+
+export type Indicator = IndicatorConfig & { Series: Series<number> };
+
+export type RawPlot = {
+    Title?: string;
+    MarketData: MarketData;
+    Indicators: Indicator[]
+}
 
 export type StrategyCtor = new (broker: IBroker, messageLogger: MessageLogger) => Strategy;
 
@@ -16,22 +23,10 @@ export interface StrategyConfig {
 export const StrategyStore = new CtorStore<StrategyCtor>();
 
 export abstract class Strategy {
+    public abstract readonly StrategyConfig: StrategyConfig;
 
-    protected readonly Trader: Trader;
-    protected readonly MessageLogger: MessageLogger;
-    protected readonly abstract StrategyConfig: StrategyConfig;
-
-    public abstract init(input: ResolutionMapped<MarketData>): RawPlot[];
-    
+    public abstract init(input: ResolutionMapped<MarketData>): RawPlot[];    
     public abstract tick(offset: ResolutionMapped<number>): void;
 
-    public constructor(broker: IBroker, messageLogger: MessageLogger) {
-        this.MessageLogger = messageLogger;
-        this.Trader = new Trader(broker);
-    }
-
-    public getConfig() {
-        return this.StrategyConfig;
-    }
-
+    public constructor(protected readonly broker: IBroker, protected readonly messageLogger: MessageLogger) {}
 }

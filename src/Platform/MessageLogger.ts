@@ -1,4 +1,4 @@
-import { Subscribable } from "Model/Events";
+import { Subscribable } from "Model/Utils/Events";
 
 export enum MessageSeverity {
     Verbose,

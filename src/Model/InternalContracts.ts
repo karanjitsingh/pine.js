@@ -1,5 +1,5 @@
-import { Candle, Resolution } from "Model/Contracts";
-import { RawSeries, SimpleSeries } from "Model/Data/Series";
+import { Candle, Resolution } from "./Contracts";
+import { RawSeries, SimpleSeries } from "./Series/Series";
 
 export interface MarketData {
     Candles: RawSeries<Candle>;
@@ -37,4 +37,16 @@ export const GetResolutionTick = (resolution: Resolution): number => {
         default:
             throw new Error(`Unsupported resolution '${resolution}'`);
     }
+}
+
+export enum Position {
+    Long,
+    Short
+}
+
+export interface OpenTrade {
+    entry: number,
+    leverage: number,
+    orderValue: number,
+    position: Position
 }

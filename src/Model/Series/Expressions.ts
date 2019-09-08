@@ -1,4 +1,4 @@
-import { EvaluatedSeries, Series, SeriesData } from "Model/Data/Series";
+import { EvaluatedSeries, Series, SeriesData } from "Model/Series/Series";
 
 export const Expression = (expr: (...args: SeriesData<number>[]) => number, ...deps: Series<any>[]): EvaluatedSeries<number> => {
     return new EvaluatedSeries(expr, deps);

@@ -1,4 +1,4 @@
-import { OpenTrade } from "Model/Data/Trading";
+import { OpenTrade } from "Model/InternalContracts";
 
 export interface IBroker {
     enterLong(leverage: number, qty: number): Promise<OpenTrade>;

@@ -1,21 +1,14 @@
-import { Candle, Resolution, ResolutionMapped, Dictionary } from "Model/Contracts";
-import { GetResolutionTick, MarketData, Tick } from "Model/Data/Data";
-import { RawSeries, SimpleSeries, EvaluatedSeries, UpdateIndex } from "Model/Data/Series";
-import { Subscribable } from "Model/Events";
+import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
-import { DataQueue } from "./DataQueue";
-
-export interface TickUpdate {
-    updatedResolutions: Resolution[],
-    lastTick: number,
-    currentTick: number
-}
-
+import { GetResolutionTick, MarketData } from "Model/InternalContracts";
+import { EvaluatedSeries, RawSeries, SimpleSeries, UpdateIndex } from "Model/Series/Series";
+import { Subscribable } from "Model/Utils/Events";
+import { CandleQueue } from "../Utils/CandleQueue";
 
 export class DataController extends Subscribable<ResolutionMapped<number>> {
 
     public readonly MarketDataMap: ResolutionMapped<MarketData> = {};
-    private dataQueue: DataQueue;
+    private dataQueue: CandleQueue;
     private isRunning: boolean = false;
 
     public constructor(private exchange: Exchange, private resolutionSet: Resolution[]) {
@@ -30,7 +23,7 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
         this.getBaseData(initCandleCount).then((dataMap) => {
             this.initData(dataMap);
 
-            this.exchange.start(this.resolutionSet).then((queue: DataQueue) => {
+            this.exchange.start(this.resolutionSet).then((queue: CandleQueue) => {
                 this.dataQueue = queue;
                 this.isRunning = true;
                 this.fetchUpdate();

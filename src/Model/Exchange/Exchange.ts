@@ -1,33 +1,28 @@
 import { Candle, Resolution } from "Model/Contracts";
-import { CtorStore } from "Model/CtorStore";
-import { DataQueue } from "Model/Exchange/DataQueue";
 import { IBroker } from "Model/Exchange/IBroker";
 import { INetwork } from "Model/Network";
+import { CandleQueue } from "Model/Utils/CandleQueue";
+import { CtorStore } from "Model/Utils/CtorStore";
 
 export type ExchangeCtor = new (network: INetwork, broker: IBroker) => Exchange;
 
 interface IExchange {
     readonly Broker: IBroker;
+    readonly isLive: boolean;
     
     getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]>;
-    isLive(): boolean;
-    start(resolutionSet: Resolution[]): Promise<DataQueue>;
-
+    start(resolutionSet: Resolution[]): Promise<CandleQueue>;
 }
 
 export const ExchangeStore = new CtorStore<ExchangeCtor>();
 
 export abstract class Exchange implements IExchange {
-    public readonly Broker: IBroker;
+    public abstract readonly isLive: boolean;
 
     public abstract getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]>;
-    
-    public abstract isLive(): boolean;
+    public abstract start(resolutionSet: Resolution[]): Promise<CandleQueue>;
 
-    public abstract start(resolutionSet: Resolution[]): Promise<DataQueue>;
-
-    constructor(protected network: INetwork, broker: IBroker) {
-        this.Broker = broker;
+    constructor(protected network: INetwork, public readonly Broker: IBroker) {
         this.network = network;
     }
 }

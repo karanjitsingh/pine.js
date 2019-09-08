@@ -1,5 +1,5 @@
 import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
-import { Subscribable } from "Model/Events";
+import { Subscribable } from "Model/Utils/Events";
 
 export type SeriesData<T> = (lookback: number) => T;
 
