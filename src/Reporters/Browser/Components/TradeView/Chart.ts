@@ -90,6 +90,10 @@ export class Chart {
                     color: 'rgba(42, 46, 57, 0.6)',
                 },
             },
+            timeScale: {
+                timeVisible: true
+            }
+            
         });
 
         chart.series = {
@@ -164,7 +168,7 @@ export class Chart {
         for (let i = 0; i < chartData.Data.length; i++) {
 
             const candle = chartData.Data[chartData.Data.length - i - 1];
-            const time = candle.startTick as TimeStamp;
+            const time = candle.startTick / 1000 as TimeStamp;
 
             candleUpdate({
                 open: candle.open,
