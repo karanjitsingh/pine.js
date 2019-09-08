@@ -1,9 +1,7 @@
 import * as http from 'http';
-import { GetMethod, PlatformInstance, PostMethod } from 'Server/ServerContracts';
+import { PlatformControl } from 'Platform/PlatformControl';
 import { URL } from 'url';
 import { rest } from './Rest';
-import { PlatformConfiguration } from 'Model/Contracts';
-import { PlatformControl } from 'Platform/PlatformControl';
 
 export class Server {
 

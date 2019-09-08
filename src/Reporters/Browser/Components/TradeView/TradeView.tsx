@@ -1,48 +1,39 @@
 import { Spinner } from 'Components/Spinner';
+import { Chart } from 'Components/TradeView/Chart';
+import { TradeLog } from 'Components/TradeView/TradeLog';
 import { DataStream } from 'DataStream';
-import { PlotConfigMap, ReporterData } from "Model/Contracts";
+import SplitWrapper from 'lib/react-split';
+import { ChartData, PlotConfigMap } from "Model/Contracts";
 import * as React from 'react';
-import SplitWrapper from '../../lib/react-split';
-import { ChartView } from './ChartView';
-import { TradeLog } from './TradeLog';
 
 export interface TradeViewProps {
-    dataStream: DataStream<ReporterData>,
-    Plot: PlotConfigMap
+    dataStream: DataStream<{[id: string]: ChartData}>,
+    plotConfigMap: PlotConfigMap
 }
 
-interface TradeViewState {
-    dataInit: boolean
-}
+type MappedContainer = {[id: string]: React.RefObject<HTMLDivElement>};
+type MappedChart = {[id: string]: Chart};
 
-type MappedChart = {[id: string]: React.RefObject<ChartView>};
-
-export class TradeView extends React.Component<TradeViewProps, TradeViewState> {
+export class TradeView extends React.Component<TradeViewProps> {
 
     private chartSplit: JSX.Element;
-    private chartRefMap: MappedChart;
-
-    public shouldComponentUpdate() {
-        return false;
-    }
+    private chartContainerMap: MappedContainer;
+    private chartMap: MappedChart;
+    private chartLoaded: boolean;
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            dataInit: false
-        };
 
         this.props.dataStream.addEventListener('data', this.dataListener.bind(this));
     }
 
     public dataListener() {
-        // this.chartSplit = this.getChartSplit(this.props.dataStream.pop());
+        this.props.dataStream.flush()
     }
 
     public render() {
-        if(!this.chartSplit && this.state.dataInit) {
-            this.chartSplit = this.getChartSplit(this.props.Plot);
+        if(!this.chartSplit) {
+            this.chartSplit = this.getChartSplit(this.props.plotConfigMap);
         }
 
         return (
@@ -55,21 +46,33 @@ export class TradeView extends React.Component<TradeViewProps, TradeViewState> {
         )
     }
 
+    public componentDidMount() {
+        if(this.chartContainerMap && !this.chartMap && !this.chartLoaded) {
+         
+            this.chartMap = Object.keys(this.chartContainerMap).reduce((map, key) => {
+                map[key] = Chart.Create(this.chartContainerMap[key].current, this.props.plotConfigMap[key]);
+                return map;
+            }, {});
+
+            this.chartLoaded = true;
+        }
+    }
+
     private getChartSplit(plotConfig: PlotConfigMap): JSX.Element {
-        const plots = Object.keys(plotConfig);
-        const chartCount = plots.length;
+        const plotIds = Object.keys(plotConfig);
+        const chartCount = plotIds.length;
         
         const sizes = new Array(chartCount).fill(Math.floor(100/chartCount));
         const sum = sizes.reduce((total, value) => (total + value));
 
         sizes[0] += 100 - sum;
 
-        this.chartRefMap = plots.reduce<MappedChart>((map, id) => {
-            map[id] = React.createRef<ChartView>();
+        this.chartContainerMap = plotIds.reduce<MappedContainer>((map, id) => {
+            map[id] = React.createRef<HTMLDivElement>();
             return map;
         }, {});
         
-        const charts = plots.map((id) => (<ChartView ref={this.chartRefMap[id]}></ChartView>));
+        const charts = plotIds.map((id) => (<div ref={this.chartContainerMap[id]}></div>));
 
         return (
             <SplitWrapper sizes={sizes} minSize={100} dragInterval={1} gutterSize={5} direction={"vertical"}>
