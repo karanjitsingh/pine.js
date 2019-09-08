@@ -35,7 +35,7 @@ export class TradeView extends React.Component<TradeViewProps> {
 
         return (
             <div style={{ height: "100%", width: "100%" }}>
-                <SplitWrapper sizes={[70, 30]} minSize={100} dragInterval={1} gutterSize={5} direction={"horizontal"}>
+                <SplitWrapper onDragEnd={this.triggerResize.bind(this)} sizes={[70, 30]} minSize={100} dragInterval={1} gutterSize={5} direction={"horizontal"}>
                     { !this.chartSplit ? <Spinner></Spinner> : this.chartSplit }
                     <TradeLog></TradeLog>
                 </SplitWrapper>
@@ -53,6 +53,8 @@ export class TradeView extends React.Component<TradeViewProps> {
 
             this.chartLoaded = true;
         }
+
+        window.addEventListener('resize', this.triggerResize.bind(this));
     }
 
     private getChartSplit(plotConfig: Dictionary<PlotConfig>): JSX.Element {
@@ -69,12 +71,18 @@ export class TradeView extends React.Component<TradeViewProps> {
             return map;
         }, {});
         
-        const charts = plotIds.map((id) => (<div ref={this.chartContainerMap[id]}></div>));
+        const charts = plotIds.map((id) => (<div className="chart-container" ref={this.chartContainerMap[id]}></div>));
 
         return (
-            <SplitWrapper sizes={sizes} minSize={100} dragInterval={1} gutterSize={5} direction={"vertical"}>
+            <SplitWrapper onDragEnd={this.triggerResize.bind(this)} sizes={sizes} minSize={100} dragInterval={1} gutterSize={5} direction={"vertical"}>
                 {charts}
             </SplitWrapper>
         );
+    }
+
+    private triggerResize() {
+        Object.values(this.chartMap).forEach((chart) => {
+            chart.resize();
+        })
     }
 }

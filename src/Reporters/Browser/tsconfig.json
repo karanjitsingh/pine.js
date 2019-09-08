@@ -8,7 +8,8 @@
         "baseUrl": "./",
         "paths": {
             "Model/Contracts": [ "../../Model/Contracts.d.ts" ],
-            "Components/*": [ "./Components/*" ]
+            "Components/*": [ "./Components/*" ],
+            "lightweight-charts": [ "lib/lightweight-charts.d.ts" ]
         },
         "moduleResolution": "node",
         "jsx": "react",

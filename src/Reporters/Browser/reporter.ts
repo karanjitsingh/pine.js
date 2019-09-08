@@ -1,9 +1,10 @@
 import { Page, PageMode } from "Components/Page";
 import React = require("react");
 import ReactDOM = require("react-dom");
-import { PlatformConfiguration, ProtocolMessage, ReporterDataMessage, MessageType } from "Model/Contracts";
+import { PlatformConfiguration, ProtocolMessage, MessageType, ChartData, Dictionary, Trade } from "Model/Contracts";
 import { Network } from "Network";
 import { TradeViewProps } from "Components/TradeView/TradeView";
+import { DataStream } from "DataStream";
 
 interface InitInfo {
     availableExchanges: string[];
@@ -15,6 +16,8 @@ class Reporter {
     private readonly page: Page;
     private socket: WebSocket;
     private network: Network;
+    private chartDataStream: DataStream<Dictionary<ChartData>>;
+    private tradeDataStream: DataStream<Trade>;
 
     constructor() {
         this.page = ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
@@ -121,6 +124,14 @@ class Reporter {
             case 'ReporterConfig':
                 const plotConfigs = (message as ProtocolMessage<'ReporterConfig'>).PlotConfig;
                 console.log(plotConfigs);
+
+                this.chartDataStream = new DataStream();
+                this.tradeDataStream = new DataStream();
+
+                this.updatePage({
+                    dataStream: this.chartDataStream,
+                    plotConfigMap: plotConfigs
+                })
                 break;
         }
     }

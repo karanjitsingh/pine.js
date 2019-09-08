@@ -2,7 +2,6 @@
 
 <head>
     <script src="lib/require.js" type="text/javascript"></script>
-    <script src="lib/lightweight-charts.js" type="text/javascript"></script>
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" /> -->
     <link rel="stylesheet" href="remote/bootstrap.min.css"/>
@@ -31,6 +30,11 @@
                         "react-dom": "remote/react-dom.production.min",
                         "react-bootstrap": "remote/react-bootstrap.min",
                         "lightweight-charts": "remote/lightweight-charts.standalone.production"
+                    },
+                    shim: {
+                        'lightweight-charts': {
+                            exports: 'LightweightCharts'
+                        }
                     },
                     waitSeconds: 0,
                     baseUrl: './'

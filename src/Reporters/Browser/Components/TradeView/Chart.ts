@@ -1,4 +1,4 @@
-import * as LightweightCharts from 'lib/lightweight-charts';
+import * as LightweightCharts from "lightweight-charts";
 import { ChartData, PlotConfig } from "Model/Contracts";
 
 type TimeStamp = LightweightCharts.Nominal<number, 'UTCTimestamp'>;
@@ -23,10 +23,15 @@ interface ChartUpdate {
 export class Chart {
 
     private constructor() { }
-    private chartObj: LightweightCharts.IChartApi;
-    private chartSeries: ChartSeries;
+    private obj: LightweightCharts.IChartApi;
+    private series: ChartSeries;
+    private size: {
+        height: number,
+        width: number
+    }
+    private container: HTMLDivElement;
 
-    public static Create(container: HTMLElement, plotConfig: PlotConfig): Chart {
+    public static Create(container: HTMLDivElement, plotConfig: PlotConfig): Chart {
 
         let chartScale;
         let volumeScale;
@@ -62,9 +67,15 @@ export class Chart {
 
         const chart = new Chart();
 
-        const chartObj = chart.chartObj = LightweightCharts.createChart(container, {
+        chart.container = container;
+
+        chart.size = {
             width: container.offsetWidth,
             height: container.offsetHeight,
+        };
+
+        const chartObj = chart.obj = LightweightCharts.createChart(container, {
+            ...chart.size,
             priceScale: {
                 scaleMargins: chartScale,
                 borderVisible: false,
@@ -83,16 +94,15 @@ export class Chart {
             },
         });
 
-        container.onresize = () => {
-            chartObj.applyOptions({
-                height: container.offsetHeight,
-                width: container.offsetWidth
-            });
-        }
+        chart.series = {
+            candles: null,
+            volume: null,
+            indicators: []
+        };
 
-        chart.chartSeries.candles = chartObj.addCandlestickSeries();
+        chart.series.candles = chartObj.addCandlestickSeries();
 
-        chart.chartSeries.volume = chartObj.addHistogramSeries({
+        chart.series.volume = chartObj.addHistogramSeries({
             color: '#26a69a',
             lineWidth: 2,
             priceFormat: {
@@ -105,7 +115,7 @@ export class Chart {
 
         plotConfig.IndicatorConfigs.forEach((config) => {
             if (config.PlotType == 'Area') {
-                chart.chartSeries.indicators.push(chartObj.addAreaSeries({
+                chart.series.indicators.push(chartObj.addAreaSeries({
                     topColor: 'rgba(38,198,218, 0.56)',
                     bottomColor: 'rgba(38,198,218, 0.04)',
                     lineColor: 'rgba(38,198,218, 1)',
@@ -116,7 +126,7 @@ export class Chart {
                     lastValueVisible: false
                 }));
             } else if (config.PlotType == 'Line') {
-                chart.chartSeries.indicators.push(chartObj.addLineSeries({
+                chart.series.indicators.push(chartObj.addLineSeries({
                     color: 'rgba(38,198,218, 1)',
                     lineWidth: 2,
                     overlay: true,
@@ -130,7 +140,7 @@ export class Chart {
         return chart;
     }
 
-    public Update(chartData: ChartData) {
+    public update(chartData: ChartData) {
         // It's given that length of candle update is same as length of indicator update
 
         const chartUpdate: ChartUpdate = {
@@ -169,11 +179,24 @@ export class Chart {
             });
         }
 
-        this.chartSeries.candles.setData(chartUpdate.candles);
-        this.chartSeries.volume.setData(chartUpdate.volume);
+        this.series.candles.setData(chartUpdate.candles);
+        this.series.volume.setData(chartUpdate.volume);
 
-        this.chartSeries.indicators.forEach((indicator, index) => {
+        this.series.indicators.forEach((indicator, index) => {
             indicator.setData(chartUpdate.indicators[index]);
         });
+    }
+
+    public resize() {
+        const newSize = {
+            width: this.container.offsetWidth,
+            height: this.container.offsetHeight,
+        };
+        
+        if(newSize.width != this.size.width || newSize.height != this.size.height) {
+            this.obj.applyOptions({
+                ...newSize
+            });
+        }
     }
 }
