@@ -1,7 +1,4 @@
-export enum PlotType {
-    Area,
-    Line
-}
+export type PlotType = 'Area' | 'Line';
 
 export interface ChartData {
     Data: Candle[];
@@ -39,7 +36,7 @@ export interface Trade {
 }
 
 export interface ReporterData {
-    Plots: {[id: string]: ChartData},
+    Plots: Dictionary<ChartData>,
     TradeData: Trade[]
 }
 
@@ -61,7 +58,7 @@ export interface MessageContract {
     };
 
     ReporterConfig: {
-        PlotConfig: PlotConfigMap
+        PlotConfig: Dictionary<PlotConfig>
     };
 }
 
@@ -76,6 +73,9 @@ export interface PlotConfig {
     IndicatorConfigs: IndicatorConfig[];
 }
 
-export type PlotConfigMap = {[id: string]: PlotConfig};
-
 export type Resolution = "1m" | "3m" | "5m" | "15m" | "30m" | "1h" | "2h" | "3h" | "4h" | "6h" | "1d" | "3d" | "1w" | "2w";
+
+
+export type Dictionary<T> = {[key: string]: T};
+
+export type ResolutionMapped<T> = {[resolution in Resolution]?: T}; 

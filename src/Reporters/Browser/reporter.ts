@@ -3,6 +3,7 @@ import React = require("react");
 import ReactDOM = require("react-dom");
 import { PlatformConfiguration, ProtocolMessage, ReporterDataMessage, MessageType } from "Model/Contracts";
 import { Network } from "Network";
+import { TradeViewProps } from "Components/TradeView/TradeView";
 
 interface InitInfo {
     availableExchanges: string[];
@@ -122,6 +123,10 @@ class Reporter {
                 console.log(plotConfigs);
                 break;
         }
+    }
+
+    private updatePage(props: TradeViewProps) {
+        this.page.Actions.RenderCharts(props);
     }
 }
 

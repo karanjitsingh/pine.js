@@ -1,5 +1,4 @@
-import { Candle, Resolution } from "Model/Contracts";
-import { ResolutionMapped } from "Model/Data/Data";
+import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
 import { Subscribable } from "Model/Events";
 
 export type SeriesData<T> = (lookback: number) => T;
@@ -48,6 +47,7 @@ export class RawSeries<T> extends Series<T> {
 
     public constructor(data: T[], resolution: Resolution) {
         super(data);
+        this.Resolution = resolution;
     }
 
     protected update(updateIndex: UpdateIndex) {

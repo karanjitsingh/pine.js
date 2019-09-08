@@ -14,5 +14,3 @@ export type RawPlot = {
     MarketData: MarketData;
     Indicators: Indicator[]
 }
-
-export type PlotMap = {[id: string]: Plot};

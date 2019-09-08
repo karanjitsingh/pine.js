@@ -1,15 +1,15 @@
 import { BacktestBroker } from "Exchange/BacktestBroker";
-import { Candle, ChartData, PlatformConfiguration, PlotConfigMap, ReporterData, Trade, IndicatorConfig, Resolution } from "Model/Contracts";
-import { MarketData, ResolutionMapped } from "Model/Data/Data";
+import { Candle, ChartData, IndicatorConfig, PlatformConfiguration, ReporterData, Resolution, ResolutionMapped, Trade, Dictionary, PlotConfig } from "Model/Contracts";
+import { MarketData } from "Model/Data/Data";
 import { Subscribable } from "Model/Events";
 import { DataController } from "Model/Exchange/DataController";
 import { Exchange } from "Model/Exchange/Exchange";
 import { INetwork } from "Model/Network";
-import { PlotMap } from "Model/Strategy/Contracts";
 import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { MessageLogger } from "Platform/MessageLogger";
 import { Network } from "Platform/Network";
 import * as uuid from 'uuid/v4';
+import { Plot } from "Model/Strategy/Contracts";
 
 export class Platform extends Subscribable<ReporterData> {
     protected readonly Network: INetwork;
@@ -18,8 +18,8 @@ export class Platform extends Subscribable<ReporterData> {
     private currentStrategy: Strategy;
     private dataController: DataController;
     private _isRunning: boolean = false;
-    private plotMap: PlotMap;
-    private plotConfigMap: PlotConfigMap;
+    private plotMap: Dictionary<Plot>;
+    private plotConfigMap: Dictionary<PlotConfig>;
 
     public constructor(config: PlatformConfiguration) {
         super();
@@ -37,7 +37,7 @@ export class Platform extends Subscribable<ReporterData> {
         return this.currentStrategy.getConfig();
     }
 
-    public start(): PlotConfigMap {
+    public start(): Dictionary<PlotConfig> {
         this._isRunning = true;
         this.initStrategy(this.currentStrategy.getConfig(), this.dataController.MarketDataMap);
 
@@ -91,7 +91,7 @@ export class Platform extends Subscribable<ReporterData> {
         })
     }
 
-    private getReporterData(plot: PlotMap, rawData: ResolutionMapped<MarketData>, update?: ResolutionMapped<number>): ReporterData {
+    private getReporterData(plot: Dictionary<Plot>, rawData: ResolutionMapped<MarketData>, update?: ResolutionMapped<number>): ReporterData {
         const reporterData: ReporterData = {
             Plots: {},
             TradeData: [] as Trade[]
@@ -102,7 +102,7 @@ export class Platform extends Subscribable<ReporterData> {
             return map;
         }, {});
 
-        Object.keys(plot).reduce<{[id: string]: ChartData}>((map, id) => {
+        Object.keys(plot).reduce<Dictionary<ChartData>>((map, id) => {
             const res = plot[id].Resolution;
             const indicators = plot[id].Indicators;
             const updateLength = update[res];

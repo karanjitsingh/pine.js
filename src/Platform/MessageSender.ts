@@ -1,4 +1,4 @@
-import { PlotConfigMap, ProtocolMessage, ReporterData } from 'Model/Contracts';
+import { ProtocolMessage, ReporterData, Dictionary, PlotConfig } from 'Model/Contracts';
 import * as WebSocket from 'ws';
 
 export class MessageSender {
@@ -12,7 +12,7 @@ export class MessageSender {
         this.send(message, sockets);
     }
 
-    public SendReporterInit(plotConfigs: PlotConfigMap, sockets: WebSocket[]) {
+    public SendReporterInit(plotConfigs: Dictionary<PlotConfig>, sockets: WebSocket[]) {
         const message: ProtocolMessage<'ReporterConfig'> = {
             Type: 'ReporterConfig',
             PlotConfig: plotConfigs

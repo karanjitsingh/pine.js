@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Platform } from 'Platform/Platform';
 import { URL } from 'url';
 import * as WebSocket from 'ws';
+import { Dictionary } from 'Model/Contracts';
 
 export type RestMethods = {
     'post': { [path: string]: PostMethod },
@@ -25,5 +26,5 @@ export interface PlatformInstance {
     key: string,
     platform: Platform,
     server: WebSocket.Server,
-    connections: {[key: string]: WebSocket}
+    connections: Dictionary<WebSocket>
 }

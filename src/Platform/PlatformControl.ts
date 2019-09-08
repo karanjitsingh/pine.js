@@ -1,4 +1,4 @@
-import { PlatformConfiguration, ReporterData } from "Model/Contracts";
+import { PlatformConfiguration, ReporterData, Dictionary } from "Model/Contracts";
 import { MessageSender } from "Platform/MessageSender";
 import { Platform } from "Platform/Platform";
 import { PlatformInstance } from "Server/ServerContracts";
@@ -6,7 +6,7 @@ import * as uuid from 'uuid/v4';
 import * as WebSocket from 'ws';
 
 export class PlatformControl {
-    private platformCollection: { [key: string]: PlatformInstance } = {};
+    private platformCollection: Dictionary<PlatformInstance> = {};
     private reporterProtocol: MessageSender;
 
     public constructor() {

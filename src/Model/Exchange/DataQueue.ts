@@ -1,5 +1,4 @@
-import { Candle, Resolution } from "Model/Contracts";
-import { ResolutionMapped } from "Model/Data/Data";
+import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
 
 export class DataQueue {
     private updateQueue: ResolutionMapped<Candle>[] = [];

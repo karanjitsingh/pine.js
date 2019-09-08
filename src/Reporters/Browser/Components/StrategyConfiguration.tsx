@@ -1,6 +1,6 @@
-import * as React from 'react';
 import { PlatformConfiguration } from 'Model/Contracts';
-import { Carousel, CarouselItem, CarouselProps, Button, ListGroup, Form } from 'react-bootstrap'
+import * as React from 'react';
+import { Button, Carousel, CarouselItem, CarouselProps, Form, ListGroup } from 'react-bootstrap';
 
 export interface StrategyConfigurationProps {
     submitCallback: (config: PlatformConfiguration) => void;
@@ -30,7 +30,7 @@ interface ListSelectorProps {
 
 export class StrategyConfiguration extends React.Component<StrategyConfigurationProps, StrategyConfigurationState> {
 
-    private readonly TotalPanes = 3;
+    private pages: JSX.Element[];
 
     public constructor(props) {
         super(props);
@@ -42,7 +42,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
     }
 
     public shouldComponentUpdate(_, nextState: StrategyConfigurationState) {
-        return this.state.activeIndex != nextState.activeIndex 
+        return this.state.activeIndex != nextState.activeIndex
             || this.state.selectedExec != nextState.selectedExec;
     }
 
@@ -56,47 +56,17 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
             interval: null
         }
 
-        const done = this.TotalPanes - 1 == this.state.activeIndex;
+        if (!this.pages) {
+            this.pages = this.getPages();
+        }
+
+        const done = this.pages.length - 1 == this.state.activeIndex;
 
         return (
             <div className="config-selector-container">
                 <div className="config-selector">
                     <Carousel onSlideEnd={() => this.setState({ activeIndex: this.state.activeIndex, isSliding: false })} activeIndex={this.state.activeIndex | 0} {...carouselProps} className="config-carousel">
-                        <CarouselItem className="config-pane">
-                            <ConfigPane heading="Strategy">
-                                <ListSelector onSelect={(strategy) => this.setState({
-                                    ...this.state,
-                                    selectedStrategy: strategy
-                                })} list={this.props.availableStrategies}></ListSelector>
-                            </ConfigPane>
-                        </CarouselItem>
-                        <CarouselItem className="config-pane">
-                            <ConfigPane heading="Exchange">
-                                <ListSelector onSelect={(exchange) => this.setState({
-                                    ...this.state,
-                                    selectedExchange: exchange
-                                })} list={this.props.availableExchanges}></ListSelector>
-                            </ConfigPane>
-                        </CarouselItem>
-                        <CarouselItem className="config-pane">
-                            <ConfigPane heading="Execution">
-                                <ListSelector onSelect={(execution) => this.setState({
-                                    ...this.state,
-                                    selectedExec: execution
-                                })} default={0} direction={Orientation.Horizontal} list={["Trade", "Backtest"]}></ListSelector>
-                                {
-                                    this.state.selectedExec == "Trade" ?
-                                    <Form.Group controlId="trade-form">
-                                        <Form.Label>Exchange auth token</Form.Label>
-                                        <Form.Control type="password" placeholder="Auth token"></Form.Control>
-                                    </Form.Group>
-                                    :
-                                    <Form.Group>
-                                        <Form.Label>✔ All set</Form.Label>
-                                    </Form.Group>
-                                }
-                            </ConfigPane>
-                        </CarouselItem>
+                        {this.pages}
                     </Carousel>
                     <div className="carousel-buttons">
                         <Button variant="light" className={this.state.activeIndex ? "" : "disabled"} onClick={() => this.configButton_OnClick(false)}>Prev</Button>
@@ -107,13 +77,73 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
         )
     }
 
+    private getPages(): JSX.Element[] {
+        return [
+
+            <CarouselItem className="config-pane">
+                <ConfigPane heading="Use Defaults">
+                    <Button variant={'primary'} onClick={() => {this.setDefaultConfiguration();}}>Defaults</Button>
+                </ConfigPane>
+            </CarouselItem>,
+
+            <CarouselItem className="config-pane">
+                <ConfigPane heading="Strategy">
+                    <ListSelector onSelect={(strategy) => this.setState({
+                        ...this.state,
+                        selectedStrategy: strategy
+                    })} list={this.props.availableStrategies}></ListSelector>
+                </ConfigPane>
+            </CarouselItem>,
+
+            <CarouselItem className="config-pane">
+                <ConfigPane heading="Exchange">
+                    <ListSelector onSelect={(exchange) => this.setState({
+                        ...this.state,
+                        selectedExchange: exchange
+                    })} list={this.props.availableExchanges}></ListSelector>
+                </ConfigPane>
+            </CarouselItem>,
+
+            <CarouselItem className="config-pane">
+                <ConfigPane heading="Execution">
+                    <ListSelector onSelect={(execution) => this.setState({
+                        ...this.state,
+                        selectedExec: execution
+                    })} default={0} direction={Orientation.Horizontal} list={["Trade", "Backtest"]}></ListSelector>
+                    {
+                        this.state.selectedExec == "Trade" ?
+                            <Form.Group controlId="trade-form">
+                                <Form.Label>Exchange auth token</Form.Label>
+                                <Form.Control type="password" placeholder="Auth token"></Form.Control>
+                            </Form.Group>
+                            :
+                            <Form.Group>
+                                <Form.Label>✔ All set</Form.Label>
+                            </Form.Group>
+                    }
+                </ConfigPane>
+            </CarouselItem>
+
+        ];
+    }
+
+    private setDefaultConfiguration() {
+        this.props.submitCallback({
+            Exchange: "ByBit",
+            Strategy: "Stochastic Strategy",
+            TradeSettings: {
+                AuthToken: "asdf"
+            }
+        });
+    }
+
     private submit() {
         const config = {
             Strategy: this.state.selectedStrategy,
             Exchange: this.state.selectedExchange
         } as PlatformConfiguration
 
-        if(this.state.selectedExec === "Trade") {
+        if (this.state.selectedExec === "Trade") {
             config.TradeSettings = {
                 AuthToken: (document.querySelector("#trade-form") as HTMLInputElement).value
             }
@@ -123,7 +153,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
 
         console.log(config);
 
-        if(this.props.submitCallback) {
+        if (this.props.submitCallback) {
             this.props.submitCallback(config);
         }
     }
@@ -132,7 +162,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
         if (!this.state.isSliding) {
             const index = this.state.activeIndex | 0;
             if (next) {
-                if (index + 1 < this.TotalPanes) {
+                if (index + 1 < this.pages.length) {
                     this.setState({
                         activeIndex: index + 1,
                         isSliding: true

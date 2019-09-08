@@ -1,6 +1,7 @@
-import { MarketData, ResolutionMapped } from "Model/Data/Data";
+import { ResolutionMapped } from "Model/Contracts";
+import { MarketData } from "Model/Data/Data";
 import { IBroker } from "Model/Exchange/IBroker";
-import { PlotMap, RawPlot } from "Model/Strategy/Contracts";
+import { RawPlot } from "Model/Strategy/Contracts";
 import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { Trader } from "Model/Strategy/Trader";
 import { MessageLogger } from "Platform/MessageLogger";
@@ -25,8 +26,6 @@ export class StochasticStrategy extends Strategy {
     }
 
     public init(input: ResolutionMapped<MarketData>): RawPlot[] {
-
-
         return [
             {
                 MarketData: input['30m'],
@@ -37,13 +36,6 @@ export class StochasticStrategy extends Strategy {
                 Indicators: []
             }
         ]
-        // return this.StrategyConfig.resolutionSet.reduce<PlotMap>((map ,res) => {
-        //     map[res] = {
-        //         Resolution: 
-        //     };
-        //     map[res].Indicators  = [];
-        //     return map;
-        // }, {})
     }
 
 

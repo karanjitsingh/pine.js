@@ -3,22 +3,19 @@ import { Chart } from 'Components/TradeView/Chart';
 import { TradeLog } from 'Components/TradeView/TradeLog';
 import { DataStream } from 'DataStream';
 import SplitWrapper from 'lib/react-split';
-import { ChartData, PlotConfigMap } from "Model/Contracts";
+import { ChartData, Dictionary, PlotConfig } from "Model/Contracts";
 import * as React from 'react';
 
 export interface TradeViewProps {
-    dataStream: DataStream<{[id: string]: ChartData}>,
-    plotConfigMap: PlotConfigMap
+    dataStream: DataStream<Dictionary<ChartData>>,
+    plotConfigMap: Dictionary<PlotConfig>
 }
-
-type MappedContainer = {[id: string]: React.RefObject<HTMLDivElement>};
-type MappedChart = {[id: string]: Chart};
 
 export class TradeView extends React.Component<TradeViewProps> {
 
     private chartSplit: JSX.Element;
-    private chartContainerMap: MappedContainer;
-    private chartMap: MappedChart;
+    private chartContainerMap: Dictionary<React.RefObject<HTMLDivElement>>;
+    private chartMap: Dictionary<Chart>;
     private chartLoaded: boolean;
 
     constructor(props) {
@@ -58,7 +55,7 @@ export class TradeView extends React.Component<TradeViewProps> {
         }
     }
 
-    private getChartSplit(plotConfig: PlotConfigMap): JSX.Element {
+    private getChartSplit(plotConfig: Dictionary<PlotConfig>): JSX.Element {
         const plotIds = Object.keys(plotConfig);
         const chartCount = plotIds.length;
         
@@ -67,7 +64,7 @@ export class TradeView extends React.Component<TradeViewProps> {
 
         sizes[0] += 100 - sum;
 
-        this.chartContainerMap = plotIds.reduce<MappedContainer>((map, id) => {
+        this.chartContainerMap = plotIds.reduce< Dictionary<React.RefObject<HTMLDivElement>>>((map, id) => {
             map[id] = React.createRef<HTMLDivElement>();
             return map;
         }, {});

@@ -1,5 +1,5 @@
-import { Candle, Resolution } from "Model/Contracts";
-import { GetResolutionTick, MarketData, ResolutionMapped, Tick } from "Model/Data/Data";
+import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
+import { GetResolutionTick, MarketData, Tick } from "Model/Data/Data";
 import { RawSeries, SimpleSeries } from "Model/Data/Series";
 import { Subscribable } from "Model/Events";
 import { Exchange } from "Model/Exchange/Exchange";

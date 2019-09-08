@@ -17,7 +17,7 @@ export interface PageState {
 export enum PageMode {
     Configuration,
     Loading,
-    View
+    TradeView
 }
 
 export enum PageActions {
@@ -34,6 +34,15 @@ export class Page extends React.Component<{}, PageState> {
         };
     }
 
+    public Actions = {
+        RenderCharts: (props: TradeViewProps) => {
+            this.setState({
+                tradeViewProps: props,
+                pageMode: PageMode.TradeView
+            });
+        }
+    }
+
     public render() {
 
         switch (this.state.pageMode) {
@@ -48,7 +57,7 @@ export class Page extends React.Component<{}, PageState> {
                 return <StrategyConfiguration {...configSelectorProps} />
             case PageMode.Loading:
                 return <Spinner />
-            case PageMode.View:
+            case PageMode.TradeView:
                 return <TradeView {...this.state.tradeViewProps} />
         }
     }

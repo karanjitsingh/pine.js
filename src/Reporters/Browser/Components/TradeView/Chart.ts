@@ -1,5 +1,7 @@
 import * as LightweightCharts from 'lib/lightweight-charts';
-import { ChartData, PlotConfig, PlotType } from "Model/Contracts";
+import { ChartData, PlotConfig } from "Model/Contracts";
+
+type TimeStamp = LightweightCharts.Nominal<number, 'UTCTimestamp'>;
 
 enum Color {
     GreenCandle = "rgba(0, 150, 136, 0.8)",
@@ -102,7 +104,7 @@ export class Chart {
         });
 
         plotConfig.IndicatorConfigs.forEach((config) => {
-            if (config.PlotType == PlotType.Area) {
+            if (config.PlotType == 'Area') {
                 chart.chartSeries.indicators.push(chartObj.addAreaSeries({
                     topColor: 'rgba(38,198,218, 0.56)',
                     bottomColor: 'rgba(38,198,218, 0.04)',
@@ -113,7 +115,7 @@ export class Chart {
                     priceLineVisible: false,
                     lastValueVisible: false
                 }));
-            } else if (config.PlotType == PlotType.Line) {
+            } else if (config.PlotType == 'Line') {
                 chart.chartSeries.indicators.push(chartObj.addLineSeries({
                     color: 'rgba(38,198,218, 1)',
                     lineWidth: 2,
@@ -140,7 +142,7 @@ export class Chart {
         for(let i = 0; i < chartData.Data.length; i++) {
 
             const candle = chartData.Data[chartData.Data.length - i - 1];
-            const time = candle.startTick as LightweightCharts.Nominal<number, 'UTCTimestamp'>;
+            const time = candle.startTick as TimeStamp;
 
             chartUpdate.candles.unshift({
                 open: candle.open,

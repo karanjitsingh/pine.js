@@ -1,4 +1,4 @@
-import { Candle, Resolution } from "Model/Contracts";
+import { Candle, Resolution, Dictionary } from "Model/Contracts";
 import { DataQueue } from "Model/Exchange/DataQueue";
 import { IBroker } from "Model/Exchange/IBroker";
 import { INetwork } from "Model/Network";
@@ -17,7 +17,7 @@ interface IExchange {
 export abstract class Exchange implements IExchange {
     public readonly Broker: IBroker;
 
-    private static registeredExchanges: {[id:string]: ExchangeCtor} = {};
+    private static registeredExchanges: Dictionary<ExchangeCtor> = {};
 
     public static Register(name: string, exchangeCtor: ExchangeCtor) {
         if (Exchange.registeredExchanges[name]) {

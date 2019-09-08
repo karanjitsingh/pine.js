@@ -1,5 +1,5 @@
-import { Resolution, Candle } from "Model/Contracts";
-import { MarketData, ResolutionMapped } from "Model/Data/Data";
+import { Resolution, ResolutionMapped, Dictionary } from "Model/Contracts";
+import { MarketData } from "Model/Data/Data";
 import { IBroker } from "Model/Exchange/IBroker";
 import { MessageLogger } from "Platform/MessageLogger";
 import { RawPlot } from "./Contracts";
@@ -17,7 +17,7 @@ export abstract class Strategy {
     
     protected readonly abstract StrategyConfig: StrategyConfig;
 
-    private static registeredStrategies: {[name: string]: StrategyCtor} = {}
+    private static registeredStrategies: Dictionary<StrategyCtor> = {}
 
     public static Register(name: string, factory: StrategyCtor) {
         if (Strategy.registeredStrategies[name]) {
