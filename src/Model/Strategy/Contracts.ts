@@ -1,13 +1,8 @@
-import { IndicatorConfig, Resolution } from "Model/Contracts";
-import { Series } from "Model/Data/Series";
+import { IndicatorConfig } from "Model/Contracts";
 import { MarketData } from "Model/Data/Data";
+import { Series } from "Model/Data/Series";
 
 export type Indicator = IndicatorConfig & { Series: Series<number> };
-
-export type Plot = {
-    Resolution: Resolution;
-    Indicators: Indicator[];
-};
 
 export type RawPlot = {
     Title?: string;

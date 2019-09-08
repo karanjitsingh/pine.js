@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as http from 'http';
 import { PlatformConfiguration } from "Model/Contracts";
-import { Exchange } from "Model/Exchange/Exchange";
-import { Strategy } from "Model/Strategy/Strategy";
+import { ExchangeStore } from "Model/Exchange/Exchange";
+import { StrategyStore } from "Model/Strategy/Strategy";
 import * as path from 'path';
 import { Server } from "Server/Server";
 import { Constants, GetReply, PostReply, RestMethods } from "Server/ServerContracts";
@@ -33,8 +33,8 @@ export const rest: RestMethods = {
         '/api/init': (url: URL, res: http.ServerResponse): GetReply => {
             res.writeHead(200);
             res.end(JSON.stringify({
-                availableStrategies: Strategy.GetRegisteredStrategies(),
-                availableExchanges: Exchange.GetRegisteredExchanges()
+                availableStrategies: StrategyStore.entries(),
+                availableExchanges: ExchangeStore.entries()
             }))
 
             return Promise.resolve(200);

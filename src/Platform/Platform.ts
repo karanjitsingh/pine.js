@@ -1,15 +1,20 @@
 import { BacktestBroker } from "Exchange/BacktestBroker";
-import { Candle, ChartData, IndicatorConfig, PlatformConfiguration, ReporterData, Resolution, ResolutionMapped, Trade, Dictionary, PlotConfig } from "Model/Contracts";
+import { Candle, ChartData, Dictionary, IndicatorConfig, PlatformConfiguration, PlotConfig, ReporterData, Resolution, ResolutionMapped, Trade } from "Model/Contracts";
 import { MarketData } from "Model/Data/Data";
 import { Subscribable } from "Model/Events";
 import { DataController } from "Model/Exchange/DataController";
-import { Exchange } from "Model/Exchange/Exchange";
+import { ExchangeStore } from "Model/Exchange/Exchange";
 import { INetwork } from "Model/Network";
-import { Strategy, StrategyConfig } from "Model/Strategy/Strategy";
+import { Indicator } from "Model/Strategy/Contracts";
+import { Strategy, StrategyConfig, StrategyStore } from "Model/Strategy/Strategy";
 import { MessageLogger } from "Platform/MessageLogger";
 import { Network } from "Platform/Network";
 import * as uuid from 'uuid/v4';
-import { Plot } from "Model/Strategy/Contracts";
+
+type Plot = {
+    Resolution: Resolution;
+    Indicators: Indicator[];
+};
 
 export class Platform extends Subscribable<ReporterData> {
     protected readonly Network: INetwork;
@@ -25,7 +30,7 @@ export class Platform extends Subscribable<ReporterData> {
         super();
         this.MessageLogger = new MessageLogger();
         this.Network = new Network();
-        
+
         this.setConfig(config);
     }
 
@@ -50,10 +55,10 @@ export class Platform extends Subscribable<ReporterData> {
     }
 
     private setConfig(config: PlatformConfiguration) {
-        const exchangeCtor = Exchange.GetExchangeCtor(config.Exchange);
+        const exchangeCtor = ExchangeStore.get(config.Exchange);
         const exchange = new exchangeCtor(this.Network, config.BacktestSettings ? new BacktestBroker() : null);
 
-        this.currentStrategy = new (Strategy.GetStartegyCtor(config.Strategy))(exchange.Broker, this.MessageLogger);
+        this.currentStrategy = new (StrategyStore.get(config.Strategy))(exchange.Broker, this.MessageLogger);
 
         const stratConfig = this.currentStrategy.getConfig();
 
@@ -109,7 +114,7 @@ export class Platform extends Subscribable<ReporterData> {
             const indicators = plot[id].Indicators;
             const updateLength = update[res];
 
-            if(updateLength) {
+            if (updateLength) {
                 map[id] = {
                     Data: rawDataUpdate[res],
                     IndicatorData: indicators.map<number[]>((i) => (
@@ -126,7 +131,7 @@ export class Platform extends Subscribable<ReporterData> {
 
     private updateCallback(update: ResolutionMapped<number>) {
         this.currentStrategy.tick(update);
-        if(this.subscriberCount) {
+        if (this.subscriberCount) {
             this.notifyAll(this.getReporterData(this.plotMap, this.dataController.MarketDataMap, update));
         }
     }

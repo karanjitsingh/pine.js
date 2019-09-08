@@ -1,4 +1,5 @@
-import { Candle, Resolution, Dictionary } from "Model/Contracts";
+import { Candle, Resolution } from "Model/Contracts";
+import { CtorStore } from "Model/CtorStore";
 import { DataQueue } from "Model/Exchange/DataQueue";
 import { IBroker } from "Model/Exchange/IBroker";
 import { INetwork } from "Model/Network";
@@ -14,26 +15,10 @@ interface IExchange {
 
 }
 
+export const ExchangeStore = new CtorStore<ExchangeCtor>();
+
 export abstract class Exchange implements IExchange {
     public readonly Broker: IBroker;
-
-    private static registeredExchanges: Dictionary<ExchangeCtor> = {};
-
-    public static Register(name: string, exchangeCtor: ExchangeCtor) {
-        if (Exchange.registeredExchanges[name]) {
-            console.warn("Overriding registered exchanged:", name);
-        }
-
-        Exchange.registeredExchanges[name] = exchangeCtor;
-    }
-
-    public static GetExchangeCtor(exchange: string): ExchangeCtor {
-        return this.registeredExchanges[exchange];
-    }
-
-    public static GetRegisteredExchanges(): string[] {
-        return Object.keys(this.registeredExchanges);
-    }
 
     public abstract getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]>;
     

@@ -1,11 +1,11 @@
 import { ByBitExchange } from "Exchange/ByBit/ByBitExchange";
-import { Exchange } from "Model/Exchange/Exchange";
-import { Strategy } from "Model/Strategy/Strategy";
+import { ExchangeStore } from "Model/Exchange/Exchange";
+import { StrategyStore } from "Model/Strategy/Strategy";
 import { Server } from "Server/Server";
 import { StochasticStrategy } from "Strategy/StochasticStrategy";
 
-Strategy.Register("Stochastic Strategy", StochasticStrategy);
-Exchange.Register("ByBit", ByBitExchange);
+StrategyStore.register("Stochastic Strategy", StochasticStrategy);
+ExchangeStore.register("ByBit", ByBitExchange);
 
 Server.getInstance().start();
 
