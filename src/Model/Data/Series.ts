@@ -112,15 +112,18 @@ export class EvaluatedSeries<T> extends Series<T> {
     public static evaluteUpdates(resolutionMappedUpdate: ResolutionMapped<UpdateIndex>) {
         Object.keys(resolutionMappedUpdate).forEach((res: Resolution) => {
             const resolutionGraph = this.evaluationGraph[res];
-            const index = resolutionMappedUpdate[res];
 
-            resolutionGraph.forEach(seriesList => {
-                if (seriesList) {
-                    seriesList.forEach(series => {
-                        series.update(index);
-                    })
-                }
-            });
+            if (resolutionGraph) {
+                const index = resolutionMappedUpdate[res];
+
+                resolutionGraph.forEach(seriesList => {
+                    if (seriesList) {
+                        seriesList.forEach(series => {
+                            series.update(index);
+                        })
+                    }
+                });
+            }
         });
     }
 

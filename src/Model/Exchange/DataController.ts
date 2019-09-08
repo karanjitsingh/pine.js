@@ -1,6 +1,6 @@
-import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
+import { Candle, Resolution, ResolutionMapped, Dictionary } from "Model/Contracts";
 import { GetResolutionTick, MarketData, Tick } from "Model/Data/Data";
-import { RawSeries, SimpleSeries } from "Model/Data/Series";
+import { RawSeries, SimpleSeries, EvaluatedSeries, UpdateIndex } from "Model/Data/Series";
 import { Subscribable } from "Model/Events";
 import { Exchange } from "Model/Exchange/Exchange";
 import { DataQueue } from "./DataQueue";
@@ -10,6 +10,7 @@ export interface TickUpdate {
     lastTick: number,
     currentTick: number
 }
+
 
 export class DataController extends Subscribable<ResolutionMapped<number>> {
 
@@ -79,16 +80,33 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
 
     private initData(resolutionDataMap: ResolutionMapped<Candle[]>) {
         const resolutions = Object.keys(resolutionDataMap);
+        
+        const updateIndex: ResolutionMapped<UpdateIndex> = {};
+        const lengthMap: ResolutionMapped<number> = {};
 
         if(resolutions.length) {
             resolutions.forEach((res: Resolution) => {
                 const update = resolutionDataMap[res];
                 this.MarketDataMap[res].Candles.append(update);
+
+                updateIndex[res] = {
+                    offset: 0,
+                    length: update.length
+                }
+
+                lengthMap[res] = update.length
             });
         }
+
+        EvaluatedSeries.evaluteUpdates(updateIndex);
+        this.notifyAll(lengthMap);
     }
 
     private updateData(fetchedUpdated: ResolutionMapped<Candle>[]) {
+
+        const updateIndex: ResolutionMapped<UpdateIndex> = {};
+        const lengthMap: ResolutionMapped<number> = {};
+
         this.resolutionSet.forEach(resolution => {
             const update = fetchedUpdated.reduce<Candle[]>((candles, curr) => {
                 const currCandle = curr[resolution];
@@ -111,22 +129,44 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
             }, []);
             
             const marketCandles = this.MarketDataMap[resolution].Candles;
-
             const lastCandle = marketCandles.getData(1)[0];
 
+            lengthMap[resolution] = update.length;
+
             if(!lastCandle) {
+
                 marketCandles.updateData(0, update);
+
+                updateIndex[resolution] = {
+                    offset: 0,
+                    length: update.length
+                }
+
             } else if (lastCandle.startTick == update[0].startTick) {
+                
                 marketCandles.updateData(1, update);
+        
+                updateIndex[resolution] = {
+                    offset: 1,
+                    length: update.length
+                }
+
             } else if (lastCandle.startTick + GetResolutionTick(resolution) == update[0].startTick) {
+                
                 marketCandles.updateData(0, update);
+            
+                updateIndex[resolution] = {
+                    offset: 0,
+                    length: update.length
+                }
+            
             } else {
                 throw new Error("Backfill error.")
             }
         });
 
-        // how to issue what updates went in; and how to issue the new updates to the reporter
-        // EvaluatedSeries.evaluteUpdates()
+        EvaluatedSeries.evaluteUpdates(updateIndex);
+        this.notifyAll(lengthMap);
     }
 
     private createMarketDataSeries(resolution: Resolution): MarketData {

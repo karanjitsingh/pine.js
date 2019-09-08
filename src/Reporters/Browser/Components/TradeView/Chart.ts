@@ -5,7 +5,7 @@ type TimeStamp = LightweightCharts.Nominal<number, 'UTCTimestamp'>;
 
 enum Color {
     GreenCandle = "rgba(0, 150, 136, 0.8)",
-	RedCandle = "rgba(255,82,82, 0.8)"
+    RedCandle = "rgba(255,82,82, 0.8)"
 }
 
 interface ChartSeries {
@@ -30,6 +30,7 @@ export class Chart {
         width: number
     }
     private container: HTMLDivElement;
+    private dataInit: boolean = false;
 
     public static Create(container: HTMLDivElement, plotConfig: PlotConfig): Chart {
 
@@ -41,13 +42,11 @@ export class Chart {
             bottom: 0.025
         }
 
-
         if (plotConfig.IndicatorConfigs.length) {
             chartScale = {
                 top: 0.05,
                 bottom: 0.30,
             };
-
             volumeScale = {
                 top: 0.55,
                 bottom: 0.25
@@ -58,7 +57,6 @@ export class Chart {
                 top: 0.05,
                 bottom: 0.05,
             }
-
             volumeScale = {
                 top: 0.8,
                 bottom: 0
@@ -149,12 +147,26 @@ export class Chart {
             indicators: new Array(chartData.IndicatorData.length).fill([])
         }
 
-        for(let i = 0; i < chartData.Data.length; i++) {
+        let candleUpdate: (data: LightweightCharts.BarData) => void;
+        let volumeUpdate: (data: LightweightCharts.HistogramData) => void;
+        let indicatorUpdates: ((data: LightweightCharts.LineData) => void)[];
+
+        if (!this.dataInit) {
+            candleUpdate = chartUpdate.candles.unshift.bind(chartUpdate.candles);
+            volumeUpdate = chartUpdate.volume.unshift.bind(chartUpdate.volume);
+            indicatorUpdates = chartUpdate.indicators.map<(data: LightweightCharts.LineData) => void>((indicator) => indicator.unshift.bind(indicator) as any)
+        } else {
+            candleUpdate = this.series.candles.update.bind(this.series.candles);
+            volumeUpdate = this.series.volume.update.bind(this.series.volume);
+            indicatorUpdates = this.series.indicators.map((indicator) => indicator.update.bind(indicator));
+        }
+
+        for (let i = 0; i < chartData.Data.length; i++) {
 
             const candle = chartData.Data[chartData.Data.length - i - 1];
             const time = candle.startTick as TimeStamp;
 
-            chartUpdate.candles.unshift({
+            candleUpdate({
                 open: candle.open,
                 close: candle.close,
                 high: candle.high,
@@ -162,16 +174,16 @@ export class Chart {
                 time
             });
 
-            chartUpdate.volume.unshift({
+            volumeUpdate({
                 time,
                 color: candle.open < candle.close ? Color.GreenCandle : Color.RedCandle,
                 value: candle.volume
             });
 
             chartData.IndicatorData.forEach((indicator, index) => {
-                const value = indicator[indicator.length - i -1];
-                if(value !== undefined && value !== NaN) {
-                    chartUpdate.indicators[index].unshift({
+                const value = indicator[indicator.length - i - 1];
+                if (value !== undefined && value !== NaN) {
+                    indicatorUpdates[index]({
                         time,
                         value
                     });
@@ -179,12 +191,17 @@ export class Chart {
             });
         }
 
-        this.series.candles.setData(chartUpdate.candles);
-        this.series.volume.setData(chartUpdate.volume);
+        if (!this.dataInit) {
+            this.series.candles.setData(chartUpdate.candles);
+            this.series.volume.setData(chartUpdate.volume);
 
-        this.series.indicators.forEach((indicator, index) => {
-            indicator.setData(chartUpdate.indicators[index]);
-        });
+            this.series.indicators.forEach((indicator, index) => {
+                indicator.setData(chartUpdate.indicators[index]);
+            });
+
+            this.dataInit = true;
+        }
+
     }
 
     public resize() {
@@ -192,8 +209,8 @@ export class Chart {
             width: this.container.offsetWidth,
             height: this.container.offsetHeight,
         };
-        
-        if(newSize.width != this.size.width || newSize.height != this.size.height) {
+
+        if (newSize.width != this.size.width || newSize.height != this.size.height) {
             this.obj.applyOptions({
                 ...newSize
             });

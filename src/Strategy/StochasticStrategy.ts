@@ -16,7 +16,8 @@ export class StochasticStrategy extends Strategy {
         this.StrategyConfig = {
             resolutionSet: [
                 '1d',
-                '30m'
+                '30m',
+                '1m'
             ]
         };
     }
@@ -27,6 +28,10 @@ export class StochasticStrategy extends Strategy {
 
     public init(input: ResolutionMapped<MarketData>): RawPlot[] {
         return [
+            {
+                MarketData: input['1m'],
+                Indicators: []
+            },
             {
                 MarketData: input['30m'],
                 Indicators: []

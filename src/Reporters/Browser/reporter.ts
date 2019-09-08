@@ -118,7 +118,13 @@ class Reporter {
         switch(message.Type) {
             case 'ReporterData':
                 const reporterData = (message as ProtocolMessage<'ReporterData'>).Data;
-                console.log(reporterData);
+                
+                console.log(new Date().getTime(), reporterData);
+
+                if(Object.values(reporterData.ChartData)) {
+                    this.chartDataStream.push(reporterData.ChartData);
+                }
+
                 break;
 
             case 'ReporterConfig':
@@ -131,7 +137,8 @@ class Reporter {
                 this.updatePage({
                     dataStream: this.chartDataStream,
                     plotConfigMap: plotConfigs
-                })
+                });
+                
                 break;
         }
     }

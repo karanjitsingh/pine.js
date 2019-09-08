@@ -91,9 +91,9 @@ export class Platform extends Subscribable<ReporterData> {
         })
     }
 
-    private getReporterData(plot: Dictionary<Plot>, rawData: ResolutionMapped<MarketData>, update?: ResolutionMapped<number>): ReporterData {
+    private getReporterData(plot: Dictionary<Plot>, rawData: ResolutionMapped<MarketData>, update: ResolutionMapped<number>): ReporterData {
         const reporterData: ReporterData = {
-            Plots: {},
+            ChartData: {},
             TradeData: [] as Trade[]
         };
 
@@ -102,7 +102,7 @@ export class Platform extends Subscribable<ReporterData> {
             return map;
         }, {});
 
-        Object.keys(plot).reduce<Dictionary<ChartData>>((map, id) => {
+        reporterData.ChartData = Object.keys(plot).reduce<Dictionary<ChartData>>((map, id) => {
             const res = plot[id].Resolution;
             const indicators = plot[id].Indicators;
             const updateLength = update[res];

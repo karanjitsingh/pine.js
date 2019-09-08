@@ -36,7 +36,7 @@ export interface Trade {
 }
 
 export interface ReporterData {
-    Plots: Dictionary<ChartData>,
+    ChartData: Dictionary<ChartData>,
     TradeData: Trade[]
 }
 

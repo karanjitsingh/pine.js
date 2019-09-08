@@ -25,7 +25,11 @@ export class TradeView extends React.Component<TradeViewProps> {
     }
 
     public dataListener() {
-        this.props.dataStream.flush()
+        this.props.dataStream.flush().forEach(data => {
+            Object.keys(data).forEach((key) => {
+                this.chartMap[key].update(data[key]);
+            })
+        });
     }
 
     public render() {

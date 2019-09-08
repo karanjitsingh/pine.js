@@ -102,6 +102,8 @@ export class ByBitExchange extends Exchange {
                         // ws.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
                     }
                 } else if (data.topic && data.topic.startsWith('kline.')) {
+                    console.log(new Date().getTime(), "Bybit: websocket data")
+
                     const candle: Candle = {
                         startTick: data.data.open_time * 1000,
                         endTick: null,
