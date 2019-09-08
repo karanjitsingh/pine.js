@@ -8,12 +8,6 @@ class SplitWrapper extends React.Component<SplitWrapperProps> {
     componentDidMount() {
         const { children, gutter, ...options } = this.props
 
-        if(children) {
-            children.forEach(elem => {
-                console.log(elem);
-            })
-        }
-
         // @ts-ignore
         options.gutter = (index, direction) => {
             let gutterElement
