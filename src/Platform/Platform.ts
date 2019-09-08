@@ -39,10 +39,12 @@ export class Platform extends Subscribable<ReporterData> {
 
     public start(): Dictionary<PlotConfig> {
         this._isRunning = true;
-        this.initStrategy(this.currentStrategy.getConfig(), this.dataController.MarketDataMap);
+        const stratConfig = this.currentStrategy.getConfig();
+
+        this.initStrategy(stratConfig, this.dataController.MarketDataMap);
 
         this.dataController.subscribe(this.updateCallback, this);
-        this.dataController.startStream();
+        this.dataController.startStream(stratConfig.initCandleCount);
 
         return this.plotConfigMap;
     }

@@ -26,8 +26,8 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
         });
     }
 
-    public startStream() {
-        this.getBaseData().then((dataMap) => {
+    public startStream(initCandleCount: number) {
+        this.getBaseData(initCandleCount).then((dataMap) => {
             this.initData(dataMap);
 
             this.exchange.start(this.resolutionSet).then((queue: DataQueue) => {
@@ -50,14 +50,14 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
         }
     }
 
-    private getBaseData(): Promise<ResolutionMapped<Candle[]>> {
+    private getBaseData(candleCount: number): Promise<ResolutionMapped<Candle[]>> {
         const resolutionDataMap: ResolutionMapped<Candle[]> = {};
         const currentTick = new Date().getTime();
 
         const promiseList: Promise<Candle[]>[] = [];
-
+        
         this.resolutionSet.forEach(res => {
-            const promise = this.exchange.getData(currentTick, Tick.Day, res);
+            const promise = this.exchange.getData(currentTick, GetResolutionTick(res) * candleCount, res);
             promise.then((candleData: Candle[]) => {
                 resolutionDataMap[res] = candleData
             }, () => {

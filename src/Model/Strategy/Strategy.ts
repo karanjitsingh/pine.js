@@ -9,6 +9,7 @@ export type StrategyCtor = new (broker: IBroker, messageLogger: MessageLogger) =
 
 export interface StrategyConfig {
     resolutionSet: Resolution[];
+    initCandleCount: number;
 }
 
 export abstract class Strategy {

@@ -18,7 +18,8 @@ export class StochasticStrategy extends Strategy {
                 '1d',
                 '30m',
                 '1m'
-            ]
+            ],
+            initCandleCount: 150
         };
     }
 
