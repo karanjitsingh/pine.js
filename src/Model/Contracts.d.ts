@@ -64,6 +64,7 @@ export interface MessageContract {
 
 export interface IndicatorConfig {
     Title?: string;
+    Color?: string;
     PlotType: PlotType;
 }
 

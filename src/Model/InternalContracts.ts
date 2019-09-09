@@ -1,13 +1,13 @@
 import { Candle, Resolution } from "./Contracts";
-import { RawSeries, SimpleSeries } from "./Series/Series";
+import { ISeries } from "./Series/Series";
 
 export interface MarketData {
-    Candles: RawSeries<Candle>;
-    Open: SimpleSeries;
-    Close: SimpleSeries;
-    High: SimpleSeries;
-    Low: SimpleSeries;
-    Volume: SimpleSeries;
+    Candles: ISeries<Candle>;
+    Open: ISeries;
+    Close: ISeries;
+    High: ISeries;
+    Low: ISeries;
+    Volume: ISeries;
 }
 
 export enum Tick

@@ -80,7 +80,7 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
         if(resolutions.length) {
             resolutions.forEach((res: Resolution) => {
                 const update = resolutionDataMap[res];
-                this.MarketDataMap[res].Candles.append(update);
+                (this.MarketDataMap[res].Candles as RawSeries<Candle>).append(update);
 
                 updateIndex[res] = {
                     offset: 0,
@@ -121,7 +121,7 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
                 return candles;
             }, []);
             
-            const marketCandles = this.MarketDataMap[resolution].Candles;
+            const marketCandles = this.MarketDataMap[resolution].Candles as RawSeries<Candle>;
             const lastCandle = marketCandles.getData(1)[0];
 
             lengthMap[resolution] = update.length;

@@ -8,8 +8,17 @@ export interface UpdateIndex {
     length: number;
 }
 
-export abstract class Series<T> extends Subscribable<UpdateIndex> {
+export interface ISeries<T = number> extends Subscribable<UpdateIndex> {
+    readonly Resolution: Resolution;
+    lookBack(offset: number): SeriesData<T>
+    getLength(): number;
+    getData(offset?: number): T[];
+    readonly Depth: number;
+}
+
+abstract class Series<T> extends Subscribable<UpdateIndex> implements ISeries<T> {
     public abstract readonly Resolution: Resolution;
+    public abstract readonly Depth: number;
 
     protected constructor(protected data: T[]) {
         super();
@@ -44,6 +53,7 @@ export abstract class Series<T> extends Subscribable<UpdateIndex> {
 
 export class RawSeries<T> extends Series<T> {
     public readonly Resolution: Resolution;
+    public readonly Depth: number = -1;
 
     public constructor(data: T[], resolution: Resolution) {
         super(data);
@@ -71,12 +81,11 @@ export class RawSeries<T> extends Series<T> {
 
 export class EvaluatedSeries<T> extends Series<T> {
     public readonly Resolution: Resolution;
+    public readonly Depth: number;
 
     private static evaluationGraph: ResolutionMapped<EvaluatedSeries<any>[][]> = {};
 
-    protected depth: number;
-
-    public constructor(private expr: any, private deps: Series<any>[]) {
+    public constructor(private expr: (self: SeriesData<T>, ...args: SeriesData<T>[]) => T, private deps: ISeries<T>[]) {
         super([]);
 
         const homogenousResolution: boolean = deps.reduce<boolean>((value, curr) => {
@@ -89,13 +98,11 @@ export class EvaluatedSeries<T> extends Series<T> {
 
         let maxDepth = -1;
 
-        deps.forEach(dep => {
-            if (dep instanceof EvaluatedSeries) {
-                maxDepth = maxDepth < dep.depth ? dep.depth : maxDepth;
-            }
+        deps.forEach((dep: Series<T>) => {
+            maxDepth = maxDepth < dep.Depth ? dep.Depth : maxDepth;
         })
 
-        this.depth = maxDepth + 1;
+        this.Depth = maxDepth + 1;
 
         EvaluatedSeries.addSeriesToEvaluationGraph(this, deps[0].Resolution);
 
@@ -135,11 +142,11 @@ export class EvaluatedSeries<T> extends Series<T> {
 
         const resolutionGraph = this.evaluationGraph[resolution];
 
-        if (resolutionGraph[series.depth]) {
-            resolutionGraph[series.depth].push(series);
+        if (resolutionGraph[series.Depth]) {
+            resolutionGraph[series.Depth].push(series);
         }
         else {
-            resolutionGraph[series.depth] = [series];
+            resolutionGraph[series.Depth] = [series];
         }
     }
 
@@ -149,7 +156,7 @@ export class EvaluatedSeries<T> extends Series<T> {
         const args = this.deps;
 
         for (let i = 0; i < updateIndex.length; i++) {
-            this.data.push(this.expr(...args.map(x => x.lookBack(updateIndex.length - 1 - i))));
+            this.data.push(this.expr(this.lookBack(-1), ...args.map(x => x.lookBack(updateIndex.length - 1 - i))));
         }
 
         this.notifyAll(updateIndex);
@@ -158,11 +165,13 @@ export class EvaluatedSeries<T> extends Series<T> {
 
 export class OffsettedSeries<T> extends Series<T> {
     public readonly Resolution: Resolution;
+    public readonly Depth: number;
 
-    public constructor(private parentSeries: Series<T>, private seriesOffset: number) {
+    public constructor(private parentSeries: ISeries<T>, private seriesOffset: number) {
         super(null);
         this.parentSeries.subscribe(this.notifyAll, this);
         this.Resolution = this.parentSeries.Resolution;
+        this.Depth = this.parentSeries.Depth;
     }
 
     public lookBack(offset: number): SeriesData<T> {
@@ -191,14 +200,17 @@ export class OffsettedSeries<T> extends Series<T> {
 
 export class SimpleSeries<T = Candle> extends Series<number> {
     public readonly Resolution: Resolution;
+    public readonly Depth: number;
 
-    public constructor(private parentSeries: Series<T>, private resolver: (data: T) => number) {
+    public constructor(private parentSeries: ISeries<T>, private resolver: (data: T) => number) {
         super(null);
 
         this.Resolution = parentSeries.Resolution;
 
         this.parentSeries = parentSeries;
         this.parentSeries.subscribe(this.notifyAll, this);
+
+        this.Depth = parentSeries.Depth;
     }
 
     public lookBack(offset: number): SeriesData<number> {

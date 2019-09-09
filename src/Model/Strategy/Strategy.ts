@@ -1,11 +1,11 @@
 import { IndicatorConfig, Resolution, ResolutionMapped } from "Model/Contracts";
 import { IBroker } from "Model/Exchange/IBroker";
 import { MarketData } from "Model/InternalContracts";
-import { Series } from "Model/Series/Series";
+import { ISeries } from "Model/Series/Series";
 import { CtorStore } from "Model/Utils/CtorStore";
 import { MessageLogger } from "Platform/MessageLogger";
 
-export type Indicator = IndicatorConfig & { Series: Series<number> };
+export type Indicator = IndicatorConfig & { Series: ISeries<number> };
 
 export type RawPlot = {
     Title?: string;
