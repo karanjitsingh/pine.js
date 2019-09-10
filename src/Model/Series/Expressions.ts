@@ -95,3 +95,23 @@ export const ema = (series: ISeries, length: number) => {
         return alpha * series(0) + (1 - alpha) * (prev ? prev : 0);
     }, series)
 }
+
+export const sma = (series: ISeries, length: number) => {
+    return Expression((self, series) => {
+        if(!series(length-1)) {
+            return undefined;
+        }
+
+        if(!self(1)) {
+            let sum = 0;
+
+            for(let i = 0; i < length; i++) {
+                sum += series(i);
+            }
+
+            return sum/length;
+        } else {
+            return self(1) - series(length) / length + series(0)/length
+        }
+    }, series);
+}

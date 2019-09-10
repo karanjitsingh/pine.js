@@ -217,7 +217,12 @@ export class SimpleSeries<T = Candle> extends Series<number> {
         const trueLookback = this.parentSeries.lookBack(offset);
 
         return (x: number) => {
-            return this.resolver(trueLookback(x));
+            const lookback = trueLookback(x);
+            if(lookback === undefined) {
+                return undefined;
+            }
+
+            return this.resolver(lookback);
         }
     }
 

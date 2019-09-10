@@ -1,7 +1,7 @@
 import { ResolutionMapped } from "Model/Contracts";
 import { IBroker } from "Model/Exchange/IBroker";
 import { MarketData } from "Model/InternalContracts";
-import { ema, HeikinAshi } from "Model/Series/Expressions";
+import { ema, HeikinAshi, sma } from "Model/Series/Expressions";
 import { ISeries } from "Model/Series/Series";
 import { RawPlot, Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { MessageLogger } from "Platform/MessageLogger";
@@ -29,10 +29,10 @@ export class StochasticStrategy extends Strategy {
     }
 
     public init(input: ResolutionMapped<MarketData>): RawPlot[] {
-
         const m30 = input['30m'];
         this.heikenashi = HeikinAshi(input['30m'].Candles);
         this.ema = ema(m30.Open, 6);
+        sma(m30.Open, 3);
 
         return [
             {
