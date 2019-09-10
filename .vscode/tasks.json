@@ -11,7 +11,10 @@
             "problemMatcher": [
                 "$tsc-watch"
             ],
-            "group": "build"
+            "group": "build",
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
         },
         {
             "label": "Build platform",
@@ -21,13 +24,19 @@
             "problemMatcher": [
                 "$tsc-watch"
             ],
-            "group": "build"
+            "group": "build",
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
         },
         {
             "type": "npm",
             "script": "watch:scss",
             "problemMatcher": [],
-            "group": "build"
+            "group": "build",
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
         },
         {
             "label": "Run Platform Server",
@@ -40,7 +49,10 @@
             "type": "npm",
             "script": "build",
             "problemMatcher": [],
-            "group": "build"
+            "group": "build",
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
         },
     ]
 }
