@@ -96,6 +96,8 @@ export class EvaluatedSeries<T> extends Series<T> {
             throw new Error("Dependencies must be of same resolution");
         }
 
+        this.Resolution = deps[0].Resolution;
+
         let maxDepth = -1;
 
         deps.forEach((dep: Series<T>) => {
@@ -135,6 +137,10 @@ export class EvaluatedSeries<T> extends Series<T> {
     }
 
     protected static addSeriesToEvaluationGraph(series: EvaluatedSeries<any>, resolution: Resolution) {
+
+        if(!resolution) {
+            throw new Error('Resolution for evaluated series was not defined.');
+        }
 
         if (!this.evaluationGraph[resolution]) {
             this.evaluationGraph[resolution] = []

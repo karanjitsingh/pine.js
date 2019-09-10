@@ -32,7 +32,7 @@ export class StochasticStrategy extends Strategy {
         const m30 = input['30m'];
         this.heikenashi = HeikinAshi(input['30m'].Candles);
         this.ema = ema(m30.Open, 6);
-        sma(m30.Open, 3);
+        sma(this.heikenashi.Open, 3);
 
         return [
             {
