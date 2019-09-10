@@ -1,7 +1,7 @@
 import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
 import { Subscribable } from "Model/Utils/Events";
 
-export type SeriesData<T> = (lookback: number) => T;
+export type SeriesData<T = number> = (lookback: number) => T;
 
 export interface UpdateIndex {
     offset: number;
@@ -213,7 +213,7 @@ export class SimpleSeries<T = Candle> extends Series<number> {
         this.Depth = parentSeries.Depth;
     }
 
-    public lookBack(offset: number): SeriesData<number> {
+    public lookBack(offset: number): SeriesData {
         const trueLookback = this.parentSeries.lookBack(offset);
 
         return (x: number) => {

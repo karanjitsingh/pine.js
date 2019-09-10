@@ -2,13 +2,11 @@ import { Candle } from "Model/Contracts";
 import { MarketData } from "Model/InternalContracts";
 import { EvaluatedSeries, ISeries, SeriesData, SimpleSeries } from "Model/Series/Series";
 
-export const Expression = <T>(expr: (self: SeriesData<T>, ...args: SeriesData<T>[]) => T, ...deps: ISeries<T>[]): ISeries<T> => {
-    
+export const Expression = <T = number>(expr: (self: SeriesData<T>, ...args: SeriesData<T>[]) => T, ...deps: ISeries<T>[]): ISeries<T> => {
     return new EvaluatedSeries<T>(expr, deps);
 }
 
-export const Min = (s: ISeries | SeriesData<number>, length: number) => {
-
+export const Min = (s: ISeries | SeriesData, length: number) => {
     if (s instanceof Object) {
         s = (s as ISeries).lookBack(0);
     }
@@ -24,7 +22,7 @@ export const Min = (s: ISeries | SeriesData<number>, length: number) => {
     return min;
 }
 
-export const Max = (s: ISeries | SeriesData<number>, length: number) => {
+export const Max = (s: ISeries | SeriesData, length: number) => {
     if (s instanceof Object) {
         s = (s as ISeries).lookBack(0);
     }
@@ -41,15 +39,13 @@ export const Max = (s: ISeries | SeriesData<number>, length: number) => {
 }
 
 export const Stoch = (close: ISeries, high: ISeries, low: ISeries, length: number): ISeries => {
-    return Expression((close, high, low) => {
+    return Expression((_, close, high, low) => {
         const min = Min(low, length);
-        // return (close(0)  - min)/(Max(high, length) - min)
-        return close(0) - high(1);
+        return (close(0)  - min)/(Max(high, length) - min)
     }, close, high, low);
 }
 
 export const HeikinAshi = (candleSeries: ISeries<Candle>): MarketData => {
-
     const series = Expression((self, candle) => {
         const candle0 = candle(0);
         const ha1 = self(1);
@@ -80,7 +76,6 @@ export const HeikinAshi = (candleSeries: ISeries<Candle>): MarketData => {
         }
 
     }, candleSeries);
-
     
     return {
         Candles: series,
@@ -90,4 +85,13 @@ export const HeikinAshi = (candleSeries: ISeries<Candle>): MarketData => {
         Low: new SimpleSeries(series, (candle: Candle) => candle.low),
         Volume: new SimpleSeries(series, (candle: Candle) => candle.volume),
     }
+}
+
+export const ema = (series: ISeries, length: number) => {
+    const alpha = 2 / (1 + length);
+
+    return Expression((self, series) => {
+        const prev = self(1);
+        return alpha * series(0) + (1 - alpha) * (prev ? prev : 0);
+    }, series)
 }
