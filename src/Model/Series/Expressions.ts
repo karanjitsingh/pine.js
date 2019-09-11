@@ -6,11 +6,7 @@ export const Expression = <T = number>(expr: (self: SeriesData<T>, ...args: Seri
     return new EvaluatedSeries<T>(expr, deps);
 }
 
-export const Min = (s: ISeries | SeriesData, length: number) => {
-    if (s instanceof Object) {
-        s = (s as ISeries).lookBack(0);
-    }
-
+export const Min = (s: SeriesData, length: number) => {
     let min = s(0);
 
     for (let i = 1; i <= length; i++) {
@@ -22,11 +18,7 @@ export const Min = (s: ISeries | SeriesData, length: number) => {
     return min;
 }
 
-export const Max = (s: ISeries | SeriesData, length: number) => {
-    if (s instanceof Object) {
-        s = (s as ISeries).lookBack(0);
-    }
-
+export const Max = (s: SeriesData, length: number) => {
     let max = s(0);
 
     for (let i = 1; i <= length; i++) {
