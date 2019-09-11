@@ -21,32 +21,37 @@ const deleteFolder = (path) => {
     }
 }
 
-switch (command) {
-    case undefined:
-        console.log("No command supplied");
-    case "clean":
-        const bin = path.join(projectDir, "out");
-        console.log("Deleting", bin);
-        deleteFolder(bin);
-        break;
-    case "watch":
-        buildWatcher();
-        break;
-    case "build":
-        build();
-        break;
-    default:
-        console.error("Unknown command:", command);
+function runCommand(command) {
+
+    switch (command) {
+        case undefined:
+            console.log("No command supplied");
+        case "clean":
+            const bin = path.join(projectDir, "out");
+            console.log("Cleaning", bin);
+            deleteFolder(bin);
+            break;
+        case "watch":
+            buildWatcher();
+            break;
+        case "build":
+            runCommand('clean');
+            console.log("Building")
+            build();
+            break;
+        default:
+            console.error("Unknown command:", command);
+    }
 }
 
 function buildWatcher() {
-    
+
     const paths = [
         "./node_modules/.bin/tsc --watch -p ./src/tsconfig.json",
         "./node_modules/.bin/tsc --watch -p ./src/Reporters/Browser/tsconfig.json",
         "node ./node_modules/node-sass/bin/node-sass -rw ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser/lib"
     ]
-    
+
     const commands = paths.map((value) => (value.replace(/\//g, path.sep)));
 
     commands.forEach(command => {
@@ -75,13 +80,15 @@ function endless() {
 
 
 function build() {
+    // copy src/Reporters/Browser/scripts to out/Reporters/Browser/scripts
+    copyFolderRecursiveSync(path.join(projectDir, "src", "Reporters", "Browser", "scripts"), path.join(projectDir, "out", "Reporters", "Browser"))
 
     const paths = [
         "./node_modules/.bin/tsc -p ./src/tsconfig.json",
         "./node_modules/.bin/tsc -p ./src/Reporters/Browser/tsconfig.json",
         "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser/lib"
     ]
-    
+
     const commands = paths.map((value) => (value.replace(/\//g, path.sep)));
 
     const promises = []
@@ -89,7 +96,7 @@ function build() {
     commands.forEach(command => {
         const child_process = cp.exec(command);
         let resolver;
-        promises.push(new Promise((r) => {resolver = r}));
+        promises.push(new Promise((r) => { resolver = r }));
 
         child_process.on('exit', () => {
             resolver(0);
@@ -97,7 +104,7 @@ function build() {
 
         child_process.stdout.on('data', (data) => {
             data.split('\n').forEach(elem => {
-                if(elem.trim().match(/^([^\s].*)[\(:](\d+)[,:](\d+)(?:\):\s+|\s+-\s+)(error|warning|info)\s+TS(\d+)\s*:\s*(.*)$/))
+                if (elem.trim().match(/^([^\s].*)[\(:](\d+)[,:](\d+)(?:\):\s+|\s+-\s+)(error|warning|info)\s+TS(\d+)\s*:\s*(.*)$/))
                     console.log(elem);
             });
         });
@@ -106,6 +113,47 @@ function build() {
 
     return Promise.all(promises).then((r) => {
         fs.copyFileSync(path.join(projectDir, "src", "Reporters", "Browser", "index.html"), path.join(projectDir, "out", "Reporters", "Browser", "index.html"));
+        console.log("Done.")
         return '';
     });
 }
+
+function copyFileSync( source, target ) {
+
+    var targetFile = target;
+
+    //if target is a directory a new file with the same name will be created
+    if ( fs.existsSync( target ) ) {
+        if ( fs.lstatSync( target ).isDirectory() ) {
+            targetFile = path.join( target, path.basename( source ) );
+        }
+    }
+
+    fs.writeFileSync(targetFile, fs.readFileSync(source));
+}
+
+function copyFolderRecursiveSync( source, target ) {
+    var files = [];
+
+    //check if folder needs to be created or integrated
+    var targetFolder = path.join( target, path.basename( source ) );
+    if ( !fs.existsSync( targetFolder ) ) {
+        fs.mkdirSync( targetFolder, { recursive: true } );
+    }
+
+    //copy
+    if ( fs.lstatSync( source ).isDirectory() ) {
+        files = fs.readdirSync( source );
+        files.forEach( function ( file ) {
+            var curSource = path.join( source, file );
+            if ( fs.lstatSync( curSource ).isDirectory() ) {
+                copyFolderRecursiveSync( curSource, targetFolder );
+            } else {
+                copyFileSync( curSource, targetFolder );
+            }
+        } );
+    }
+}
+
+runCommand(command);
+

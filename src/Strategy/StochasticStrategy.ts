@@ -48,7 +48,14 @@ export class StochasticStrategy extends Strategy {
             },
             {
                 MarketData: input['30m'],
-                Indicators: []
+                Indicators: [{
+                    PlotType: 'Area',
+                    Series: k,
+                },
+                {
+                    PlotType: 'Area',
+                    Series: d,
+                }]
             },
             {
                 MarketData: input['1d'],

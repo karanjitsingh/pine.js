@@ -103,7 +103,7 @@ export const sma = (series: ISeries, length: number) => {
 
             return sum/length;
         } else {
-            return self(1) - series(length) / length + series(0)/length
+            return self(1) - (series(length) / length) + series(0)/length
         }
     }, series);
 }

@@ -73,39 +73,39 @@ export const rest: RestMethods = {
             return promise;
         },
 
-        '/remote': (url: URL, res: http.ServerResponse): GetReply => {
-            const file = path.join(Constants.pine, url.pathname);
-            let resolver: (code: number) => void;
-            const promise = new Promise<number>((resolve) => resolver = resolve);
+        // '/scripts': (url: URL, res: http.ServerResponse): GetReply => {
+        //     const file = path.join(Constants.pine, url.pathname);
+        //     let resolver: (code: number) => void;
+        //     const promise = new Promise<number>((resolve) => resolver = resolve);
 
-            if (fs.existsSync(file)) {
-                fs.readFile(file, (err, content) => {
-                    if (err) {
-                        res.writeHead(500, {
-                            "Content-Type": "text/HTML"
-                        });
+        //     if (fs.existsSync(file)) {
+        //         fs.readFile(file, (err, content) => {
+        //             if (err) {
+        //                 res.writeHead(500, {
+        //                     "Content-Type": "text/HTML"
+        //                 });
 
-                        res.end(err.toString());
-                        resolver(500);
-                    }
-                    else {
-                        res.writeHead(200, {
-                            "Content-Type": ServerUtils.getContentType(file)
-                        });
+        //                 res.end(err.toString());
+        //                 resolver(500);
+        //             }
+        //             else {
+        //                 res.writeHead(200, {
+        //                     "Content-Type": ServerUtils.getContentType(file)
+        //                 });
 
-                        res.end(content);
-                        resolver(200);
-                    }
-                });
-            }
-            else {
-                res.writeHead(404)
-                res.end();
-                resolver(404);
-            }
+        //                 res.end(content);
+        //                 resolver(200);
+        //             }
+        //         });
+        //     }
+        //     else {
+        //         res.writeHead(404)
+        //         res.end();
+        //         resolver(404);
+        //     }
 
-            return promise;
-        },
+        //     return promise;
+        // },
 
         '/api/datastream': (url: URL, res: http.ServerResponse): GetReply => {
             const id = url.searchParams.get('id');
@@ -129,9 +129,9 @@ export const rest: RestMethods = {
                 return Promise.resolve(500);
             }
         },
-
+        
         '/': ServerUtils.browserGet,
-        '/lib': ServerUtils.browserGet
+        '/scripts': ServerUtils.browserGet
     }
 }
 
