@@ -33,7 +33,7 @@ export const Max = (s: SeriesData, length: number) => {
 export const Stoch = (close: ISeries, high: ISeries, low: ISeries, length: number): ISeries => {
     return Expression((_, close, high, low) => {
         const min = Min(low, length);
-        return (close(0)  - min)/(Max(high, length) - min)
+        return (close(0)  - min)/(Max(high, length) - min)*100
     }, close, high, low);
 }
 

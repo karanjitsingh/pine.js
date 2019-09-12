@@ -34,33 +34,38 @@ export class StochasticStrategy extends Strategy {
         this.ema = ema(m30.Open, 6);
         sma(this.heikenashi.Open, 3);
         
-        const k = ema(Stoch(this.heikenashi.Close,this.heikenashi.High, this.heikenashi.Open, 20), 3);
+        const k = ema(ema(Stoch(this.heikenashi.Close,this.heikenashi.High, this.heikenashi.Low, 20), 3),3);
         const k2 = Expression((self, k) => {
             return k(0) - 40;
         }, k);
 
-        const d = sma(k2,3);
+        // const d = sma(k2,3);
+
+        const d = Expression((self, k) => {
+            return k(0) + 10;
+        }, k2);
 
         return [
-            {
-                MarketData: input['1m'],
-                Indicators: []
-            },
+            // {
+            //     MarketData: input['1m'],
+            //     Indicators: []
+            // },
             {
                 MarketData: input['30m'],
                 Indicators: [{
                     PlotType: 'Area',
-                    Series: k,
+                    Series: k2,
                 },
                 {
                     PlotType: 'Area',
                     Series: d,
                 }]
-            },
-            {
-                MarketData: input['1d'],
-                Indicators: []
             }
+            // ,
+            // {
+            //     MarketData: input['1d'],
+            //     Indicators: []
+            // }
         ]
     }
 

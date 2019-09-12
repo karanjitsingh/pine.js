@@ -148,7 +148,7 @@ export class Chart {
         const chartUpdate: ChartUpdate = {
             candles: [],
             volume: [],
-            indicators: new Array(chartData.IndicatorData.length).fill([])
+            indicators: new Array(chartData.IndicatorData.length).fill(0).map(() => new Array())
         }
 
         let candleUpdate: (data: LightweightCharts.BarData) => void;
@@ -186,7 +186,7 @@ export class Chart {
 
             chartData.IndicatorData.forEach((indicator, index) => {
                 const value = indicator[indicator.length - i - 1];
-                if (value !== undefined && value !== NaN) {
+                if (value !== undefined && value !== NaN && value !== null) {
                     indicatorUpdates[index]({
                         time,
                         value
