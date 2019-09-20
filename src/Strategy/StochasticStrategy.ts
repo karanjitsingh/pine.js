@@ -39,11 +39,7 @@ export class StochasticStrategy extends Strategy {
             return k(0) - 40;
         }, k);
 
-        // const d = sma(k2,3);
-
-        const d = Expression((self, k) => {
-            return k(0) + 10;
-        }, k2);
+        const d = sma(k2,3);
 
         return [
             // {

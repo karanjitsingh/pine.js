@@ -92,7 +92,10 @@ export declare type Nominal<T, Name extends string> = T & {
 	[Symbol.species]: Name;
 };
 export declare type PriceAxisPosition = 'left' | 'right' | 'none';
+export declare type PriceFormat = PriceFormatBuiltIn | PriceFormatCustom;
 export declare type PriceFormatterFn = (priceValue: BarPrice) => string;
+export declare type SeriesMarkerPosition = 'aboveBar' | 'belowBar' | 'inBar';
+export declare type SeriesMarkerShape = 'circle' | 'square' | 'arrowUp' | 'arrowDown';
 export declare type SeriesOptions<T> = (T & SeriesOptionsCommon & OverlaySeriesSpecificOptions) | (T & SeriesOptionsCommon & NonOverlaySeriesSpecificOptions);
 export declare type SeriesPartialOptions<T> = (DeepPartial<T & SeriesOptionsCommon> & OverlaySeriesSpecificOptions) | (DeepPartial<T & SeriesOptionsCommon> & NonOverlaySeriesSpecificOptions);
 export declare type SeriesType = keyof SeriesOptionsMap;
@@ -407,6 +410,11 @@ export interface ISeriesApi<TSeriesType extends SeriesType> {
 	 * If the new item's time is equal to the last existing item's time, then the existing item is replaced with the new one.
 	 */
 	update(bar: SeriesDataItemTypeMap[TSeriesType]): void;
+	/**
+	 * Sets markers for the series
+	 * @param data array of series markers. This array should be sorted by time. Several markers with same time are allowed.
+	 */
+	setMarkers(data: SeriesMarker<Time>[]): void;
 }
 /** Interface to chart time scale */
 export interface ITimeScaleApi {
@@ -506,6 +514,8 @@ export interface MouseEventParams {
 	time?: UTCTimestamp | BusinessDay;
 	point?: Point;
 	seriesPrices: Map<ISeriesApi<SeriesType>, BarPrice | BarPrices>;
+	hoveredSeries?: ISeriesApi<SeriesType>;
+	hoveredMarkerId?: SeriesMarker<Time>['id'];
 }
 export interface NonOverlaySeriesSpecificOptions {
 	overlay?: false;
@@ -527,7 +537,7 @@ export interface Point {
  * minMove = 0.01 , precision = 3. Prices will change like 1.130, 1.140, 1.150 etc.
  * minMove = 0.05 , precision is not specified. Prices will change like 1.10, 1.15, 1.20
  */
-export interface PriceFormat {
+export interface PriceFormatBuiltIn {
 	/**
 	 *  Enum of possible modes of price formatting
 	 * 'price' is the most common choice; it allows customization of precision and rounding of prices
@@ -542,6 +552,17 @@ export interface PriceFormat {
 	precision: number;
 	/**
 	 * Minimal step of the price. This value shouldn't have more decimal digits than the precision
+	 */
+	minMove: number;
+}
+export interface PriceFormatCustom {
+	type: 'custom';
+	/**
+	 * User-defined function for price formatting that could be used for some specific cases, that could not be covered with PriceFormatBuiltIn
+	 */
+	formatter: PriceFormatterFn;
+	/**
+	 * Minimal step of the price.
 	 */
 	minMove: number;
 }
@@ -580,6 +601,13 @@ export interface SeriesDataItemTypeMap {
 	Line: LineData;
 	Histogram: HistogramData;
 }
+export interface SeriesMarker<TimeType> {
+	time: TimeType;
+	position: SeriesMarkerPosition;
+	shape: SeriesMarkerShape;
+	color: string;
+	id?: string;
+}
 /**
  * Structure describing options common for all types of series
  */
@@ -588,6 +616,7 @@ export interface SeriesOptionsCommon {
 	lastValueVisible: boolean;
 	/** Title of the series. This label is placed with price axis label */
 	title: string;
+	scaleGroup: string;
 	/** Visibility of the price line. Price line is a horizontal line indicating the last price of the series */
 	priceLineVisible: boolean;
 	/** Width of the price line. Ignored if priceLineVisible is false */

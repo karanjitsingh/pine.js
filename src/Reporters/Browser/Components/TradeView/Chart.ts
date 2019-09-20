@@ -4,8 +4,8 @@ import { ChartData, PlotConfig } from "Model/Contracts";
 type TimeStamp = LightweightCharts.Nominal<number, 'UTCTimestamp'>;
 
 enum Color {
-    GreenCandle = "rgba(0, 150, 136, 0.8)",
-    RedCandle = "rgba(255,82,82, 0.8)"
+    GreenCandle = "rgba(0, 150, 136, 0.3)",
+    RedCandle = "rgba(255,82,82, 0.3)"
 }
 
 interface ChartSeries {
@@ -125,7 +125,8 @@ export class Chart {
                     overlay: true,
                     scaleMargins: indicatorScale,
                     priceLineVisible: false,
-                    lastValueVisible: false
+                    lastValueVisible: false,
+                    scaleGroup: "indicator"
                 }));
             } else if (config.PlotType == 'Line') {
                 chart.series.indicators.push(chartObj.addLineSeries({
