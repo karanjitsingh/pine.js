@@ -91,7 +91,8 @@ export class Platform extends Subscribable<ReporterData> {
                 Resolution: resolution,
                 IndicatorConfigs: rawPlot.Indicators.map<IndicatorConfig>((indicator) => ({
                     Title: indicator.Title,
-                    PlotType: indicator.PlotType
+                    PlotType: indicator.PlotType,
+                    Color: indicator.Color
                 }))
             }
         })

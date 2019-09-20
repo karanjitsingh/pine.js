@@ -116,11 +116,14 @@ export class Chart {
         });
 
         plotConfig.IndicatorConfigs.forEach((config) => {
+
+            const color = config.Color || "rgba(38,198,218, 0.5)"
+
             if (config.PlotType == 'Area') {
                 chart.series.indicators.push(chartObj.addAreaSeries({
-                    topColor: 'rgba(38,198,218, 0.56)',
-                    bottomColor: 'rgba(38,198,218, 0.04)',
-                    lineColor: 'rgba(38,198,218, 1)',
+                    topColor: color,
+                    bottomColor: color,
+                    lineColor: color,
                     lineWidth: 2,
                     overlay: true,
                     scaleMargins: indicatorScale,
@@ -130,7 +133,7 @@ export class Chart {
                 }));
             } else if (config.PlotType == 'Line') {
                 chart.series.indicators.push(chartObj.addLineSeries({
-                    color: 'rgba(38,198,218, 1)',
+                    color: color,
                     lineWidth: 2,
                     overlay: true,
                     scaleMargins: indicatorScale,
