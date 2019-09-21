@@ -1,8 +1,9 @@
-import { OpenTrade } from "Model/InternalContracts";
+import { OpenTrade } from "Model/Contracts";
 
 export interface IBroker {
-    enterLong(leverage: number, qty: number): Promise<OpenTrade>;
-    enterShort(leverage: number, qty: number): Promise<OpenTrade>;
-    exitTrade(): Promise<void>;
-    getCurrentPosition(): Promise<OpenTrade>;
+    readonly BrokerBusy: boolean;
+    enterLong(leverage: number, qty: number): boolean;
+    enterShort(leverage: number, qty: number): boolean;
+    exitTrade(): boolean;
+    getCurrentPosition(): OpenTrade | null;
 }

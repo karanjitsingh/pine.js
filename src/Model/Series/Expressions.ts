@@ -42,40 +42,40 @@ export const HeikinAshi = (candleSeries: ISeries<Candle>): MarketData => {
         const candle0 = candle(0);
         const ha1 = self(1);
 
-        let haclose = (candle0.close + candle0.open + candle0.low + candle0.high)/4;
+        let haclose = (candle0.Close + candle0.Open + candle0.Low + candle0.High)/4;
         let haopen: number;
         let hahigh: number;
         let halow: number;
 
         if(!ha1) {
-            haopen = (candle0.open + candle0.close)/2;
-            halow = candle0.low;
-            haopen = candle0.open;
+            haopen = (candle0.Open + candle0.Close)/2;
+            halow = candle0.Low;
+            haopen = candle0.Open;
         } else {
-            haopen = (ha1.open + ha1.close)/2;
-            hahigh = Math.max(candle0.high, haopen, haclose);
-            halow = Math.min(candle0.low, haopen, haclose);
+            haopen = (ha1.Open + ha1.Close)/2;
+            hahigh = Math.max(candle0.High, haopen, haclose);
+            halow = Math.min(candle0.Low, haopen, haclose);
         }
 
         return {
-            close: haclose,
-            open: haopen,
-            high: hahigh,
-            low: halow,
-            volume: candle0.volume,
-            startTick: candle0.startTick,
-            endTick: candle0.endTick
+            Close: haclose,
+            Open: haopen,
+            High: hahigh,
+            Low: halow,
+            Volume: candle0.Volume,
+            StartTick: candle0.StartTick,
+            EndTick: candle0.EndTick
         }
 
     }, candleSeries);
     
     return {
         Candles: series,
-        Open: new SimpleSeries(series, (candle: Candle) => candle.open),
-        Close: new SimpleSeries(series, (candle: Candle) => candle.close),
-        High: new SimpleSeries(series, (candle: Candle) => candle.high),
-        Low: new SimpleSeries(series, (candle: Candle) => candle.low),
-        Volume: new SimpleSeries(series, (candle: Candle) => candle.volume),
+        Open: new SimpleSeries(series, (candle: Candle) => candle.Open),
+        Close: new SimpleSeries(series, (candle: Candle) => candle.Close),
+        High: new SimpleSeries(series, (candle: Candle) => candle.High),
+        Low: new SimpleSeries(series, (candle: Candle) => candle.Low),
+        Volume: new SimpleSeries(series, (candle: Candle) => candle.Volume),
     }
 }
 

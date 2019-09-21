@@ -38,15 +38,3 @@ export const GetResolutionTick = (resolution: Resolution): number => {
             throw new Error(`Unsupported resolution '${resolution}'`);
     }
 }
-
-export enum Position {
-    Long,
-    Short
-}
-
-export interface OpenTrade {
-    entry: number,
-    leverage: number,
-    orderValue: number,
-    position: Position
-}

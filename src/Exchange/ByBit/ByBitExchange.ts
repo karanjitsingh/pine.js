@@ -43,11 +43,16 @@ export class ByBitExchange extends Exchange {
         "1M"
     ];
     
-    private _isLive: boolean = false;;
+    private _isLive: boolean = false;
+    private _lastPrice: number = 0;
     private webSocket: WebSocket;
     
     constructor(protected network: INetwork, private broker: IBroker) {
         super(network, broker);
+    }
+
+    public get lastPrice(): number {
+        return this._lastPrice
     }
 
     public get isLive(): boolean {
@@ -80,7 +85,7 @@ export class ByBitExchange extends Exchange {
             console.log('Bybit: Connection opened');
             
             this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + this.subscribedResolutions.join("|")]}));
-            this.webSocket.send('{"op":"subscribe","args":["instrument.BTCUSD"]}')
+            // this.webSocket.send('{"op":"subscribe","args":["instrument.BTCUSD"]}')
 
             this._isLive = true;
 
@@ -105,14 +110,16 @@ export class ByBitExchange extends Exchange {
                     console.log(new Date().getTime(), "Bybit: websocket data")
 
                     const candle: Candle = {
-                        startTick: data.data.open_time * 1000,
-                        endTick: null,
-                        high: data.data.high,
-                        open: data.data.open,
-                        close: data.data.close,
-                        low: data.data.low,
-                        volume: data.data.volume    
+                        StartTick: data.data.open_time * 1000,
+                        EndTick: null,
+                        High: data.data.high,
+                        Open: data.data.open,
+                        Close: data.data.close,
+                        Low: data.data.low,
+                        Volume: data.data.volume    
                     }
+
+                    this._lastPrice = candle.Close;
 
                     this.dataQueue.push(data.data.interval, candle);
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
@@ -137,7 +144,7 @@ export class ByBitExchange extends Exchange {
                     //     me.positions[position.symbol] = position
                     // })
                 } else {
-                    // console.log('unknown', data.data);
+                    console.log('unknown', data.data);
                 }
             }
         };
@@ -181,15 +188,17 @@ export class ByBitExchange extends Exchange {
                     const startTick = result.start_at;
 
                     return {
-                        startTick: startTick * 1000,
-                        endTick: (startTick + res[1]) * 1000,
-                        high: result.high,
-                        open: result.open,
-                        close: result.close,
-                        low: result.low,
-                        volume: result.volume
+                        StartTick: startTick * 1000,
+                        EndTick: (startTick + res[1]) * 1000,
+                        High: result.high,
+                        Open: result.open,
+                        Close: result.close,
+                        Low: result.low,
+                        Volume: result.volume
                     } as Candle;
                 });
+
+                this._lastPrice = candleData[candleData.length - 1].Close;
 
                 return Promise.resolve(candleData);
             } else {

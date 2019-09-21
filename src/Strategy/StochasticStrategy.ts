@@ -24,8 +24,8 @@ export class StochasticStrategy extends Strategy {
         };
     }
 
-    public tick(currentTick: any) {
-        // throw new Error("Method not implemented.");
+    public tick(updateOffset: ResolutionMapped<number>) {
+        console.log("strategy tick", updateOffset);
     }
 
     public init(input: ResolutionMapped<MarketData>): RawPlot[] {

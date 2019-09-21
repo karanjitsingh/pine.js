@@ -1,20 +1,22 @@
+import { OpenTrade } from "Model/Contracts";
 import { IBroker } from "Model/Exchange/IBroker";
-import { OpenTrade } from "Model/InternalContracts";
 
 export class BacktestBroker implements IBroker {
-    enterLong(leverage: number, qty: number): Promise<OpenTrade> {
-        throw new Error("Method not implemented.");
-    }
-    
-    enterShort(leverage: number, qty: number): Promise<OpenTrade> {
-        throw new Error("Method not implemented.");
-    }
-    exitTrade(): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    getCurrentPosition(): Promise<OpenTrade> {
+    BrokerBusy: boolean;
+
+    enterLong(leverage: number, qty: number): boolean {
         throw new Error("Method not implemented.");
     }
 
+    enterShort(leverage: number, qty: number): boolean {
+        throw new Error("Method not implemented.");
+    }
 
+    exitTrade(): boolean {
+        throw new Error("Method not implemented.");
+    }
+
+    getCurrentPosition(): OpenTrade {
+        throw new Error("Method not implemented.");
+    }
 }

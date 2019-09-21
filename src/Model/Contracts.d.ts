@@ -15,16 +15,26 @@ export interface PlatformConfiguration {
 }
 
 export interface Candle {
-    startTick: number;
-    endTick: number;
-    high: number;
-    open: number;
-    close: number;
-    low: number;
-    volume: number;
+    StartTick: number;
+    EndTick: number;
+    High: number;
+    Open: number;
+    Close: number;
+    Low: number;
+    Volume: number;
+}
+
+export type Position = 'Long' | 'Short';
+
+export interface OpenTrade {
+    Entry: number,
+    Leverage: number,
+    OrderValue: number,
+    Position: Position
 }
 
 export interface Trade {
+    Position: Position
     EntryTick: number;
     ExitTick: number;
     EntryPrice: number;
@@ -36,19 +46,11 @@ export interface Trade {
 }
 
 export interface ReporterData {
-    ChartData: Dictionary<ChartData>,
-    TradeData: Trade[]
+    ChartData?: Dictionary<ChartData>,
+    TradeData?: Trade[]
 }
 
 export type MessageType = "ReporterData" | "ReporterConfig" ;
-
-export type ReporterDataMessage = {
-    data: ReporterData;
-}
-
-export type ReporterInitMessage = {
-    count: number;
-}
 
 export type ProtocolMessage<T extends MessageType> = { Type: T } & MessageContract[T];
 

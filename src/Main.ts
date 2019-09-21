@@ -17,7 +17,7 @@ const id = Server.platformControl.addPlatform({
     }
 });
 
-// const instance = Server.platformControl.getInstance(id);
+const instance = Server.platformControl.getInstance(id);
 
-// instance.platform.start();
+instance.platform.start();
 

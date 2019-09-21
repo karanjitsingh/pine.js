@@ -25,8 +25,9 @@ export const StrategyStore = new CtorStore<StrategyCtor>();
 export abstract class Strategy {
     public abstract readonly StrategyConfig: StrategyConfig;
 
-    public abstract init(input: ResolutionMapped<MarketData>): RawPlot[];    
-    public abstract tick(offset: ResolutionMapped<number>): void;
+    public abstract init(input: ResolutionMapped<MarketData>): RawPlot[];  
+
+    public abstract tick(updateOffset: ResolutionMapped<number>): void;
 
     public constructor(protected readonly broker: IBroker, protected readonly messageLogger: MessageLogger) {}
 }

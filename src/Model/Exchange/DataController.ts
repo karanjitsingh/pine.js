@@ -92,6 +92,8 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
         }
 
         EvaluatedSeries.evaluteUpdates(updateIndex);
+
+        // notify update after series has been updated with latest data
         this.notifyAll(lengthMap);
     }
 
@@ -109,9 +111,9 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
                 } else {
                     const last = candles.length - 1;
 
-                    if(candles[last].startTick == currCandle.startTick) {
+                    if(candles[last].StartTick == currCandle.StartTick) {
                         candles[last] = currCandle;
-                    } else if (candles[last].startTick < currCandle.startTick) {
+                    } else if (candles[last].StartTick < currCandle.StartTick) {
                         candles.push(currCandle);
                     } else {
                         throw new Error("Backfill error.");
@@ -135,7 +137,7 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
                     length: update.length
                 }
 
-            } else if (lastCandle.startTick == update[0].startTick) {
+            } else if (lastCandle.StartTick == update[0].StartTick) {
                 
                 marketCandles.updateData(1, update);
         
@@ -144,7 +146,7 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
                     length: update.length
                 }
 
-            } else if (lastCandle.startTick + GetResolutionTick(resolution) == update[0].startTick) {
+            } else if (lastCandle.StartTick + GetResolutionTick(resolution) == update[0].StartTick) {
                 
                 marketCandles.updateData(0, update);
             
@@ -167,11 +169,11 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
 
         return {
             Candles: series,
-            Open: new SimpleSeries(series, (candle: Candle) => candle.open),
-            Close: new SimpleSeries(series, (candle: Candle) => candle.close),
-            High: new SimpleSeries(series, (candle: Candle) => candle.high),
-            Low: new SimpleSeries(series, (candle: Candle) => candle.low),
-            Volume: new SimpleSeries(series, (candle: Candle) => candle.volume),
+            Open: new SimpleSeries(series, (candle: Candle) => candle.Open),
+            Close: new SimpleSeries(series, (candle: Candle) => candle.Close),
+            High: new SimpleSeries(series, (candle: Candle) => candle.High),
+            Low: new SimpleSeries(series, (candle: Candle) => candle.Low),
+            Volume: new SimpleSeries(series, (candle: Candle) => candle.Volume),
         }
     }
 }

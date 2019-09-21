@@ -172,20 +172,20 @@ export class Chart {
         for (let i = 0; i < chartData.Data.length; i++) {
 
             const candle = chartData.Data[chartData.Data.length - i - 1];
-            const time = candle.startTick / 1000 as TimeStamp;
+            const time = candle.StartTick / 1000 as TimeStamp;
 
             candleUpdate({
-                open: candle.open,
-                close: candle.close,
-                high: candle.high,
-                low: candle.low,
+                open: candle.Open,
+                close: candle.Close,
+                high: candle.High,
+                low: candle.Low,
                 time
             });
 
             volumeUpdate({
                 time,
-                color: candle.open < candle.close ? Color.GreenCandle : Color.RedCandle,
-                value: candle.volume
+                color: candle.Open < candle.Close ? Color.GreenCandle : Color.RedCandle,
+                value: candle.Volume
             });
 
             chartData.IndicatorData.forEach((indicator, index) => {

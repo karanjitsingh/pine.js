@@ -7,7 +7,7 @@ import { ChartData, Dictionary, PlotConfig } from "Model/Contracts";
 import * as React from 'react';
 
 export interface TradeViewProps {
-    dataStream: DataStream<Dictionary<ChartData>>,
+    chartDataStream: DataStream<Dictionary<ChartData>>,
     plotConfigMap: Dictionary<PlotConfig>
 }
 
@@ -21,11 +21,11 @@ export class TradeView extends React.Component<TradeViewProps> {
     constructor(props) {
         super(props);
 
-        this.props.dataStream.addEventListener('data', this.dataListener.bind(this));
+        this.props.chartDataStream.addEventListener('data', this.dataListener.bind(this));
     }
 
     public dataListener() {
-        this.props.dataStream.flush().forEach(data => {
+        this.props.chartDataStream.flush().forEach(data => {
             Object.keys(data).forEach((key) => {
                 this.chartMap[key].update(data[key]);
             })

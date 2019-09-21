@@ -47,7 +47,7 @@ export class Platform extends Subscribable<ReporterData> {
 
         this.initStrategy(stratConfig, this.dataController.MarketDataMap);
 
-        this.dataController.subscribe(this.updateCallback, this);
+        this.dataController.subscribe(this.dataUpdate, this);
         this.dataController.startStream(stratConfig.initCandleCount);
 
         return this.plotConfigMap;
@@ -98,18 +98,13 @@ export class Platform extends Subscribable<ReporterData> {
         })
     }
 
-    private getReporterData(plot: Dictionary<Plot>, rawData: ResolutionMapped<MarketData>, update: ResolutionMapped<number>): ReporterData {
-        const reporterData: ReporterData = {
-            ChartData: {},
-            TradeData: [] as Trade[]
-        };
-
+    private getChartData(plot: Dictionary<Plot>, rawData: ResolutionMapped<MarketData>, update: ResolutionMapped<number>): Dictionary<ChartData> {
         const rawDataUpdate = Object.keys(update).reduce<ResolutionMapped<Candle[]>>((map, res: Resolution) => {
             map[res] = rawData[res].Candles.getData(update[res]);
             return map;
         }, {});
 
-        reporterData.ChartData = Object.keys(plot).reduce<Dictionary<ChartData>>((map, id) => {
+        return Object.keys(plot).reduce<Dictionary<ChartData>>((map, id) => {
             const res = plot[id].Resolution;
             const indicators = plot[id].Indicators;
             const updateLength = update[res];
@@ -125,14 +120,14 @@ export class Platform extends Subscribable<ReporterData> {
 
             return map;
         }, {});
-
-        return reporterData;
     }
 
-    private updateCallback(update: ResolutionMapped<number>) {
+    private dataUpdate(update: ResolutionMapped<number>) {
         this.currentStrategy.tick(update);
         if (this.subscriberCount) {
-            this.notifyAll(this.getReporterData(this.plotMap, this.dataController.MarketDataMap, update));
+            this.notifyAll({
+                ChartData: this.getChartData(this.plotMap, this.dataController.MarketDataMap, update)
+            });
         }
     }
 }

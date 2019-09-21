@@ -125,6 +125,10 @@ class Reporter {
                     this.chartDataStream.push(reporterData.ChartData);
                 }
 
+                if(Object.values(reporterData.TradeData)) {
+                    this.tradeDataStream.push(reporterData.TradeData);
+                }
+
                 break;
 
             case 'ReporterConfig':
@@ -135,7 +139,7 @@ class Reporter {
                 this.tradeDataStream = new DataStream();
 
                 this.updatePage({
-                    dataStream: this.chartDataStream,
+                    chartDataStream: this.chartDataStream,
                     plotConfigMap: plotConfigs
                 });
                 
