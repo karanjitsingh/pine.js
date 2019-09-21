@@ -8,6 +8,7 @@ export type ExchangeCtor = new (network: INetwork, auth?: ExchangeAuth) => Excha
 interface IExchange {
     readonly isLive: boolean;
     readonly lastPrice: number;
+    readonly authSuccess: boolean;
     
     getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]>;
     start(resolutionSet: Resolution[]): Promise<CandleQueue>;
@@ -18,6 +19,7 @@ export const ExchangeStore = new CtorStore<ExchangeCtor>();
 export abstract class Exchange implements IExchange {
     public abstract readonly isLive: boolean;
     public abstract readonly lastPrice: number;
+    public abstract readonly authSuccess: boolean;
 
     public abstract getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]>;
     public abstract start(resolutionSet: Resolution[]): Promise<CandleQueue>;

@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import { Candle, ExchangeAuth, Resolution } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { IBroker } from "Model/Exchange/IBroker";
@@ -29,6 +30,15 @@ interface SymbolResponse {
     result: CandleResult[]
 }
 
+const ErrorCodes = [
+    10001, 10002, 10003, 10004, 10005, 10006, 10010, 20001, 20003, 20004, 20005, 20006, 20007, 20008,
+    20009, 20010, 20011, 20012, 20013, 20014, 20015, 20016, 20017, 20018, 20019, 20020, 20021, 30001,
+    30002, 30003, 30004, 30005, 30006, 30007, 30008, 30009, 30010, 30011, 30012, 30013, 30014, 30015,
+    30016, 30017, 30018, 30019, 30020, 30021, 30022, 30023, 30024, 30025, 30026, 30027, 30028, 30029,
+    30030, 30031, 30032, 30033, 30034, 30035, 30036, 30037, 30041, 30042, 30043, 30044, 30045, 30057,
+    30063, 20022, 20023, 20031, 20070, 20071, 30040, 30049, 30050, 30051, 30052, 30054, 30067, 30068
+]
+
 export class ByBitExchange extends Exchange {
 
     public readonly Broker: IBroker;
@@ -46,6 +56,8 @@ export class ByBitExchange extends Exchange {
     
     private _isLive: boolean = false;
     private _lastPrice: number = 0;
+    private _authSuccess: boolean = false;
+
     private webSocket: WebSocket;
 
     protected webSocketAddress: string = "wss://stream-testnet.bybit.com/realtime";
@@ -60,6 +72,10 @@ export class ByBitExchange extends Exchange {
 
     public get isLive(): boolean {
         return this._isLive;
+    }
+
+    public get authSuccess(): boolean {
+        return this._authSuccess;
     }
 
     public start(resolutionSet: Resolution[]): Promise<CandleQueue> {
@@ -77,18 +93,22 @@ export class ByBitExchange extends Exchange {
         if(unsupportedResolutions.length > 0) {
             throw new Error("Unsupported resolution(s): " + JSON.stringify(unsupportedResolutions));
         }
-
-        // this.subscribedResolutions = resolutionSet;
-        this.subscribedResolutions = resolutionSet;
         
+        this.subscribedResolutions = resolutionSet;
         this.webSocket = new WebSocket(this.webSocketAddress);
         
         this.webSocket.onopen = () => {
             const symbol = "BTCUSD";
             console.log('Bybit: Connection opened');
-            
+
+            if(this.auth) {
+                let expires = new Date().getTime() + 10000;
+                let signature = crypto.createHmac('sha256', this.auth.Secret).update('GET/realtime' + expires).digest('hex');
+
+                this.webSocket.send(JSON.stringify({'op': 'auth', 'args': [this.auth.ApiKey, expires, signature]}));
+            }
+
             this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + this.subscribedResolutions.join("|")]}));
-            // this.webSocket.send('{"op":"subscribe","args":["instrument.BTCUSD"]}')
 
             this._isLive = true;
 
@@ -103,14 +123,16 @@ export class ByBitExchange extends Exchange {
                     console.error('Bybit: error ' + event.data)
                 } else if ('success' in data && data.success === true) {
                     if (data.request && data.request.op === 'auth') {
-                        // me.logger.info('Bybit: Auth successful')
+                        console.log('Bybit: Auth successful')
 
-                        // ws.send(JSON.stringify({'op': 'subscribe', 'args': ['order']}))
-                        // ws.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))
-                        // ws.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
+                        this._authSuccess = true;
+
+                        this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['order']}))
+                        this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))
+                        this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
                     }
                 } else if (data.topic && data.topic.startsWith('kline.')) {
-                    console.log(new Date().getTime(), "Bybit: websocket data")
+                    // console.log(new Date().getTime(), "Bybit: websocket data")
 
                     const candle: Candle = {
                         StartTick: data.data.open_time * 1000,
@@ -126,15 +148,16 @@ export class ByBitExchange extends Exchange {
 
                     this.dataQueue.push(data.data.interval, candle);
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
-                    // let orders = data.data;
-
-                    // Bybit.createOrders(orders).forEach(order => {
-                    //     me.triggerOrder(order)
-                    // })
+                    const orders = data.data;
+                    console.log("orders");
+                    console.log(orders);
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'position') {
-                    // let positionsRaw = data.data;
+                    const positionsRaw = data.data;
+                    
+                    console.log("position");
+                    console.log(positionsRaw)
+                    
                     // let positions = []
-
                     // positionsRaw.forEach(positionRaw => {
                     //     if (!['buy', 'sell'].includes(positionRaw['side'].toLowerCase())) {
                     //         delete me.positions[positionRaw.symbol]
