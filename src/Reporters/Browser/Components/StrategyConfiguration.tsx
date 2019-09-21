@@ -56,10 +56,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
             interval: null
         }
 
-        if (!this.pages) {
-            this.pages = this.getPages();
-        }
-
+        this.pages = this.getPages();
         const done = this.pages.length - 1 == this.state.activeIndex;
 
         return (
@@ -113,8 +110,10 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
                     {
                         this.state.selectedExec == "Trade" ?
                             <Form.Group controlId="trade-form">
-                                <Form.Label>Exchange auth token</Form.Label>
-                                <Form.Control type="password" placeholder="Auth token"></Form.Control>
+                                <Form.Label>Api Key</Form.Label>
+                                <Form.Control type="password" placeholder="Api Key" id="apikey"></Form.Control>
+                                <Form.Label>Auth Secret</Form.Label>
+                                <Form.Control type="password" placeholder="Auth Secret" id="authsecret"></Form.Control>
                             </Form.Group>
                             :
                             <Form.Group>
@@ -129,12 +128,8 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
 
     private setDefaultConfiguration() {
         this.props.submitCallback({
-            Exchange: "ByBit",
-            Strategy: "Stochastic Strategy",
-            TradeSettings: {
-                AuthToken: "asdf"
-            }
-        });
+            default: true
+        } as any);
     }
 
     private submit() {
@@ -144,8 +139,9 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
         } as PlatformConfiguration
 
         if (this.state.selectedExec === "Trade") {
-            config.TradeSettings = {
-                AuthToken: (document.querySelector("#trade-form") as HTMLInputElement).value
+            config.ExchangeAuth = {
+                ApiKey: (document.querySelector("#apikey") as HTMLInputElement).value,
+                Secret: (document.querySelector("#authsecret") as HTMLInputElement).value
             }
         } else {
             config.BacktestSettings = {}

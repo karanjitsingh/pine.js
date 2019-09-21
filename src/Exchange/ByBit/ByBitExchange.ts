@@ -1,9 +1,10 @@
-import { Candle, Resolution } from "Model/Contracts";
+import { Candle, ExchangeAuth, Resolution } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { IBroker } from "Model/Exchange/IBroker";
-import { GetResolutionTick, Tick } from "Model/InternalContracts";
+import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
 import { CandleQueue } from "Model/Utils/CandleQueue";
+import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 
 interface CandleResult {
@@ -46,9 +47,11 @@ export class ByBitExchange extends Exchange {
     private _isLive: boolean = false;
     private _lastPrice: number = 0;
     private webSocket: WebSocket;
+
+    protected webSocketAddress: string = "wss://stream-testnet.bybit.com/realtime";
     
-    constructor(protected network: INetwork, private broker: IBroker) {
-        super(network, broker);
+    constructor(protected network: INetwork, auth?: ExchangeAuth) {
+        super(network, auth);
     }
 
     public get lastPrice(): number {
@@ -78,7 +81,7 @@ export class ByBitExchange extends Exchange {
         // this.subscribedResolutions = resolutionSet;
         this.subscribedResolutions = resolutionSet;
         
-        this.webSocket = new WebSocket('wss://stream.bybit.com/realtime');
+        this.webSocket = new WebSocket(this.webSocketAddress);
         
         this.webSocket.onopen = () => {
             const symbol = "BTCUSD";
@@ -212,7 +215,7 @@ export class ByBitExchange extends Exchange {
     }
 
     private resolutionMap(resolution: Resolution): [string, number] {
-        const tickValue = GetResolutionTick(resolution);
+        const tickValue = Utils.GetResolutionTick(resolution);
         
         switch (resolution) {
             case "1m":

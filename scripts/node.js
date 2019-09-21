@@ -89,6 +89,12 @@ function build() {
         "node ./node_modules/node-sass/bin/node-sass -r ./src/Reporters/Browser/Components/style.scss -o ./out/Reporters/Browser/lib"
     ]
 
+    // paths relative to source
+    const copyPaths = [
+        "Reporters/Browser/index.html",
+        ".testconfig.json"
+    ]
+
     const commands = paths.map((value) => (value.replace(/\//g, path.sep)));
 
     const promises = []
@@ -112,7 +118,11 @@ function build() {
 
 
     return Promise.all(promises).then((r) => {
-        fs.copyFileSync(path.join(projectDir, "src", "Reporters", "Browser", "index.html"), path.join(projectDir, "out", "Reporters", "Browser", "index.html"));
+        copyPaths.forEach((copyPath) => {
+            const split = copyPath.split('/');
+            fs.copyFileSync(path.join(projectDir, "src", ...split), path.join(projectDir, "out", ...split));
+        })
+
         console.log("Done.")
         return '';
     });

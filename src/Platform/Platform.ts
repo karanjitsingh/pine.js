@@ -1,5 +1,4 @@
-import { BacktestBroker } from "Exchange/Backtest/BacktestBroker";
-import { Candle, ChartData, Dictionary, IndicatorConfig, PlatformConfiguration, PlotConfig, ReporterData, Resolution, ResolutionMapped, Trade } from "Model/Contracts";
+import { Candle, ChartData, Dictionary, IndicatorConfig, PlatformConfiguration, PlotConfig, ReporterData, Resolution, ResolutionMapped } from "Model/Contracts";
 import { DataController } from "Model/Exchange/DataController";
 import { ExchangeStore } from "Model/Exchange/Exchange";
 import { MarketData } from "Model/InternalContracts";
@@ -55,9 +54,9 @@ export class Platform extends Subscribable<ReporterData> {
 
     private setConfig(config: PlatformConfiguration) {
         const exchangeCtor = ExchangeStore.get(config.Exchange);
-        const exchange = new exchangeCtor(this.Network, config.BacktestSettings ? new BacktestBroker() : null);
+        const exchange = new exchangeCtor(this.Network, config.ExchangeAuth);
 
-        this.currentStrategy = new (StrategyStore.get(config.Strategy))(exchange.Broker, this.MessageLogger);
+        this.currentStrategy = new (StrategyStore.get(config.Strategy))(null ,this.MessageLogger);
 
         const stratConfig = this.currentStrategy.StrategyConfig;
 

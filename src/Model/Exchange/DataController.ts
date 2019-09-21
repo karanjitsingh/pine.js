@@ -1,8 +1,9 @@
 import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
-import { GetResolutionTick, MarketData } from "Model/InternalContracts";
+import { MarketData } from "Model/InternalContracts";
 import { EvaluatedSeries, RawSeries, SimpleSeries, UpdateIndex } from "Model/Series/Series";
 import { Subscribable } from "Model/Utils/Events";
+import { Utils } from "Model/Utils/Utils";
 import { CandleQueue } from "../Utils/CandleQueue";
 
 export class DataController extends Subscribable<ResolutionMapped<number>> {
@@ -50,7 +51,7 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
         const promiseList: Promise<Candle[]>[] = [];
         
         this.resolutionSet.forEach(res => {
-            const promise = this.exchange.getData(currentTick, GetResolutionTick(res) * candleCount, res);
+            const promise = this.exchange.getData(currentTick, Utils.GetResolutionTick(res) * candleCount, res);
             promise.then((candleData: Candle[]) => {
                 resolutionDataMap[res] = candleData
             }, () => {
@@ -146,7 +147,7 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
                     length: update.length
                 }
 
-            } else if (lastCandle.StartTick + GetResolutionTick(resolution) == update[0].StartTick) {
+            } else if (lastCandle.StartTick + Utils.GetResolutionTick(resolution) == update[0].StartTick) {
                 
                 marketCandles.updateData(0, update);
             

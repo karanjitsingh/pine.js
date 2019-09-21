@@ -3,6 +3,7 @@ import * as http from 'http';
 import { PlatformConfiguration } from "Model/Contracts";
 import { ExchangeStore } from "Model/Exchange/Exchange";
 import { StrategyStore } from "Model/Strategy/Strategy";
+import { Utils } from 'Model/Utils/Utils';
 import * as path from 'path';
 import { Server } from "Server/Server";
 import { Constants, GetReply, PostReply, RestMethods } from "Server/ServerContracts";
@@ -12,11 +13,17 @@ import { URL } from "url";
 export const rest: RestMethods = {
     'post': {
         '/api/config': (url: URL, config: PlatformConfiguration, res: http.ServerResponse): PostReply => {
-            if (!Validations.ValidateBotConfig(config)) {
+            // todo: better way of handling default configs
+            if((config as any).default) {
+                config = Utils.GetTestConfig();
+            }
+
+            if (!Utils.Validations.ValidateBotConfig(config)) {
                 res.writeHead(400);
                 res.end();
                 return Promise.resolve(400);
             }
+
 
             const key = Server.platformControl.addPlatform(config);
             const platform = Server.platformControl.getInstance(key).platform;
@@ -72,41 +79,6 @@ export const rest: RestMethods = {
 
             return promise;
         },
-
-        // '/scripts': (url: URL, res: http.ServerResponse): GetReply => {
-        //     const file = path.join(Constants.pine, url.pathname);
-        //     let resolver: (code: number) => void;
-        //     const promise = new Promise<number>((resolve) => resolver = resolve);
-
-        //     if (fs.existsSync(file)) {
-        //         fs.readFile(file, (err, content) => {
-        //             if (err) {
-        //                 res.writeHead(500, {
-        //                     "Content-Type": "text/HTML"
-        //                 });
-
-        //                 res.end(err.toString());
-        //                 resolver(500);
-        //             }
-        //             else {
-        //                 res.writeHead(200, {
-        //                     "Content-Type": ServerUtils.getContentType(file)
-        //                 });
-
-        //                 res.end(content);
-        //                 resolver(200);
-        //             }
-        //         });
-        //     }
-        //     else {
-        //         res.writeHead(404)
-        //         res.end();
-        //         resolver(404);
-        //     }
-
-        //     return promise;
-        // },
-
         '/api/datastream': (url: URL, res: http.ServerResponse): GetReply => {
             const id = url.searchParams.get('id');
 
@@ -132,19 +104,5 @@ export const rest: RestMethods = {
         
         '/': ServerUtils.browserGet,
         '/scripts': ServerUtils.browserGet
-    }
-}
-
-const Validations = {
-    ValidateBotConfig: (config: PlatformConfiguration) => {
-        if (!config) {
-            return false;
-        }
-
-        if (!config.Exchange || !config.Strategy || !(!!config.BacktestSettings || !!config.TradeSettings)) {
-            return false;
-        }
-
-        return true;
     }
 }

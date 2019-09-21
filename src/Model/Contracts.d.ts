@@ -5,12 +5,15 @@ export interface ChartData {
     IndicatorData: number[][];
 }
 
+export interface ExchangeAuth {
+    ApiKey: string,
+    Secret: string
+}
+
 export interface PlatformConfiguration {
     Strategy: string,
     Exchange: string,
-    TradeSettings?: {
-        AuthToken: string
-    }
+    ExchangeAuth?: ExchangeAuth,
     BacktestSettings?: {}
 }
 
