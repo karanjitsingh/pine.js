@@ -1,7 +1,6 @@
 import * as crypto from 'crypto';
 import { Candle, ExchangeAuth, Resolution } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
-import { IBroker } from "Model/Exchange/IBroker";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
 import { CandleQueue } from "Model/Utils/CandleQueue";
@@ -41,11 +40,17 @@ const ErrorCodes = [
 
 export class ByBitExchange extends Exchange {
 
-    public readonly Broker: IBroker;
+    public get lastPrice(): number { return this._lastPrice; }
+    public get isLive(): boolean { return this._isLive; }
 
+    protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
+    protected baseApiEndpoint: string = "https://api2.bybit.com";
+    
     private subscribedResolutions: Resolution[];
     private dataQueue: CandleQueue;
-    
+    private auth: ExchangeAuth;
+    private connecting: boolean = false;
+
     private readonly LiveSupportedResolutions: string[] = [
         "1m", "3m", "5m", "15m", "30m",
         "1h", "2h", "3h", "4h", "6h",
@@ -56,135 +61,122 @@ export class ByBitExchange extends Exchange {
     
     private _isLive: boolean = false;
     private _lastPrice: number = 0;
-    private _authSuccess: boolean = false;
 
     private webSocket: WebSocket;
-
-    protected webSocketAddress: string = "wss://stream-testnet.bybit.com/realtime";
     
-    constructor(protected network: INetwork, auth?: ExchangeAuth) {
-        super(network, auth);
+    constructor(protected network: INetwork) {
+        super(network);
     }
 
-    public get lastPrice(): number {
-        return this._lastPrice
-    }
+    public async connect(auth?: ExchangeAuth): Promise<void> {
+        let _resolve: () => void;
+        let _reject: (reason: any) => void;
+        const promise = new Promise<void>((resolver, rejector) => { _resolve = resolver; _reject = rejector; });
+        this.auth = auth;
+        
+        let resolve: () => void = () => {
+            this._isLive = true;
+            this.connecting = false;
+            this.initWebsocket();
+            _resolve();
+        };
 
-    public get isLive(): boolean {
-        return this._isLive;
-    }
+        let reject: (reason: any) => void = (reason) => {
+            this.connecting = false;
+            this.initWebsocket()
+            _reject(reason);
+        };
 
-    public get authSuccess(): boolean {
-        return this._authSuccess;
-    }
-
-    public start(resolutionSet: Resolution[]): Promise<CandleQueue> {
-        let resolver: (value: CandleQueue) => void;
-        const promise = new Promise<CandleQueue>((resolve) => {
-            resolver = resolve;
-        })
+        if(this.connecting) {
+            throw new Error("Already connecting")
+        }
 
         if(this._isLive) {
             throw new Error("Already connected to exchange");
         }
 
-        const unsupportedResolutions = resolutionSet.filter(val => !this.LiveSupportedResolutions.includes(val));
+        this.connecting = true;
 
-        if(unsupportedResolutions.length > 0) {
-            throw new Error("Unsupported resolution(s): " + JSON.stringify(unsupportedResolutions));
-        }
-        
-        this.subscribedResolutions = resolutionSet;
-        this.webSocket = new WebSocket(this.webSocketAddress);
+        this.webSocket = new WebSocket(this.websocketEndpoint);
         
         this.webSocket.onopen = () => {
-            const symbol = "BTCUSD";
             console.log('Bybit: Connection opened');
 
             if(this.auth) {
                 let expires = new Date().getTime() + 10000;
                 let signature = crypto.createHmac('sha256', this.auth.Secret).update('GET/realtime' + expires).digest('hex');
 
-                this.webSocket.send(JSON.stringify({'op': 'auth', 'args': [this.auth.ApiKey, expires, signature]}));
+                this.webSocket.send(JSON.stringify({'op': 'auth', 'args': [this.auth.ApiKey + 1, expires, signature]}));
+
+                this.webSocket.onmessage = (event) => {
+                    if (event.type === 'message') {
+                        let data = JSON.parse(event.data.toString());
+        
+                        if ('success' in data && data.success === false) {
+                            reject(data);
+                        } else if ('success' in data && data.success === true) {
+                            if (data.request && data.request.op === 'auth') {
+                                if(!this.authSuccess) {
+                                        
+                                    console.log('Bybit: Auth successful');
+
+                                    // await order
+                                    // await balance and position;
+                                    // await current leverage
+
+                                    this.setAuthSuccess({
+                                        Position: null,
+                                        Balance: 0,
+                                        Leverage: 0,
+                                    })
+        
+                                    this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['order']}))
+                                    this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))
+                                    this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
+        
+                                    resolve();
+                                }
+                            }
+                        } else {
+                            reject(data);
+                        }
+                    }
+                };
+            } else {
+                resolve();
             }
+        }
 
-            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + this.subscribedResolutions.join("|")]}));
+        return promise;
+    }
 
-            this._isLive = true;
+    public getCandleQueue(resolutionSet: Resolution[]): Promise<CandleQueue> {
+        let resolver: (value: CandleQueue) => void;
+        const promise = new Promise<CandleQueue>((resolve) => {
+            resolver = resolve;
+        });
 
-            resolver(this.dataQueue = new CandleQueue(this.subscribedResolutions));
+        if (!this._isLive) {
+            throw new Error("Not connected to exchange.");
+        }
+
+        if (this.subscribedResolutions) {
+            throw new Error("Already subscribed to " + JSON.stringify(this.subscribedResolutions));
         }
         
-        this.webSocket.onmessage = (event) => {
-            if (event.type === 'message') {
-                let data = JSON.parse(event.data.toString());
+        const unsupportedResolutions = resolutionSet.filter(val => !this.LiveSupportedResolutions.includes(val));
 
-                if ('success' in data && data.success === false) {
-                    console.error('Bybit: error ' + event.data)
-                } else if ('success' in data && data.success === true) {
-                    if (data.request && data.request.op === 'auth') {
-                        console.log('Bybit: Auth successful')
+        if (unsupportedResolutions.length > 0) {
+            throw new Error("Unsupported resolution(s): " + JSON.stringify(unsupportedResolutions));
+        }
+        
+        const symbol = "BTCUSD";
 
-                        this._authSuccess = true;
+        this.subscribedResolutions = resolutionSet;
+      
+        this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + this.subscribedResolutions.join("|")]}));
 
-                        this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['order']}))
-                        this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))
-                        this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
-                    }
-                } else if (data.topic && data.topic.startsWith('kline.')) {
-                    // console.log(new Date().getTime(), "Bybit: websocket data")
-
-                    const candle: Candle = {
-                        StartTick: data.data.open_time * 1000,
-                        EndTick: null,
-                        High: data.data.high,
-                        Open: data.data.open,
-                        Close: data.data.close,
-                        Low: data.data.low,
-                        Volume: data.data.volume    
-                    }
-
-                    this._lastPrice = candle.Close;
-
-                    this.dataQueue.push(data.data.interval, candle);
-                } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
-                    const orders = data.data;
-                    console.log("orders");
-                    console.log(orders);
-                } else if (data.data && data.topic && data.topic.toLowerCase() === 'position') {
-                    const positionsRaw = data.data;
-                    
-                    console.log("position");
-                    console.log(positionsRaw)
-                    
-                    // let positions = []
-                    // positionsRaw.forEach(positionRaw => {
-                    //     if (!['buy', 'sell'].includes(positionRaw['side'].toLowerCase())) {
-                    //         delete me.positions[positionRaw.symbol]
-                    //     } else {
-                    //         positions.push(positionRaw)
-                    //     }
-                    // })
-
-                    // Bybit.createPositionsWithOpenStateOnly(positions).forEach(position => {
-                    //     me.positions[position.symbol] = position
-                    // })
-                } else {
-                    console.log('unknown', data.data);
-                }
-            }
-        };
-
-        this.webSocket.onclose = () => {
-            console.log('Bybit: Connection closed.')
-
-            this._isLive = false;
-
-            // retry connecting after some second to not bothering on high load
-            setTimeout(() => {
-                this.start(resolutionSet);
-            }, 500);
-        };
+        resolver(this.dataQueue = new CandleQueue(this.subscribedResolutions));
 
         return promise;
     }
@@ -202,7 +194,7 @@ export class ByBitExchange extends Exchange {
         const from = Math.floor((endTick - duration) / 1000);
         const to = Math.floor(endTick / 1000);
 
-        const endpoint = `https://api2.bybit.com/kline/list?symbol=BTCUSD&resolution=${res[0]}&from=${from}&to=${to}`;
+        const endpoint = `${this.baseApiEndpoint}/kline/list?symbol=BTCUSD&resolution=${res[0]}&from=${from}&to=${to}`;
 
         try {
             const response = await this.network.get(endpoint);
@@ -233,8 +225,167 @@ export class ByBitExchange extends Exchange {
             }
         } catch (err) {
             console.error(err);
-            return Promise.reject({})
+            return Promise.reject(err)
         }
+    }
+
+    private initWebsocket() {
+
+        this.webSocket.onmessage = (event) => {
+            if (event.type === 'message') {
+                let data = JSON.parse(event.data.toString());
+
+                if ('success' in data && data.success === false) {
+                    console.error('Bybit: error ' + event.data)
+                } else if ('success' in data && data.success === true) {
+                    if (data.request && data.request.op === 'auth') {
+                        if(!this.authSuccess) {
+                                
+                            console.log('Bybit: Auth successful');
+
+                            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['order']}))
+                            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))
+                            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
+                        }
+                    }
+                } else if (data.topic && data.topic.startsWith('kline.')) {
+                    // console.log(new Date().getTime(), "Bybit: websocket data")
+
+                    const candle: Candle = {
+                        StartTick: data.data.open_time * 1000,
+                        EndTick: null,
+                        High: data.data.high,
+                        Open: data.data.open,
+                        Close: data.data.close,
+                        Low: data.data.low,
+                        Volume: data.data.volume    
+                    }
+
+                    this._lastPrice = candle.Close;
+
+                    this.dataQueue.push(data.data.interval, candle);
+                } else if (data.data && data.topic && data.topic.toLowerCase() === 'execution') {
+                    
+                    const executions = data.data;
+                    console.log("executions");
+                    console.log(executions);
+
+                    /*
+                        {
+                            "topic":"execution",
+                            "data":[
+                                {
+                                    "symbol":"BTCUSD",
+                                    "side":"Sell",
+                                    "order_id":"xxxxxxxx-xxxx-xxxx-9a8f-4a973eb5c418",
+                                    "exec_id":"xxxxxxxx-xxxx-xxxx-8b66-c3d2fcd352f6",
+                                    "order_link_id":"xxxxxxx",
+                                    "price":3559,
+                                    "exec_qty":1028,
+                                    "exec_fee":-0.00007221,
+                                    "leaves_qty":0,
+                                    "is_maker":true,
+                                    "trade_time":"2019-01-22T14:49:38.000Z"
+                                },
+                            ]
+                        }
+                    */
+
+                } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
+                    
+                    const orders = data.data;
+                    console.log("orders");
+                    console.log(orders);
+                    
+                    /*
+                        {
+                            "topic":"order",
+                            "data":[
+                                {
+                                    "order_id":"xxxxxxxx-xxxx-xxxx-832b-1eca710bf0a6",
+                                    "order_link_id":"xxxxxxxx",
+                                    "symbol":"BTCUSD",
+                                    "side":"Sell",
+                                    "order_type":"Limit",
+                                    "price":3559.5,
+                                    "qty":850,
+                                    "time_in_force":"GoodTillCancel",
+                                    "order_status":"Cancelled",
+                                    "leaves_qty":0,
+                                    "cum_exec_qty":0,
+                                    "cum_exec_value":0,
+                                    "cum_exec_fee":0,
+                                    "timestamp":"2019-01-22T14:49:38.000Z"
+                                }
+                            ]
+                        }
+                    */
+
+                } else if (data.data && data.topic && data.topic.toLowerCase() === 'position') {
+                    const positionsRaw = data.data;
+                    
+                    console.log("position");
+                    console.log(positionsRaw);
+
+                    /*
+                        {
+                            "topic":"position",
+                            "action":"update",
+                            "data":[
+                                {
+                                    "symbol":"BTCUSD",                  // the contract for this position
+                                    "side":"Sell",                      // side
+                                    "size":11,                          // the current position amount
+                                    "entry_price":6907.291588174717,    // entry price
+                                    "liq_price":7100.234,               // liquidation price
+                                    "bust_price":7088.1234,             // bankruptcy price
+                                    "take_profit":0,                    // take profit price
+                                    "stop_loss":0,                      // stop loss price
+                                    "trailing_stop":0,                  // trailing stop points
+                                    "position_value":0.00159252,        // positional value
+                                    "leverage":1,                       // leverage
+                                    "position_status":"Normal",         // status of position (Normal:normal Liq:in the process of liquidation Adl:in the process of Auto-Deleveraging)
+                                    "auto_add_margin":0,                // Auto margin replenishment enabled (0:no 1:yes)
+                                    "position_seq":14                   // position version number
+                                }
+                            ]
+                        }
+                        
+                        let positions = []
+                        positionsRaw.forEach(positionRaw => {
+                            if (!['buy', 'sell'].includes(positionRaw['side'].toLowerCase())) {
+                                delete me.positions[positionRaw.symbol]
+                            } else {
+                                positions.push(positionRaw)
+                            }
+                        })
+
+                        Bybit.createPositionsWithOpenStateOnly(positions).forEach(position => {
+                            me.positions[position.symbol] = position
+                        })
+                    */
+                } else {
+                    console.log('unknown', data.data);
+                }
+            }
+        };
+
+        this.webSocket.onclose = () => {
+            console.log('Bybit: Connection closed.');
+            console.log('Bybit: Retrying in 500ms.');
+
+            this._isLive = false;
+
+            // retry connecting after some second to not bothering on high load
+            setTimeout(() => {
+                console.log('Bybit: Retrying.')
+                this.connect(this.auth).then((success) => { }, (reason) => {
+                    console.log('Bybit: Retry rejection, reason: ' + reason);
+                    this.distessSignal.set();
+                });
+            }, 500);
+        };
+
     }
 
     private resolutionMap(resolution: Resolution): [string, number] {

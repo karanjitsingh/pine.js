@@ -100,3 +100,35 @@ export abstract class Subscribable<TArgs> {
         this.emitter.emit("event", args);
     }
 }
+
+export class SubscribableValue<TValue> extends Subscribable<TValue> {
+    private _value: TValue;
+
+    public get value(): TValue { return this._value; }
+    
+    public set value(newValue: TValue) {
+        this._value = newValue;
+        this.notifyAll(newValue);
+    }
+
+    constructor(private initValue: TValue) {
+        super();
+        this._value = initValue;
+    }
+}
+
+export class Signal extends Subscribable<void> {
+    
+    private signalSet: boolean = false;
+
+    public get isSet(): boolean { return this.signalSet; }
+
+    public reset() {
+        this.signalSet = false;
+    }
+    
+    public set() {
+        this.signalSet = true;
+        this.notifyAll();
+    }
+}

@@ -23,8 +23,7 @@ export class DataController extends Subscribable<ResolutionMapped<number>> {
     public startStream(initCandleCount: number) {
         this.getBaseData(initCandleCount).then((dataMap) => {
             this.initData(dataMap);
-
-            this.exchange.start(this.resolutionSet).then((queue: CandleQueue) => {
+            this.exchange.getCandleQueue(this.resolutionSet).then((queue: CandleQueue) => {
                 this.dataQueue = queue;
                 this.isRunning = true;
                 this.fetchUpdate();

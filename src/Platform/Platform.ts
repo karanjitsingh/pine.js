@@ -1,6 +1,6 @@
 import { Candle, ChartData, Dictionary, IndicatorConfig, PlatformConfiguration, PlotConfig, ReporterData, Resolution, ResolutionMapped } from "Model/Contracts";
 import { DataController } from "Model/Exchange/DataController";
-import { ExchangeStore } from "Model/Exchange/Exchange";
+import { Exchange, ExchangeStore } from "Model/Exchange/Exchange";
 import { MarketData } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
 import { Indicator, Strategy, StrategyConfig, StrategyStore } from "Model/Strategy/Strategy";
@@ -18,18 +18,17 @@ export class Platform extends Subscribable<ReporterData> {
     protected readonly Network: INetwork;
     protected readonly MessageLogger: MessageLogger;
 
-    private currentStrategy: Strategy;
+    private strategy: Strategy;
+    private exchange: Exchange;
     private dataController: DataController;
     private _isRunning: boolean = false;
     private plotMap: Dictionary<Plot>;
     private plotConfigMap: Dictionary<PlotConfig>;
 
-    public constructor(config: PlatformConfiguration) {
+    public constructor(private config: PlatformConfiguration) {
         super();
         this.MessageLogger = new MessageLogger();
         this.Network = new Network();
-
-        this.setConfig(config);
     }
 
     public get isRunning(): boolean {
@@ -37,30 +36,26 @@ export class Platform extends Subscribable<ReporterData> {
     }
 
     public getStrategyConfig(): StrategyConfig {
-        return this.currentStrategy.StrategyConfig;
+        return this.strategy.StrategyConfig;
     }
 
     public start(): Dictionary<PlotConfig> {
-        this._isRunning = true;
-        const stratConfig = this.currentStrategy.StrategyConfig;
+        const exchangeCtor = ExchangeStore.get(this.config.Exchange);
 
-        this.initStrategy(stratConfig, this.dataController.MarketDataMap);
+        this.exchange = new exchangeCtor(this.Network, this.config.ExchangeAuth);
+        this.strategy = new (StrategyStore.get(this.config.Strategy))(null ,this.MessageLogger);
+        this.dataController = new DataController(this.exchange, this.strategy.StrategyConfig.resolutionSet);
 
-        this.dataController.subscribe(this.dataUpdate, this);
-        this.dataController.startStream(stratConfig.initCandleCount);
+        this.exchange.connect(this.config.ExchangeAuth).then(() => {
+            this._isRunning = true;
+            this.dataController.subscribe(this.dataUpdate, this);
+            this.dataController.startStream(this.strategy.StrategyConfig.initCandleCount);
+        }, (reason) => {
+            console.log("Platfprm: Connection rejected, " + reason);
+        });
 
+        this.initStrategy(this.strategy.StrategyConfig, this.dataController.MarketDataMap);
         return this.plotConfigMap;
-    }
-
-    private setConfig(config: PlatformConfiguration) {
-        const exchangeCtor = ExchangeStore.get(config.Exchange);
-        const exchange = new exchangeCtor(this.Network, config.ExchangeAuth);
-
-        this.currentStrategy = new (StrategyStore.get(config.Strategy))(null ,this.MessageLogger);
-
-        const stratConfig = this.currentStrategy.StrategyConfig;
-
-        this.dataController = new DataController(exchange, stratConfig.resolutionSet);
     }
 
     private initStrategy(config: StrategyConfig, dataSeries: ResolutionMapped<MarketData>) {
@@ -70,7 +65,7 @@ export class Platform extends Subscribable<ReporterData> {
             stratData[res] = dataSeries[res];
         })
 
-        const rawPlots = this.currentStrategy.init(stratData);
+        const rawPlots = this.strategy.init(stratData);
 
         this.plotMap = {};
         this.plotConfigMap = {};
@@ -122,7 +117,7 @@ export class Platform extends Subscribable<ReporterData> {
     }
 
     private dataUpdate(update: ResolutionMapped<number>) {
-        this.currentStrategy.tick(update);
+        this.strategy.tick(update);
         if (this.subscriberCount) {
             this.notifyAll({
                 ChartData: this.getChartData(this.plotMap, this.dataController.MarketDataMap, update)
