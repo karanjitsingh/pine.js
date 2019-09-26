@@ -117,7 +117,7 @@ export class Platform extends Subscribable<ReporterData> {
     }
 
     private dataUpdate(update: ResolutionMapped<number>) {
-        this.strategy.tick(update);
+        this.strategy.update(update);
         if (this.subscriberCount) {
             this.notifyAll({
                 ChartData: this.getChartData(this.plotMap, this.dataController.MarketDataMap, update)

@@ -7,28 +7,8 @@ import { CandleQueue } from "Model/Utils/CandleQueue";
 import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 import { ByBitBroker } from './ByBitBroker';
+import { Api } from './ByBitContracts';
 
-interface CandleResult {
-    id: number,
-    symbol: string,
-    period: string,
-    start_at: number,
-    open: number,
-    high: number,
-    low: number,
-    close: number,
-    volume: number,
-    turnover: number,
-    cross_seq: number,
-    time: number
-}
-
-interface SymbolResponse {
-    ret_code: any,
-    ret_msg: any,
-    ext_code: any,
-    result: CandleResult[]
-}
 
 const ErrorCodes = [
     10001, 10002, 10003, 10004, 10005, 10006, 10010, 20001, 20003, 20004, 20005, 20006, 20007, 20008,
@@ -43,11 +23,11 @@ export class ByBitExchange extends Exchange {
 
     public get lastPrice(): number { return this._lastPrice; }
     public get isLive(): boolean { return this._isLive; }
-
-    public readonly broker: ByBitBroker;
+    public get broker(): ByBitBroker { return this._broker };
+    public get leverage(): number { return this._leverage; };
 
     protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
-    protected baseApiEndpoint: string = "https://api2.bybit.com";
+    protected baseApiEndpoint: string = "https://api.bybit.com/v2";
     
     private subscribedResolutions: Resolution[];
     private dataQueue: CandleQueue;
@@ -64,26 +44,26 @@ export class ByBitExchange extends Exchange {
     
     private _isLive: boolean = false;
     private _lastPrice: number = 0;
+    private _broker: ByBitBroker;
+    private _leverage: number;
 
     private webSocket: WebSocket;
     
     constructor(protected network: INetwork) {
         super(network);
-
-        this.broker = new ByBitBroker(this);
     }
 
-    public async connect(auth?: ExchangeAuth): Promise<void> {
-        let _resolve: () => void;
+    public async connect(auth?: ExchangeAuth): Promise<ByBitBroker | undefined> {
+        let _resolve: (broker?: ByBitBroker) => void;
         let _reject: (reason: any) => void;
-        const promise = new Promise<void>((resolver, rejector) => { _resolve = resolver; _reject = rejector; });
+        const promise = new Promise<ByBitBroker | undefined>((resolver, rejector) => { _resolve = resolver; _reject = rejector; });
         this.auth = auth;
         
-        let resolve: () => void = () => {
+        let resolve: (broker?: ByBitBroker) => void = () => {
             this._isLive = true;
             this.connecting = false;
             this.initWebsocket();
-            _resolve();
+            _resolve(this.broker);
         };
 
         let reject: (reason: any) => void = (reason) => {
@@ -139,7 +119,7 @@ export class ByBitExchange extends Exchange {
                                     this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))
                                     this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
         
-                                    resolve();
+                                    resolve(this._broker = new ByBitBroker(this));
                                 }
                             }
                         } else {
@@ -199,15 +179,15 @@ export class ByBitExchange extends Exchange {
         const from = Math.floor((endTick - duration) / 1000);
         const to = Math.floor(endTick / 1000);
 
-        const endpoint = `${this.baseApiEndpoint}/kline/list?symbol=BTCUSD&resolution=${res[0]}&from=${from}&to=${to}`;
+        const endpoint = `${this.baseApiEndpoint}/public/kline/list?symbol=BTCUSD&resolution=${res[0]}&from=${from}&to=${to}`;
 
         try {
             const response = await this.network.get(endpoint);
 
-            const data = JSON.parse(response.response) as SymbolResponse;
+            const data = JSON.parse(response.response) as Api.SymbolResponse;
 
             if (data.result) {
-                const candleData = data.result.map((result: CandleResult): Candle => {
+                const candleData = data.result.map((result: Api.CandleResult): Candle => {
                     const startTick = result.start_at;
 
                     return {
@@ -419,4 +399,6 @@ export class ByBitExchange extends Exchange {
                 throw new Error("Unsupported resolution for getting base data");
         }
     }
+
+
 }

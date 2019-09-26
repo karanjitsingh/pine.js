@@ -5,6 +5,7 @@ import { ema, HeikinAshi, sma, Stoch, Expression } from "Model/Series/Expression
 import { ISeries } from "Model/Series/Series";
 import { RawPlot, Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { MessageLogger } from "Platform/MessageLogger";
+import { Order } from "Model/Exchange/Orders";
 
 export class StochasticStrategy extends Strategy {
     public readonly StrategyConfig: StrategyConfig;
@@ -24,8 +25,12 @@ export class StochasticStrategy extends Strategy {
         };
     }
 
-    public tick(updateOffset: ResolutionMapped<number>) {
+    public update(updateOffset: ResolutionMapped<number>) {
         console.log("strategy tick", updateOffset);
+    }
+
+    public trade(update: Order) {
+         
     }
 
     public init(input: ResolutionMapped<MarketData>): RawPlot[] {

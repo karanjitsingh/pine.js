@@ -1,14 +1,34 @@
-import { OpenTrade, Position } from "Model/Contracts";
+import { Order } from "./Orders";
+import { Position } from "./Exchange";
+
+export interface BrokerResponseSuccess {
+    success: true;
+}
+
+export interface BrokerResponseFailure {
+    success: false;
+    reason: string;
+}
+
+export interface BrokerOrderResponseSuccess extends BrokerResponseSuccess {
+    orderId: string;
+}
+
+export type BrokerResponse = BrokerResponseSuccess | BrokerResponseFailure;
+export type BrokerOrderResponse = BrokerOrderResponseSuccess | BrokerResponseFailure;
 
 export interface IBroker {
-    readonly position: Position;
-    readonly currentOrders: string[];
     readonly balance: number;
+    readonly leverage: number;
 
-    getOrder(): Readonly<any>;
-    marketOrder(): Promise<any>;
-    limitOrder(): Promise<any>;
-    conditionalOrder(): Promise<any>;
+    
 
-    exitPosition(): Promise<any>
+    marketOrder(): Promise<BrokerOrderResponse>;
+    limitOrder(): Promise<BrokerOrderResponse>;
+    conditionalOrder(): Promise<BrokerOrderResponse>;
+    cancelOrder(orderId: string): Promise<BrokerOrderResponse>;
+
+    updateLeverage(leverage: number): Promise<BrokerResponse>;
+
+    exitPosition(): Promise<BrokerResponse>
 }
