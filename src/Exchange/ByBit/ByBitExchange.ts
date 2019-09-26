@@ -6,6 +6,7 @@ import { INetwork } from "Model/Network";
 import { CandleQueue } from "Model/Utils/CandleQueue";
 import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
+import { ByBitBroker } from './ByBitBroker';
 
 interface CandleResult {
     id: number,
@@ -43,6 +44,8 @@ export class ByBitExchange extends Exchange {
     public get lastPrice(): number { return this._lastPrice; }
     public get isLive(): boolean { return this._isLive; }
 
+    public readonly broker: ByBitBroker;
+
     protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
     protected baseApiEndpoint: string = "https://api2.bybit.com";
     
@@ -66,6 +69,8 @@ export class ByBitExchange extends Exchange {
     
     constructor(protected network: INetwork) {
         super(network);
+
+        this.broker = new ByBitBroker(this);
     }
 
     public async connect(auth?: ExchangeAuth): Promise<void> {

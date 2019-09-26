@@ -3,6 +3,7 @@ import { INetwork } from "Model/Network";
 import { CandleQueue } from "Model/Utils/CandleQueue";
 import { CtorStore } from "Model/Utils/CtorStore";
 import { Signal, Subscribable } from "Model/Utils/Events";
+import { IBroker } from "./IBroker";
 
 export type ExchangeCtor = new (network: INetwork, auth?: ExchangeAuth) => Exchange;
 
@@ -11,7 +12,9 @@ export const ExchangeStore = new CtorStore<ExchangeCtor>();
 export abstract class Exchange extends Subscribable<Update<Account>> {
     public abstract readonly isLive: boolean;
     public abstract readonly lastPrice: number;
+    public abstract readonly broker: IBroker;
     public readonly account: Account;
+
     public distessSignal: Signal;
     
     public get authSuccess(): boolean { return this._authSuccess; }

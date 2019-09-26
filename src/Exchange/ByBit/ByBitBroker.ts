@@ -1,46 +1,29 @@
-import { OpenTrade } from "Model/Contracts";
 import { IBroker } from "Model/Exchange/IBroker";
+import { Position } from "Model/Contracts";
 import { ByBitExchange } from "./ByBitExchange";
 
 export class ByBitBroker implements IBroker {
-
-    private brokerBusy: boolean;
-
-    private currentPosition: OpenTrade = null;
+    position: Position;
+    currentOrders: string[];
+    balance: number;
 
     constructor(private exchange: ByBitExchange) {
 
     }
 
-    public get BrokerBusy(): boolean {
-        return this.brokerBusy;
+    getOrder(): Readonly<any> {
+        throw new Error("Method not implemented.");
     }
-
-    enterLong(leverage: number, qty: number): boolean {
-        if (this.brokerBusy) {
-            return false;
-        }
-
-        return true;
+    marketOrder(): Promise<any> {
+        throw new Error("Method not implemented.");
     }
-
-    enterShort(leverage: number, qty: number): boolean {
-        if (this.brokerBusy) {
-            return false;
-        }
-
-        return true;
+    limitOrder(): Promise<any> {
+        throw new Error("Method not implemented.");
     }
-
-    exitTrade(): boolean {
-        if (this.brokerBusy) {
-            return false;
-        }
-
-        return true;
+    conditionalOrder(): Promise<any> {
+        throw new Error("Method not implemented.");
     }
-
-    getCurrentPosition(): OpenTrade | null {
-        return this.currentPosition;
+    exitPosition(): Promise<any> {
+        throw new Error("Method not implemented.");
     }
 }

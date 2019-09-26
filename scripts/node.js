@@ -108,6 +108,10 @@ function build() {
             resolver(0);
         });
 
+        child_process.stderr.on('data', (data) => {
+            console.log(data);
+        })
+        
         child_process.stdout.on('data', (data) => {
             data.split('\n').forEach(elem => {
                 if (elem.trim().match(/^([^\s].*)[\(:](\d+)[,:](\d+)(?:\):\s+|\s+-\s+)(error|warning|info)\s+TS(\d+)\s*:\s*(.*)$/))
