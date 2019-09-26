@@ -1,7 +1,6 @@
-import { IBroker, BrokerOrderResponse, BrokerResponse } from "Model/Exchange/IBroker";
+import { Order, Position } from "Model/Contracts";
+import { BrokerOrderResponse, BrokerResponse, IBroker } from "Model/Exchange/IBroker";
 import { ByBitExchange } from "./ByBitExchange";
-import { Position } from "Model/Exchange/Exchange";
-import { Order } from "Model/Exchange/Orders";
 
 export class ByBitBroker implements IBroker {
 

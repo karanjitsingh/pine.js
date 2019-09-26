@@ -1,11 +1,10 @@
-import { ResolutionMapped } from "Model/Contracts";
+import { Order, ResolutionMapped } from "Model/Contracts";
 import { IBroker } from "Model/Exchange/IBroker";
 import { MarketData } from "Model/InternalContracts";
-import { ema, HeikinAshi, sma, Stoch, Expression } from "Model/Series/Expressions";
+import { ema, Expression, HeikinAshi, sma, Stoch } from "Model/Series/Expressions";
 import { ISeries } from "Model/Series/Series";
 import { RawPlot, Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { MessageLogger } from "Platform/MessageLogger";
-import { Order } from "Model/Exchange/Orders";
 
 export class StochasticStrategy extends Strategy {
     public readonly StrategyConfig: StrategyConfig;

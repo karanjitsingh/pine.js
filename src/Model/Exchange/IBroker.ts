@@ -1,6 +1,3 @@
-import { Order } from "./Orders";
-import { Position } from "./Exchange";
-
 export interface BrokerResponseSuccess {
     success: true;
 }
@@ -21,7 +18,7 @@ export interface IBroker {
     readonly balance: number;
     readonly leverage: number;
 
-    
+
 
     marketOrder(): Promise<BrokerOrderResponse>;
     limitOrder(): Promise<BrokerOrderResponse>;

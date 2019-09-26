@@ -1,31 +1,44 @@
 // ------------------------------------------------------------------------------------------------
 // Trading ----------------------------------------------------------------------------------------
 
-export interface Account {
-    Position: null;
-    Balance: number;
-    Leverage: number;
+export type Side = 'Buy' | 'Sell';
+export type OrderType = 'Market' | 'Limit';
+
+export interface Order {
+    OrderId: string;
+    Side: Side;
+    Symbol: string;
+    OrderType: OrderType;
+    Quantity: number;
+    Price: number;
+    TimeInForce: string;
+    TakeProfit?: number
+    StopLoss?: number
+    ReduceOnly?: boolean
+    CloseOnTrigger?: boolean
 }
 
-export type Position = 'Long' | 'Short';
-
-export interface OpenTrade {
-    Entry: number,
+export interface Position {
+    Side: Side,
+    Symbol: string,
+    Size: number,
+    PositionValue: number,
+    EntryPrice: number,
     Leverage: number,
-    OrderValue: number,
-    Position: Position
-}
-
-export interface Trade {
-    Position: Position
-    EntryTick: number;
-    ExitTick: number;
-    EntryPrice: number;
-    ExitPrice: number;
-    ProfitLoss: number;
-    FeePaid: number;
-    NetAccountValue: number;
-    FillType: string;
+    AutoAddMargin: boolean,
+    PositionMargin: number,
+    LiquidationPrice: number,
+    BankrupcyPrice: number,
+    ClosingFee: number,
+    FundingFee: number,
+    TakeProfit: number,
+    StopLoss: number,
+    TrailingProfit: number,
+    PositionStatus: string,
+    UsedMargin: number,
+    UnrealizedPnl: number,
+    CreatedAt: string,
+    LastUpdate: string
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -94,8 +107,9 @@ export interface ChartData {
 }
 
 export interface ReporterData {
-    ChartData?: Dictionary<ChartData>,
-    TradeData?: Trade[]
+    ChartData: Dictionary<ChartData>,
+    Orders: Order[],
+    Positions: Position[]
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -107,7 +121,7 @@ export type ProtocolMessage<T extends MessageType> = { Type: T } & MessageContra
 
 export interface MessageContract {
     ReporterData: {
-        Data: ReporterData
+        Data: Partial<ReporterData>
     };
 
     ReporterConfig: {

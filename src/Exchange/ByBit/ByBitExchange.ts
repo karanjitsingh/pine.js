@@ -25,6 +25,7 @@ export class ByBitExchange extends Exchange {
     public get isLive(): boolean { return this._isLive; }
     public get broker(): ByBitBroker { return this._broker };
     public get leverage(): number { return this._leverage; };
+    public get authSuccess(): boolean { return this._authSuccess; };
 
     protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
     protected baseApiEndpoint: string = "https://api.bybit.com/v2";
@@ -42,10 +43,11 @@ export class ByBitExchange extends Exchange {
         "1M"
     ];
     
-    private _isLive: boolean = false;
     private _lastPrice: number = 0;
+    private _isLive: boolean = false;
     private _broker: ByBitBroker;
     private _leverage: number;
+    private _authSuccess: boolean;
 
     private webSocket: WebSocket;
     
@@ -109,11 +111,7 @@ export class ByBitExchange extends Exchange {
                                     // await balance and position;
                                     // await current leverage
 
-                                    this.setAuthSuccess({
-                                        Position: null,
-                                        Balance: 0,
-                                        Leverage: 0,
-                                    })
+                                    this._authSuccess = true;
         
                                     this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['order']}))
                                     this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))

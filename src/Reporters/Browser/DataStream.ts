@@ -7,8 +7,11 @@ export class DataStream<T> extends EventTarget {
     }
 
     public push(data: T | T[]) {
-        
+
         if(data instanceof Array) {
+            if(!data.length) {
+                return;
+            }
             this.data.push(...data)
         } else {
             this.data.push(data);

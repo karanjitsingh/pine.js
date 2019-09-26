@@ -1,4 +1,4 @@
-import { Side, OrderType } from "Model/Exchange/Orders";
+import { OrderType, Side } from "Model/Contracts";
 
 export namespace Api {
 

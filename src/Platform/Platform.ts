@@ -14,7 +14,7 @@ type Plot = {
     Indicators: Indicator[];
 };
 
-export class Platform extends Subscribable<ReporterData> {
+export class Platform extends Subscribable<Partial<ReporterData>> {
     protected readonly Network: INetwork;
     protected readonly MessageLogger: MessageLogger;
 
