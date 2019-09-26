@@ -95,19 +95,20 @@ class Reporter {
     }
 
     private subscribeToSocket(connection: string) {
-        const ws = this.socket = new WebSocket(connection);
-        ws.onmessage = (ev) => {
+        this.socket = new WebSocket(connection);
+        
+        this.socket.onmessage = (ev) => {
             // JSON.parse(ev.data);
             this.processMessage(ev.data);
         }
 
-        ws.onerror = function (ev) {
+        this.socket.onerror = function (ev) {
             console.log(ev);
         };
-        ws.onopen = function () {
+        this.socket.onopen = function () {
             // showMessage('WebSocket connection established');
         };
-        ws.onclose = function () {
+        this.socket.onclose = function () {
             // showMessage('WebSocket connection closed');
             // ws = null;
         };
