@@ -7,7 +7,7 @@ import { CandleQueue } from "Model/Utils/CandleQueue";
 import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 import { ByBitBroker } from './ByBitBroker';
-import { Api } from './ByBitContracts';
+import { Api } from './ApiContracts';
 
 
 const ErrorCodes = [
@@ -18,6 +18,12 @@ const ErrorCodes = [
     30030, 30031, 30032, 30033, 30034, 30035, 30036, 30037, 30041, 30042, 30043, 30044, 30045, 30057,
     30063, 20022, 20023, 20031, 20070, 20071, 30040, 30049, 30050, 30051, 30052, 30054, 30067, 30068
 ]
+
+export interface ByBitEndpoints {
+    websocket: string;
+    kline: string;
+
+}
 
 export class ByBitExchange extends Exchange {
 
@@ -212,6 +218,8 @@ export class ByBitExchange extends Exchange {
         }
     }
 
+
+
     private initWebsocket() {
 
         this.webSocket.onmessage = (event) => {
@@ -370,6 +378,8 @@ export class ByBitExchange extends Exchange {
         };
 
     }
+
+
 
     private resolutionMap(resolution: Resolution): [string, number] {
         const tickValue = Utils.GetResolutionTick(resolution);

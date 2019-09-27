@@ -14,16 +14,22 @@ export interface BrokerOrderResponseSuccess extends BrokerResponseSuccess {
 export type BrokerResponse = BrokerResponseSuccess | BrokerResponseFailure;
 export type BrokerOrderResponse = BrokerOrderResponseSuccess | BrokerResponseFailure;
 
+export interface TradingStop {
+    TakeProfit: number;
+    StopLoss: number;
+    TrailingStop: number;
+}
+
 export interface IBroker {
     readonly balance: number;
     readonly leverage: number;
-
-
 
     marketOrder(): Promise<BrokerOrderResponse>;
     limitOrder(): Promise<BrokerOrderResponse>;
     conditionalOrder(): Promise<BrokerOrderResponse>;
     cancelOrder(orderId: string): Promise<BrokerOrderResponse>;
+
+    setStop(stops: TradingStop): Promise<BrokerResponse>;
 
     updateLeverage(leverage: number): Promise<BrokerResponse>;
 
