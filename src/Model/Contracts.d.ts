@@ -50,6 +50,15 @@ export type Update<T> = { [key in keyof T]?: boolean };
 
 export type Partial<T> = { [key in keyof T]?: T[key] };
 
+/** Tick number */
+export type UtcTimeStamp = number;
+
+/** Just to notify that string will wrap a primitive type T, "0.05"~StringWrapped<number> */ 
+export type StringWrapped<T> = string;
+
+/** Timestamp of the format "2018-10-15T04:12:19.000Z" */
+export type Timestamp = string;
+
 // ------------------------------------------------------------------------------------------------
 // Configuration ----------------------------------------------------------------------------------
 

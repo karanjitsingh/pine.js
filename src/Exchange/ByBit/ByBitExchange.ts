@@ -7,7 +7,6 @@ import { CandleQueue } from "Model/Utils/CandleQueue";
 import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 import { ByBitBroker } from './ByBitBroker';
-import { Api } from './ApiContracts';
 
 
 const ErrorCodes = [

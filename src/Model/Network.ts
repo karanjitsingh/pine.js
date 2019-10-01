@@ -1,7 +1,10 @@
 import { IncomingHttpHeaders } from "http";
 
 export interface INetwork {
-    get(url: string): Promise<NetworkResponse>;
+    Request: {
+        get(url: string, params: any): Promise<NetworkResponse>;
+        post(url: string, params: any, body: any): Promise<NetworkResponse>;
+    }
 }
 
 export interface NetworkResponse {
@@ -11,8 +14,6 @@ export interface NetworkResponse {
     response: string,
     error: any
 }
-
-export type ApiCall<P, R> = (params: ApiContract<P, R>['Params']) => Promise<ApiContract<P, R>['Response']>;
 
 export interface ApiContract<TParams, TResponse> {
     Params: TParams;
