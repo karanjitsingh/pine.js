@@ -872,7 +872,7 @@ export interface ByBitContracts {
             symbol: Symbol,
             resolution: string,
         },
-        {
+        Array<{
             id: number,
             symbol: Symbol,
             period: string,
@@ -885,6 +885,6 @@ export interface ByBitContracts {
             turnover: number,
             cross_seq: number,
             time: number
-        }
+        }>
     >
 }

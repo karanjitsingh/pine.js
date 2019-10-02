@@ -9,22 +9,19 @@ export interface Response<TResult> {
     result: TResult,
     time_now: string
 }
+export type Api = {[id in keyof ByBitContracts]?: (params: ByBitContracts[id]['Params'], auth?: ExchangeAuth) => Promise<ByBitContracts[id]['Response']> };
 
-export class ByBitApi {
-    constructor(private network: INetwork, private testnet: boolean) {
-        
+export class ByBitApi implements Api {
+    constructor(private network: INetwork, private testnet: boolean) { }
+
+    public PlaceActiveOrder = (params: ByBitContracts['PlaceActiveOrder']['Params'], auth?: ExchangeAuth) => {
+        const url = this.testnet ? "https://api-testnet.bybit.com/open-api/order/create" : "https://api.bybit.com/open-api/order/create";
+        return this.apiCall<ByBitContracts['PlaceActiveOrder']['Params'], ByBitContracts['PlaceActiveOrder']['Response']>('post', url, params, auth);
     }
-
-    public ActiveOrders: {[id in keyof ByBitContracts]?: (params: ByBitContracts[id]['Params'], auth?: ExchangeAuth) => Promise<ByBitContracts[id]['Response']> } = {
-        PlaceActiveOrder: (params: ByBitContracts['PlaceActiveOrder']['Params'], auth: ExchangeAuth) => {
-            const url = this.testnet ? "https://api-testnet.bybit.com/open-api/order/create" : "https://api.bybit.com/open-api/order/create";
-            return this.apiCall('post', url, params, auth);
-        },
-
-        Kline: (params: ByBitContracts['Kline']['Params']) => {
-            const url = this.testnet ? "https://api-testnet.bybit.com/v2/public/kline/list" : "https://api.bybit.com/v2/public/kline/list";
-            return this.apiCall('get', url, params);
-        }
+    
+    public Kline = (params: ByBitContracts['Kline']['Params']) => {
+        const url = this.testnet ? "https://api-testnet.bybit.com/v2/public/kline/list" : "https://api.bybit.com/v2/public/kline/list";
+        return this.apiCall<ByBitContracts['Kline']['Params'], ByBitContracts['Kline']['Response']>('post', url, params);
     }
 
     private apiCall<P, R>(method: keyof INetwork, url: string, params: ApiContract<P, R>['Params'], auth?: ExchangeAuth): Promise<ApiContract<P, R>['Response']> {

@@ -184,20 +184,19 @@ export class ByBitExchange extends Exchange {
         const from = Math.floor((endTick - duration) / 1000);
         const to = Math.floor(endTick / 1000);
 
-        const endpoint = `${this.baseApiEndpoint}/public/kline/list`;
+
 
         try {
-            const response = await this.network.get(endpoint, {
+            const data = await this.api.Kline({
                 symbol: 'BTCUSD',
                 resolution: res[0],
-                from: from.toString(),
-                to: to.toString()
+                from: from,
+                to: to
             });
 
-            const data = JSON.parse(response.response) as Api.SymbolResponse;
 
             if (data.result) {
-                const candleData = data.result.map((result: Api.CandleResult): Candle => {
+                const candleData = data.result.map<Candle>((result) => {
                     const startTick = result.start_at;
 
                     return {
@@ -223,8 +222,6 @@ export class ByBitExchange extends Exchange {
             return Promise.reject(err)
         }
     }
-
-
 
     private initWebsocket() {
 
