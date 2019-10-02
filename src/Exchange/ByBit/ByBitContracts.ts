@@ -857,4 +857,34 @@ export interface ByBitContracts {
             countdown_hour: number
         }>
     >
+
+    /**
+     * Get kline objects
+     * 
+     * GET /v2/public/kline/list
+     * Testnet: https://api-testnet.bybit.com/v2/public/kline/list
+     * Mainnet: https://api.bybit.com/v2/public/kline/list
+     */
+    Kline: ByBitApiContract<
+        {
+            from: number,
+            to: number,
+            symbol: Symbol,
+            resolution: string,
+        },
+        {
+            id: number,
+            symbol: Symbol,
+            period: string,
+            start_at: number,
+            open: number,
+            high: number,
+            low: number,
+            close: number,
+            volume: number,
+            turnover: number,
+            cross_seq: number,
+            time: number
+        }
+    >
 }

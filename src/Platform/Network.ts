@@ -2,11 +2,16 @@ import * as https from 'https';
 import { URL } from 'url';
 import { INetwork, NetworkResponse } from 'Model/Network';
 import { IncomingHttpHeaders } from 'http';
+import { Dictionary } from 'Model/Contracts';
 
 export class Network implements INetwork {
     private static requestId: number = 0;
 
-    public async get(url: string): Promise<NetworkResponse> {
+    public async post(url: string, params: Dictionary<string>, body: string): Promise<NetworkResponse> {
+        return Promise.resolve(null);
+    }
+
+    public async get(url: string, params: Dictionary<string>): Promise<NetworkResponse> {
 
         const requestId = Network.requestId++;
 
@@ -14,8 +19,16 @@ export class Network implements INetwork {
             let status: number;
             let headers: IncomingHttpHeaders;
             let data = "";
-                        
-            var req = https.get(new URL(url), resp => {
+                     
+            let search = "";
+
+            if(params && Object.keys(params).length > 0) {
+                search = "?" + Object.keys(params).map((key, index, arr) => {
+                    return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}${ index + 1 == arr.length ? '' : '&'}`;
+                }).join('');
+            }
+
+            var req = https.get(new URL(search, url), resp => {
                 status = resp.statusCode;
                 headers = resp.headers;
 

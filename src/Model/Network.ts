@@ -1,10 +1,9 @@
 import { IncomingHttpHeaders } from "http";
+import { Dictionary } from "./Contracts";
 
 export interface INetwork {
-    Request: {
-        get(url: string, params: any): Promise<NetworkResponse>;
-        post(url: string, params: any, body: any): Promise<NetworkResponse>;
-    }
+    get(url: string, params: Dictionary<string>): Promise<NetworkResponse>;
+    post(url: string, params: Dictionary<string>, body: string): Promise<NetworkResponse>;
 }
 
 export interface NetworkResponse {
@@ -15,7 +14,7 @@ export interface NetworkResponse {
     error: any
 }
 
-export interface ApiContract<TParams, TResponse> {
+export interface ApiContract<TParams extends Object, TResponse extends Object> {
     Params: TParams;
     Response: TResponse;
 }

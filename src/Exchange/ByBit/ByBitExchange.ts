@@ -7,6 +7,7 @@ import { CandleQueue } from "Model/Utils/CandleQueue";
 import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 import { ByBitBroker } from './ByBitBroker';
+import { ByBitApi } from './ByBitApi';
 
 
 const ErrorCodes = [
@@ -33,7 +34,7 @@ export class ByBitExchange extends Exchange {
     public get authSuccess(): boolean { return this._authSuccess; };
 
     protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
-    protected baseApiEndpoint: string = "https://api.bybit.com/v2";
+    protected api: ByBitApi;
     
     private subscribedResolutions: Resolution[];
     private dataQueue: CandleQueue;
@@ -58,6 +59,7 @@ export class ByBitExchange extends Exchange {
     
     constructor(protected network: INetwork) {
         super(network);
+        this.api = new ByBitApi(this.network, false);
     }
 
     public async connect(auth?: ExchangeAuth): Promise<ByBitBroker | undefined> {
@@ -182,10 +184,15 @@ export class ByBitExchange extends Exchange {
         const from = Math.floor((endTick - duration) / 1000);
         const to = Math.floor(endTick / 1000);
 
-        const endpoint = `${this.baseApiEndpoint}/public/kline/list?symbol=BTCUSD&resolution=${res[0]}&from=${from}&to=${to}`;
+        const endpoint = `${this.baseApiEndpoint}/public/kline/list`;
 
         try {
-            const response = await this.network.get(endpoint);
+            const response = await this.network.get(endpoint, {
+                symbol: 'BTCUSD',
+                resolution: res[0],
+                from: from.toString(),
+                to: to.toString()
+            });
 
             const data = JSON.parse(response.response) as Api.SymbolResponse;
 
