@@ -21,7 +21,7 @@ export class ByBitApi implements Api {
     
     public Kline = (params: ByBitContracts['Kline']['Params']) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/v2/public/kline/list" : "https://api.bybit.com/v2/public/kline/list";
-        return this.apiCall<ByBitContracts['Kline']['Params'], ByBitContracts['Kline']['Response']>('post', url, params);
+        return this.apiCall<ByBitContracts['Kline']['Params'], ByBitContracts['Kline']['Response']>('get', url, params);
     }
 
     private apiCall<P, R>(method: keyof INetwork, url: string, params: ApiContract<P, R>['Params'], auth?: ExchangeAuth): Promise<ApiContract<P, R>['Response']> {

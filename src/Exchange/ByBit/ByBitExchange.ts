@@ -100,7 +100,7 @@ export class ByBitExchange extends Exchange {
                 let expires = new Date().getTime() + 10000;
                 let signature = crypto.createHmac('sha256', this.auth.Secret).update('GET/realtime' + expires).digest('hex');
 
-                this.webSocket.send(JSON.stringify({'op': 'auth', 'args': [this.auth.ApiKey + 1, expires, signature]}));
+                this.webSocket.send(JSON.stringify({'op': 'auth', 'args': [this.auth.ApiKey, expires, signature]}));
 
                 this.webSocket.onmessage = (event) => {
                     if (event.type === 'message') {
@@ -189,7 +189,7 @@ export class ByBitExchange extends Exchange {
         try {
             const data = await this.api.Kline({
                 symbol: 'BTCUSD',
-                resolution: res[0],
+                interval: res[0],
                 from: from,
                 to: to
             });
@@ -197,16 +197,16 @@ export class ByBitExchange extends Exchange {
 
             if (data.result) {
                 const candleData = data.result.map<Candle>((result) => {
-                    const startTick = result.start_at;
+                    const startTick = result.open_time;
 
                     return {
                         StartTick: startTick * 1000,
                         EndTick: (startTick + res[1]) * 1000,
-                        High: result.high,
-                        Open: result.open,
-                        Close: result.close,
-                        Low: result.low,
-                        Volume: result.volume
+                        High: parseFloat(result.high),
+                        Open: parseFloat(result.open),
+                        Close: parseFloat(result.close),
+                        Low: parseFloat(result.low),
+                        Volume: parseFloat(result.volume)
                     } as Candle;
                 });
 

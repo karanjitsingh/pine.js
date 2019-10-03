@@ -870,21 +870,18 @@ export interface ByBitContracts {
             from: number,
             to: number,
             symbol: Symbol,
-            resolution: string,
+            interval: string,
         },
         Array<{
-            id: number,
             symbol: Symbol,
-            period: string,
-            start_at: number,
-            open: number,
-            high: number,
-            low: number,
-            close: number,
-            volume: number,
-            turnover: number,
-            cross_seq: number,
-            time: number
+            interval: string,
+            open_time: number,
+            open: StringWrapped<number>,
+            high: StringWrapped<number>,
+            low: StringWrapped<number>,
+            close: StringWrapped<number>,
+            volume: StringWrapped<number>,
+            turnover: StringWrapped<number>
         }>
     >
 }

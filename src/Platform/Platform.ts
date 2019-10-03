@@ -29,6 +29,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         super();
         this.MessageLogger = new MessageLogger();
         this.Network = new Network();
+        this.strategy = new (StrategyStore.get(this.config.Strategy))(null ,this.MessageLogger);
     }
 
     public get isRunning(): boolean {
@@ -43,7 +44,6 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         const exchangeCtor = ExchangeStore.get(this.config.Exchange);
 
         this.exchange = new exchangeCtor(this.Network, this.config.ExchangeAuth);
-        this.strategy = new (StrategyStore.get(this.config.Strategy))(null ,this.MessageLogger);
         this.dataController = new DataController(this.exchange, this.strategy.StrategyConfig.resolutionSet);
 
         this.exchange.connect(this.config.ExchangeAuth).then(() => {
@@ -51,7 +51,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
             this.dataController.subscribe(this.dataUpdate, this);
             this.dataController.startStream(this.strategy.StrategyConfig.initCandleCount);
         }, (reason) => {
-            console.log("Platfprm: Connection rejected, " + reason);
+            console.log("Platform: Connection rejected, " + (reason instanceof String ? reason : JSON.stringify(reason)));
         });
 
         this.initStrategy(this.strategy.StrategyConfig, this.dataController.MarketDataMap);

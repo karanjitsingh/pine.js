@@ -19,7 +19,7 @@ export abstract class Exchange {
     public readonly orderBook = new SubscribableDictionary<Order>();
     public readonly positions = new SubscribableDictionary<Position>();
 
-    public distessSignal: Signal;
+    public distessSignal: Signal = new Signal();
 
     public abstract getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]>;
     public abstract getCandleQueue(resolutionSet: Resolution[]): Promise<CandleQueue>;
