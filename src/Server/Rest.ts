@@ -12,7 +12,7 @@ import { URL } from "url";
 
 export const rest: RestMethods = {
     'post': {
-        '/api/config': (url: URL, config: PlatformConfiguration, res: http.ServerResponse): PostReply => {
+        '/api/create': (url: URL, config: PlatformConfiguration, res: http.ServerResponse): PostReply => {
             // todo: better way of handling default configs
             if((config as any).default) {
                 config = Utils.GetTestConfig();

@@ -9,5 +9,4 @@ export class ByBitTestnetExchange extends ByBitExchange {
         super(network);
         this.api = new ByBitApi(network, true);
     }
-    
 }

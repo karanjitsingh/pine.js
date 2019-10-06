@@ -1,6 +1,5 @@
 import { ApiContract } from "Model/Network";
-import { Side, OrderType, Timestamp, StringWrapped, UtcTimeStamp } from "Model/Contracts";
-
+import { Side, OrderType, Timestamp, StringWrapped, UtcTimeStamp, OrderStatus } from "Model/Contracts";
 
 export type Symbol = 'BTCUSD' | 'ETHUSD' | 'XRPUSD' | 'EOSUSD';
 export type Currency = 'BTC' | 'ETH' | 'EOS' | 'XRP';
@@ -12,9 +11,6 @@ export type TimeInForce = "GoodTillCancel" | "ImmediateOrCancel" | "FillOrKill" 
 export type PositionStatus = 'Normal' | 'Liq' | 'Adl';
 
 export type SortOrder = 'desc' /* default */ | 'asc';
-
-// To filter by multiple statuses, separate with a comma like so: Filled,New
-export type OrderStatus = "Created" | "Rejected" | "New" | "PartiallyFilled" | "Filled" | "Cancelled";
 
 export type LastTickDirection = "PlusTick" | "ZeroPlusTick" | "MinusTick" | "ZeroMinusTick";
 

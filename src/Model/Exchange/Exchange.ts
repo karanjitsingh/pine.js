@@ -1,8 +1,8 @@
-import { Candle, ExchangeAuth, Order, Position, Resolution } from "Model/Contracts";
+import { Candle, ExchangeAuth, Order, Position, Resolution, Wallet } from "Model/Contracts";
 import { INetwork } from "Model/Network";
 import { CandleQueue } from "Model/Utils/CandleQueue";
 import { CtorStore } from "Model/Utils/CtorStore";
-import { Signal } from "Model/Utils/Events";
+import { Signal, Subscribable, SubscribableValue } from "Model/Utils/Events";
 import { SubscribableDictionary } from "Model/Utils/SubscribableDictionary";
 import { IBroker } from "./IBroker";
 
@@ -17,7 +17,8 @@ export abstract class Exchange {
     public abstract readonly authSuccess: boolean;
     
     public readonly orderBook = new SubscribableDictionary<Order>();
-    public readonly positions = new SubscribableDictionary<Position>();
+    public readonly walletBalance = new SubscribableDictionary<Wallet>();
+    public readonly positions = new SubscribableValue<Position>();
 
     public distessSignal: Signal = new Signal();
 

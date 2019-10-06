@@ -55,11 +55,10 @@ class Reporter {
     }
 
     private strategySelected(config: PlatformConfiguration) {
-        this.network.post('/api/config', JSON.stringify(config)).then((res: XMLHttpRequest) => {
+        this.network.post('/api/create', JSON.stringify(config)).then((res: XMLHttpRequest) => {
             if (res.status != 200) {
-                console.error('/api/config', res.status);
+                console.error('/api/create', res.status);
             } else {
-
                 const {key, config} = JSON.parse(res.responseText);
 
                 this.page.setState({
@@ -90,7 +89,7 @@ class Reporter {
                 this.subscribeToSocket(connection);
             }
         }, (why) => {
-            console.error('failed', 'api/config', why);
+            console.error('failed', 'api/datastream', why);
         });
     }
 

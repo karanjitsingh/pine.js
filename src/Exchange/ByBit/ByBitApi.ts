@@ -1,6 +1,7 @@
 import { ApiContract, INetwork, NetworkResponse } from "Model/Network";
 import { ExchangeAuth } from "Model/Contracts";
 import { ByBitContracts } from "./ByBitContracts";
+import * as crypto from 'crypto';
 
 export interface Response<TResult> {
     ret_code: number,
@@ -9,38 +10,84 @@ export interface Response<TResult> {
     result: TResult,
     time_now: string
 }
-export type Api = {[id in keyof ByBitContracts]?: (params: ByBitContracts[id]['Params'], auth?: ExchangeAuth) => Promise<ByBitContracts[id]['Response']> };
+export type Api = { [id in keyof ByBitContracts]?: (params: ByBitContracts[id]['Params'], auth?: ExchangeAuth) => Promise<ByBitContracts[id]['Response']> };
 
 export class ByBitApi implements Api {
     constructor(private network: INetwork, private testnet: boolean) { }
 
-    public PlaceActiveOrder = (params: ByBitContracts['PlaceActiveOrder']['Params'], auth?: ExchangeAuth) => {
+    public PlaceActiveOrder = (params: ByBitContracts['PlaceActiveOrder']['Params'], auth: ExchangeAuth) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/order/create" : "https://api.bybit.com/open-api/order/create";
-        return this.apiCall<ByBitContracts['PlaceActiveOrder']['Params'], ByBitContracts['PlaceActiveOrder']['Response']>('post', url, params, auth);
-    }
-    
-    public Kline = (params: ByBitContracts['Kline']['Params']) => {
-        const url = this.testnet ? "https://api-testnet.bybit.com/v2/public/kline/list" : "https://api.bybit.com/v2/public/kline/list";
-        return this.apiCall<ByBitContracts['Kline']['Params'], ByBitContracts['Kline']['Response']>('get', url, params);
+        return this.apiCall<ByBitContracts['PlaceActiveOrder']>('post', url, params, auth);
     }
 
-    private apiCall<P, R>(method: keyof INetwork, url: string, params: ApiContract<P, R>['Params'], auth?: ExchangeAuth): Promise<ApiContract<P, R>['Response']> {
-        let resolver: (response: R) => void;
-        let rejector: (reason: any) => void;
-        const promise = new Promise<R>((resolve, reject) => {resolver = resolve; rejector = reject;})
+    public Kline = (params: ByBitContracts['Kline']['Params']) => {
+        const url = this.testnet ? "https://api-testnet.bybit.com/v2/public/kline/list" : "https://api.bybit.com/v2/public/kline/list";
+        return this.apiCall<ByBitContracts['Kline']>('get', url, params);
+    }
+
+    public GetActiveOrder = (params: ByBitContracts['GetActiveOrder']['Params'], auth: ExchangeAuth) => {
+        const url = this.testnet ? "https://api-testnet.bybit.com/open-api/order/list" : "https://api.bybit.com/open-api/order/list";
+        return this.apiCall<ByBitContracts['GetActiveOrder']>('get', url, params, auth);
+    }
+
+    public MyPosition = (params: ByBitContracts['MyPosition']['Params'], auth: ExchangeAuth) => {
+        const url = this.testnet ? "https://api-testnet.bybit.com/position/list" : "https://api.bybit.com/position/list";
+        return this.apiCall<ByBitContracts['MyPosition']>('get', url, params, auth);
+    }
+
+    public GetWalletFundRecords = (params: ByBitContracts['GetWalletFundRecords']['Params'], auth: ExchangeAuth) => {
+        const url = this.testnet ? "https://api-testnet.bybit.com/open-api/wallet/fund/records" : "https://api.bybit.com/open-api/wallet/fund/records";
+        return this.apiCall<ByBitContracts['GetWalletFundRecords']>('get', url, params, auth);
+    }
+
+    private apiCall<Contract extends ApiContract<Contract['Params'], Contract['Response']>>(method: keyof INetwork, url: string, params: Contract['Params'], auth?: ExchangeAuth): Promise<Contract['Response']> {
         
-        switch(method) {
+        if(!params || !(params instanceof Object)) {
+            params = {};
+        }
+        
+        return new Promise<Contract['Response']>((resolve, reject) => {
+            this.apiNetworkCall(method, url, params, auth).then((response: NetworkResponse) => {
+                resolve(JSON.parse(response.response) as Contract['Response']);
+            }, (reason) => {
+                reject(reason);
+            });;
+        });
+    }
+
+    private apiNetworkCall<Contract extends ApiContract<Contract['Params'], Contract['Response']>>(method: keyof INetwork, url: string, params: Contract['Params'], auth?: ExchangeAuth): Promise<NetworkResponse> {
+        switch (method) {
             case 'get':
-                this.network[method](url, params as any).then((response: NetworkResponse) => {
-                    resolver(JSON.parse(response.response) as R);
-                }, (reason) => {
-                    rejector(reason);
-                });
-                return promise;
+                return this.network[method](url, auth ? this.getSignedParam(auth, params) : params);
             case 'post':
-                break;
+                return this.network[method](url, {
+                    "Content-Type": "application/json"
+                }, JSON.stringify(auth ? this.getSignedParam(auth, params) : params));
         }
 
         return Promise.reject(`Unsupported method: '${method}'`);
+    }
+
+    private getSignedParam(auth: ExchangeAuth, params: any): Object {
+        params['timestamp'] = new Date().getTime() + 2000;
+        params['api_key'] = auth.ApiKey;
+
+        const orderedParams: any = {}
+
+        let paramstr = "";
+
+        Object.keys(params).sort().forEach((key: string) => {
+            orderedParams[key] = params[key];
+            
+            if (paramstr) {
+                paramstr += "&";
+            }
+
+            paramstr += key + "=" + encodeURIComponent(params[key]);
+        });
+
+        orderedParams['sign'] = crypto.createHmac('sha256', auth.Secret).update(paramstr).digest('hex');
+
+        return orderedParams;
     }
 }

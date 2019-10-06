@@ -1,15 +1,27 @@
 // ------------------------------------------------------------------------------------------------
 // Trading ----------------------------------------------------------------------------------------
 
+export interface Wallet {
+    Currency: string,
+    Balance: number;
+    OrderMargin: number;
+    PositionMargin: number;
+}
+
 export type Side = 'Buy' | 'Sell';
 export type OrderType = 'Market' | 'Limit';
+
+// To filter by multiple statuses, separate with a comma like so: Filled,New
+export type OrderStatus = "Created" | "Rejected" | "New" | "PartiallyFilled" | "Filled" | "Cancelled";
 
 export interface Order {
     OrderId: string;
     Side: Side;
     Symbol: string;
     OrderType: OrderType;
+    OrderStatus: OrderStatus;
     Quantity: number;
+    FilledQuantity: number;
     Price: number;
     TimeInForce: string;
     TakeProfit?: number

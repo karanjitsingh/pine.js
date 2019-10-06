@@ -104,14 +104,14 @@ export abstract class Subscribable<TArgs> {
 export class SubscribableValue<TValue> extends Subscribable<TValue> {
     private _value: TValue;
 
-    public get value(): TValue { return this._value; }
+    public get value(): TValue | undefined { return this._value; }
     
     public set value(newValue: TValue) {
         this._value = newValue;
         this.notifyAll(newValue);
     }
 
-    constructor(private initValue: TValue) {
+    constructor(private initValue?: TValue) {
         super();
         this._value = initValue;
     }

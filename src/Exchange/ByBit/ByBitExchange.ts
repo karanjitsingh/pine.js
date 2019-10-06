@@ -35,7 +35,7 @@ export class ByBitExchange extends Exchange {
 
     protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
     protected api: ByBitApi;
-    
+
     private subscribedResolutions: Resolution[];
     private dataQueue: CandleQueue;
     private auth: ExchangeAuth;
@@ -48,7 +48,7 @@ export class ByBitExchange extends Exchange {
         "1w", "2w",
         "1M"
     ];
-    
+
     private _lastPrice: number = 0;
     private _isLive: boolean = false;
     private _broker: ByBitBroker;
@@ -56,7 +56,7 @@ export class ByBitExchange extends Exchange {
     private _authSuccess: boolean;
 
     private webSocket: WebSocket;
-    
+
     constructor(protected network: INetwork) {
         super(network);
         this.api = new ByBitApi(this.network, false);
@@ -67,7 +67,9 @@ export class ByBitExchange extends Exchange {
         let _reject: (reason: any) => void;
         const promise = new Promise<ByBitBroker | undefined>((resolver, rejector) => { _resolve = resolver; _reject = rejector; });
         this.auth = auth;
-        
+
+        this._authSuccess = false;
+
         let resolve: (broker?: ByBitBroker) => void = () => {
             this._isLive = true;
             this.connecting = false;
@@ -81,54 +83,78 @@ export class ByBitExchange extends Exchange {
             _reject(reason);
         };
 
-        if(this.connecting) {
+        if (this.connecting) {
             throw new Error("Already connecting")
         }
 
-        if(this._isLive) {
+        if (this._isLive) {
             throw new Error("Already connected to exchange");
         }
 
         this.connecting = true;
 
         this.webSocket = new WebSocket(this.websocketEndpoint);
-        
+
         this.webSocket.onopen = () => {
             console.log('Bybit: Connection opened');
 
-            if(this.auth) {
+            if (this.auth) {
                 let expires = new Date().getTime() + 10000;
                 let signature = crypto.createHmac('sha256', this.auth.Secret).update('GET/realtime' + expires).digest('hex');
-
-                this.webSocket.send(JSON.stringify({'op': 'auth', 'args': [this.auth.ApiKey, expires, signature]}));
+                this.webSocket.send(JSON.stringify({ 'op': 'auth', 'args': [this.auth.ApiKey, expires, signature] }));
 
                 this.webSocket.onmessage = (event) => {
                     if (event.type === 'message') {
                         let data = JSON.parse(event.data.toString());
-        
-                        if ('success' in data && data.success === false) {
-                            reject(data);
-                        } else if ('success' in data && data.success === true) {
-                            if (data.request && data.request.op === 'auth') {
-                                if(!this.authSuccess) {
-                                        
-                                    console.log('Bybit: Auth successful');
 
-                                    // await order
-                                    // await balance and position;
-                                    // await current leverage
+                        if (!this.authSuccess) {
+                            if ('success' in data && data.success === false) {
+                                reject(data);
+                            } else if ('success' in data && data.success === true) {
+                                if (data.request && data.request.op === 'auth') {
+                                    if (!this.authSuccess) {
 
-                                    this._authSuccess = true;
-        
-                                    this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['order']}))
-                                    this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))
-                                    this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
-        
-                                    resolve(this._broker = new ByBitBroker(this));
+                                        console.log('Bybit: Auth successful');
+
+                                        // await order
+                                        // await balance and position;
+                                        // await current leverage
+
+                                        this._authSuccess = true;
+
+                                        this.webSocket.send(JSON.stringify({ 'op': 'subscribe', 'args': ['order', 'position', 'execution', 'private.wallet'] }));
+
+                                        Promise.all([
+                                            this.api.GetActiveOrder({}, this.auth),
+                                            this.api.MyPosition({}, this.auth),
+                                            this.api.GetWalletFundRecords({
+                                                currency: 'BTC',
+                                                limit: 1
+                                            }, this.auth),
+                                            this.api.GetWalletFundRecords({
+                                                currency: 'ETH',
+                                                limit: 1
+                                            }, this.auth),
+                                            this.api.GetWalletFundRecords({
+                                                currency: 'XRP',
+                                                limit: 1
+                                            }, this.auth),
+                                            this.api.GetWalletFundRecords({
+                                                currency: 'EOS',
+                                                limit: 1
+                                            }, this.auth)
+                                        ]).then((value) => {
+                                            // 10002, timestamp was too less
+                                            console.log(value);
+                                            resolve(this._broker = new ByBitBroker(this));
+                                        }, (reason) => {
+                                            reject(reason);
+                                        });
+                                    }
                                 }
+                            } else {
+                                reject(data);
                             }
-                        } else {
-                            reject(data);
                         }
                     }
                 };
@@ -153,18 +179,18 @@ export class ByBitExchange extends Exchange {
         if (this.subscribedResolutions) {
             throw new Error("Already subscribed to " + JSON.stringify(this.subscribedResolutions));
         }
-        
+
         const unsupportedResolutions = resolutionSet.filter(val => !this.LiveSupportedResolutions.includes(val));
 
         if (unsupportedResolutions.length > 0) {
             throw new Error("Unsupported resolution(s): " + JSON.stringify(unsupportedResolutions));
         }
-        
+
         const symbol = "BTCUSD";
 
         this.subscribedResolutions = resolutionSet;
-      
-        this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['kline.' + symbol + '.' + this.subscribedResolutions.join("|")]}));
+
+        this.webSocket.send(JSON.stringify({ 'op': 'subscribe', 'args': ['kline.' + symbol + '.' + this.subscribedResolutions.join("|")] }));
 
         resolver(this.dataQueue = new CandleQueue(this.subscribedResolutions));
 
@@ -229,18 +255,8 @@ export class ByBitExchange extends Exchange {
             if (event.type === 'message') {
                 let data = JSON.parse(event.data.toString());
 
-                if ('success' in data && data.success === false) {
-                    console.error('Bybit: error ' + event.data)
-                } else if ('success' in data && data.success === true) {
+                if ('success' in data && data.success === true) {
                     if (data.request && data.request.op === 'auth') {
-                        if(!this.authSuccess) {
-                                
-                            console.log('Bybit: Auth successful');
-
-                            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['order']}))
-                            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['position']}))
-                            this.webSocket.send(JSON.stringify({'op': 'subscribe', 'args': ['execution']}))
-                        }
                     }
                 } else if (data.topic && data.topic.startsWith('kline.')) {
                     // console.log(new Date().getTime(), "Bybit: websocket data")
@@ -252,14 +268,14 @@ export class ByBitExchange extends Exchange {
                         Open: data.data.open,
                         Close: data.data.close,
                         Low: data.data.low,
-                        Volume: data.data.volume    
+                        Volume: data.data.volume
                     }
 
                     this._lastPrice = candle.Close;
 
                     this.dataQueue.push(data.data.interval, candle);
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'execution') {
-                    
+
                     const executions = data.data;
                     console.log("executions");
                     console.log(executions);
@@ -286,11 +302,11 @@ export class ByBitExchange extends Exchange {
                     */
 
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
-                    
+
                     const orders = data.data;
                     console.log("orders");
                     console.log(orders);
-                    
+
                     /*
                         {
                             "topic":"order",
@@ -317,7 +333,7 @@ export class ByBitExchange extends Exchange {
 
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'position') {
                     const positionsRaw = data.data;
-                    
+
                     console.log("position");
                     console.log(positionsRaw);
 
@@ -358,13 +374,52 @@ export class ByBitExchange extends Exchange {
                             me.positions[position.symbol] = position
                         })
                     */
-                } else {
+                } else if (data && data.topic && data.topic.toLowerCase() == "private.wallet") {
+                    const wallet = data.data;
+
+                    console.log("wallet");
+                    console.log(wallet);
+                    /*
+                        {
+                            "topic": "private.wallet",
+                            "data": [
+                                {
+                                    "symbol": "BTCUSD",
+                                    "wallet_balance": 0.24347523,
+                                    "used_margin": 0.01271277,
+                                    "available_balance": 0.23076245999999997,
+                                    "order_margin": 0,
+                                    "cum_realised_pnl": 0.01347523,
+                                    "position_margin": 0.01260875,
+                                    "occ_closing_fee": 0.00010402,
+                                    "occ_funding_fee": 0,
+                                    "risk_id": 1,
+                                    "risk_section": [
+                                        "1",
+                                        "2",
+                                        "3",
+                                        "5",
+                                        "10",
+                                        "25",
+                                        "50",
+                                        "100"
+                                    ],
+                                    "cross_seq": 254058651,
+                                    "position_seq": 95872583,
+                                    "realised_pnl": 0.00165942
+                                }
+                            ],
+                            "user_id": 105455
+                        }
+                    */
+                }
+                else {
                     console.log('unknown', data.data);
                 }
             }
         };
 
-        this.webSocket.onclose = () => {
+        this.webSocket.onclose = (e) => {
             console.log('Bybit: Connection closed.');
             console.log('Bybit: Retrying in 500ms.');
 
@@ -386,7 +441,7 @@ export class ByBitExchange extends Exchange {
 
     private resolutionMap(resolution: Resolution): [string, number] {
         const tickValue = Utils.GetResolutionTick(resolution);
-        
+
         switch (resolution) {
             case "1m":
                 return ["1", tickValue];
@@ -404,12 +459,10 @@ export class ByBitExchange extends Exchange {
                 return ["120", tickValue];
             case "4h":
                 return ["240", tickValue];
-             case "1d":
+            case "1d":
                 return ["D", Tick.Day];
             default:
                 throw new Error("Unsupported resolution for getting base data");
         }
     }
-
-
 }
