@@ -58,7 +58,7 @@ export interface Position {
 // ------------------------------------------------------------------------------------------------
 // Typing -----------------------------------------------------------------------------------------
 
-export type Dictionary<T> = { [key: string]: T };
+export type Dictionary<TValue, TKey extends string = string> = { [key in TKey]: TValue };
 
 export type Update<T> = { [key in keyof T]?: boolean };
 

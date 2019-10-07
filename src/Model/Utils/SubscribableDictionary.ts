@@ -15,11 +15,6 @@ export class SubscribableDictionary<T> extends Subscribable<DictionaryUpdate<T>>
         }
 
         this.addOrUpdate(key, value);
-
-        this.notifyAll({
-            UpdateType: 'Add',
-            Value: this.dict[key]
-        });
     }
 
     public update(key: string, value: T) {
@@ -28,17 +23,25 @@ export class SubscribableDictionary<T> extends Subscribable<DictionaryUpdate<T>>
         }
 
         this.addOrUpdate(key, value);
-
-        this.notifyAll({
-            UpdateType: 'Update',
-            Value: this.dict[key]
-        });
     }
     
     public addOrUpdate(key: string, value: T) {
         Object.freeze(value);
 
+        let update: DictionaryUpdate<any>['UpdateType'];
+
+        if(this.dict[key]) {
+            update = 'Update';
+        } else {
+            update = 'Add'
+        }
+
         this.dict[key] = value;
+         
+        this.notifyAll({
+            UpdateType: update,
+            Value: this.dict[key]
+        });
     }
 
     public remove(key: string) {

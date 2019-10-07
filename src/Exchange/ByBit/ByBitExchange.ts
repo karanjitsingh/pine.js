@@ -1,9 +1,9 @@
 import * as crypto from 'crypto';
-import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position } from "Model/Contracts";
+import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
-import { CandleQueue } from "Model/Utils/CandleQueue";
+import { CandleQueue } from "Model/Utils/Queue";
 import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 import { ByBitBroker } from './ByBitBroker';
@@ -67,7 +67,7 @@ export class ByBitExchange extends Exchange {
 
 
     private subscribedResolutions: Resolution[];
-    private dataQueue: CandleQueue;
+    private candleQueue: CandleQueue;
     private auth: ExchangeAuth;
     private connecting: boolean = false;
     private webSocket: WebSocket;
@@ -209,12 +209,7 @@ export class ByBitExchange extends Exchange {
         return promise;
     }
 
-    public getCandleQueue(resolutionSet: Resolution[]): Promise<CandleQueue> {
-        let resolver: (value: CandleQueue) => void;
-        const promise = new Promise<CandleQueue>((resolve) => {
-            resolver = resolve;
-        });
-
+    public subscribeCandle(resolutionSet: Resolution[]): CandleQueue {
         if (!this._isLive) {
             throw new Error("Not connected to exchange.");
         }
@@ -224,20 +219,16 @@ export class ByBitExchange extends Exchange {
         }
 
         const unsupportedResolutions = resolutionSet.filter(val => !this.LiveSupportedResolutions.includes(val));
-
         if (unsupportedResolutions.length > 0) {
             throw new Error("Unsupported resolution(s): " + JSON.stringify(unsupportedResolutions));
         }
 
-        const symbol = "BTCUSD";
-
         this.subscribedResolutions = resolutionSet;
 
-        this.webSocket.send(JSON.stringify({ 'op': 'subscribe', 'args': ['kline.' + symbol + '.' + this.subscribedResolutions.join("|")] }));
+        // Todo: Symbol is hardcoded
+        this.webSocket.send(JSON.stringify({ 'op': 'subscribe', 'args': ['kline.BTCUSD.' + this.subscribedResolutions.join("|")] }));
 
-        resolver(this.dataQueue = new CandleQueue(this.subscribedResolutions));
-
-        return promise;
+        return this.candleQueue = new CandleQueue(this.subscribedResolutions);
     }
 
     public async getData(endTick: number, duration: number, resolution: Resolution): Promise<Candle[]> {
@@ -314,7 +305,10 @@ export class ByBitExchange extends Exchange {
 
                     // this._lastPrice = candle.Close;
 
-                    this.dataQueue.push(data.data.interval, candle);
+                    const candleUpdate: ResolutionMapped<Candle> = {};
+                    candleUpdate[data.data.interval as Resolution] = candle;
+
+                    this.candleQueue.push(candleUpdate);
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'execution') {
 
                     const executions = data.data;

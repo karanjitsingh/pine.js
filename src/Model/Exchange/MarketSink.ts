@@ -4,7 +4,7 @@ import { MarketData } from "Model/InternalContracts";
 import { EvaluatedSeries, RawSeries, SimpleSeries, UpdateIndex } from "Model/Series/Series";
 import { Subscribable } from "Model/Utils/Events";
 import { Utils } from "Model/Utils/Utils";
-import { CandleQueue } from "../Utils/CandleQueue";
+import { CandleQueue } from "../Utils/Queue";
 
 export class MarketSink extends Subscribable<ResolutionMapped<number>> {
 
@@ -23,15 +23,14 @@ export class MarketSink extends Subscribable<ResolutionMapped<number>> {
     public startStream(initCandleCount: number) {
         this.getBaseData(initCandleCount).then((dataMap) => {
             this.initData(dataMap);
-            this.exchange.getCandleQueue(this.resolutionSet).then((queue: CandleQueue) => {
-                this.dataQueue = queue;
-                this.isRunning = true;
-                this.fetchUpdate();
-            });
+
+            this.dataQueue = this.exchange.subscribeCandle(this.resolutionSet);
+            this.isRunning = true;
+            this.fetchCandleUpdates();
         })
     }
 
-    private fetchUpdate() {
+    private fetchCandleUpdates() {
         const data = this.dataQueue.flush();
         
         if(data.length > 0) {
@@ -39,7 +38,7 @@ export class MarketSink extends Subscribable<ResolutionMapped<number>> {
         }
 
         if(this.isRunning) {
-            setTimeout(this.fetchUpdate.bind(this), 1);
+            setTimeout(this.fetchCandleUpdates.bind(this), 1);
         }
     }
 
