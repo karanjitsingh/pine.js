@@ -1,5 +1,5 @@
 import { Candle, ChartData, Dictionary, IndicatorConfig, PlatformConfiguration, PlotConfig, ReporterData, Resolution, ResolutionMapped } from "Model/Contracts";
-import { DataController } from "Model/Exchange/DataController";
+import { MarketSink } from "Model/Exchange/MarketSink";
 import { Exchange, ExchangeStore } from "Model/Exchange/Exchange";
 import { MarketData } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
@@ -20,7 +20,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
     private strategy: Strategy;
     private exchange: Exchange;
-    private dataController: DataController;
+    private dataController: MarketSink;
     private _isRunning: boolean = false;
     private plotMap: Dictionary<Plot>;
     private plotConfigMap: Dictionary<PlotConfig>;
@@ -44,7 +44,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         const exchangeCtor = ExchangeStore.get(this.config.Exchange);
 
         this.exchange = new exchangeCtor(this.Network, this.config.ExchangeAuth);
-        this.dataController = new DataController(this.exchange, this.strategy.StrategyConfig.resolutionSet);
+        this.dataController = new MarketSink(this.exchange, this.strategy.StrategyConfig.resolutionSet);
 
         this.exchange.connect(this.config.ExchangeAuth).then(() => {
             this._isRunning = true;

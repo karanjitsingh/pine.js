@@ -6,7 +6,7 @@ import { Subscribable } from "Model/Utils/Events";
 import { Utils } from "Model/Utils/Utils";
 import { CandleQueue } from "../Utils/CandleQueue";
 
-export class DataController extends Subscribable<ResolutionMapped<number>> {
+export class MarketSink extends Subscribable<ResolutionMapped<number>> {
 
     public readonly MarketDataMap: ResolutionMapped<MarketData> = {};
     private dataQueue: CandleQueue;
