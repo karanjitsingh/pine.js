@@ -2,7 +2,7 @@ import { Candle, ExchangeAuth, Order, Position, Resolution, Wallet } from "Model
 import { INetwork } from "Model/Network";
 import { CandleQueue } from "Model/Utils/CandleQueue";
 import { CtorStore } from "Model/Utils/CtorStore";
-import { Signal, Subscribable, SubscribableValue } from "Model/Utils/Events";
+import { Signal, SubscribableValue } from "Model/Utils/Events";
 import { SubscribableDictionary } from "Model/Utils/SubscribableDictionary";
 import { IBroker } from "./IBroker";
 
@@ -10,15 +10,24 @@ export type ExchangeCtor = new (network: INetwork, auth?: ExchangeAuth) => Excha
 
 export const ExchangeStore = new CtorStore<ExchangeCtor>();
 
+export class IAccount {
+
+}
+
+export class Account {
+    // public readonly 
+}
+
 export abstract class Exchange {
     public abstract readonly isLive: boolean;
-    public abstract readonly lastPrice: number;
     public abstract readonly broker: IBroker;
     public abstract readonly authSuccess: boolean;
     
-    public readonly orderBook = new SubscribableDictionary<Order>();
-    public readonly walletBalance = new SubscribableDictionary<Wallet>();
-    public readonly positions = new SubscribableValue<Position>();
+    public abstract readonly leverage: SubscribableDictionary<number>;
+    public abstract readonly orders: SubscribableDictionary<Order>;
+    public abstract readonly conditionalOrders: SubscribableDictionary<Order>;
+    public abstract readonly walletBalance: SubscribableDictionary<Wallet>;
+    public abstract readonly positions: SubscribableValue<Position>;
 
     public distessSignal: Signal = new Signal();
 

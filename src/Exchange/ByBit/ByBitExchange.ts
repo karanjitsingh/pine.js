@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { Candle, ExchangeAuth, Resolution } from "Model/Contracts";
+import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
@@ -8,7 +8,19 @@ import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 import { ByBitBroker } from './ByBitBroker';
 import { ByBitApi } from './ByBitApi';
+import { ByBitContracts, Symbol } from './ByBitContracts';
+import { SubscribableDictionary } from 'Model/Utils/SubscribableDictionary';
+import { SubscribableValue } from 'Model/Utils/Events';
 
+type ConnectionResponse = [
+    ByBitContracts['GetActiveOrder']['Response'],
+    ByBitContracts['GetConditionalOrder']['Response'],
+    ByBitContracts['MyPosition']['Response'],
+    ByBitContracts['GetWalletFundRecords']['Response'],
+    ByBitContracts['GetWalletFundRecords']['Response'],
+    ByBitContracts['GetWalletFundRecords']['Response'],
+    ByBitContracts['GetWalletFundRecords']['Response']
+];
 
 const ErrorCodes = [
     10001, 10002, 10003, 10004, 10005, 10006, 10010, 20001, 20003, 20004, 20005, 20006, 20007, 20008,
@@ -27,19 +39,38 @@ export interface ByBitEndpoints {
 
 export class ByBitExchange extends Exchange {
 
-    public get lastPrice(): number { return this._lastPrice; }
     public get isLive(): boolean { return this._isLive; }
-    public get broker(): ByBitBroker { return this._broker };
-    public get leverage(): number { return this._leverage; };
-    public get authSuccess(): boolean { return this._authSuccess; };
+    public get broker(): ByBitBroker { return this._broker }
+    public get authSuccess(): boolean { return this._authSuccess; }
+
+    public get positions() { return this._positions; }
+    public get walletBalance() { return this._walletBalance; }
+    public get conditionalOrders() { return this._conditionalOrders; }
+    public get orders() { return this._orders; }
+    public get leverage() { return this._leverage; }
 
     protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
     protected api: ByBitApi;
+
+    // public get orders(): SubscribableDictionary<Order> => {}
+
+
+    private _isLive: boolean = false;
+    private _broker: ByBitBroker;
+    private _authSuccess: boolean;
+
+    private _leverage = new SubscribableDictionary<number>();
+    private _orders = new SubscribableDictionary<Order>();
+    private _conditionalOrders = new SubscribableDictionary<Order>();
+    private _walletBalance = new SubscribableDictionary<Wallet>();
+    private _positions = new SubscribableValue<Position>();
+
 
     private subscribedResolutions: Resolution[];
     private dataQueue: CandleQueue;
     private auth: ExchangeAuth;
     private connecting: boolean = false;
+    private webSocket: WebSocket;
 
     private readonly LiveSupportedResolutions: string[] = [
         "1m", "3m", "5m", "15m", "30m",
@@ -49,13 +80,9 @@ export class ByBitExchange extends Exchange {
         "1M"
     ];
 
-    private _lastPrice: number = 0;
-    private _isLive: boolean = false;
-    private _broker: ByBitBroker;
-    private _leverage: number;
-    private _authSuccess: boolean;
 
-    private webSocket: WebSocket;
+
+
 
     constructor(protected network: INetwork) {
         super(network);
@@ -124,8 +151,17 @@ export class ByBitExchange extends Exchange {
 
                                         this.webSocket.send(JSON.stringify({ 'op': 'subscribe', 'args': ['order', 'position', 'execution', 'private.wallet'] }));
 
+                                        
                                         Promise.all([
-                                            this.api.GetActiveOrder({}, this.auth),
+                                            this.api.GetActiveOrder({
+                                                order_status: "Created,New,PartiallyFilled",
+                                                
+                                                // Todo: consolidate if more than 50 open orders present
+                                                limit: 50
+                                            }, this.auth),
+                                            this.api.GetConditionalOrder({
+                                                limit: 50
+                                            }, this.auth),
                                             this.api.MyPosition({}, this.auth),
                                             this.api.GetWalletFundRecords({
                                                 currency: 'BTC',
@@ -143,10 +179,17 @@ export class ByBitExchange extends Exchange {
                                                 currency: 'EOS',
                                                 limit: 1
                                             }, this.auth)
-                                        ]).then((value) => {
+                                        ]).then((response) => {
                                             // 10002, timestamp was too less
-                                            console.log(value);
-                                            resolve(this._broker = new ByBitBroker(this));
+                                            
+                                            const rejectionReason = this.initAccount(response);
+
+                                            if(!rejectionReason) {
+                                                resolve(this._broker = new ByBitBroker(this));
+                                            } else {
+                                                reject(rejectionReason);
+                                            }
+                                            
                                         }, (reason) => {
                                             reject(reason);
                                         });
@@ -159,7 +202,7 @@ export class ByBitExchange extends Exchange {
                     }
                 };
             } else {
-                resolve();
+                resolve(null);
             }
         }
 
@@ -210,8 +253,6 @@ export class ByBitExchange extends Exchange {
         const from = Math.floor((endTick - duration) / 1000);
         const to = Math.floor(endTick / 1000);
 
-
-
         try {
             const data = await this.api.Kline({
                 symbol: 'BTCUSD',
@@ -236,7 +277,7 @@ export class ByBitExchange extends Exchange {
                     } as Candle;
                 });
 
-                this._lastPrice = candleData[candleData.length - 1].Close;
+                // this._lastPrice = candleData[candleData.length - 1].Close;
 
                 return Promise.resolve(candleData);
             } else {
@@ -271,7 +312,7 @@ export class ByBitExchange extends Exchange {
                         Volume: data.data.volume
                     }
 
-                    this._lastPrice = candle.Close;
+                    // this._lastPrice = candle.Close;
 
                     this.dataQueue.push(data.data.interval, candle);
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'execution') {
@@ -438,6 +479,95 @@ export class ByBitExchange extends Exchange {
     }
 
 
+    /**
+     * Initialize account from connection response
+     * @param response the response from the apis to get account trading details
+     * @returns null if everything was okay, reason as string if something went wrong
+     */
+    private initAccount(response: ConnectionResponse): string {
+        const apiErrors = [];
+
+        const orderResponse = response[0];
+        const stopOrderResponse = response[1]
+        const positionReponse = response[2];
+
+        const walletRecords: Array<[string, ByBitContracts['GetWalletFundRecords']['Response']]> = [
+            ['BTC', response[3]],
+            ['ETH', response[4]],
+            ['XRP', response[5]],
+            ['EOS', response[6]],
+        ];
+
+        walletRecords.forEach(walletRecord => {
+            if(walletRecord[1].ret_code == 0) {
+                if(walletRecord[1].result.data.length) {
+                    this.walletBalance.addOrUpdate(walletRecord[0], {
+                        Currency: walletRecord[0],
+                        Balance: walletRecord[1].result.data[0].wallet_balance,
+                        
+                        // Can't figure out order margin and position margin from this
+                        // will have to rely on orders and position
+                        OrderMargin: 0,
+                        PositionMargin: 0,
+                    })
+                } else {
+                    apiErrors.push(`GetWalletFundRecords-${walletRecord[0]}: ${walletRecord[1].ret_msg}.`);
+                }
+            }
+        })
+
+
+        if(orderResponse.ret_code == 0) {
+            const orders = orderResponse.result.data;
+
+            orders.forEach(order => {
+                this.orders.addOrUpdate(order.order_id, {
+                    OrderId: order.order_id,
+                    Side: order.side,
+                    Symbol: order.symbol,
+                    OrderType: order.order_type,
+                    OrderStatus: order.order_status,
+                    Quantity: order.qty,
+                    FilledQuantity: order.qty - order.leaves_qty,
+                    Price: order.price,
+                    TimeInForce: order.time_in_force,
+                    // TakeProfit: order.
+                });
+            });
+        } else {
+            apiErrors.push("GetActiveOrders: " + orderResponse.ret_msg);
+        }
+
+        if(stopOrderResponse.ret_code == 0) {
+            const orders = stopOrderResponse.result.data;
+        }
+        
+        if(positionReponse.ret_code == 0) {
+            // process positions
+        } else {
+            apiErrors.push("MyPosition: " + positionReponse.ret_msg);
+        }
+
+
+
+        
+
+    }
+
+    private bybitSymbolToCurrencyMap(symbol: Symbol) {
+        switch(symbol) {
+            case 'BTCUSD':
+                return 'BTC';
+            case 'EOSUSD':
+                return 'EOS';
+            case 'ETHUSD':
+                return 'ETH';
+            case 'XRPUSD':
+                return 'XRP';
+            default:
+                return symbol;
+        }
+    }
 
     private resolutionMap(resolution: Resolution): [string, number] {
         const tickValue = Utils.GetResolutionTick(resolution);

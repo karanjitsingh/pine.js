@@ -83,7 +83,7 @@ export class Network implements INetwork {
 
             if(params && Object.keys(params).length > 0) {
                 search = "?" + Object.keys(params).map((key, index, arr) => {
-                    return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}${ index + 1 == arr.length ? '' : '&'}`;
+                    return `${key}=${encodeURIComponent(params[key])}${ index + 1 == arr.length ? '' : '&'}`;
                 }).join('');
             }
 

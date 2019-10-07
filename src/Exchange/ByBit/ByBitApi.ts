@@ -30,6 +30,11 @@ export class ByBitApi implements Api {
         return this.apiCall<ByBitContracts['GetActiveOrder']>('get', url, params, auth);
     }
 
+    public GetConditionalOrder = (params: ByBitContracts['GetConditionalOrder']['Params'], auth: ExchangeAuth) => {
+        const url = this.testnet ? "https://api-testnet.bybit.com/open-api/stop-order/list" : "https://api.bybit.com/open-api/stop-order/list";
+        return this.apiCall<ByBitContracts['GetConditionalOrder']>('get', url, params, auth);
+    }
+
     public MyPosition = (params: ByBitContracts['MyPosition']['Params'], auth: ExchangeAuth) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/position/list" : "https://api.bybit.com/position/list";
         return this.apiCall<ByBitContracts['MyPosition']>('get', url, params, auth);
@@ -83,7 +88,7 @@ export class ByBitApi implements Api {
                 paramstr += "&";
             }
 
-            paramstr += key + "=" + encodeURIComponent(params[key]);
+            paramstr += key + "=" + params[key];
         });
 
         orderedParams['sign'] = crypto.createHmac('sha256', auth.Secret).update(paramstr).digest('hex');

@@ -11,7 +11,7 @@ export class SubscribableDictionary<T> extends Subscribable<DictionaryUpdate<T>>
 
     public add(key: string, value: T) {
         if(this.dict[key]) {
-            throw new Error("Order already exists");
+            throw new Error(`Value with key '${key}' already exists.`)
         }
 
         this.addOrUpdate(key, value);
@@ -23,12 +23,22 @@ export class SubscribableDictionary<T> extends Subscribable<DictionaryUpdate<T>>
     }
 
     public update(key: string, value: T) {
+        if(!this.dict[key]) {
+            throw new Error(`Value with key '${key}' does not exist.`)
+        }
+
         this.addOrUpdate(key, value);
 
         this.notifyAll({
             UpdateType: 'Update',
             Value: this.dict[key]
         });
+    }
+    
+    public addOrUpdate(key: string, value: T) {
+        Object.freeze(value);
+
+        this.dict[key] = value;
     }
 
     public remove(key: string) {
@@ -59,11 +69,5 @@ export class SubscribableDictionary<T> extends Subscribable<DictionaryUpdate<T>>
     
     public get values(): T[] {
         return Object.values(this.dict);
-    }
-
-    private addOrUpdate(key: string, value: T) {
-        Object.freeze(value);
-
-        this.dict[key] = value;
     }
 }
