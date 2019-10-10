@@ -18,6 +18,7 @@ export type StrategyCtor = new (broker: IBroker, messageLogger: MessageLogger) =
 export interface StrategyConfig {
     resolutionSet: Resolution[];
     initCandleCount: number;
+    symbol: string;
 }
 
 export const StrategyStore = new CtorStore<StrategyCtor>();

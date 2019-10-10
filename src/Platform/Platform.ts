@@ -42,19 +42,20 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
     public start(): Dictionary<PlotConfig> {
         const exchangeCtor = ExchangeStore.get(this.config.Exchange);
+        const strategyConfig = this.strategy.StrategyConfig;
 
         this.exchange = new exchangeCtor(this.Network, this.config.ExchangeAuth);
-        this.dataController = new MarketSink(this.exchange, this.strategy.StrategyConfig.resolutionSet);
+        this.dataController = new MarketSink(this.exchange, strategyConfig.resolutionSet);
 
-        this.exchange.connect(this.config.ExchangeAuth).then(() => {
+        this.exchange.connect(strategyConfig.symbol ,this.config.ExchangeAuth).then(() => {
             this._isRunning = true;
             this.dataController.subscribe(this.dataUpdate, this);
-            this.dataController.startStream(this.strategy.StrategyConfig.initCandleCount);
+            this.dataController.startStream(strategyConfig.initCandleCount);
         }, (reason) => {
             console.log("Platform: Connection rejected, " + (reason instanceof String ? reason : JSON.stringify(reason)));
         });
 
-        this.initStrategy(this.strategy.StrategyConfig, this.dataController.MarketDataMap);
+        this.initStrategy(strategyConfig, this.dataController.MarketDataMap);
         return this.plotConfigMap;
     }
 

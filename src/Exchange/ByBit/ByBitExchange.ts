@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped, Dictionary } from "Model/Contracts";
-import { Exchange, Account } from "Model/Exchange/Exchange";
+import { Exchange } from "Model/Exchange/Exchange";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
 import { CandleQueue } from "Model/Utils/Queue";
@@ -9,8 +9,6 @@ import * as WebSocket from 'ws';
 import { ByBitBroker } from './ByBitBroker';
 import { ByBitApi } from './ByBitApi';
 import { ByBitContracts, Symbol } from './ByBitContracts';
-import { SubscribableDictionary } from 'Model/Utils/SubscribableDictionary';
-import { SubscribableValue } from 'Model/Utils/Events';
 
 type ConnectionResponse = [
     ByBitContracts['GetActiveOrder']['Response'],
@@ -37,27 +35,14 @@ export interface ByBitEndpoints {
 
 }
 
-export interface ByBitAccount extends Account {
-    Leverage: Dictionary<number, Symbol>;
-    Wallet: Dictionary<Wallet, Symbol>;
-    Position: {
-        Open: Dictionary<Position>;
-        Close: Dictionary<Position>;
-    };
-    OrderBook: {
-        Open: Dictionary<Order>;
-        Closed: Dictionary<Order>;
-        Conditional: Dictionary<Order>
-    }
-}
-
 export class ByBitExchange extends Exchange {
 
     public get isLive(): boolean { return this._isLive; }
-    public get broker(): ByBitBroker { return this._broker }
+    public get broker(): ByBitBroker { return this._broker; }
     public get authSuccess(): boolean { return this._authSuccess; }
 
-    public get account(): ByBitAccount { return this._account; }
+    public get lastPrice(): number { return this._lastPrice; };
+    public get marketPrice(): number { return this._marketPrice; };
 
     protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
     protected api: ByBitApi;
@@ -65,13 +50,15 @@ export class ByBitExchange extends Exchange {
     private _isLive: boolean = false;
     private _broker: ByBitBroker;
     private _authSuccess: boolean;
-    private _account: ByBitAccount;
+    private _lastPrice: number;
+    private _marketPrice: number;
 
     private subscribedResolutions: Resolution[];
     private candleQueue: CandleQueue;
     private auth: ExchangeAuth;
     private connecting: boolean = false;
     private webSocket: WebSocket;
+    private symbol: Symbol;
 
     private readonly LiveSupportedResolutions: string[] = [
         "1m", "3m", "5m", "15m", "30m",
@@ -81,20 +68,22 @@ export class ByBitExchange extends Exchange {
         "1M"
     ];
 
-
-
-
-
     constructor(protected network: INetwork) {
         super(network);
         this.api = new ByBitApi(this.network, false);
     }
 
-    public async connect(auth?: ExchangeAuth): Promise<ByBitBroker | undefined> {
+    public getSymbolList() {
+        return ["BTCUSD", "ETHUSD", "XRPUSD", "EOSUSD"];
+    }
+
+    public async connect(symbol: Symbol, auth?: ExchangeAuth): Promise<ByBitBroker | undefined> {
+        this.auth = auth;
+        this.symbol = symbol;
+        
         let _resolve: (broker?: ByBitBroker) => void;
         let _reject: (reason: any) => void;
         const promise = new Promise<ByBitBroker | undefined>((resolver, rejector) => { _resolve = resolver; _reject = rejector; });
-        this.auth = auth;
 
         this._authSuccess = false;
 
@@ -464,7 +453,7 @@ export class ByBitExchange extends Exchange {
             // retry connecting after some second to not bothering on high load
             setTimeout(() => {
                 console.log('Bybit: Retrying.')
-                this.connect(this.auth).then((success) => { }, (reason) => {
+                this.connect(this.symbol, this.auth).then((success) => { }, (reason) => {
                     console.log('Bybit: Retry rejection, reason: ' + reason);
                     this.distessSignal.set();
                 });
@@ -496,15 +485,15 @@ export class ByBitExchange extends Exchange {
         walletRecords.forEach(walletRecord => {
             if(walletRecord[1].ret_code == 0) {
                 if(walletRecord[1].result.data.length) {
-                    this.walletBalance.addOrUpdate(walletRecord[0], {
-                        Currency: walletRecord[0],
-                        Balance: walletRecord[1].result.data[0].wallet_balance,
+                    // this.walletBalance.addOrUpdate(walletRecord[0], {
+                    //     Currency: walletRecord[0],
+                    //     Balance: walletRecord[1].result.data[0].wallet_balance,
                         
-                        // Can't figure out order margin and position margin from this
-                        // will have to rely on orders and position
-                        OrderMargin: 0,
-                        PositionMargin: 0,
-                    })
+                    //     // Can't figure out order margin and position margin from this
+                    //     // will have to rely on orders and position
+                    //     OrderMargin: 0,
+                    //     PositionMargin: 0,
+                    // })
                 } else {
                     apiErrors.push(`GetWalletFundRecords-${walletRecord[0]}: ${walletRecord[1].ret_msg}.`);
                 }
@@ -516,18 +505,18 @@ export class ByBitExchange extends Exchange {
             const orders = orderResponse.result.data;
 
             orders.forEach(order => {
-                this.orders.addOrUpdate(order.order_id, {
-                    OrderId: order.order_id,
-                    Side: order.side,
-                    Symbol: order.symbol,
-                    OrderType: order.order_type,
-                    OrderStatus: order.order_status,
-                    Quantity: order.qty,
-                    FilledQuantity: order.qty - order.leaves_qty,
-                    Price: order.price,
-                    TimeInForce: order.time_in_force,
-                    // TakeProfit: order.
-                });
+                // this.orders.addOrUpdate(order.order_id, {
+                //     OrderId: order.order_id,
+                //     Side: order.side,
+                //     Symbol: order.symbol,
+                //     OrderType: order.order_type,
+                //     OrderStatus: order.order_status,
+                //     Quantity: order.qty,
+                //     FilledQuantity: order.qty - order.leaves_qty,
+                //     Price: order.price,
+                //     TimeInForce: order.time_in_force,
+                //     // TakeProfit: order.
+                // });
             });
         } else {
             apiErrors.push("GetActiveOrders: " + orderResponse.ret_msg);
@@ -542,11 +531,6 @@ export class ByBitExchange extends Exchange {
         } else {
             apiErrors.push("MyPosition: " + positionReponse.ret_msg);
         }
-
-
-
-        
-
     }
 
     private bybitSymbolToCurrencyMap(symbol: Symbol) {

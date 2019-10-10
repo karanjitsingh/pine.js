@@ -20,7 +20,8 @@ export class StochasticStrategy extends Strategy {
                 '30m',
                 '1m'
             ],
-            initCandleCount: 150
+            initCandleCount: 150,
+            symbol: "BTCUSD"
         };
     }
 

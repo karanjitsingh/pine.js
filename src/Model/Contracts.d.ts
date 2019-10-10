@@ -2,7 +2,6 @@
 // Trading ----------------------------------------------------------------------------------------
 
 export interface Wallet {
-    Currency: string,
     Balance: number;
     OrderMargin: number;
     PositionMargin: number;
@@ -67,7 +66,13 @@ export type Dictionary<TValue, TKey extends string = string> = { [key in TKey]: 
 
 export type Update<T> = { [key in keyof T]?: boolean };
 
-export type Partial<T> = { [key in keyof T]?: T[key] };
+export type DeepPartial<T> = {
+    [P in keyof T]?: T[P] extends Array<infer U>
+    ? Array<DeepPartial<U>>
+    : T[P] extends ReadonlyArray<infer U>
+    ? ReadonlyArray<DeepPartial<U>>
+    : DeepPartial<T[P]>
+};
 
 /** Tick number */
 export type UtcTimeStamp = number;
