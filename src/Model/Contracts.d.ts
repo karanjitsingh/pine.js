@@ -14,7 +14,7 @@ export type OrderType = 'Market' | 'Limit';
 // To filter by multiple statuses, separate with a comma like so: Filled,New
 export type OrderStatus = "Created" | "Rejected" | "New" | "PartiallyFilled" | "Filled" | "Cancelled";
 
-export interface Order<T = any> {
+export interface Order<T = {}> {
     OrderId: string;
     Side: Side;
     Symbol: string;
@@ -28,10 +28,13 @@ export interface Order<T = any> {
     /** Conditional order specific field */
     CloseOnTrigger?: boolean
 
+    IsOpen: boolean,
+
     ExtraFields?: T
 }
 
-export interface Position {
+export interface Position<T = {}> {
+    PositionId: string,
     Side: Side,
     Symbol: string,
     Size: number,
@@ -52,7 +55,9 @@ export interface Position {
     UnrealizedPnl: number,
     CreatedAt: string,
     LastUpdate: string,
-    ExtraFields: {[id: string]: any}
+    IsOpen: boolean,
+
+    ExtraFields: T
 }
 
 // ------------------------------------------------------------------------------------------------

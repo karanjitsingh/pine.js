@@ -44,18 +44,30 @@ export class SubscribableDictionary<T> extends Subscribable<DictionaryUpdate<T>>
         });
     }
 
-    public remove(key: string) {
-        if(!this.dict[key]) {
-            throw new Error(`Value with key '${key}' does not exist.`)
+    public remove(key: string): T {
+        const value = this.tryRemove(key);
+
+        if(value) {
+            return value;
+        } else {
+            throw new Error(`Value with key '${key}' does not exists.`);
+        }
+    }
+
+    public tryRemove(key: string): T | null {
+        if(this.dict[key]) {
+            const value = this.dict[key];
+            delete this.dict[key];
+
+            this.notifyAll({
+                UpdateType: 'Remove',
+                Value: value
+            });
+
+            return value;
         }
 
-        const order = this.dict[key];
-        delete this.dict[key];
-
-        this.notifyAll({
-            UpdateType: 'Remove',
-            Value: order
-        });
+        return null;
     }
 
     public get(key: string): Readonly<T> | null {

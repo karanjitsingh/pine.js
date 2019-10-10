@@ -1,3 +1,5 @@
+import { DualDictionary } from "Model/Utils/DualDictionary";
+
 export interface BrokerResponseSuccess {
     success: true;
 }
@@ -23,6 +25,10 @@ export interface TradingStop {
 export interface IBroker {
     readonly balance: number;
     readonly leverage: number;
+    readonly requestOrderMap: DualDictionary;
+    readonly requestPositionMap: DualDictionary;
+
+    getRequestStatus(requestId: string): boolean; 
 
     marketOrder(): Promise<BrokerOrderResponse>;
     limitOrder(): Promise<BrokerOrderResponse>;

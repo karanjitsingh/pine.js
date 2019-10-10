@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
-import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped } from "Model/Contracts";
-import { Exchange } from "Model/Exchange/Exchange";
+import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped, Dictionary } from "Model/Contracts";
+import { Exchange, Account } from "Model/Exchange/Exchange";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
 import { CandleQueue } from "Model/Utils/Queue";
@@ -37,34 +37,35 @@ export interface ByBitEndpoints {
 
 }
 
+export interface ByBitAccount extends Account {
+    Leverage: Dictionary<number, Symbol>;
+    Wallet: Dictionary<Wallet, Symbol>;
+    Position: {
+        Open: Dictionary<Position>;
+        Close: Dictionary<Position>;
+    };
+    OrderBook: {
+        Open: Dictionary<Order>;
+        Closed: Dictionary<Order>;
+        Conditional: Dictionary<Order>
+    }
+}
+
 export class ByBitExchange extends Exchange {
 
     public get isLive(): boolean { return this._isLive; }
     public get broker(): ByBitBroker { return this._broker }
     public get authSuccess(): boolean { return this._authSuccess; }
 
-    public get positions() { return this._positions; }
-    public get walletBalance() { return this._walletBalance; }
-    public get conditionalOrders() { return this._conditionalOrders; }
-    public get orders() { return this._orders; }
-    public get leverage() { return this._leverage; }
+    public get account(): ByBitAccount { return this._account; }
 
     protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
     protected api: ByBitApi;
 
-    // public get orders(): SubscribableDictionary<Order> => {}
-
-
     private _isLive: boolean = false;
     private _broker: ByBitBroker;
     private _authSuccess: boolean;
-
-    private _leverage = new SubscribableDictionary<number>();
-    private _orders = new SubscribableDictionary<Order>();
-    private _conditionalOrders = new SubscribableDictionary<Order>();
-    private _walletBalance = new SubscribableDictionary<Wallet>();
-    private _positions = new SubscribableValue<Position>();
-
+    private _account: ByBitAccount;
 
     private subscribedResolutions: Resolution[];
     private candleQueue: CandleQueue;
