@@ -23,11 +23,10 @@ export interface Order<T = {}> {
     FilledQuantity: number;
     Price: number;
     TimeInForce: string;
+    // UsedMargin: number;
 
     /** Conditional order specific field */
     CloseOnTrigger?: boolean
-
-    IsOpen: boolean,
 
     ExtraFields?: T
 }

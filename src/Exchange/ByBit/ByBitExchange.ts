@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped, Dictionary } from "Model/Contracts";
+import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped, Dictionary, DeepPartial } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
@@ -9,6 +9,7 @@ import * as WebSocket from 'ws';
 import { ByBitBroker } from './ByBitBroker';
 import { ByBitApi } from './ByBitApi';
 import { ByBitContracts, Symbol } from './ByBitContracts';
+import { Account } from 'Model/Exchange/Account';
 
 type ConnectionResponse = [
     ByBitContracts['GetActiveOrder']['Response'],
@@ -460,14 +461,15 @@ export class ByBitExchange extends Exchange {
         const positionReponse = response[2];
         const walletRecord = response[3];
 
-        
+        const accountUpdate: DeepPartial<Account> = {};
+
 
         if(walletRecord.ret_code == 0) {
             if(walletRecord.result.data.length) {
 
                 walletRecord.result.data[0].wallet_balance;
 
-                this.account.Wallet = {
+                accountUpdate.Wallet = {
                     Balance: walletRecord.result.data[0].wallet_balance,
                     OrderMargin: 0,
                     PositionMargin: 0
@@ -481,27 +483,48 @@ export class ByBitExchange extends Exchange {
         if(orderResponse.ret_code == 0) {
             const orders = orderResponse.result.data;
 
+            const openOrders = Object.keys(this.account.OrderBook.Open);
+
             if(orders) {
+                accountUpdate.OrderBook = {};
+                accountUpdate.OrderBook.Open = {};
+
                 orders.forEach(order => {
-                    // this.orders.addOrUpdate(order.order_id, {
-                    //     OrderId: order.order_id,
-                    //     Side: order.side,
-                    //     Symbol: order.symbol,
-                    //     OrderType: order.order_type,
-                    //     OrderStatus: order.order_status,
-                    //     Quantity: order.qty,
-                    //     FilledQuantity: order.qty - order.leaves_qty,
-                    //     Price: order.price,
-                    //     TimeInForce: order.time_in_force,
-                    //     // TakeProfit: order.
-                    // });
+                    accountUpdate.OrderBook.Open[order.order_id] = {
+                        OrderId: order.order_id,
+                        Side: order.side,
+                        Symbol: order.symbol,
+                        OrderType: order.order_type,
+                        OrderStatus: order.order_status,
+                        Quantity: order.qty,
+                        FilledQuantity: order.qty - order.leaves_qty,
+                        Price: order.price,
+                        TimeInForce: order.time_in_force,
+                    };
                 });
             }
+
+            if(openOrders.length) {
+                // open orders must be closed if they're not contained in active orders
+                // this also means closed orders might not be updated properly
+                const closedOrders = openOrders.filter((orderid) => !!accountUpdate.OrderBook.Open[orderid]);
+
+                if(closedOrders.length) {
+                    accountUpdate.OrderBook.Closed = {};
+
+                    closedOrders.forEach((orderid) => {
+                        accountUpdate.OrderBook.Closed[orderid] = this.account.OrderBook.Open[orderid];
+                    });
+                }
+            }
+
         } else {
             apiErrors.push("GetActiveOrders: " + orderResponse.ret_msg);
         }
 
         if(stopOrderResponse.ret_code == 0) {
+
+            // conditional orders
             const orders = stopOrderResponse.result.data;
 
         }
@@ -509,6 +532,13 @@ export class ByBitExchange extends Exchange {
         if(positionReponse.ret_code == 0) {
             const rawPositions = positionReponse.result.filter((position) => position.symbol == this.symbol);
 
+            // if(rawPositions)
+
+            // side: None == closed
+            // side: Buy/Sell == open
+
+            // if position has been closed only update realized pnl
+            console.log(rawPositions);
         } else {
             apiErrors.push("MyPosition: " + positionReponse.ret_msg);
         }
@@ -516,6 +546,8 @@ export class ByBitExchange extends Exchange {
         if(apiErrors.length) {
             return apiErrors.join("\n");
         }
+
+        this.account.update(accountUpdate);
 
         return null;
     }
