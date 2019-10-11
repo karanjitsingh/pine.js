@@ -14,20 +14,8 @@ type ConnectionResponse = [
     ByBitContracts['GetActiveOrder']['Response'],
     ByBitContracts['GetConditionalOrder']['Response'],
     ByBitContracts['MyPosition']['Response'],
-    ByBitContracts['GetWalletFundRecords']['Response'],
-    ByBitContracts['GetWalletFundRecords']['Response'],
-    ByBitContracts['GetWalletFundRecords']['Response'],
     ByBitContracts['GetWalletFundRecords']['Response']
 ];
-
-const ErrorCodes = [
-    10001, 10002, 10003, 10004, 10005, 10006, 10010, 20001, 20003, 20004, 20005, 20006, 20007, 20008,
-    20009, 20010, 20011, 20012, 20013, 20014, 20015, 20016, 20017, 20018, 20019, 20020, 20021, 30001,
-    30002, 30003, 30004, 30005, 30006, 30007, 30008, 30009, 30010, 30011, 30012, 30013, 30014, 30015,
-    30016, 30017, 30018, 30019, 30020, 30021, 30022, 30023, 30024, 30025, 30026, 30027, 30028, 30029,
-    30030, 30031, 30032, 30033, 30034, 30035, 30036, 30037, 30041, 30042, 30043, 30044, 30045, 30057,
-    30063, 20022, 20023, 20031, 20070, 20071, 30040, 30049, 30050, 30051, 30052, 30054, 30067, 30068
-]
 
 export interface ByBitEndpoints {
     websocket: string;
@@ -59,6 +47,13 @@ export class ByBitExchange extends Exchange {
     private connecting: boolean = false;
     private webSocket: WebSocket;
     private symbol: Symbol;
+
+    private symbolToCurrencyMap: Dictionary<string, Symbol> = {
+        "BTCUSD": "BTC",
+        "EOSUSD": "EOS",
+        "ETHUSD": "ETH",
+        "XRPUSD": "XRP"
+    };
 
     private readonly LiveSupportedResolutions: string[] = [
         "1m", "3m", "5m", "15m", "30m",
@@ -145,28 +140,17 @@ export class ByBitExchange extends Exchange {
                                         Promise.all([
                                             this.api.GetActiveOrder({
                                                 order_status: "Created,New,PartiallyFilled",
-                                                
+                                                symbol: this.symbol,                                                
                                                 // Todo: consolidate if more than 50 open orders present
                                                 limit: 50
                                             }, this.auth),
                                             this.api.GetConditionalOrder({
-                                                limit: 50
+                                                limit: 50,
+                                                symbol: this.symbol
                                             }, this.auth),
                                             this.api.MyPosition({}, this.auth),
                                             this.api.GetWalletFundRecords({
-                                                currency: 'BTC',
-                                                limit: 1
-                                            }, this.auth),
-                                            this.api.GetWalletFundRecords({
-                                                currency: 'ETH',
-                                                limit: 1
-                                            }, this.auth),
-                                            this.api.GetWalletFundRecords({
-                                                currency: 'XRP',
-                                                limit: 1
-                                            }, this.auth),
-                                            this.api.GetWalletFundRecords({
-                                                currency: 'EOS',
+                                                currency: this.symbolToCurrencyMap[this.symbol],
                                                 limit: 1
                                             }, this.auth)
                                         ]).then((response) => {
@@ -474,78 +458,66 @@ export class ByBitExchange extends Exchange {
         const orderResponse = response[0];
         const stopOrderResponse = response[1]
         const positionReponse = response[2];
+        const walletRecord = response[3];
 
-        const walletRecords: Array<[string, ByBitContracts['GetWalletFundRecords']['Response']]> = [
-            ['BTC', response[3]],
-            ['ETH', response[4]],
-            ['XRP', response[5]],
-            ['EOS', response[6]],
-        ];
+        
 
-        walletRecords.forEach(walletRecord => {
-            if(walletRecord[1].ret_code == 0) {
-                if(walletRecord[1].result.data.length) {
-                    // this.walletBalance.addOrUpdate(walletRecord[0], {
-                    //     Currency: walletRecord[0],
-                    //     Balance: walletRecord[1].result.data[0].wallet_balance,
-                        
-                    //     // Can't figure out order margin and position margin from this
-                    //     // will have to rely on orders and position
-                    //     OrderMargin: 0,
-                    //     PositionMargin: 0,
-                    // })
-                } else {
-                    apiErrors.push(`GetWalletFundRecords-${walletRecord[0]}: ${walletRecord[1].ret_msg}.`);
+        if(walletRecord.ret_code == 0) {
+            if(walletRecord.result.data.length) {
+
+                walletRecord.result.data[0].wallet_balance;
+
+                this.account.Wallet = {
+                    Balance: walletRecord.result.data[0].wallet_balance,
+                    OrderMargin: 0,
+                    PositionMargin: 0
                 }
-            }
-        })
 
+            } else {
+                apiErrors.push(`GetWalletFundRecords-${this.symbolToCurrencyMap[this.symbol]}: ${walletRecord.ret_msg}.`);
+            }
+        }
 
         if(orderResponse.ret_code == 0) {
             const orders = orderResponse.result.data;
 
-            orders.forEach(order => {
-                // this.orders.addOrUpdate(order.order_id, {
-                //     OrderId: order.order_id,
-                //     Side: order.side,
-                //     Symbol: order.symbol,
-                //     OrderType: order.order_type,
-                //     OrderStatus: order.order_status,
-                //     Quantity: order.qty,
-                //     FilledQuantity: order.qty - order.leaves_qty,
-                //     Price: order.price,
-                //     TimeInForce: order.time_in_force,
-                //     // TakeProfit: order.
-                // });
-            });
+            if(orders) {
+                orders.forEach(order => {
+                    // this.orders.addOrUpdate(order.order_id, {
+                    //     OrderId: order.order_id,
+                    //     Side: order.side,
+                    //     Symbol: order.symbol,
+                    //     OrderType: order.order_type,
+                    //     OrderStatus: order.order_status,
+                    //     Quantity: order.qty,
+                    //     FilledQuantity: order.qty - order.leaves_qty,
+                    //     Price: order.price,
+                    //     TimeInForce: order.time_in_force,
+                    //     // TakeProfit: order.
+                    // });
+                });
+            }
         } else {
             apiErrors.push("GetActiveOrders: " + orderResponse.ret_msg);
         }
 
         if(stopOrderResponse.ret_code == 0) {
             const orders = stopOrderResponse.result.data;
+
         }
         
         if(positionReponse.ret_code == 0) {
-            // process positions
+            const rawPositions = positionReponse.result.filter((position) => position.symbol == this.symbol);
+
         } else {
             apiErrors.push("MyPosition: " + positionReponse.ret_msg);
         }
-    }
 
-    private bybitSymbolToCurrencyMap(symbol: Symbol) {
-        switch(symbol) {
-            case 'BTCUSD':
-                return 'BTC';
-            case 'EOSUSD':
-                return 'EOS';
-            case 'ETHUSD':
-                return 'ETH';
-            case 'XRPUSD':
-                return 'XRP';
-            default:
-                return symbol;
+        if(apiErrors.length) {
+            return apiErrors.join("\n");
         }
+
+        return null;
     }
 
     private resolutionMap(resolution: Resolution): [string, number] {
