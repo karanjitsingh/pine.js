@@ -1,10 +1,9 @@
-import { PlatformConfiguration, ReporterData, Dictionary } from "Model/Contracts";
+import { Dictionary, PlatformConfiguration, ReporterData, RunningInstance } from "Model/Contracts";
 import { MessageSender } from "Platform/MessageSender";
 import { Platform } from "Platform/Platform";
 import { PlatformInstance } from "Server/ServerContracts";
 import * as uuid from 'uuid/v4';
 import * as WebSocket from 'ws';
-import * as net from 'net';
 
 export class PlatformControl {
     private platformCollection: Dictionary<PlatformInstance> = {};
@@ -21,14 +20,26 @@ export class PlatformControl {
         this.platformCollection[platformKey] = {
             key: platformKey,
             platform,
-            server: null,
+            websocketServer: null,
             connections: {}
         };
 
         return platformKey;
     }
 
-    public getInstance(platformKey: string) {
+    public getRunningInstances(): RunningInstance[] {
+        return Object.keys(this.platformCollection).map<RunningInstance>((key) => {
+            const platform = this.platformCollection[key].platform;
+            return {
+                key,
+                exchange: platform.CurrentExchange,
+                strategy: platform.CurrentStrategy,
+                backtest: platform.IsBacktest
+            }
+        });
+    }
+
+    public getPlatformInstance(platformKey: string) {
         return this.platformCollection[platformKey];
     }
 
@@ -40,8 +51,8 @@ export class PlatformControl {
             const address = `ws://localhost:${port}`;
             const path = `/${instance.key}`;
 
-            if (!instance.server) {
-                const websocket = instance.server = new WebSocket.Server({
+            if (!instance.websocketServer) {
+                const websocket = instance.websocketServer = new WebSocket.Server({
                     host: 'localhost',
                     path,
                     port: port

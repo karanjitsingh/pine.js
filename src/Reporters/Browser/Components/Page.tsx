@@ -1,14 +1,14 @@
-import { PlatformConfiguration } from 'Model/Contracts';
+import { PlatformConfiguration, ReporterInit } from 'Model/Contracts';
 import * as React from 'react';
+import { ConfigDialog, ConfigDialogProps } from './Config/ConfigDialog';
 import { Spinner } from './Spinner';
-import { StrategyConfiguration, StrategyConfigurationProps } from './StrategyConfiguration';
 import { TradeView, TradeViewProps } from './TradeView/TradeView';
 
 export interface PageState {
     configProps?: {
-        strategySelectCallback: (config: PlatformConfiguration) => void;
-        availableStrategies: string[];
-        availableExchanges: string[];
+        newConfigCallback: (config: PlatformConfiguration) => void;
+        selectInstanceCallback: (platformKey: string) => void;
+        reporterInit: ReporterInit;
     };
     tradeViewProps?: TradeViewProps;
     pageMode: PageMode;
@@ -44,17 +44,16 @@ export class Page extends React.Component<{}, PageState> {
     }
 
     public render() {
-
         switch (this.state.pageMode) {
             case PageMode.Configuration:
 
-                const configSelectorProps: StrategyConfigurationProps = {
-                    availableExchanges: this.state.configProps.availableExchanges,
-                    availableStrategies: this.state.configProps.availableStrategies,
-                    submitCallback: this.strategySelected.bind(this),
+                const configSelectorProps: ConfigDialogProps = {
+                    submitNewConfig: this.submitNewConfig.bind(this),
+                    selectRunningInstance: this.selectRunningInstance.bind(this),
+                    ...this.state.configProps.reporterInit
                 }
-                
-                return <StrategyConfiguration {...configSelectorProps} />
+
+                return <ConfigDialog {...configSelectorProps} />
             case PageMode.Loading:
                 return <Spinner />
             case PageMode.TradeView:
@@ -62,12 +61,19 @@ export class Page extends React.Component<{}, PageState> {
         }
     }
 
-    private strategySelected(config: PlatformConfiguration) {
-
+    private submitNewConfig(config: PlatformConfiguration) {
         this.setState({
             pageMode: PageMode.Loading
         });
 
-        this.state.configProps.strategySelectCallback(config);
+        this.state.configProps.newConfigCallback(config);
+    }
+
+    private selectRunningInstance(key: string) {
+        this.setState({
+            pageMode: PageMode.Loading
+        });
+
+        this.state.configProps.selectInstanceCallback(key);
     }
 }

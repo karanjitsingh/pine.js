@@ -1,15 +1,10 @@
 import { Page, PageMode } from "Components/Page";
-import React = require("react");
-import ReactDOM = require("react-dom");
-import { Network } from "Network";
 import { TradeViewProps } from "Components/TradeView/TradeView";
 import { DataStream } from "DataStream";
-import { Order, Dictionary, ChartData, PlatformConfiguration, MessageType, ProtocolMessage, Position } from "Model/Contracts";
-
-interface InitInfo {
-    availableExchanges: string[];
-    availableStrategies: string[];
-}
+import { ChartData, Dictionary, MessageType, Order, PlatformConfiguration, Position, ProtocolMessage, ReporterInit } from "Model/Contracts";
+import { Network } from "Network";
+import React = require("react");
+import ReactDOM = require("react-dom");
 
 class Reporter {
 
@@ -32,7 +27,7 @@ class Reporter {
             } else {
                 try {
                     const info = JSON.parse(res.responseText);
-                    this.loadConfigForm(info as InitInfo);
+                    this.loadConfigForm(info as ReporterInit);
                     console.log(info);
                 }
                 catch (ex) {
@@ -45,21 +40,23 @@ class Reporter {
         })
     }
 
-    private loadConfigForm(info: InitInfo) {
+    private loadConfigForm(info: ReporterInit) {
         this.page.setState({
-            configProps: Object.assign({
-                strategySelectCallback: this.strategySelected.bind(this)
-            }, info),
+            configProps: {
+                newConfigCallback: this.configSelected.bind(this),
+                selectInstanceCallback: this.instanceSelected.bind(this),
+                reporterInit: info
+            },
             pageMode: PageMode.Configuration
         })
     }
 
-    private strategySelected(config: PlatformConfiguration) {
+    private configSelected(config: PlatformConfiguration) {
         this.network.post('/api/create', JSON.stringify(config)).then((res: XMLHttpRequest) => {
             if (res.status != 200) {
                 console.error('/api/create', res.status);
             } else {
-                const {key, config} = JSON.parse(res.responseText);
+                const { key, config } = JSON.parse(res.responseText);
 
                 this.page.setState({
                     pageMode: PageMode.Loading
@@ -76,6 +73,10 @@ class Reporter {
         }, (why) => {
             console.error('failed', 'api/config', why);
         });
+    }
+
+    private instanceSelected(platformKey: string) {
+
     }
 
     private subscribeWebSocket(platformId: string) {
@@ -95,7 +96,7 @@ class Reporter {
 
     private subscribeToSocket(connection: string) {
         this.socket = new WebSocket(connection);
-        
+
         this.socket.onmessage = (ev) => {
             // JSON.parse(ev.data);
             this.processMessage(ev.data);
@@ -116,23 +117,23 @@ class Reporter {
     private processMessage(rawMessage: string) {
         const message: ProtocolMessage<MessageType> = JSON.parse(rawMessage);
 
-        switch(message.Type) {
+        switch (message.Type) {
             case 'ReporterData':
                 const reporterData = (message as ProtocolMessage<'ReporterData'>).Data;
-                
+
                 console.log(new Date().getTime(), reporterData);
 
-                if(reporterData.ChartData) {
+                if (reporterData.ChartData) {
                     this.chartDataStream.push(reporterData.ChartData);
                 }
 
-                if(reporterData.Orders) {
-                    this.orderStream.push(reporterData.Orders);
-                }
+                // if(reporterData.Orders) {
+                //     this.orderStream.push(reporterData.Orders);
+                // }
 
-                if(reporterData.Positions) {
-                    this.positionStream.push(reporterData.Positions);
-                }
+                // if(reporterData.Positions) {
+                //     this.positionStream.push(reporterData.Positions);
+                // }
 
                 break;
 
@@ -148,7 +149,7 @@ class Reporter {
                     chartDataStream: this.chartDataStream,
                     plotConfigMap: plotConfigs
                 });
-                
+
                 break;
         }
     }

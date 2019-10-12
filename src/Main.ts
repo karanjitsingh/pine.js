@@ -12,10 +12,10 @@ ExchangeStore.register("ByBit Testnet", ByBitTestnetExchange);
 
 Server.getInstance().start();
 
-if(process.argv.includes("autoinit")) {
+if (process.argv.includes("autoinit")) {
     const config = Utils.GetTestConfig();
     const id = Server.platformControl.addPlatform(config);
-    const instance = Server.platformControl.getInstance(id);
+    const instance = Server.platformControl.getPlatformInstance(id);
     instance.platform.start();
 }
 

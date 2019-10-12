@@ -1,6 +1,23 @@
 // ------------------------------------------------------------------------------------------------
 // Trading ----------------------------------------------------------------------------------------
 
+export interface AccountPosition<TFields> {
+    Open: Dictionary<Position<TFields>>;
+    Closed: Dictionary<Position<TFields>>;
+}
+
+export interface AccountOrders<TFields> {
+    Open: Dictionary<Order<TFields>>;
+    Closed: Dictionary<Order<TFields>>;
+}
+
+export interface IAccount<TOrderFields = {}, TPositionFields = {}> {
+    Leverage: number;
+    Wallet: Wallet;
+    Positions: AccountPosition<TPositionFields>;
+    OrderBook: AccountOrders<TOrderFields>;
+}
+
 export interface Wallet {
     Balance: number;
     OrderMargin: number;
@@ -76,7 +93,7 @@ export type DeepPartial<T> = {
 /** Tick number */
 export type UtcTimeStamp = number;
 
-/** Just to notify that string will wrap a primitive type T, "0.05"~StringWrapped<number> */ 
+/** Just to notify that string will wrap a primitive type T, "0.05"~StringWrapped<number> */
 export type StringWrapped<T> = string;
 
 /** Timestamp of the format "2018-10-15T04:12:19.000Z" */
@@ -115,8 +132,8 @@ export interface PlotConfig {
 // Data -------------------------------------------------------------------------------------------
 
 export type Resolution =
-"1m" | "3m" | "5m" | "15m" | "30m" | "1h" | "2h" |
-"3h" | "4h" | "6h" | "1d" | "3d" | "1w" | "2w";
+    "1m" | "3m" | "5m" | "15m" | "30m" | "1h" | "2h" |
+    "3h" | "4h" | "6h" | "1d" | "3d" | "1w" | "2w";
 
 export type ResolutionMapped<T> = { [resolution in Resolution]?: T };
 
@@ -140,8 +157,7 @@ export interface ChartData {
 
 export interface ReporterData {
     ChartData: Dictionary<ChartData>,
-    Orders: Order[],
-    Positions: Position[]
+    Account: DeepPartial<IAccount>
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -160,6 +176,21 @@ export interface MessageContract {
         PlotConfig: Dictionary<PlotConfig>
     };
 }
+
+
+export interface ReporterInit {
+    availableExchanges: string[];
+    availableStrategies: string[];
+    runningInstances: RunningInstance[];
+}
+
+export interface RunningInstance {
+    key: string,
+    strategy: string,
+    exchange: string,
+    backtest: boolean
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------

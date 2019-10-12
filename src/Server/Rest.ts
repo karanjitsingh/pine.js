@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as http from 'http';
-import { PlatformConfiguration } from "Model/Contracts";
+import { PlatformConfiguration, ReporterInit } from "Model/Contracts";
 import { ExchangeStore } from "Model/Exchange/Exchange";
 import { StrategyStore } from "Model/Strategy/Strategy";
 import { Utils } from 'Model/Utils/Utils';
@@ -14,7 +14,7 @@ export const rest: RestMethods = {
     'post': {
         '/api/create': (url: URL, config: PlatformConfiguration, res: http.ServerResponse): PostReply => {
             // todo: better way of handling default configs
-            if((config as any).default) {
+            if ((config as any).default) {
                 config = Utils.GetTestConfig();
             }
 
@@ -26,7 +26,7 @@ export const rest: RestMethods = {
 
 
             const key = Server.platformControl.addPlatform(config);
-            const platform = Server.platformControl.getInstance(key).platform;
+            const platform = Server.platformControl.getPlatformInstance(key).platform;
 
             res.writeHead(200);
             res.end(JSON.stringify({
@@ -41,8 +41,9 @@ export const rest: RestMethods = {
             res.writeHead(200);
             res.end(JSON.stringify({
                 availableStrategies: StrategyStore.entries(),
-                availableExchanges: ExchangeStore.entries()
-            }))
+                availableExchanges: ExchangeStore.entries(),
+                runningInstances: Server.platformControl.getRunningInstances()
+            } as ReporterInit))
 
             return Promise.resolve(200);
         },
@@ -83,7 +84,7 @@ export const rest: RestMethods = {
             const id = url.searchParams.get('id');
 
 
-            if (!Server.platformControl.getInstance(id)) {
+            if (!Server.platformControl.getPlatformInstance(id)) {
                 res.writeHead(400);
                 res.end();
                 return Promise.resolve(400);
@@ -91,7 +92,7 @@ export const rest: RestMethods = {
 
             const address = Server.platformControl.createSocketStream(id);
 
-            if(address) {
+            if (address) {
                 res.writeHead(200);
                 res.end(address);
                 return Promise.resolve(200);
@@ -101,7 +102,7 @@ export const rest: RestMethods = {
                 return Promise.resolve(500);
             }
         },
-        
+
         '/': ServerUtils.browserGet,
         '/scripts': ServerUtils.browserGet
     }

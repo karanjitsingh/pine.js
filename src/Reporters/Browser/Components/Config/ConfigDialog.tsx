@@ -1,14 +1,15 @@
-import { PlatformConfiguration } from 'Model/Contracts';
+import { PlatformConfiguration, ReporterInit } from 'Model/Contracts';
 import * as React from 'react';
-import { Button, Carousel, CarouselItem, CarouselProps, Form, ListGroup } from 'react-bootstrap';
+import { Button, Carousel, CarouselItem, CarouselProps, Form } from 'react-bootstrap';
+import { ConfigPane } from './ConfigPane';
+import { ListSelector, Orientation } from './ListSelector';
 
-export interface StrategyConfigurationProps {
-    submitCallback: (config: PlatformConfiguration) => void;
-    availableStrategies: string[],
-    availableExchanges: string[]
+export interface ConfigDialogProps extends ReporterInit {
+    submitNewConfig: (config: PlatformConfiguration) => void;
+    selectRunningInstance: (platformKey: string) => void;
 }
 
-interface StrategyConfigurationState {
+interface ConfigDialogState {
     activeIndex: number;
     isSliding: boolean;
     selectedExec: string;
@@ -16,19 +17,8 @@ interface StrategyConfigurationState {
     selectedStrategy?: string;
 }
 
-enum Orientation {
-    Horizontal,
-    Vertical
-}
 
-interface ListSelectorProps {
-    direction?: Orientation,
-    list: string[],
-    onSelect?: (value: string, index: number) => void,
-    default?: number
-}
-
-export class StrategyConfiguration extends React.Component<StrategyConfigurationProps, StrategyConfigurationState> {
+export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialogState> {
 
     private pages: JSX.Element[];
 
@@ -41,7 +31,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
         }
     }
 
-    public shouldComponentUpdate(_, nextState: StrategyConfigurationState) {
+    public shouldComponentUpdate(_, nextState: ConfigDialogState) {
         return this.state.activeIndex != nextState.activeIndex
             || this.state.selectedExec != nextState.selectedExec;
     }
@@ -58,6 +48,8 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
 
         this.pages = this.getPages();
         const done = this.pages.length - 1 == this.state.activeIndex;
+        const proceedText = this.state.activeIndex ? (done ? "Done" : "Next") : "Skip";
+
 
         return (
             <div className="config-selector-container">
@@ -67,7 +59,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
                     </Carousel>
                     <div className="carousel-buttons">
                         <Button variant="light" className={this.state.activeIndex ? "" : "disabled"} onClick={() => this.configButton_OnClick(false)}>Prev</Button>
-                        <Button variant={done ? "info" : "light"} onClick={() => this.configButton_OnClick(true)}>{done ? "Done" : "Next"}</Button>
+                        <Button variant={done ? "info" : "light"} onClick={() => this.configButton_OnClick(true)}>{proceedText}</Button>
                     </div>
                 </div>
             </div>
@@ -78,8 +70,24 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
         return [
 
             <CarouselItem className="config-pane">
-                <ConfigPane heading="Use Defaults">
-                    <Button variant={'primary'} onClick={() => {this.setDefaultConfiguration();}}>Defaults</Button>
+                <ConfigPane>
+                    <Button variant={'primary'} onClick={() => { this.setDefaultConfiguration(); }}>Default Config</Button>
+
+                    <Form.Group>
+                        {
+                            this.props.runningInstances && this.props.runningInstances.length ?
+                                [<Form.Label>Select a running instance</Form.Label>,
+                                <ListSelector buttonClass="platform-instance-button" list={this.props.runningInstances} itemRender={(item) => {
+                                    return (
+                                        <div>
+                                            <div>{item.strategy}</div>
+                                            <div>{item.exchange}</div>
+                                            <div>{item.backtest ? "Backtest" : "Live"}</div>
+                                        </div>
+                                    )
+                                }}></ListSelector>] : null
+                        }
+                    </Form.Group>
                 </ConfigPane>
             </CarouselItem>,
 
@@ -88,7 +96,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
                     <ListSelector onSelect={(strategy) => this.setState({
                         ...this.state,
                         selectedStrategy: strategy
-                    })} list={this.props.availableStrategies}></ListSelector>
+                    })} list={this.props.availableStrategies} sticky={true}></ListSelector>
                 </ConfigPane>
             </CarouselItem>,
 
@@ -97,7 +105,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
                     <ListSelector onSelect={(exchange) => this.setState({
                         ...this.state,
                         selectedExchange: exchange
-                    })} list={this.props.availableExchanges}></ListSelector>
+                    })} list={this.props.availableExchanges} sticky={true}></ListSelector>
                 </ConfigPane>
             </CarouselItem>,
 
@@ -106,7 +114,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
                     <ListSelector onSelect={(execution) => this.setState({
                         ...this.state,
                         selectedExec: execution
-                    })} default={0} direction={Orientation.Horizontal} list={["Trade", "Backtest"]}></ListSelector>
+                    })} default={0} sticky={true} direction={Orientation.Horizontal} list={["Trade", "Backtest"]}></ListSelector>
                     {
                         this.state.selectedExec == "Trade" ?
                             <Form.Group controlId="trade-form">
@@ -127,7 +135,7 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
     }
 
     private setDefaultConfiguration() {
-        this.props.submitCallback({
+        this.props.submitNewConfig({
             default: true
         } as any);
     }
@@ -149,8 +157,8 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
 
         console.log(config);
 
-        if (this.props.submitCallback) {
-            this.props.submitCallback(config);
+        if (this.props.submitNewConfig) {
+            this.props.submitNewConfig(config);
         }
     }
 
@@ -178,48 +186,3 @@ export class StrategyConfiguration extends React.Component<StrategyConfiguration
     }
 }
 
-export class ConfigPane extends React.Component<{ heading: string }> {
-
-    public render() {
-        return (
-            <div className="pane-container">
-                <h1>{this.props.heading}</h1>
-                <div className="pane-content custom-scroll">
-                    {this.props.children}
-                </div>
-            </div>
-        )
-    }
-}
-
-export class ListSelector extends React.Component<ListSelectorProps, { selectedItem: number }> {
-
-    public constructor(props) {
-        super(props);
-
-        this.state = {
-            selectedItem: this.props.default !== undefined ? this.props.default : -1
-        }
-    }
-
-    public render() {
-        if (!this.props.list || this.props.list.length == 0) {
-            return [];
-        }
-        return (
-            <ListGroup className={this.props.direction === Orientation.Horizontal ? "list-group-horizontal" : ""}>
-                {this.props.list.map((element, index) => <Button onClick={() => this.onSelect(element, index)} className={"list-group-item " + (index == this.state.selectedItem ? "active" : "")}>{element}</Button>)}
-            </ListGroup>
-        )
-    }
-
-    private onSelect(element, index) {
-        if (this.props.onSelect) {
-            this.props.onSelect(element, index);
-        }
-
-        this.setState({
-            selectedItem: index
-        });
-    }
-}

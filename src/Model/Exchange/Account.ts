@@ -1,21 +1,5 @@
-import { Dictionary, Position, Order, Wallet, DeepPartial } from "Model/Contracts";
+import { AccountOrders, AccountPosition, DeepPartial, IAccount, Wallet } from "Model/Contracts";
 
-export interface AccountPosition<TFields> {
-    Open: Dictionary<Position<TFields>>;
-    Closed: Dictionary<Position<TFields>>;
-}
-
-export interface AccountOrders<TFields> {
-    Open: Dictionary<Order<TFields>>;
-    Closed: Dictionary<Order<TFields>>;
-}
-
-export interface IAccount<TOrderFields = {}, TPositionFields = {}> {
-    Leverage: number;
-    Wallet: Wallet;
-    Positions: AccountPosition<TPositionFields>;
-    OrderBook: AccountOrders<TOrderFields>;
-}
 
 export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccount<TOrderFields, TPositionFields> {
     public Leverage: number = 0;
@@ -54,20 +38,20 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
                 if (!this.accountUpdate[key]) {
                     this.accountUpdate[key] = {};
                 }
-                
+
                 Object.assign(this[key].Open, update[key].Open)
                 Object.assign(this[key].Closed, update[key].Closed)
-                
+
                 this.mix(update[key], this.accountUpdate[key], "Open");
                 this.mix(update[key], this.accountUpdate[key], "Closed");
 
-                if(update[key].Closed) {
+                if (update[key].Closed) {
                     Object.keys(update[key].Closed).forEach((id) => {
-                        if(this.accountUpdate[key].Open && this.accountUpdate[key].Open[id]) {
+                        if (this.accountUpdate[key].Open && this.accountUpdate[key].Open[id]) {
                             delete this.accountUpdate[key].Open[id];
                         }
 
-                        if(this[key].Open && this[key].Open[id]) {
+                        if (this[key].Open && this[key].Open[id]) {
                             delete this[key].Open[id];
                         }
                     });
@@ -77,11 +61,11 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
     }
 
     private mix<T>(source: T, target: T, key: keyof T) {
-        if(!source[key]) {
+        if (!source[key]) {
             return;
         }
 
-        if(!target[key]) {
+        if (!target[key]) {
             (target[key] as any) = {};
         }
 
