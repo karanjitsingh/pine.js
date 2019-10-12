@@ -5,6 +5,7 @@ body {
     background: #131722 !important;
     height: 100%;
     font-family: "Open Sans", sans-serif;
+    overflow: hidden;
 }
 
 .split-horizontal>div {
@@ -141,7 +142,8 @@ body {
     }
 }
 
-.scroll {
+.custom-scroll {
+
     &::-webkit-scrollbar {
         width: 5px;
         height: 5px;
@@ -183,9 +185,81 @@ body {
     align-items: center;
     justify-content: center;
     height: 100%;
-    width:100%;
+    width: 100%;
 }
 
 .chart-container {
     overflow: hidden
+}
+
+.collapsible-section {
+    width: 100%;
+
+    .header {
+        background: #364156;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-size: 13px;
+        line-height: 22px;
+        color: white;
+
+        &::before {
+            content: "-";
+            padding: 0px 7px;
+            font-family: consolas;
+        }
+
+        &.collapsed {
+            &::before {
+                content: "+";
+            }
+        }
+    }
+
+    .content {
+        transition: max-height 0.2s ease-out;
+        overflow: hidden;
+        color: white;
+
+        &.custom-scroll {
+            overflow: auto;
+
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                border-radius: 0px;
+                background: rgba(255,255,255,0.3);
+            }
+
+            &::-webkit-scrollbar-track {
+                background-color: transparent ;
+                border-radius: 0;
+            }
+
+            &::-webkit-scrollbar-track:hover {
+                background: transparent;
+            }
+        }
+    }
+}
+
+.trade-panel {
+    max-height: 100%;
+    display: flex;
+
+    >div {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+
+        .collapsible-section:nth-child(2) {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+        }
+    }
+
 }

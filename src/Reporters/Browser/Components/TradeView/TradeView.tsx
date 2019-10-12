@@ -1,10 +1,10 @@
 import { Spinner } from 'Components/Spinner';
 import { Chart } from 'Components/TradeView/Chart';
-import { TradeLog } from 'Components/TradeView/TradeLog';
 import { DataStream } from 'DataStream';
 import SplitWrapper from 'lib/react-split';
 import { ChartData, Dictionary, PlotConfig } from "Model/Contracts";
 import * as React from 'react';
+import { Section } from 'Components/Section';
 
 export interface TradeViewProps {
     chartDataStream: DataStream<Dictionary<ChartData>>,
@@ -17,10 +17,12 @@ export class TradeView extends React.Component<TradeViewProps> {
     private chartContainerMap: Dictionary<React.RefObject<HTMLDivElement>>;
     private chartMap: Dictionary<Chart>;
     private chartLoaded: boolean;
+    private ref: React.RefObject<any>;
 
     constructor(props) {
         super(props);
-
+        this.ref = React.createRef();
+        window['ref'] = this.ref;
         this.props.chartDataStream.addEventListener('data', this.dataListener.bind(this));
     }
 
@@ -28,7 +30,7 @@ export class TradeView extends React.Component<TradeViewProps> {
         this.props.chartDataStream.flush().forEach(data => {
             Object.keys(data).forEach((key) => {
                 this.chartMap[key].update(data[key]);
-            })
+            });
         });
     }
 
@@ -39,9 +41,18 @@ export class TradeView extends React.Component<TradeViewProps> {
 
         return (
             <div style={{ height: "100%", width: "100%" }}>
-                <SplitWrapper onDragEnd={this.triggerResize.bind(this)} sizes={[70, 30]} minSize={100} dragInterval={1} gutterSize={5} direction={"horizontal"}>
+                <SplitWrapper ref={this.ref} onDragStart={(...args) => console.log(args) } onDragEnd={this.triggerResize.bind(this)} sizes={[70, 30]} minSize={450} dragInterval={1} gutterSize={5} direction={"horizontal"}>
                     { !this.chartSplit ? <Spinner></Spinner> : this.chartSplit }
-                    <TradeLog></TradeLog>
+                    <div className="trade-panel">
+                        <div>
+                            <Section header="Wallet">asdfasdf</Section>
+                            <Section scrollBar={true} header="Orders">
+                                sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>
+                            </Section>
+                            <Section header="Position">asdfasdf</Section>    
+                        </div>
+                        
+                    </div>
                 </SplitWrapper>
             </div>
         )
@@ -70,7 +81,7 @@ export class TradeView extends React.Component<TradeViewProps> {
 
         sizes[0] += 100 - sum;
 
-        this.chartContainerMap = plotIds.reduce< Dictionary<React.RefObject<HTMLDivElement>>>((map, id) => {
+        this.chartContainerMap = plotIds.reduce<Dictionary<React.RefObject<HTMLDivElement>>>((map, id) => {
             map[id] = React.createRef<HTMLDivElement>();
             return map;
         }, {});

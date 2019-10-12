@@ -184,7 +184,7 @@ export class ConfigPane extends React.Component<{ heading: string }> {
         return (
             <div className="pane-container">
                 <h1>{this.props.heading}</h1>
-                <div className="pane-content scroll">
+                <div className="pane-content custom-scroll">
                     {this.props.children}
                 </div>
             </div>
