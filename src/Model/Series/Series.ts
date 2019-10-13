@@ -46,6 +46,9 @@ abstract class Series<T> extends Subscribable<UpdateIndex> implements ISeries<T>
         if (!offset) {
             return this.data;
         } else {
+            let start = this.data.length - offset;
+            start = start < 0 ? 0 : start;
+
             return this.data.slice(this.data.length - offset, this.data.length);
         }
     }
@@ -138,7 +141,7 @@ export class EvaluatedSeries<T> extends Series<T> {
 
     protected static addSeriesToEvaluationGraph(series: EvaluatedSeries<any>, resolution: Resolution) {
 
-        if(!resolution) {
+        if (!resolution) {
             throw new Error('Resolution for evaluated series was not defined.');
         }
 
@@ -195,7 +198,7 @@ export class OffsettedSeries<T> extends Series<T> {
     public getData(offset?: number) {
         const data = this.parentSeries.getData();
         const length = data.length - this.seriesOffset;
-        if (!offset) {
+        if (!offset || offset < 0) {
             return data.slice(0, length);
         }
         else {
@@ -224,7 +227,7 @@ export class SimpleSeries<T = Candle> extends Series<number> {
 
         return (x: number) => {
             const lookback = trueLookback(x);
-            if(lookback === undefined) {
+            if (lookback === undefined) {
                 return undefined;
             }
 

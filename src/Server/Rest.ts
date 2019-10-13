@@ -31,7 +31,7 @@ export const rest: RestMethods = {
             res.writeHead(200);
             res.end(JSON.stringify({
                 key: key,
-                config: platform.getStrategyConfig()
+                config: platform.StrategyConfig
             }));
             return Promise.resolve(200);
         }
@@ -80,9 +80,8 @@ export const rest: RestMethods = {
 
             return promise;
         },
-        '/api/datastream': (url: URL, res: http.ServerResponse): GetReply => {
+        '/api/connect': (url: URL, res: http.ServerResponse): GetReply => {
             const id = url.searchParams.get('id');
-
 
             if (!Server.platformControl.getPlatformInstance(id)) {
                 res.writeHead(400);

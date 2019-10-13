@@ -77,7 +77,7 @@ export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialo
                         {
                             this.props.runningInstances && this.props.runningInstances.length ?
                                 [<Form.Label>Select a running instance</Form.Label>,
-                                <ListSelector buttonClass="platform-instance-button" list={this.props.runningInstances} itemRender={(item) => {
+                                <ListSelector onSelect={(item) => this.props.selectRunningInstance(item.key)} buttonClass="platform-instance-button" list={this.props.runningInstances} itemRender={(item) => {
                                     return (
                                         <div>
                                             <div>{item.strategy}</div>

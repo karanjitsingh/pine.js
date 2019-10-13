@@ -1,4 +1,5 @@
-import { Dictionary, PlatformConfiguration, ReporterData, RunningInstance } from "Model/Contracts";
+import { Dictionary, PlatformConfiguration, PlotConfig, ReporterData, RunningInstance } from "Model/Contracts";
+import { AddressInfo } from "net";
 import { MessageSender } from "Platform/MessageSender";
 import { Platform } from "Platform/Platform";
 import { PlatformInstance } from "Server/ServerContracts";
@@ -45,13 +46,15 @@ export class PlatformControl {
 
     public createSocketStream(platformKey: string): string {
         const instance = this.platformCollection[platformKey];
+        let port = 0;
 
         if (instance) {
-            const port: number = this.getOpenPort();
-            const address = `ws://localhost:${port}`;
             const path = `/${instance.key}`;
 
+            // Initialize websocket server if it doesn't already exist
             if (!instance.websocketServer) {
+                port = this.getOpenPort();
+
                 const websocket = instance.websocketServer = new WebSocket.Server({
                     host: 'localhost',
                     path,
@@ -61,16 +64,22 @@ export class PlatformControl {
                 websocket.on('connection', (socket: WebSocket) => {
                     const key = uuid();
 
+                    let plotConfigs: Dictionary<PlotConfig>;
+
                     if (!instance.platform.isRunning) {
 
                         instance.platform.subscribe((data: ReporterData) => {
                             this.updateData(data, instance.key);
                         }, null);
 
-                        const plotConfigs = instance.platform.start();
+                        plotConfigs = instance.platform.start();
+                    } else {
+                        plotConfigs = instance.platform.PlotConfig;
 
-                        this.reporterProtocol.SendReporterInit(plotConfigs, [socket]);
+                        this.reporterProtocol.SendReporterData(instance.platform.getData(500), [socket]);
                     }
+
+                    this.reporterProtocol.SendReporterInit(plotConfigs, [socket]);
 
                     instance.connections[key] = socket;
 
@@ -78,9 +87,11 @@ export class PlatformControl {
                         delete instance.connections[key];
                     }
                 });
+            } else {
+                port = (instance.websocketServer.address() as AddressInfo).port;
             }
 
-            return address + path;
+            return `ws://localhost:${port + path}`;
         }
         else {
             return null;
@@ -119,7 +130,7 @@ export class PlatformControl {
         return Math.floor(Math.random() * (end - start + 1)) + start;
     }
 
-    private updateData(data: ReporterData, platformKey: string) {
+    private updateData(data: Partial<ReporterData>, platformKey: string) {
         const sockets = Object.values(this.platformCollection[platformKey].connections);
         this.reporterProtocol.SendReporterData(data, sockets);
     }

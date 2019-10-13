@@ -18,6 +18,9 @@ class Reporter {
     constructor() {
         this.page = ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
         this.network = new Network();
+        this.chartDataStream = new DataStream();
+        this.orderStream = new DataStream();
+        this.positionStream = new DataStream();
     }
 
     public init() {
@@ -76,13 +79,13 @@ class Reporter {
     }
 
     private instanceSelected(platformKey: string) {
-
+        this.subscribeWebSocket(platformKey);
     }
 
     private subscribeWebSocket(platformId: string) {
-        this.network.get('/api/datastream', { id: platformId }).then((res: XMLHttpRequest) => {
+        this.network.get('/api/connect', { id: platformId }).then((res: XMLHttpRequest) => {
             if (res.status != 200) {
-                console.error('/api/datastream?id=' + platformId, res.status);
+                console.error('/api/connect?id=' + platformId, res.status);
             } else {
                 const connection = res.responseText;
 
@@ -90,7 +93,7 @@ class Reporter {
                 this.subscribeToSocket(connection);
             }
         }, (why) => {
-            console.error('failed', 'api/datastream', why);
+            console.error('failed', 'api/connect', why);
         });
     }
 
@@ -140,10 +143,6 @@ class Reporter {
             case 'ReporterConfig':
                 const plotConfigs = (message as ProtocolMessage<'ReporterConfig'>).PlotConfig;
                 console.log(plotConfigs);
-
-                this.chartDataStream = new DataStream();
-                this.orderStream = new DataStream();
-                this.positionStream = new DataStream();
 
                 this.updatePage({
                     chartDataStream: this.chartDataStream,

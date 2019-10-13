@@ -18,6 +18,15 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
     public get CurrentExchange(): string { return this.config.Exchange; }
     public get CurrentStrategy(): string { return this.config.Strategy; }
     public get IsBacktest(): boolean { return !!this.config.BacktestSettings; }
+    public get PlotConfig(): Dictionary<PlotConfig> | undefined { return this.plotConfigMap; }
+
+    public get StrategyConfig(): StrategyConfig | undefined {
+        if (this.strategy) {
+            return this.strategy.StrategyConfig;
+        }
+
+        return undefined;
+    }
 
     protected readonly Network: INetwork;
     protected readonly MessageLogger: MessageLogger;
@@ -40,9 +49,6 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         return this._isRunning;
     }
 
-    public getStrategyConfig(): StrategyConfig {
-        return this.strategy.StrategyConfig;
-    }
 
     public start(): Dictionary<PlotConfig> {
         const exchangeCtor = ExchangeStore.get(this.config.Exchange);
@@ -61,6 +67,20 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
         this.initStrategy(strategyConfig, this.dataController.MarketDataMap);
         return this.plotConfigMap;
+    }
+
+    public getData(lookback: number): Partial<ReporterData> {
+        if (this.isRunning) {
+            const update = this.StrategyConfig.resolutionSet.reduce<Dictionary<number>>((acc, res) => {
+                acc[res] = lookback;
+                return acc;
+            }, {});
+            return {
+                ChartData: this.getChartData(this.plotMap, this.dataController.MarketDataMap, update)
+            }
+        } else {
+            return {};
+        }
     }
 
     private initStrategy(config: StrategyConfig, dataSeries: ResolutionMapped<MarketData>) {
@@ -97,16 +117,16 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         })
     }
 
-    private getChartData(plot: Dictionary<Plot>, rawData: ResolutionMapped<MarketData>, update: ResolutionMapped<number>): Dictionary<ChartData> {
-        const rawDataUpdate = Object.keys(update).reduce<ResolutionMapped<Candle[]>>((map, res: Resolution) => {
-            map[res] = rawData[res].Candles.getData(update[res]);
+    private getChartData(plot: Dictionary<Plot>, rawData: ResolutionMapped<MarketData>, length: ResolutionMapped<number>): Dictionary<ChartData> {
+        const rawDataUpdate = Object.keys(length).reduce<ResolutionMapped<Candle[]>>((map, res: Resolution) => {
+            map[res] = rawData[res].Candles.getData(length[res]);
             return map;
         }, {});
 
         return Object.keys(plot).reduce<Dictionary<ChartData>>((map, id) => {
             const res = plot[id].Resolution;
             const indicators = plot[id].Indicators;
-            const updateLength = update[res];
+            const updateLength = length[res];
 
             if (updateLength) {
                 map[id] = {

@@ -1,9 +1,9 @@
-import { ProtocolMessage, ReporterData, Dictionary, PlotConfig } from 'Model/Contracts';
+import { Dictionary, PlotConfig, ProtocolMessage, ReporterData } from 'Model/Contracts';
 import * as WebSocket from 'ws';
 
 export class MessageSender {
 
-    public SendReporterData(reporterData: ReporterData, sockets: WebSocket[]) {
+    public SendReporterData(reporterData: Partial<ReporterData>, sockets: WebSocket[]) {
         const message: ProtocolMessage<'ReporterData'> = {
             Type: 'ReporterData',
             Data: reporterData
