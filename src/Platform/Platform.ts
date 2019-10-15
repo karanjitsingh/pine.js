@@ -33,7 +33,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
     private strategy: Strategy;
     private exchange: Exchange;
-    private dataController: MarketSink;
+    private marketSink: MarketSink;
     private _isRunning: boolean = false;
     private plotMap: Dictionary<Plot>;
     private plotConfigMap: Dictionary<PlotConfig>;
@@ -49,23 +49,22 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         return this._isRunning;
     }
 
-
     public start(): Dictionary<PlotConfig> {
         const exchangeCtor = ExchangeStore.get(this.config.Exchange);
         const strategyConfig = this.strategy.StrategyConfig;
 
         this.exchange = new exchangeCtor(this.Network, this.config.ExchangeAuth);
-        this.dataController = new MarketSink(this.exchange, strategyConfig.resolutionSet);
+        this.marketSink = new MarketSink(this.exchange, strategyConfig.resolutionSet);
 
         this.exchange.connect(strategyConfig.symbol, this.config.ExchangeAuth).then(() => {
             this._isRunning = true;
-            this.dataController.subscribe(this.dataUpdate, this);
-            this.dataController.startStream(strategyConfig.initCandleCount);
+            this.marketSink.subscribe(this.dataUpdate, this);
+            this.marketSink.startStream(strategyConfig.initCandleCount);
         }, (reason) => {
             console.log("Platform: Connection rejected, " + (reason instanceof String ? reason : JSON.stringify(reason)));
         });
 
-        this.initStrategy(strategyConfig, this.dataController.MarketDataMap);
+        this.initStrategy(strategyConfig, this.marketSink.MarketDataMap);
         return this.plotConfigMap;
     }
 
@@ -76,7 +75,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
                 return acc;
             }, {});
             return {
-                ChartData: this.getChartData(this.plotMap, this.dataController.MarketDataMap, update)
+                ChartData: this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update)
             }
         } else {
             return {};
@@ -145,7 +144,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         this.strategy.update(update);
         if (this.subscriberCount) {
             this.notifyAll({
-                ChartData: this.getChartData(this.plotMap, this.dataController.MarketDataMap, update)
+                ChartData: this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update)
             });
         }
     }

@@ -2,13 +2,13 @@
 // Trading ----------------------------------------------------------------------------------------
 
 export interface AccountPosition<TFields> {
-    Open: Dictionary<Position<TFields>>;
-    Closed: Dictionary<Position<TFields>>;
+    Open?: Dictionary<Position<TFields>>;
+    Closed?: Dictionary<Position<TFields>>;
 }
 
 export interface AccountOrders<TFields> {
-    Open: Dictionary<Order<TFields>>;
-    Closed: Dictionary<Order<TFields>>;
+    Open?: Dictionary<Order<TFields>>;
+    Closed?: Dictionary<Order<TFields>>;
 }
 
 export interface IAccount<TOrderFields = {}, TPositionFields = {}> {
@@ -49,8 +49,8 @@ export interface Order<T = {}> {
 }
 
 export interface Position<T = {}> {
-    PositionId: string,
-    Side: Side,
+    PositionId: number,
+    Side: Side | "None",
     Symbol: string,
     Size: number,
     PositionValue: number,
@@ -64,15 +64,16 @@ export interface Position<T = {}> {
     FundingFee: number,
     TakeProfit: number,
     StopLoss: number,
-    TrailingProfit: number,
+    TrailingStop: number,
     PositionStatus: string,
-    UsedMargin: number,
     UnrealizedPnl: number,
     CreatedAt: string,
     LastUpdate: string,
-    IsOpen: boolean,
 
-    ExtraFields: T
+    // Comes only after position is closed
+    RealizedPnl?: number,
+
+    ExtraFields?: T
 }
 
 // ------------------------------------------------------------------------------------------------

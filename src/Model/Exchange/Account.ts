@@ -1,4 +1,4 @@
-import { AccountOrders, AccountPosition, DeepPartial, IAccount, Wallet } from "Model/Contracts";
+import { AccountOrders, AccountPosition, IAccount, Wallet } from "Model/Contracts";
 
 
 export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccount<TOrderFields, TPositionFields> {
@@ -8,6 +8,7 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
         OrderMargin: 0,
         PositionMargin: 0
     };
+
     public Positions: AccountPosition<TPositionFields> = {
         Open: {},
         Closed: {}
@@ -17,16 +18,16 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
         Closed: {}
     }
 
-    private accountUpdate: DeepPartial<IAccount> = {};
+    private accountUpdate: Partial<IAccount> = {};
 
-    public flushUpdate(): DeepPartial<IAccount> {
+    public flushUpdate(): Partial<IAccount> {
         const temp = this.accountUpdate;
         this.accountUpdate = {};
 
         return temp;
     }
 
-    public update(update: DeepPartial<IAccount>) {
+    public update(update: Partial<IAccount>) {
         Object.assign(this.Leverage, update.Leverage);
         Object.assign(this.Wallet, update.Wallet);
 

@@ -7,7 +7,7 @@ import { CandleQueue } from "Model/Utils/Queue";
 import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 import { ByBitBroker } from './ByBitBroker';
-import { ByBitApi } from './ByBitApi';
+import { ByBitApi, Response } from './ByBitApi';
 import { ByBitContracts, Symbol } from './ByBitContracts';
 import { Account } from 'Model/Exchange/Account';
 
@@ -21,7 +21,6 @@ type ConnectionResponse = [
 export interface ByBitEndpoints {
     websocket: string;
     kline: string;
-
 }
 
 export class ByBitExchange extends Exchange {
@@ -226,7 +225,6 @@ export class ByBitExchange extends Exchange {
                 from: from,
                 to: to
             });
-
 
             if (data.result) {
                 const candleData = data.result.map<Candle>((result) => {
@@ -461,7 +459,7 @@ export class ByBitExchange extends Exchange {
         const positionReponse = response[2];
         const walletRecord = response[3];
 
-        const accountUpdate: DeepPartial<Account> = {};
+        const accountUpdate: Partial<Account> = {};
 
 
         if(walletRecord.ret_code == 0) {
@@ -483,7 +481,7 @@ export class ByBitExchange extends Exchange {
         if(orderResponse.ret_code == 0) {
             const orders = orderResponse.result.data;
 
-            const openOrders = Object.keys(this.account.OrderBook.Open);
+            const openOrders = Object.keys(this.account.OrderBook ? this.account.OrderBook.Open : []);
 
             if(orders) {
                 accountUpdate.OrderBook = {};
@@ -530,15 +528,82 @@ export class ByBitExchange extends Exchange {
         }
         
         if(positionReponse.ret_code == 0) {
-            const rawPositions = positionReponse.result.filter((position) => position.symbol == this.symbol);
+            const positions = positionReponse.result.filter((position) => position.symbol == this.symbol);
 
-            // if(rawPositions)
+            const orders = positionReponse.result;
+            const positionsOpen = this.account.Positions ? this.account.Positions.Open : {};
 
+            if(positions) {
+                accountUpdate.Positions = {};
+                accountUpdate.Positions.Open = {}
+
+                type response = ByBitContracts['MyPosition']['Response']['result']
+                
+                let [responsePositionsOpen, responsePositionsClosed] = positions.reduce<[response, response]>((acc, position) => {
+                    if(position.side == "None") {
+                        // closed
+                        acc[1].push(position);
+                    } else {
+                        // open
+                        acc[0].push(position);
+                    }
+                    return acc;
+                }, [[], []]);
+
+                // There will be only one active position at a time 
+                if(responsePositionsOpen.length > 1) {
+                    console.warn('ByBit: Multiple active positions for same position.')
+                }
+
+                responsePositionsOpen.forEach((open) => {
+                    accountUpdate.Positions.Open[open.id] = {
+                        Symbol: open.symbol,
+                        PositionId: open.id,
+                        Side: open.side,
+                        Size: open.size,
+                        PositionValue: open.position_value,
+                        EntryPrice: open.entry_price,
+                        Leverage: open.leverage,
+                        AutoAddMargin: !!open.auto_add_margin,
+                        PositionMargin: open.position_margin,
+                        LiquidationPrice: open.liq_price,
+                        BankrupcyPrice: open.bust_price,
+                        ClosingFee: open.occ_closing_fee,
+                        FundingFee: open.occ_funding_fee,
+                        TakeProfit: open.take_profit,
+                        StopLoss: open.stop_loss,
+                        TrailingStop: open.trailing_stop,
+                        PositionStatus: open.position_status,
+                        UnrealizedPnl: open.unrealised_pnl,
+                        CreatedAt: open.created_at,
+                        LastUpdate: open.updated_at
+                        // UsedMargin: open.
+                    }
+                });
+
+                responsePositionsClosed.forEach((closed) => {
+                    if(positionsOpen[closed.id]) {
+                        accountUpdate.Positions.Closed[closed.id] = {
+                            ...positionsOpen[closed.id],
+                            Side: closed.side,
+                            PositionStatus: closed.position_status,
+                            Leverage: closed.leverage,
+                            UnrealizedPnl: closed.unrealised_pnl,
+                            RealizedPnl: closed.realised_pnl,
+                            CreatedAt: closed.created_at,
+                            LastUpdate: closed.updated_at,
+                        }
+                    }
+                })
+
+            }
+
+            
             // side: None == closed
             // side: Buy/Sell == open
 
             // if position has been closed only update realized pnl
-            console.log(rawPositions);
+            console.log(positions);
         } else {
             apiErrors.push("MyPosition: " + positionReponse.ret_msg);
         }

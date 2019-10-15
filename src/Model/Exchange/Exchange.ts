@@ -15,7 +15,6 @@ export abstract class Exchange {
     public abstract readonly isLive: boolean;
     public abstract readonly broker: IBroker;
     public abstract readonly authSuccess: boolean;
-
     public abstract readonly lastPrice: number;
     public abstract readonly marketPrice: number;
     
