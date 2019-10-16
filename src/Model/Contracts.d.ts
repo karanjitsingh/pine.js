@@ -36,6 +36,9 @@ export interface Order<T = {}> {
     CloseOnTrigger?: boolean
     Closed: boolean;
 
+    CreatedAt: string,
+    UpdatedAt: string,
+
     ExtraFields?: T
 }
 
@@ -59,7 +62,11 @@ export interface Position<T = {}> {
     PositionStatus: string,
     UnrealizedPnl: number,
     CreatedAt: string,
-    LastUpdate: string,
+    UpdatedAt: string,
+
+    Closed: boolean;
+
+    Closed: boolean;
 
     Closed: boolean;
 
