@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped, Dictionary, DeepPartial } from "Model/Contracts";
+import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped, Dictionary, DeepPartial, IAccount } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
@@ -459,7 +459,7 @@ export class ByBitExchange extends Exchange {
         const positionReponse = response[2];
         const walletRecord = response[3];
 
-        const accountUpdate: Partial<Account> = {};
+        const accountUpdate: Partial<IAccount> = {};
 
 
         if(walletRecord.ret_code == 0) {
@@ -480,15 +480,27 @@ export class ByBitExchange extends Exchange {
 
         if(orderResponse.ret_code == 0) {
             const orders = orderResponse.result.data;
+            accountUpdate.OrderBook = {};
 
-            const openOrders = Object.keys(this.account.OrderBook ? this.account.OrderBook.Open : []);
+            const existingOrders = Object.values(this.account.OrderBook);
 
+            // Existing orders will be there only if initAccount was called for reconnection
+            // This might cause some of the values in closed orders to be stale
+            
+            // Assume all orders are closed
+            existingOrders.forEach(order => {
+                if(!order.Closed) {
+                    accountUpdate.OrderBook[order.OrderId] = {
+                        ...order,
+                        Closed:true
+                    };
+                }
+            })
+
+            // Will override orders with updated values if they were actual open
             if(orders) {
-                accountUpdate.OrderBook = {};
-                accountUpdate.OrderBook.Open = {};
-
                 orders.forEach(order => {
-                    accountUpdate.OrderBook.Open[order.order_id] = {
+                    accountUpdate.OrderBook[order.order_id] = {
                         OrderId: order.order_id,
                         Side: order.side,
                         Symbol: order.symbol,
@@ -498,24 +510,10 @@ export class ByBitExchange extends Exchange {
                         FilledQuantity: order.qty - order.leaves_qty,
                         Price: order.price,
                         TimeInForce: order.time_in_force,
+                        Closed: false
                     };
                 });
             }
-
-            if(openOrders.length) {
-                // open orders must be closed if they're not contained in active orders
-                // this also means closed orders might not be updated properly
-                const closedOrders = openOrders.filter((orderid) => !!accountUpdate.OrderBook.Open[orderid]);
-
-                if(closedOrders.length) {
-                    accountUpdate.OrderBook.Closed = {};
-
-                    closedOrders.forEach((orderid) => {
-                        accountUpdate.OrderBook.Closed[orderid] = this.account.OrderBook.Open[orderid];
-                    });
-                }
-            }
-
         } else {
             apiErrors.push("GetActiveOrders: " + orderResponse.ret_msg);
         }
