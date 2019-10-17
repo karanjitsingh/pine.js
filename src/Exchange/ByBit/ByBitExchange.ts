@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped, Dictionary, DeepPartial } from "Model/Contracts";
+import { Candle, ExchangeAuth, Resolution, Order, Wallet, Position, ResolutionMapped, Dictionary, DeepPartial, IAccount } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
@@ -75,7 +75,7 @@ export class ByBitExchange extends Exchange {
     public async connect(symbol: Symbol, auth?: ExchangeAuth): Promise<ByBitBroker | undefined> {
         this.auth = auth;
         this.symbol = symbol;
-        
+
         let _resolve: (broker?: ByBitBroker) => void;
         let _reject: (reason: any) => void;
         const promise = new Promise<ByBitBroker | undefined>((resolver, rejector) => { _resolve = resolver; _reject = rejector; });
@@ -136,11 +136,11 @@ export class ByBitExchange extends Exchange {
 
                                         this.webSocket.send(JSON.stringify({ 'op': 'subscribe', 'args': ['order', 'position', 'execution', 'private.wallet'] }));
 
-                                        
+
                                         Promise.all([
                                             this.api.GetActiveOrder({
                                                 order_status: "Created,New,PartiallyFilled",
-                                                symbol: this.symbol,                                                
+                                                symbol: this.symbol,
                                                 // Todo: consolidate if more than 50 open orders present
                                                 limit: 50
                                             }, this.auth),
@@ -155,15 +155,15 @@ export class ByBitExchange extends Exchange {
                                             }, this.auth)
                                         ]).then((response) => {
                                             // 10002, timestamp was too less
-                                            
+
                                             const rejectionReason = this.initAccount(response);
 
-                                            if(!rejectionReason) {
+                                            if (!rejectionReason) {
                                                 resolve(this._broker = new ByBitBroker(this));
                                             } else {
                                                 reject(rejectionReason);
                                             }
-                                            
+
                                         }, (reason) => {
                                             reject(reason);
                                         });
@@ -459,11 +459,11 @@ export class ByBitExchange extends Exchange {
         const positionReponse = response[2];
         const walletRecord = response[3];
 
-        const accountUpdate: Partial<Account> = {};
+        const accountUpdate: Partial<IAccount> = {};
 
 
-        if(walletRecord.ret_code == 0) {
-            if(walletRecord.result.data.length) {
+        if (walletRecord.ret_code == 0) {
+            if (walletRecord.result.data.length) {
 
                 walletRecord.result.data[0].wallet_balance;
 
@@ -478,69 +478,144 @@ export class ByBitExchange extends Exchange {
             }
         }
 
-        if(orderResponse.ret_code == 0) {
+        if (orderResponse.ret_code == 0) {
             const orders = orderResponse.result.data;
+            accountUpdate.OrderBook = {};
 
-            const openOrders = Object.keys(this.account.OrderBook ? this.account.OrderBook.Open : []);
+            const existingOrders = Object.values(this.account.OrderBook);
 
-            if(orders) {
-                accountUpdate.OrderBook = {};
-                accountUpdate.OrderBook.Open = {};
+            // Existing orders will be there only if initAccount was called for reconnection
+            // This might cause some of the values in closed orders to be stale
 
-                orders.forEach(order => {
-                    accountUpdate.OrderBook.Open[order.order_id] = {
-                        OrderId: order.order_id,
-                        Side: order.side,
-                        Symbol: order.symbol,
-                        OrderType: order.order_type,
-                        OrderStatus: order.order_status,
-                        Quantity: order.qty,
-                        FilledQuantity: order.qty - order.leaves_qty,
-                        Price: order.price,
-                        TimeInForce: order.time_in_force,
+            // Assume all orders are closed
+            existingOrders.forEach(order => {
+                if (!order.Closed) {
+                    accountUpdate.OrderBook[order.OrderId] = {
+                        ...order,
+                        Closed: true
                     };
+                }
+            })
+
+            // Will override orders with updated values if they were actual open
+            if (orders) {
+                orders.forEach(order => {
+                    if (accountUpdate.OrderBook[order.order_id] && this.account.OrderBook[order.order_id].UpdatedAt == order.updated_at) {
+                        // Remove since there has been no change in the order
+                        delete accountUpdate.OrderBook[order.order_id];
+                    } else {
+                        accountUpdate.OrderBook[order.order_id] = {
+                            OrderId: order.order_id,
+                            Side: order.side,
+                            Symbol: order.symbol,
+                            OrderType: order.order_type,
+                            OrderStatus: order.order_status,
+                            Quantity: order.qty,
+                            FilledQuantity: order.qty - order.leaves_qty,
+                            Price: order.price,
+                            TimeInForce: order.time_in_force,
+                            CreatedAt: order.created_at,
+                            UpdatedAt: order.updated_at,
+                            Closed: false
+                        };
+                    }
                 });
             }
-
-            if(openOrders.length) {
-                // open orders must be closed if they're not contained in active orders
-                // this also means closed orders might not be updated properly
-                const closedOrders = openOrders.filter((orderid) => !!accountUpdate.OrderBook.Open[orderid]);
-
-                if(closedOrders.length) {
-                    accountUpdate.OrderBook.Closed = {};
-
-                    closedOrders.forEach((orderid) => {
-                        accountUpdate.OrderBook.Closed[orderid] = this.account.OrderBook.Open[orderid];
-                    });
-                }
-            }
-
         } else {
             apiErrors.push("GetActiveOrders: " + orderResponse.ret_msg);
         }
 
-        if(stopOrderResponse.ret_code == 0) {
+        if (stopOrderResponse.ret_code == 0) {
 
             // conditional orders
             const orders = stopOrderResponse.result.data;
 
         }
-        
-        if(positionReponse.ret_code == 0) {
+
+        if (positionReponse.ret_code == 0) {
             const positions = positionReponse.result.filter((position) => position.symbol == this.symbol);
+            accountUpdate.Positions = {};
 
-            const orders = positionReponse.result;
-            const positionsOpen = this.account.Positions ? this.account.Positions.Open : {};
+            const existingPositions = this.account.Positions;
 
-            if(positions) {
-                accountUpdate.Positions = {};
-                accountUpdate.Positions.Open = {}
+
+            if (positions) {
+                positions.forEach((position) => {
+                    if (existingPositions[position.id]) {
+                        // Position is in account, push update if position has been updated
+                        if(existingPositions[position.id].UpdatedAt != position.updated_at) {
+                            if(position.side == "None") {
+                                
+                            } else {
+
+                            }
+                        }
+
+                    } else if (position.side != "None") {
+                        // Position is not in account, add to updates if it is open
+
+                        accountUpdate.Positions[position.id] = {
+                            Symbol: position.symbol,
+                            PositionId: position.id,
+                            Side: position.side,
+                            Size: position.size,
+                            PositionValue: position.position_value,
+                            EntryPrice: position.entry_price,
+                            Leverage: position.leverage,
+                            AutoAddMargin: !!position.auto_add_margin,
+                            PositionMargin: position.position_margin,
+                            LiquidationPrice: position.liq_price,
+                            BankrupcyPrice: position.bust_price,
+                            ClosingFee: position.occ_closing_fee,
+                            FundingFee: position.occ_funding_fee,
+                            TakeProfit: position.take_profit,
+                            StopLoss: position.stop_loss,
+                            TrailingStop: position.trailing_stop,
+                            PositionStatus: position.position_status,
+                            UnrealizedPnl: position.unrealised_pnl,
+                            CreatedAt: position.created_at,
+                            UpdatedAt: position.updated_at,
+                            Closed: false
+                        }
+                    }
+                    // if(accountUpdate.Positions[position.id] && this.account.Positions[position.id] && this.account.Positions[position.id].UpdatedAt == position.updated_at) {
+                    //     // Remove from updates since there has been no change in the position
+                    //     delete accountUpdate.Positions[position.id];
+                    // } else {
+                    //     if(position.side != "None" && !accountUpdate.Positions[position.id]) {
+                    //         accountUpdate.Positions[position.id] = {
+                    //             Symbol: position.symbol,
+                    //             PositionId: position.id,
+                    //             Side: position.side,
+                    //             Size: position.size,
+                    //             PositionValue: position.position_value,
+                    //             EntryPrice: position.entry_price,
+                    //             Leverage: position.leverage,
+                    //             AutoAddMargin: !!position.auto_add_margin,
+                    //             PositionMargin: position.position_margin,
+                    //             LiquidationPrice: position.liq_price,
+                    //             BankrupcyPrice: position.bust_price,
+                    //             ClosingFee: position.occ_closing_fee,
+                    //             FundingFee: position.occ_funding_fee,
+                    //             TakeProfit: position.take_profit,
+                    //             StopLoss: position.stop_loss,
+                    //             TrailingStop: position.trailing_stop,
+                    //             PositionStatus: position.position_status,
+                    //             UnrealizedPnl: position.unrealised_pnl,
+                    //             CreatedAt: position.created_at,
+                    //             UpdatedAt: position.updated_at,
+                    //             Closed: false
+                    //         }
+                    //     } else if (position.side == "None" && accountUpdate.Positions[position.id]) {
+
+                    //     }
+                    // }
+                })
 
                 type response = ByBitContracts['MyPosition']['Response']['result']
-                
+
                 let [responsePositionsOpen, responsePositionsClosed] = positions.reduce<[response, response]>((acc, position) => {
-                    if(position.side == "None") {
+                    if (position.side == "None") {
                         // closed
                         acc[1].push(position);
                     } else {
@@ -551,12 +626,12 @@ export class ByBitExchange extends Exchange {
                 }, [[], []]);
 
                 // There will be only one active position at a time 
-                if(responsePositionsOpen.length > 1) {
+                if (responsePositionsOpen.length > 1) {
                     console.warn('ByBit: Multiple active positions for same position.')
                 }
 
                 responsePositionsOpen.forEach((open) => {
-                    accountUpdate.Positions.Open[open.id] = {
+                    accountUpdate.Positions[open.id] = {
                         Symbol: open.symbol,
                         PositionId: open.id,
                         Side: open.side,
@@ -576,14 +651,14 @@ export class ByBitExchange extends Exchange {
                         PositionStatus: open.position_status,
                         UnrealizedPnl: open.unrealised_pnl,
                         CreatedAt: open.created_at,
-                        LastUpdate: open.updated_at
-                        // UsedMargin: open.
+                        UpdatedAt: open.updated_at,
+                        Closed: true
                     }
                 });
 
                 responsePositionsClosed.forEach((closed) => {
-                    if(positionsOpen[closed.id]) {
-                        accountUpdate.Positions.Closed[closed.id] = {
+                    if (positionsOpen[closed.id]) {
+                        accountUpdate.Positions[closed.id] = {
                             ...positionsOpen[closed.id],
                             Side: closed.side,
                             PositionStatus: closed.position_status,
@@ -592,13 +667,14 @@ export class ByBitExchange extends Exchange {
                             RealizedPnl: closed.realised_pnl,
                             CreatedAt: closed.created_at,
                             LastUpdate: closed.updated_at,
+                            Closed: true
                         }
                     }
-                })
+                });
 
             }
 
-            
+
             // side: None == closed
             // side: Buy/Sell == open
 
@@ -608,7 +684,7 @@ export class ByBitExchange extends Exchange {
             apiErrors.push("MyPosition: " + positionReponse.ret_msg);
         }
 
-        if(apiErrors.length) {
+        if (apiErrors.length) {
             return apiErrors.join("\n");
         }
 

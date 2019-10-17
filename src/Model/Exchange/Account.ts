@@ -1,4 +1,4 @@
-import { AccountOrders, AccountPosition, IAccount, Wallet } from "Model/Contracts";
+import {IAccount, Wallet, Dictionary, Position, Order } from "Model/Contracts";
 
 
 export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccount<TOrderFields, TPositionFields> {
@@ -9,14 +9,9 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
         PositionMargin: 0
     };
 
-    public Positions: AccountPosition<TPositionFields> = {
-        Open: {},
-        Closed: {}
-    }
-    public OrderBook: AccountOrders<TOrderFields> = {
-        Open: {},
-        Closed: {}
-    }
+    public Positions: Dictionary<Position<TPositionFields>> = {};
+
+    public OrderBook: Dictionary<Order<TOrderFields>> = {};
 
     private accountUpdate: Partial<IAccount> = {};
 
@@ -28,48 +23,19 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
     }
 
     public update(update: Partial<IAccount>) {
-        Object.assign(this.Leverage, update.Leverage);
+        
+        if(update.Leverage) {
+            this.Leverage = update.Leverage;
+            this.accountUpdate.Leverage = update.Leverage;
+        }
+
         Object.assign(this.Wallet, update.Wallet);
+        Object.assign(this.accountUpdate.Wallet, update.Wallet);
 
-        this.mix(update, this.accountUpdate, "Leverage");
-        this.mix(update, this.accountUpdate, "Wallet");
-
-        ["OrderBook", "Positions"].forEach((key: "OrderBook" | "Positions") => {
-            if (update[key]) {
-                if (!this.accountUpdate[key]) {
-                    this.accountUpdate[key] = {};
-                }
-
-                Object.assign(this[key].Open, update[key].Open)
-                Object.assign(this[key].Closed, update[key].Closed)
-
-                this.mix(update[key], this.accountUpdate[key], "Open");
-                this.mix(update[key], this.accountUpdate[key], "Closed");
-
-                if (update[key].Closed) {
-                    Object.keys(update[key].Closed).forEach((id) => {
-                        if (this.accountUpdate[key].Open && this.accountUpdate[key].Open[id]) {
-                            delete this.accountUpdate[key].Open[id];
-                        }
-
-                        if (this[key].Open && this[key].Open[id]) {
-                            delete this[key].Open[id];
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    private mix<T>(source: T, target: T, key: keyof T) {
-        if (!source[key]) {
-            return;
-        }
-
-        if (!target[key]) {
-            (target[key] as any) = {};
-        }
-
-        Object.assign(source[key] as any, target[key]);
+        Object.assign(this.OrderBook, update.OrderBook)
+        Object.assign(this.accountUpdate.OrderBook, update.OrderBook);
+        
+        Object.assign(this.Positions, update.Positions);
+        Object.assign(this.accountUpdate.Positions, update.Positions);
     }
 }

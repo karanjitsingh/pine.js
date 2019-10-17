@@ -1,21 +1,11 @@
 // ------------------------------------------------------------------------------------------------
 // Trading ----------------------------------------------------------------------------------------
 
-export interface AccountPosition<TFields> {
-    Open?: Dictionary<Position<TFields>>;
-    Closed?: Dictionary<Position<TFields>>;
-}
-
-export interface AccountOrders<TFields> {
-    Open?: Dictionary<Order<TFields>>;
-    Closed?: Dictionary<Order<TFields>>;
-}
-
 export interface IAccount<TOrderFields = {}, TPositionFields = {}> {
     Leverage: number;
     Wallet: Wallet;
-    Positions: AccountPosition<TPositionFields>;
-    OrderBook: AccountOrders<TOrderFields>;
+    Positions: Dictionary<Position<TPositionFields>>;
+    OrderBook: Dictionary<Order<TOrderFields>>;
 }
 
 export interface Wallet {
@@ -44,6 +34,10 @@ export interface Order<T = {}> {
 
     /** Conditional order specific field */
     CloseOnTrigger?: boolean
+    Closed: boolean;
+
+    CreatedAt: string,
+    UpdatedAt: string,
 
     ExtraFields?: T
 }
@@ -68,7 +62,13 @@ export interface Position<T = {}> {
     PositionStatus: string,
     UnrealizedPnl: number,
     CreatedAt: string,
-    LastUpdate: string,
+    UpdatedAt: string,
+
+    Closed: boolean;
+
+    Closed: boolean;
+
+    Closed: boolean;
 
     // Comes only after position is closed
     RealizedPnl?: number,
