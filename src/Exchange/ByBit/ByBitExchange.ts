@@ -541,18 +541,25 @@ export class ByBitExchange extends Exchange {
 
             if (positions) {
                 positions.forEach((position) => {
-                    if (existingPositions[position.id]) {
-                        // Position is in account, push update if position has been updated
-                        if(existingPositions[position.id].UpdatedAt != position.updated_at) {
-                            if(position.side == "None") {
-                                
-                            } else {
-
-                            }
+                    if (existingPositions[position.id] && existingPositions[position.id].UpdatedAt != position.updated_at && position.side == "None") {
+                        accountUpdate.Positions[position.id] = {
+                            ...this.account.Positions[position.id],
+                            Side: position.side,
+                            PositionStatus: position.position_status,
+                            Leverage: position.leverage,
+                            UnrealizedPnl: position.unrealised_pnl,
+                            RealizedPnl: position.realised_pnl,
+                            CreatedAt: position.created_at,
+                            UpdatedAt: position.updated_at,
+                            Closed: true
                         }
-
-                    } else if (position.side != "None") {
-                        // Position is not in account, add to updates if it is open
+                    } else if (
+                        (existingPositions[position.id] && existingPositions[position.id].UpdatedAt != position.updated_at && position.side != "None") ||
+                        (!existingPositions[position.id] && position.side != "None")
+                    ) {
+                        // Position is in account, is open, and has been updated
+                        // or
+                        // Position is not in account and is open
 
                         accountUpdate.Positions[position.id] = {
                             Symbol: position.symbol,
@@ -578,38 +585,6 @@ export class ByBitExchange extends Exchange {
                             Closed: false
                         }
                     }
-                    // if(accountUpdate.Positions[position.id] && this.account.Positions[position.id] && this.account.Positions[position.id].UpdatedAt == position.updated_at) {
-                    //     // Remove from updates since there has been no change in the position
-                    //     delete accountUpdate.Positions[position.id];
-                    // } else {
-                    //     if(position.side != "None" && !accountUpdate.Positions[position.id]) {
-                    //         accountUpdate.Positions[position.id] = {
-                    //             Symbol: position.symbol,
-                    //             PositionId: position.id,
-                    //             Side: position.side,
-                    //             Size: position.size,
-                    //             PositionValue: position.position_value,
-                    //             EntryPrice: position.entry_price,
-                    //             Leverage: position.leverage,
-                    //             AutoAddMargin: !!position.auto_add_margin,
-                    //             PositionMargin: position.position_margin,
-                    //             LiquidationPrice: position.liq_price,
-                    //             BankrupcyPrice: position.bust_price,
-                    //             ClosingFee: position.occ_closing_fee,
-                    //             FundingFee: position.occ_funding_fee,
-                    //             TakeProfit: position.take_profit,
-                    //             StopLoss: position.stop_loss,
-                    //             TrailingStop: position.trailing_stop,
-                    //             PositionStatus: position.position_status,
-                    //             UnrealizedPnl: position.unrealised_pnl,
-                    //             CreatedAt: position.created_at,
-                    //             UpdatedAt: position.updated_at,
-                    //             Closed: false
-                    //         }
-                    //     } else if (position.side == "None" && accountUpdate.Positions[position.id]) {
-
-                    //     }
-                    // }
                 })
 
                 type response = ByBitContracts['MyPosition']['Response']['result']
