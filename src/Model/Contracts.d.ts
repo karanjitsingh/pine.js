@@ -10,8 +10,9 @@ export interface IAccount<TOrderFields = {}, TPositionFields = {}> {
 
 export interface Wallet {
     Balance: number;
-    OrderMargin: number;
-    PositionMargin: number;
+    AvailableMargin?: number;
+    OrderMargin?: number;
+    PositionMargin?: number;
 }
 
 export type Side = 'Buy' | 'Sell';
@@ -63,10 +64,6 @@ export interface Position<T = {}> {
     UnrealizedPnl: number,
     CreatedAt: string,
     UpdatedAt: string,
-
-    Closed: boolean;
-
-    Closed: boolean;
 
     Closed: boolean;
 
@@ -158,7 +155,7 @@ export interface ChartData {
 
 export interface ReporterData {
     ChartData: Dictionary<ChartData>,
-    Account: DeepPartial<IAccount>
+    Account: Partial<IAccount>
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -191,7 +188,6 @@ export interface RunningInstance {
     exchange: string,
     backtest: boolean
 }
-
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------

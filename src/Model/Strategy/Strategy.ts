@@ -1,4 +1,4 @@
-import { IndicatorConfig, Order, Resolution, ResolutionMapped } from "Model/Contracts";
+import { IndicatorConfig, Order, Resolution, ResolutionMapped, IAccount } from "Model/Contracts";
 import { IBroker } from "Model/Exchange/IBroker";
 import { MarketData } from "Model/InternalContracts";
 import { ISeries } from "Model/Series/Series";
@@ -30,7 +30,7 @@ export abstract class Strategy {
 
     public abstract update(update: ResolutionMapped<number>): void;
 
-    public abstract trade(update?: Order): void;
+    public abstract trade(update: Partial<IAccount>): void;
 
     public constructor(protected readonly broker: IBroker, protected readonly messageLogger: MessageLogger) {}
 }

@@ -1,4 +1,4 @@
-import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
+import { Candle, Resolution, ResolutionMapped, IAccount, Update } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { MarketData } from "Model/InternalContracts";
 import { EvaluatedSeries, RawSeries, SimpleSeries, UpdateIndex } from "Model/Series/Series";
@@ -6,7 +6,12 @@ import { Subscribable } from "Model/Utils/Events";
 import { Utils } from "Model/Utils/Utils";
 import { CandleQueue } from "../Utils/Queue";
 
-export class MarketSink extends Subscribable<ResolutionMapped<number>> {
+export interface ExchangeUpdate {
+    CandleUpdate?: ResolutionMapped<number>;
+    AccountUpdate: boolean;
+}
+
+export class ExchangeSink extends Subscribable<ExchangeUpdate> {
 
     public readonly MarketDataMap: ResolutionMapped<MarketData> = {};
     private dataQueue: CandleQueue;
@@ -26,19 +31,34 @@ export class MarketSink extends Subscribable<ResolutionMapped<number>> {
 
             this.dataQueue = this.exchange.subscribeCandle(this.resolutionSet);
             this.isRunning = true;
-            this.fetchCandleUpdates();
+            this.fetchUpdates();
         })
     }
 
-    private fetchCandleUpdates() {
+    private fetchUpdates() {
         const data = this.dataQueue.flush();
-        
+
+        let candleUpdate: ResolutionMapped<number>;
+        let accountUpdate = this.exchange.account.didUpdate();
+
         if(data.length > 0) {
-            this.updateData(data);
+            candleUpdate = this.updateData(data);
+        }
+
+        if(candleUpdate || accountUpdate) {
+            const update: ExchangeUpdate = {
+                AccountUpdate: accountUpdate
+            };
+
+            if(candleUpdate) {
+                update.CandleUpdate = candleUpdate
+            }
+
+            this.notifyAll(update);
         }
 
         if(this.isRunning) {
-            setTimeout(this.fetchCandleUpdates.bind(this), 1);
+            setTimeout(this.fetchUpdates.bind(this), 1);
         }
     }
 
@@ -93,10 +113,13 @@ export class MarketSink extends Subscribable<ResolutionMapped<number>> {
         EvaluatedSeries.evaluteUpdates(updateIndex);
 
         // notify update after series has been updated with latest data
-        this.notifyAll(lengthMap);
+        this.notifyAll({
+            CandleUpdate: lengthMap,
+            AccountUpdate: true
+        });
     }
 
-    private updateData(fetchedUpdated: ResolutionMapped<Candle>[]) {
+    private updateData(fetchedUpdated: ResolutionMapped<Candle>[]): ResolutionMapped<number> {
 
         const updateIndex: ResolutionMapped<UpdateIndex> = {};
         const lengthMap: ResolutionMapped<number> = {};
@@ -160,7 +183,7 @@ export class MarketSink extends Subscribable<ResolutionMapped<number>> {
         });
 
         EvaluatedSeries.evaluteUpdates(updateIndex);
-        this.notifyAll(lengthMap);
+        return lengthMap;
     }
 
     private createMarketDataSeries(resolution: Resolution): MarketData {

@@ -1,6 +1,6 @@
 import { Candle, ChartData, Dictionary, IndicatorConfig, PlatformConfiguration, PlotConfig, ReporterData, Resolution, ResolutionMapped } from "Model/Contracts";
 import { Exchange, ExchangeStore } from "Model/Exchange/Exchange";
-import { MarketSink } from "Model/Exchange/MarketSink";
+import { ExchangeSink, ExchangeUpdate } from "Model/Exchange/ExchangeSink";
 import { MarketData } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
 import { Indicator, Strategy, StrategyConfig, StrategyStore } from "Model/Strategy/Strategy";
@@ -33,7 +33,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
     private strategy: Strategy;
     private exchange: Exchange;
-    private marketSink: MarketSink;
+    private marketSink: ExchangeSink;
     private _isRunning: boolean = false;
     private plotMap: Dictionary<Plot>;
     private plotConfigMap: Dictionary<PlotConfig>;
@@ -54,7 +54,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         const strategyConfig = this.strategy.StrategyConfig;
 
         this.exchange = new exchangeCtor(this.Network, this.config.ExchangeAuth);
-        this.marketSink = new MarketSink(this.exchange, strategyConfig.resolutionSet);
+        this.marketSink = new ExchangeSink(this.exchange, strategyConfig.resolutionSet);
 
         this.exchange.connect(strategyConfig.symbol, this.config.ExchangeAuth).then(() => {
             this._isRunning = true;
@@ -140,12 +140,22 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         }, {});
     }
 
-    private dataUpdate(update: ResolutionMapped<number>) {
-        this.strategy.update(update);
+    private dataUpdate(update: ExchangeUpdate) {
+        let reporterData: Partial<ReporterData> = {};
+
+        if(update.AccountUpdate) {
+            const flushedUpdate = this.exchange.account.flushUpdate();
+            this.strategy.trade(flushedUpdate);
+            reporterData.Account = flushedUpdate;
+        }
+
+        if(update.CandleUpdate) {
+            this.strategy.update(update.CandleUpdate);
+            reporterData.ChartData = this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update.CandleUpdate);
+        }
+
         if (this.subscriberCount) {
-            this.notifyAll({
-                ChartData: this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update)
-            });
+            this.notifyAll(reporterData);
         }
     }
 }
