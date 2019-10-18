@@ -1,4 +1,4 @@
-import { Order, ResolutionMapped } from "Model/Contracts";
+import { IAccount, ResolutionMapped } from "Model/Contracts";
 import { IBroker } from "Model/Exchange/IBroker";
 import { MarketData } from "Model/InternalContracts";
 import { ema, Expression, HeikinAshi, sma, Stoch } from "Model/Series/Expressions";
@@ -29,8 +29,8 @@ export class StochasticStrategy extends Strategy {
         console.log("strategy tick", updateOffset);
     }
 
-    public trade(update: Order) {
-         
+    public trade(update: Partial<IAccount>) {
+
     }
 
     public init(input: ResolutionMapped<MarketData>): RawPlot[] {
