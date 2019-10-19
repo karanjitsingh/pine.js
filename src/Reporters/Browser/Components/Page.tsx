@@ -1,7 +1,7 @@
 import { PlatformConfiguration, ReporterInit } from 'Model/Contracts';
 import * as React from 'react';
 import { ConfigDialog, ConfigDialogProps } from './Config/ConfigDialog';
-import { Spinner } from './Spinner';
+import { Spinner } from './Fabric/Spinner';
 import { TradeView, TradeViewProps } from './TradeView/TradeView';
 
 export interface PageState {

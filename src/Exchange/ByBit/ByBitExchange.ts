@@ -508,7 +508,7 @@ export class ByBitExchange extends Exchange {
                             OrderType: order.order_type,
                             OrderStatus: order.order_status,
                             Quantity: order.qty,
-                            FilledQuantity: order.qty - order.leaves_qty,
+                            FilledRemaining: order.leaves_qty,
                             Price: order.price,
                             TimeInForce: order.time_in_force,
                             CreatedAt: order.created_at,

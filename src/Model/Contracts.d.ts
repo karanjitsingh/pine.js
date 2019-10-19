@@ -28,7 +28,7 @@ export interface Order<T = {}> {
     OrderType: OrderType;
     OrderStatus: OrderStatus;
     Quantity: number;
-    FilledQuantity: number;
+    FilledRemaining: number;
     Price: number;
     TimeInForce: string;
     // UsedMargin: number;

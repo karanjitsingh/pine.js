@@ -1,7 +1,7 @@
 import { Page, PageMode } from "Components/Page";
 import { TradeViewProps } from "Components/TradeView/TradeView";
 import { DataStream } from "DataStream";
-import { ChartData, Dictionary, MessageType, Order, PlatformConfiguration, Position, ProtocolMessage, ReporterInit } from "Model/Contracts";
+import { ChartData, Dictionary, MessageType, Order, PlatformConfiguration, Position, ProtocolMessage, ReporterInit, Wallet } from "Model/Contracts";
 import { Network } from "Network";
 import React = require("react");
 import ReactDOM = require("react-dom");
@@ -14,6 +14,7 @@ class Reporter {
     private chartDataStream: DataStream<Dictionary<ChartData>>;
     private orderStream: DataStream<Order>;
     private positionStream: DataStream<Position>;
+    private walletStream: DataStream<Wallet>;
 
     constructor() {
         this.page = ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
@@ -21,6 +22,7 @@ class Reporter {
         this.chartDataStream = new DataStream();
         this.orderStream = new DataStream();
         this.positionStream = new DataStream();
+        this.walletStream = new DataStream();
     }
 
     public init() {
@@ -130,6 +132,12 @@ class Reporter {
                     this.chartDataStream.push(reporterData.ChartData);
                 }
 
+                if(reporterData.Account) {
+                    if(reporterData.Account.OrderBook) {
+                        this.orderStream.push(reporterData.Account.OrderBook);
+                    }
+                }
+
                 // if(reporterData.Orders) {
                 //     this.orderStream.push(reporterData.Orders);
                 // }
@@ -145,7 +153,12 @@ class Reporter {
                 console.log(plotConfigs);
 
                 this.updatePage({
-                    chartDataStream: this.chartDataStream,
+                    tradeStreams: {
+                        chart: this.chartDataStream,
+                        order: this.orderStream,
+                        position: this.positionStream,
+                        wallet: this.walletStream
+                    },
                     plotConfigMap: plotConfigs
                 });
 

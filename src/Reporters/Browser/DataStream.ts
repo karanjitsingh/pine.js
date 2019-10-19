@@ -1,9 +1,18 @@
-export class DataStream<T> extends EventTarget {
+export class DataStream<T> {
     private data: T[] = [];
-    private onDataPush: Event = new Event('data');
+    private onDataPushEvent: Event = new Event('data');
+    private eventTarget: EventTarget = new EventTarget();
 
     public length(): number {
         return this.data.length;
+    }
+
+    public subscribe(listener: EventListenerOrEventListenerObject) {
+        this.eventTarget.addEventListener('data', listener);
+    }
+
+    public unsubscribe(listener: EventListenerOrEventListenerObject) {
+        this.eventTarget.removeEventListener('data', listener);
     }
 
     public push(data: T | T[]) {
@@ -17,7 +26,7 @@ export class DataStream<T> extends EventTarget {
             this.data.push(data);
         }
 
-        this.dispatchEvent(this.onDataPush)
+        this.eventTarget.dispatchEvent(this.onDataPushEvent)
     }
 
     public flush(): T[] {

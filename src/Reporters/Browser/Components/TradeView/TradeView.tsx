@@ -1,13 +1,21 @@
-import { Spinner } from 'Components/Spinner';
+import { Spinner } from 'Components/Fabric/Spinner';
 import { Chart } from 'Components/TradeView/Chart';
 import { DataStream } from 'DataStream';
 import SplitWrapper from 'lib/react-split';
-import { ChartData, Dictionary, PlotConfig } from "Model/Contracts";
+import { ChartData, Dictionary, PlotConfig, Wallet, Order, Position } from "Model/Contracts";
 import * as React from 'react';
 import { Section } from 'Components/Section';
+import { OrderBook } from './OrderBook';
+
+export interface TradeStreams {
+    chart: DataStream<Dictionary<ChartData>>,
+    wallet: DataStream<Wallet>,
+    position: DataStream<Position>,
+    order: DataStream<Order>
+}
 
 export interface TradeViewProps {
-    chartDataStream: DataStream<Dictionary<ChartData>>,
+    tradeStreams: TradeStreams;
     plotConfigMap: Dictionary<PlotConfig>
 }
 
@@ -23,11 +31,11 @@ export class TradeView extends React.Component<TradeViewProps> {
         super(props);
         this.ref = React.createRef();
         window['ref'] = this.ref;
-        this.props.chartDataStream.addEventListener('data', this.dataListener.bind(this));
+        this.props.tradeStreams.chart.subscribe(this.dataListener.bind(this));
     }
 
     public dataListener() {
-        this.props.chartDataStream.flush().forEach(data => {
+        this.props.tradeStreams.chart.flush().forEach(data => {
             Object.keys(data).forEach((key) => {
                 this.chartMap[key].update(data[key]);
             });
@@ -45,9 +53,9 @@ export class TradeView extends React.Component<TradeViewProps> {
                     { !this.chartSplit ? <Spinner></Spinner> : this.chartSplit }
                     <div className="trade-panel">
                         <div>
-                            <Section header="Wallet">asdfasdf</Section>
+                            <Section header="Wallet">wallet</Section>
                             <Section scrollBar={true} header="Orders">
-                                sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>sadf<br/>
+                                <OrderBook orderStream={this.props.tradeStreams.order}></OrderBook>
                             </Section>
                             <Section header="Position">asdfasdf</Section>    
                         </div>
