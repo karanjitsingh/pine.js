@@ -75,7 +75,8 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
                 return acc;
             }, {});
             return {
-                ChartData: this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update)
+                ChartData: this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update),
+                Account: this.exchange.account.getAccountObject()
             }
         } else {
             return {};

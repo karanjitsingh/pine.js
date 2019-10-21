@@ -20,6 +20,15 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
         return temp;
     }
 
+    public getAccountObject(): IAccount {
+        return {
+            Leverage: this.Leverage,
+            Wallet: this.Wallet,
+            Positions: this.Positions,
+            OrderBook: this.OrderBook
+        }
+    }
+
     public didUpdate(): boolean {
         return this._didUpdate;
     }
