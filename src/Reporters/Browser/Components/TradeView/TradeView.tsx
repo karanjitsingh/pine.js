@@ -9,9 +9,9 @@ import { OrderBook } from './OrderBook';
 
 export interface TradeStreams {
     chart: DataStream<Dictionary<ChartData>>,
-    wallet: DataStream<Wallet>,
-    position: DataStream<Position>,
-    order: DataStream<Order>
+    wallet: DataStream<Dictionary<Wallet>>,
+    position: DataStream<Dictionary<Position>>,
+    order: DataStream<Dictionary<Order>>
 }
 
 export interface TradeViewProps {

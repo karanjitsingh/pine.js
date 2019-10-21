@@ -11,6 +11,7 @@ export interface TableProps<T> {
     columns: TableColumn<T>[];
     comparer?: (a: T, b: T) => number;
     rows: T[];
+    className?: string
 }
 
 export class Table<T> extends React.Component<TableProps<T>> {
@@ -20,8 +21,14 @@ export class Table<T> extends React.Component<TableProps<T>> {
     }
 
     public render() {
+        const tableProps: React.DetailedHTMLProps<React.TableHTMLAttributes<HTMLTableElement>, HTMLTableElement> = {};
+        
+        if(this.props.className) {
+            tableProps.className = this.props.className;
+        }
+
         return (
-            <table>
+            <table {...tableProps}>
                 <th>
                     {this.getColumns()}
                 </th>

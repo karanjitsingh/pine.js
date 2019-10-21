@@ -4,12 +4,11 @@ import { Order, Dictionary } from 'Model/Contracts';
 import { Table, TableColumn } from 'Components/Fabric/Table'
 
 export interface OrderBookProps {
-    orderStream: DataStream<Order>;
+    orderStream: DataStream<Dictionary<Order>>;
 }
 
 interface OrderBookState {
-    openOrders: Dictionary<Order>;
-    closedOrders: Dictionary<Order>;
+    orders: Dictionary<Order>;
 }
 
 export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
@@ -19,8 +18,7 @@ export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
         super(props);
 
         this.state = {
-            openOrders: {},
-            closedOrders: {}
+            orders: {},
         };
 
         this.props.orderStream.subscribe(this.dataListener.bind(this));
@@ -63,36 +61,19 @@ export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
             }
         ];
 
-        return <Table columns={columns} rows={Object.values(this.state.openOrders)} ></Table>
+        return <Table className={"orderbook-table"} columns={columns} rows={Object.values(this.state.orders).filter((order) => !order.Closed)} ></Table>
     }
 
     private dataListener() {
-        this.props.orderStream.flush().forEach(data => {
-            const orders = Object.values(data);
 
-            const stateUpdate = orders.reduce<OrderBookState>((acc, value: Order) => {
+        const newState: OrderBookState = {
+            orders: {}
+        }
 
-                if (value.Closed) {
-                    acc.closedOrders[value.OrderId] = value;
-                } else {
-                    acc.openOrders[value.OrderId] = value;
-                }
-
-                return acc;
-            }, {
-                openOrders: {},
-                closedOrders: {}
-            });
-
-            const newState: OrderBookState = {
-                openOrders: {},
-                closedOrders: {}
-            }
-
-            Object.assign(newState.openOrders, stateUpdate.openOrders, this.state.openOrders);
-            Object.assign(newState.closedOrders, stateUpdate.closedOrders, this.state.closedOrders);
-
-            this.setState(newState);
+        this.props.orderStream.flush().forEach(orders => {
+            Object.assign(newState.orders, orders, this.state.orders);
         });
+
+        this.setState(newState);
     }
 }

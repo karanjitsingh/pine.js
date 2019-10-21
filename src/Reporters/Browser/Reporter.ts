@@ -12,9 +12,9 @@ class Reporter {
     private socket: WebSocket;
     private network: Network;
     private chartDataStream: DataStream<Dictionary<ChartData>>;
-    private orderStream: DataStream<Order>;
-    private positionStream: DataStream<Position>;
-    private walletStream: DataStream<Wallet>;
+    private orderStream: DataStream<Dictionary<Order>>;
+    private positionStream: DataStream<Dictionary<Position>>;
+    private walletStream: DataStream<Dictionary<Wallet>>;
 
     constructor() {
         this.page = ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
