@@ -15,6 +15,10 @@ export class DataStream<T> {
         this.eventTarget.removeEventListener('data', listener);
     }
 
+    public hasUpdate(): boolean {
+        return this.data.length > 0;
+    }
+
     public push(data: T | T[]) {
 
         if(data instanceof Array) {

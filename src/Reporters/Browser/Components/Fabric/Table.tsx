@@ -1,5 +1,5 @@
-import { Dictionary } from "Model/Contracts";
 import * as React from 'react';
+import { Table as BootstrapTable } from 'react-bootstrap'
 
 export interface TableColumn<T> {
     title: string,
@@ -21,25 +21,19 @@ export class Table<T> extends React.Component<TableProps<T>> {
     }
 
     public render() {
-        const tableProps: React.DetailedHTMLProps<React.TableHTMLAttributes<HTMLTableElement>, HTMLTableElement> = {};
-        
-        if(this.props.className) {
-            tableProps.className = this.props.className;
-        }
-
         return (
-            <table {...tableProps}>
-                <th>
+            <BootstrapTable variant="dark" striped className={this.props.className}>
+                <tr>
                     {this.getColumns()}
-                </th>
+                </tr>
                 {this.getRows()}
-            </table>
+            </BootstrapTable>
         )
     }
 
     private getColumns(): JSX.Element[] {
         return this.props.columns.map((col) => {
-            return <td className={col.cssClass}>{col.title}</td>
+            return <th className={col.cssClass}>{col.title}</th>
         });
     }
 

@@ -22,6 +22,10 @@ export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
         };
 
         this.props.orderStream.subscribe(this.dataListener.bind(this));
+
+        if(this.props.orderStream.hasUpdate()) {
+            this.state = this.getOrderBookState();
+        }
     }
 
     public render() {
@@ -65,6 +69,10 @@ export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
     }
 
     private dataListener() {
+        this.setState(this.getOrderBookState());
+    }
+
+    private getOrderBookState(): OrderBookState {
 
         const newState: OrderBookState = {
             orders: {}
@@ -74,6 +82,6 @@ export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
             Object.assign(newState.orders, orders, this.state.orders);
         });
 
-        this.setState(newState);
+        return newState;
     }
 }
