@@ -132,23 +132,15 @@ class Reporter {
                     this.chartDataStream.push(reporterData.ChartData);
                 }
 
-                if(reporterData.Account) {
-                    if(reporterData.Account.OrderBook) {
+                if (reporterData.Account) {
+                    if (reporterData.Account.OrderBook) {
                         this.orderStream.push(reporterData.Account.OrderBook);
                     }
 
-                    if(reporterData.Account.Wallet) {
+                    if (reporterData.Account.Wallet) {
                         this.walletStream.push(reporterData.Account.Wallet);
                     }
                 }
-
-                // if(reporterData.Orders) {
-                //     this.orderStream.push(reporterData.Orders);
-                // }
-
-                // if(reporterData.Positions) {
-                //     this.positionStream.push(reporterData.Positions);
-                // }
 
                 break;
 

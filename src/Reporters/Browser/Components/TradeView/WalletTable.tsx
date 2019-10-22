@@ -3,17 +3,17 @@ import { DataStream } from 'DataStream';
 import { Wallet } from 'Model/Contracts';
 import * as React from 'react';
 
-export interface WalletProps {
-    walletStream: DataStream<Wallet>;
+export interface WalletTableProps {
+    stream: DataStream<Wallet>;
 }
 
-interface WalletState {
+interface WalletTableState {
     wallet: Wallet;
 }
 
-export class WalletTable extends React.Component<WalletProps, WalletState> {
+export class WalletTable extends React.Component<WalletTableProps, WalletTableState> {
 
-    constructor(props: WalletProps) {
+    constructor(props: WalletTableProps) {
         super(props);
 
         this.state = {
@@ -25,10 +25,10 @@ export class WalletTable extends React.Component<WalletProps, WalletState> {
             }
         };
 
-        this.props.walletStream.subscribe(this.dataListener.bind(this));
+        this.props.stream.subscribe(this.dataListener.bind(this));
 
-        if (this.props.walletStream.hasUpdate()) {
-            const update = this.props.walletStream.flush();
+        if (this.props.stream.hasUpdate()) {
+            const update = this.props.stream.flush();
             this.state = {
                 wallet: update[update.length - 1]
             }
@@ -40,19 +40,19 @@ export class WalletTable extends React.Component<WalletProps, WalletState> {
         const columns: TableColumn<Wallet>[] = [
             {
                 title: "Balance",
-                render: (order: Wallet) => order.Balance
+                render: (wallet: Wallet) => wallet.Balance
             },
             {
                 title: "Margin",
-                render: (order: Wallet) => order.AvailableMargin
+                render: (wallet: Wallet) => wallet.AvailableMargin
             },
             {
                 title: "Order",
-                render: (order: Wallet) => order.OrderMargin
+                render: (wallet: Wallet) => wallet.OrderMargin
             },
             {
                 title: "Position",
-                render: (order: Wallet) => order.PositionMargin
+                render: (wallet: Wallet) => wallet.PositionMargin
             },
         ];
 
@@ -60,7 +60,7 @@ export class WalletTable extends React.Component<WalletProps, WalletState> {
     }
 
     private dataListener() {
-        const update = this.props.walletStream.flush();
+        const update = this.props.stream.flush();
 
         this.setState({
             wallet: update[update.length - 1]

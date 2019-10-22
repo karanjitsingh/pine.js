@@ -3,26 +3,26 @@ import { DataStream } from 'DataStream';
 import { Dictionary, Order } from 'Model/Contracts';
 import * as React from 'react';
 
-export interface OrderBookProps {
-    orderStream: DataStream<Dictionary<Order>>;
+export interface OrderTableProps {
+    stream: DataStream<Dictionary<Order>>;
 }
 
-interface OrderBookState {
+interface OrderTableState {
     orders: Dictionary<Order>;
 }
 
-export class OrderBookTable extends React.Component<OrderBookProps, OrderBookState> {
+export class OrderTable extends React.Component<OrderTableProps, OrderTableState> {
 
-    constructor(props: OrderBookProps) {
+    constructor(props: OrderTableProps) {
         super(props);
 
         this.state = {
             orders: {},
         };
 
-        this.props.orderStream.subscribe(this.dataListener.bind(this));
+        this.props.stream.subscribe(this.dataListener.bind(this));
 
-        if (this.props.orderStream.hasUpdate()) {
+        if (this.props.stream.hasUpdate()) {
             this.state = this.getOrderBookState();
         }
     }
@@ -71,13 +71,13 @@ export class OrderBookTable extends React.Component<OrderBookProps, OrderBookSta
         this.setState(this.getOrderBookState());
     }
 
-    private getOrderBookState(): OrderBookState {
+    private getOrderBookState(): OrderTableState {
 
-        const newState: OrderBookState = {
+        const newState: OrderTableState = {
             orders: {}
         }
 
-        this.props.orderStream.flush().forEach(orders => {
+        this.props.stream.flush().forEach(orders => {
             Object.assign(newState.orders, orders, this.state.orders);
         });
 
