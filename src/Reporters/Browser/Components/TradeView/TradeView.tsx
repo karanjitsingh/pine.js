@@ -4,7 +4,7 @@ import { DataStream } from 'DataStream';
 import SplitWrapper from 'lib/react-split';
 import { ChartData, Dictionary, PlotConfig, Wallet, Order, Position } from "Model/Contracts";
 import * as React from 'react';
-import { Section } from 'Components/Section';
+import { Section } from 'Components/Fabric/Section';
 import { OrderBook } from './OrderBook';
 
 export interface TradeStreams {
@@ -54,7 +54,7 @@ export class TradeView extends React.Component<TradeViewProps> {
                     <div className="trade-panel">
                         <div>
                             <Section header="Wallet">wallet</Section>
-                            <Section scrollBar={true} header="Orders">
+                            <Section dynamicHeight scrollBar={true} header="Orders">
                                 <OrderBook orderStream={this.props.tradeStreams.order}></OrderBook>
                             </Section>
                             <Section header="Position">asdfasdf</Section>    
@@ -63,7 +63,7 @@ export class TradeView extends React.Component<TradeViewProps> {
                     </div>
                 </SplitWrapper>
             </div>
-        )
+        );
     }
 
     public componentDidMount() {

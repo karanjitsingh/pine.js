@@ -13,7 +13,6 @@ interface OrderBookState {
 
 export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
 
-
     constructor(props: OrderBookProps) {
         super(props);
 

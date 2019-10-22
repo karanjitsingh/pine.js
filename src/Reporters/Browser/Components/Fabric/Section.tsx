@@ -1,18 +1,19 @@
 import * as React from 'react';
 
 export interface SectionProps {
-    header: string,
-    scrollBar?: boolean
+    header: string;
+    scrollBar?: boolean;
+    dynamicHeight?: boolean;
 }
 
 export interface SectionState {
     collapsed: boolean;
     contentHeight?: number;
-
 }
 
 export class Section extends React.Component<SectionProps, SectionState> {
     private contentRef: React.RefObject<HTMLDivElement>;
+    private monitorTimer: number;
 
     constructor(props: SectionProps) {
         super(props);
@@ -32,6 +33,15 @@ export class Section extends React.Component<SectionProps, SectionState> {
     }
 
     public render() {
+        if(this.props.dynamicHeight) {
+            if(!this.monitorTimer) {
+                this.monitorTimer = setInterval(this.monitor.bind(this), 100);
+            }
+        } else if(this.monitorTimer) {
+            clearInterval(this.monitorTimer);
+            this.monitorTimer = null;
+        }
+
         return (
             <div className="collapsible-section">
                 <div className={"header" + (this.state.collapsed ? " collapsed" : "")} onClick={() => this.toggleState()}>{this.props.header}</div>
@@ -48,10 +58,21 @@ export class Section extends React.Component<SectionProps, SectionState> {
         );
     }
 
+    private monitor() {
+        if(!this.state.collapsed) {
+            if(this.contentRef && this.contentRef.current && (this.contentRef.current.scrollHeight + 1 != this.state.contentHeight || !this.state.contentHeight)) {
+                this.setState({
+                    collapsed: false,
+                    contentHeight: this.contentRef.current.scrollHeight + 1
+                })
+            }
+        }
+    }
+
     private toggleState() {
         this.setState({
             collapsed: !this.state.collapsed,
-            contentHeight: this.state.collapsed ? (this.contentRef.current.scrollHeight + 1) : 0
+            contentHeight: this.state.collapsed ? 0 : (this.contentRef.current.scrollHeight + 1)
         });
     }
 }
