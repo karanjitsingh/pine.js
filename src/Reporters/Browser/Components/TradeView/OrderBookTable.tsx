@@ -1,7 +1,7 @@
-import * as React from 'react';
+import { Table, TableColumn } from 'Components/Fabric/Table';
 import { DataStream } from 'DataStream';
-import { Order, Dictionary } from 'Model/Contracts';
-import { Table, TableColumn } from 'Components/Fabric/Table'
+import { Dictionary, Order } from 'Model/Contracts';
+import * as React from 'react';
 
 export interface OrderBookProps {
     orderStream: DataStream<Dictionary<Order>>;
@@ -11,7 +11,7 @@ interface OrderBookState {
     orders: Dictionary<Order>;
 }
 
-export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
+export class OrderBookTable extends React.Component<OrderBookProps, OrderBookState> {
 
     constructor(props: OrderBookProps) {
         super(props);
@@ -22,13 +22,13 @@ export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
 
         this.props.orderStream.subscribe(this.dataListener.bind(this));
 
-        if(this.props.orderStream.hasUpdate()) {
+        if (this.props.orderStream.hasUpdate()) {
             this.state = this.getOrderBookState();
         }
     }
 
     public render() {
-        
+
         const columns: TableColumn<Order>[] = [
             {
                 title: "Contract",
@@ -64,7 +64,7 @@ export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
             }
         ];
 
-        return <Table className={"orderbook-table"} columns={columns} rows={Object.values(this.state.orders).filter((order) => !order.Closed)} ></Table>
+        return <Table className={"orderbook-table"} columns={columns} data={Object.values(this.state.orders).filter((order) => !order.Closed)} ></Table>
     }
 
     private dataListener() {

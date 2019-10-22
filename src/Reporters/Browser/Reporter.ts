@@ -14,7 +14,7 @@ class Reporter {
     private chartDataStream: DataStream<Dictionary<ChartData>>;
     private orderStream: DataStream<Dictionary<Order>>;
     private positionStream: DataStream<Dictionary<Position>>;
-    private walletStream: DataStream<Dictionary<Wallet>>;
+    private walletStream: DataStream<Wallet>;
 
     constructor() {
         this.page = ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
@@ -135,6 +135,10 @@ class Reporter {
                 if(reporterData.Account) {
                     if(reporterData.Account.OrderBook) {
                         this.orderStream.push(reporterData.Account.OrderBook);
+                    }
+
+                    if(reporterData.Account.Wallet) {
+                        this.walletStream.push(reporterData.Account.Wallet);
                     }
                 }
 

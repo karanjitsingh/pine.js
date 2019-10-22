@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Table as BootstrapTable } from 'react-bootstrap'
+import { Table as BootstrapTable } from 'react-bootstrap';
 
 export interface TableColumn<T> {
     title: string,
@@ -10,7 +10,7 @@ export interface TableColumn<T> {
 export interface TableProps<T> {
     columns: TableColumn<T>[];
     comparer?: (a: T, b: T) => number;
-    rows: T[];
+    data: T[];
     className?: string
 }
 
@@ -41,7 +41,7 @@ export class Table<T> extends React.Component<TableProps<T>> {
 
         const cols = this.props.columns;
 
-        return this.props.rows.map((row) => (
+        return this.props.data.map((row) => (
             <tr>{
                 cols.map((col) => <td>{col.render(row)}</td>)
             }</tr>

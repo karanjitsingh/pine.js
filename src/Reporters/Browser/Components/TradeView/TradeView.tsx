@@ -5,11 +5,12 @@ import SplitWrapper from 'lib/react-split';
 import { ChartData, Dictionary, PlotConfig, Wallet, Order, Position } from "Model/Contracts";
 import * as React from 'react';
 import { Section } from 'Components/Fabric/Section';
-import { OrderBook } from './OrderBook';
+import { OrderBookTable } from './OrderBookTable';
+import { WalletTable } from './WalletTable';
 
 export interface TradeStreams {
     chart: DataStream<Dictionary<ChartData>>,
-    wallet: DataStream<Dictionary<Wallet>>,
+    wallet: DataStream<Wallet>,
     position: DataStream<Dictionary<Position>>,
     order: DataStream<Dictionary<Order>>
 }
@@ -53,9 +54,9 @@ export class TradeView extends React.Component<TradeViewProps> {
                     { !this.chartSplit ? <Spinner></Spinner> : this.chartSplit }
                     <div className="trade-panel">
                         <div>
-                            <Section header="Wallet">wallet</Section>
+                            <Section header="Wallet"><WalletTable walletStream={this.props.tradeStreams.wallet}></WalletTable></Section>
                             <Section dynamicHeight scrollBar={true} header="Orders">
-                                <OrderBook orderStream={this.props.tradeStreams.order}></OrderBook>
+                                <OrderBookTable orderStream={this.props.tradeStreams.order}></OrderBookTable>
                             </Section>
                             <Section header="Position">asdfasdf</Section>    
                         </div>
