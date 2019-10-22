@@ -22,7 +22,7 @@ export class Table<T> extends React.Component<TableProps<T>> {
 
     public render() {
         return (
-            <BootstrapTable variant="dark" striped className={this.props.className}>
+            <BootstrapTable className={this.props.className}>
                 <tr>
                     {this.getColumns()}
                 </tr>

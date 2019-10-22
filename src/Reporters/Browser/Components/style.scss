@@ -293,4 +293,21 @@ body {
 .orderbook-table {
     color: white;
     font-size: 11px;
+    margin: 0;
+    box-sizing: border-box;
+    white-space: nowrap;
+
+    tr, th {
+        box-sizing: border-box;
+    }
+
+    th, td {
+        border-top: 0 none;
+    }
+
+    tr:nth-child(even) {
+        td {
+            background: rgba(255,255,255,0.07);
+        }
+    }
 }

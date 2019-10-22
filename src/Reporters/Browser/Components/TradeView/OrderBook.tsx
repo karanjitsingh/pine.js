@@ -44,11 +44,11 @@ export class OrderBook extends React.Component<OrderBookProps, OrderBookState> {
                 render: (order: Order) => order.Price
             },
             {
-                title: "Filled Remaining",
+                title: "Left Qty",
                 render: (order: Order) => order.FilledRemaining
             },
             {
-                title: "Order Value",
+                title: "Order",
                 render: (order: Order) => (order.Quantity / order.Price).toFixed(8)
             },
             {

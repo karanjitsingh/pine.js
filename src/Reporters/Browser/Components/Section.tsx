@@ -51,9 +51,7 @@ export class Section extends React.Component<SectionProps, SectionState> {
     private toggleState() {
         this.setState({
             collapsed: !this.state.collapsed,
-            contentHeight: this.state.collapsed ? this.contentRef.current.scrollHeight : 0
+            contentHeight: this.state.collapsed ? (this.contentRef.current.scrollHeight + 1) : 0
         });
     }
 }
-
-// 624763
