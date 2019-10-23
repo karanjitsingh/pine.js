@@ -61,11 +61,10 @@ export class TradeView extends React.Component<TradeViewProps> {
                             <Section dynamicHeight scrollBar={true} header="Orders">
                                 <OrderTable stream={this.props.tradeStreams.order} />
                             </Section>
-                            <Section header="Position">
+                            <Section dynamicHeight header="Position">
                                 <PositionTable stream={this.props.tradeStreams.position}></PositionTable>    
                             </Section>    
                         </div>
-                        
                     </div>
                 </SplitWrapper>
             </div>

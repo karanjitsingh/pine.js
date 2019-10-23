@@ -29,6 +29,101 @@ export type ByBitApiContract<TParams, TResult> = ApiContract<TParams, Response<T
 
 export type IntBoolean = 0 | 1;
 
+export interface ByBitWebsocketContract {
+
+    /**
+     * Websocket topic: execution
+     */
+    Execution: {
+        exec_fee: StringWrapped<number>			        // "0.00009465"
+        exec_id: string                                 // "c83a9fe7-7307-595b-b2c7-16375915a884"
+        exec_qty: number                                // 1000
+        exec_type: string                               // "Trade"
+        is_maker: boolean                               // false
+        leaves_qty: number                              // 0
+        order_id: string                                // "b6ad8f2d-10e8-4bd0-a803-ec9b874a34fc"
+        order_link_id: string                           // ""
+        order_qty: number                               // 1000
+        price: StringWrapped<number>			        // "7924"
+        side: Side			                            // "Sell"
+        symbol:	Symbol		                            // "BTCUSD"
+        trade_time:	string		                        // "2019-10-23T03:34:57.901Z"
+    }
+
+    /**
+     * Websocket topic: order
+     */
+    Order: {
+        cum_exec_fee: StringWrapped<number>			    // "0.00009465"
+        cum_exec_qty: number			                // 1000
+        cum_exec_value: StringWrapped<number>		    // "0.12619888"
+        last_exec_price: StringWrapped<number>		    // "7924"
+        leaves_qty: number			                    // 0
+        order_id: string			                    // "b6ad8f2d-10e8-4bd0-a803-ec9b874a34fc"
+        order_link_id: string			                // ""
+        order_status: OrderStatus			            // "Filled"
+        order_type: OrderType			                // "Market"
+        price: StringWrapped<number>	                // "7951"
+        qty: number			                            // 1000
+        side: Side			                            // "Sell"
+        stop_loss: StringWrapped<number>			    // "0"
+        symbol: Symbol			                        // "BTCUSD"
+        take_profit: StringWrapped<number>			    // "0"
+        time_in_force: TimeInForce			            // "ImmediateOrCancel"
+        trailing_stop: StringWrapped<number>		    // "0"
+        timestamp: string			                    // "2019-10-23T03:34:57.901Z"
+    }
+
+    /**
+     * Websocket topic: position
+     */
+    Position: {
+        auto_add_margin: IntBoolean			            // 0
+        available_balance: StringWrapped<number>	    // "0.24384864"
+        bust_price: StringWrapped<number>			    // "0"
+        cum_realised_pnl: StringWrapped<number>		    // "0.01291595"
+        entry_price: StringWrapped<number>			    // "0"
+        leverage: StringWrapped<number>			        // "10"
+        liq_price: StringWrapped<number>			    // "0"
+        occ_closing_fee: StringWrapped<number>		    // "0"
+        occ_funding_fee: StringWrapped<number>		    // "0"
+        order_margin: StringWrapped<number>			    // "0.03906731"
+        position_margin: StringWrapped<number>		    // "0"
+        position_seq: number			                // 120844840
+        position_status: PositionStatus			        // "Normal"
+        position_value: StringWrapped<number>		    // "0"
+        realised_pnl: StringWrapped<number>			    // "-0.00434982"
+        risk_id: number			                        // 1
+        side: Side | "None"			                    // "None"
+        size: number			                        // 0
+        stop_loss: StringWrapped<number>			    // "0"
+        symbol: Symbol			                        // "BTCUSD"
+        take_profit: StringWrapped<number>			    // "0"
+        trailing_stop: StringWrapped<number>		    // "0"
+        user_id: number			                        // 105455
+        wallet_balance:	StringWrapped<number>		    // "0.28291595"
+    }
+
+    /**
+     * Websocket topic: private.wallet
+     */
+    Wallet: {
+        available_balance: number			            // 0.23240129999999998
+        cross_seq: number			                    // 278814121
+        cum_realised_pnl: number			            // 0.01408436
+        occ_closing_fee: number			                // 0.00010323
+        occ_funding_fee: number			                // 0
+        order_margin: number			                // 0.03906731
+        position_margin: number			                // 0.01251252
+        position_seq: number			                // 120836757
+        realised_pnl: number			                // -0.00318141
+        risk_id: number			                        // 1
+        risk_section: Array<StringWrapped<number>>	    // ["1", "2", "3" ...]
+        symbol: Symbol			                        // "BTCUSD"
+        used_margin: number			                    // 0.05168306
+        wallet_balance: number			                // 0.28408436
+    }
+}
 
 export interface ByBitContracts {
 
@@ -880,4 +975,5 @@ export interface ByBitContracts {
             turnover: StringWrapped<number>
         }>
     >
+
 }

@@ -26,7 +26,7 @@ export class StochasticStrategy extends Strategy {
     }
 
     public update(updateOffset: ResolutionMapped<number>) {
-        console.log("strategy tick", updateOffset);
+        // console.log("strategy tick", updateOffset);
     }
 
     public trade(update: Partial<IAccount>) {
