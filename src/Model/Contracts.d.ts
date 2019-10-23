@@ -5,7 +5,7 @@ export interface IAccount<TOrderFields = {}, TPositionFields = {}> {
     Leverage: number;
     Wallet: Wallet;
     Positions: Dictionary<Position<TPositionFields>>;
-    OrderBook: Dictionary<Order<TOrderFields>>;
+    Orders: Dictionary<Order<TOrderFields>>;
 }
 
 export interface Wallet {

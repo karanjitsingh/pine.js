@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { Candle, Dictionary, ExchangeAuth, IAccount, Resolution, ResolutionMapped } from "Model/Contracts";
+import { Candle, Dictionary, ExchangeAuth, IAccount, Resolution, ResolutionMapped, Order } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
@@ -8,7 +8,7 @@ import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 import { ByBitApi } from './ByBitApi';
 import { ByBitBroker } from './ByBitBroker';
-import { ByBitContracts, Symbol } from './ByBitContracts';
+import { ByBitContracts, Symbol, ByBitWebsocketContracts } from './ByBitContracts';
 import { Decimal } from 'decimal.js';
 
 type ConnectionResponse = [
@@ -310,115 +310,76 @@ export class ByBitExchange extends Exchange {
 
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
 
-                    const orders = data.data;
-                    console.log("orders");
-                    console.log(orders);
+                    const orders = data.data as ByBitWebsocketContracts['Order'];
+                    
+                    const accountUpdate: Partial<IAccount> = {
+                        Orders: {}
+                    }
 
-                    /*
-                        {
-                            "topic":"order",
-                            "data":[
-                                {
-                                    "order_id":"xxxxxxxx-xxxx-xxxx-832b-1eca710bf0a6",
-                                    "order_link_id":"xxxxxxxx",
-                                    "symbol":"BTCUSD",
-                                    "side":"Sell",
-                                    "order_type":"Limit",
-                                    "price":3559.5,
-                                    "qty":850,
-                                    "time_in_force":"GoodTillCancel",
-                                    "order_status":"Cancelled",
-                                    "leaves_qty":0,
-                                    "cum_exec_qty":0,
-                                    "cum_exec_value":0,
-                                    "cum_exec_fee":0,
-                                    "timestamp":"2019-01-22T14:49:38.000Z"
-                                }
-                            ]
-                        }
-                    */
-
+                    orders.forEach((order) => {
+                        accountUpdate.Orders[order.order_id] = {
+                            OrderId: order.order_id,
+                            Side: order.side,
+                            Symbol: order.symbol,
+                            OrderType: order.order_type,
+                            OrderStatus: order.order_status,
+                            Quantity: order.qty,
+                            FilledRemaining: order.leaves_qty,
+                            Price: parseFloat(order.price),
+                            TimeInForce: order.time_in_force,
+                            CreatedAt: this.account.Orders[order.order_id] ? this.account.Orders[order.order_id].CreatedAt : order.timestamp,
+                            UpdatedAt: order.timestamp,
+                            Closed: order.order_status == ("Created" || order.order_status == "New" || order.order_status == "PartiallyFilled") ? false : true
+                        };
+                    })
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'position') {
-                    const positionsRaw = data.data;
+                    const positionsRaw = data.data as ByBitWebsocketContracts['Position'];
 
-                    console.log("position");
-                    console.log(positionsRaw);
+                    const accountUpdate: Partial<IAccount> = {
+                        Positions: {}
+                    }
 
-                    /*
-                        {
-                            "topic":"position",
-                            "action":"update",
-                            "data":[
-                                {
-                                    "symbol":"BTCUSD",                  // the contract for this position
-                                    "side":"Sell",                      // side
-                                    "size":11,                          // the current position amount
-                                    "entry_price":6907.291588174717,    // entry price
-                                    "liq_price":7100.234,               // liquidation price
-                                    "bust_price":7088.1234,             // bankruptcy price
-                                    "take_profit":0,                    // take profit price
-                                    "stop_loss":0,                      // stop loss price
-                                    "trailing_stop":0,                  // trailing stop points
-                                    "position_value":0.00159252,        // positional value
-                                    "leverage":1,                       // leverage
-                                    "position_status":"Normal",         // status of position (Normal:normal Liq:in the process of liquidation Adl:in the process of Auto-Deleveraging)
-                                    "auto_add_margin":0,                // Auto margin replenishment enabled (0:no 1:yes)
-                                    "position_seq":14                   // position version number
-                                }
-                            ]
-                        }
+                    positionsRaw.forEach(position => {
                         
-                        let positions = []
-                        positionsRaw.forEach(positionRaw => {
-                            if (!['buy', 'sell'].includes(positionRaw['side'].toLowerCase())) {
-                                delete me.positions[positionRaw.symbol]
-                            } else {
-                                positions.push(positionRaw)
-                            }
-                        })
-
-                        Bybit.createPositionsWithOpenStateOnly(positions).forEach(position => {
-                            me.positions[position.symbol] = position
-                        })
-                    */
-                } else if (data && data.topic && data.topic.toLowerCase() == "private.wallet") {
-                    const wallet = data.data;
-
-                    console.log("wallet");
-                    console.log(wallet);
-                    /*
-                        {
-                            "topic": "private.wallet",
-                            "data": [
-                                {
-                                    "symbol": "BTCUSD",
-                                    "wallet_balance": 0.24347523,
-                                    "used_margin": 0.01271277,
-                                    "available_balance": 0.23076245999999997,
-                                    "order_margin": 0,
-                                    "cum_realised_pnl": 0.01347523,
-                                    "position_margin": 0.01260875,
-                                    "occ_closing_fee": 0.00010402,
-                                    "occ_funding_fee": 0,
-                                    "risk_id": 1,
-                                    "risk_section": [
-                                        "1",
-                                        "2",
-                                        "3",
-                                        "5",
-                                        "10",
-                                        "25",
-                                        "50",
-                                        "100"
-                                    ],
-                                    "cross_seq": 254058651,
-                                    "position_seq": 95872583,
-                                    "realised_pnl": 0.00165942
-                                }
-                            ],
-                            "user_id": 105455
+                        accountUpdate.Positions[position.id] = {
+                            Symbol: position.symbol,
+                            PositionId: position.id,
+                            Side: position.side,
+                            Size: position.size,
+                            PositionValue: parseFloat(position.position_value),
+                            EntryPrice: parseFloat(position.entry_price),
+                            Leverage: parseFloat(position.leverage),
+                            AutoAddMargin: !!position.auto_add_margin,
+                            PositionMargin: parseFloat(position.position_margin),
+                            LiquidationPrice: parseFloat(position.liq_price),
+                            BankrupcyPrice: parseFloat(position.bust_price),
+                            ClosingFee: parseFloat(position.occ_closing_fee),
+                            FundingFee: parseFloat(position.occ_funding_fee),
+                            TakeProfit: parseFloat(position.take_profit),
+                            StopLoss: parseFloat(position.stop_loss),
+                            TrailingStop: parseFloat(position.trailing_stop),
+                            PositionStatus: position.position_status,
+                            UnrealizedPnl: parseFloat(position.unrealised_pnl),
+                            CreatedAt: position.created_at,
+                            UpdatedAt: position.updated_at,
+                            Closed: false
                         }
-                    */
+                    });
+                    
+                } else if (data && data.topic && data.topic.toLowerCase() == "private.wallet") {
+                    const wallet = data.data as ByBitWebsocketContracts['Wallet'];
+
+                    this.account.update({
+                        Wallet: {
+                            Balance: wallet.wallet_balance,
+                            OrderMargin: wallet.order_margin,
+                            PositionMargin: wallet.position_margin,
+                            AvailableMargin: Decimal.sub(wallet.wallet_balance, wallet.order_margin)
+                                                    .sub(wallet.position_margin)
+                                                    .sub(wallet.occ_closing_fee)
+                                                    .sub(wallet.occ_funding_fee).toNumber()
+                        }
+                    })
                 }
                 else {
                     console.log('unknown', data.data);
@@ -477,9 +438,9 @@ export class ByBitExchange extends Exchange {
 
         if (orderResponse.ret_code == 0) {
             const orders = orderResponse.result.data;
-            accountUpdate.OrderBook = {};
+            accountUpdate.Orders = {};
 
-            const existingOrders = Object.values(this.account.OrderBook);
+            const existingOrders = Object.values(this.account.Orders);
 
             // Existing orders will be there only if initAccount was called for reconnection
             // This might cause some of the values in closed orders to be stale
@@ -487,7 +448,7 @@ export class ByBitExchange extends Exchange {
             // Assume all orders are closed
             existingOrders.forEach(order => {
                 if (!order.Closed) {
-                    accountUpdate.OrderBook[order.OrderId] = {
+                    accountUpdate.Orders[order.OrderId] = {
                         ...order,
                         Closed: true
                     };
@@ -497,11 +458,11 @@ export class ByBitExchange extends Exchange {
             // Will override orders with updated values if they were actual open
             if (orders) {
                 orders.forEach(order => {
-                    if (accountUpdate.OrderBook[order.order_id] && this.account.OrderBook[order.order_id].UpdatedAt == order.updated_at) {
+                    if (accountUpdate.Orders[order.order_id] && this.account.Orders[order.order_id].UpdatedAt == order.updated_at) {
                         // Remove since there has been no change in the order
-                        delete accountUpdate.OrderBook[order.order_id];
+                        delete accountUpdate.Orders[order.order_id];
                     } else {
-                        accountUpdate.OrderBook[order.order_id] = {
+                        accountUpdate.Orders[order.order_id] = {
                             OrderId: order.order_id,
                             Side: order.side,
                             Symbol: order.symbol,

@@ -6,7 +6,7 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
     };
 
     public Positions: Dictionary<Position<TPositionFields>> = {};
-    public OrderBook: Dictionary<Order<TOrderFields>> = {};
+    public Orders: Dictionary<Order<TOrderFields>> = {};
 
     private accountUpdate: Partial<IAccount> = null;
     private _didUpdate: boolean = false;
@@ -25,7 +25,7 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
             Leverage: this.Leverage,
             Wallet: this.Wallet,
             Positions: this.Positions,
-            OrderBook: this.OrderBook
+            Orders: this.Orders
         }
     }
 
@@ -53,11 +53,11 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
             Object.assign(this.accountUpdate.Wallet, update.Wallet);
         }
 
-        if (update.OrderBook) {
-            this.accountUpdate.OrderBook = {};
+        if (update.Orders) {
+            this.accountUpdate.Orders = {};
 
-            Object.assign(this.OrderBook, update.OrderBook)
-            Object.assign(this.accountUpdate.OrderBook, update.OrderBook);
+            Object.assign(this.Orders, update.Orders)
+            Object.assign(this.accountUpdate.Orders, update.Orders);
         }
 
         if (update.Positions) {

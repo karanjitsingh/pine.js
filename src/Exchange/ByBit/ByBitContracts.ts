@@ -29,7 +29,7 @@ export type ByBitApiContract<TParams, TResult> = ApiContract<TParams, Response<T
 
 export type IntBoolean = 0 | 1;
 
-export interface ByBitWebsocketContract {
+export interface ByBitWebsocketContracts {
 
     /**
      * Websocket topic: execution
@@ -48,7 +48,7 @@ export interface ByBitWebsocketContract {
         side: Side			                            // "Sell"
         symbol:	Symbol		                            // "BTCUSD"
         trade_time:	string		                        // "2019-10-23T03:34:57.901Z"
-    }
+    }[]
 
     /**
      * Websocket topic: order
@@ -72,7 +72,7 @@ export interface ByBitWebsocketContract {
         time_in_force: TimeInForce			            // "ImmediateOrCancel"
         trailing_stop: StringWrapped<number>		    // "0"
         timestamp: string			                    // "2019-10-23T03:34:57.901Z"
-    }
+    }[]
 
     /**
      * Websocket topic: position
@@ -102,7 +102,7 @@ export interface ByBitWebsocketContract {
         trailing_stop: StringWrapped<number>		    // "0"
         user_id: number			                        // 105455
         wallet_balance:	StringWrapped<number>		    // "0.28291595"
-    }
+    }[]
 
     /**
      * Websocket topic: private.wallet

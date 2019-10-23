@@ -133,8 +133,8 @@ class Reporter {
                 }
 
                 if (reporterData.Account) {
-                    if (reporterData.Account.OrderBook) {
-                        this.orderStream.push(reporterData.Account.OrderBook);
+                    if (reporterData.Account.Orders) {
+                        this.orderStream.push(reporterData.Account.Orders);
                     }
 
                     if (reporterData.Account.Wallet) {
