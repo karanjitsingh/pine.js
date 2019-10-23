@@ -140,6 +140,10 @@ class Reporter {
                     if (reporterData.Account.Wallet) {
                         this.walletStream.push(reporterData.Account.Wallet);
                     }
+
+                    if (reporterData.Account.Positions) {
+                        this.positionStream.push(reporterData.Account.Positions)
+                    }
                 }
 
                 break;

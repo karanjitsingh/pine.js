@@ -59,7 +59,7 @@ export class PositionTable extends React.Component<PositionTableProps, PositionT
             },
             {
                 title: "P&L",
-                render: (position: Position) => position.UnrealizedPnl
+                render: (position: Position) => position.UnrealizedPnl.toFixed(8)
             },
             {
                 title: "TP/SL",

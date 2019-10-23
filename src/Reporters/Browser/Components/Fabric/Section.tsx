@@ -38,8 +38,7 @@ export class Section extends React.Component<SectionProps, SectionState> {
                 this.monitorTimer = setInterval(this.monitor.bind(this), 100);
             }
         } else if(this.monitorTimer) {
-            clearInterval(this.monitorTimer);
-            this.monitorTimer = null;
+            this.clearMonitor();
         }
 
         return (
@@ -58,7 +57,17 @@ export class Section extends React.Component<SectionProps, SectionState> {
         );
     }
 
+    private clearMonitor() {
+        clearInterval(this.monitorTimer);
+        this.monitorTimer = null;
+    }
+
     private monitor() {
+        if(!this.props.dynamicHeight) {
+            this.clearMonitor();
+            return;
+        }
+
         if(!this.state.collapsed) {
             if(this.contentRef && this.contentRef.current && (this.contentRef.current.scrollHeight + 1 != this.state.contentHeight || !this.state.contentHeight)) {
                 this.setState({
@@ -70,9 +79,11 @@ export class Section extends React.Component<SectionProps, SectionState> {
     }
 
     private toggleState() {
+        this.clearMonitor();
+
         this.setState({
             collapsed: !this.state.collapsed,
-            contentHeight: this.state.collapsed ? 0 : (this.contentRef.current.scrollHeight + 1)
+            contentHeight: !this.state.collapsed ? 0 : (this.contentRef.current.scrollHeight + 1)
         });
     }
 }
