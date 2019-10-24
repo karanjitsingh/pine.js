@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
-import { Candle, Dictionary, ExchangeAuth, IAccount, Resolution, ResolutionMapped, Order } from "Model/Contracts";
+import { Decimal } from 'decimal.js';
+import { Candle, Dictionary, ExchangeAuth, IAccount, Resolution, ResolutionMapped } from "Model/Contracts";
 import { Exchange } from "Model/Exchange/Exchange";
 import { Tick } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
@@ -8,13 +9,13 @@ import { Utils } from "Model/Utils/Utils";
 import * as WebSocket from 'ws';
 import { ByBitApi } from './ByBitApi';
 import { ByBitBroker } from './ByBitBroker';
-import { ByBitContracts, Symbol, ByBitWebsocketContracts } from './ByBitContracts';
-import { Decimal } from 'decimal.js';
+import { ByBitContracts, ByBitWebsocketContracts, Symbol } from './ByBitContracts';
 
 type ConnectionResponse = [
     ByBitContracts['GetActiveOrder']['Response'],
     ByBitContracts['GetConditionalOrder']['Response'],
     ByBitContracts['MyPosition']['Response'],
+    ByBitContracts['UserLeverage']['Response'],
     ByBitContracts['GetWalletFundRecords']['Response']
 ];
 
@@ -148,6 +149,7 @@ export class ByBitExchange extends Exchange {
                                                 symbol: this.symbol
                                             }, this.auth),
                                             this.api.MyPosition({}, this.auth),
+                                            this.api.UserLeverage({}, this.auth),
                                             this.api.GetWalletFundRecords({
                                                 currency: this.symbolToCurrencyMap[this.symbol],
                                                 limit: 1
@@ -341,7 +343,7 @@ export class ByBitExchange extends Exchange {
 
                     const position = positionsRaw.filter(position => position.symbol == this.symbol)[0];
 
-                    if(position) {
+                    if (position) {
                         accountUpdate.Positions[this.symbol] = {
                             Symbol: position.symbol,
                             PositionId: 0,
@@ -418,22 +420,29 @@ export class ByBitExchange extends Exchange {
         const orderResponse = response[0];
         const stopOrderResponse = response[1]
         const positionReponse = response[2];
-        const walletRecord = response[3];
+        const userLeverageResponse = response[3];
+        const walletResponse = response[4];
 
         const accountUpdate: Partial<IAccount> = {};
 
+        if (userLeverageResponse.ret_code == 0) {
+            const leverage = userLeverageResponse.result;
+            if(this.account.Leverage != leverage[this.symbol].leverage) {
+                accountUpdate.Leverage = leverage[this.symbol].leverage;
+            }
+        }
 
-        if (walletRecord.ret_code == 0) {
-            if (walletRecord.result.data.length) {
+        if (walletResponse.ret_code == 0) {
+            if (walletResponse.result.data.length) {
 
-                walletRecord.result.data[0].wallet_balance;
+                walletResponse.result.data[0].wallet_balance;
 
                 accountUpdate.Wallet = {
-                    Balance: walletRecord.result.data[0].wallet_balance
+                    Balance: walletResponse.result.data[0].wallet_balance
                 }
 
             } else {
-                apiErrors.push(`GetWalletFundRecords-${this.symbolToCurrencyMap[this.symbol]}: ${walletRecord.ret_msg}.`);
+                apiErrors.push(`GetWalletFundRecords-${this.symbolToCurrencyMap[this.symbol]}: ${walletResponse.ret_msg}.`);
             }
         }
 
@@ -485,10 +494,8 @@ export class ByBitExchange extends Exchange {
         }
 
         if (stopOrderResponse.ret_code == 0) {
-
             // conditional orders
             const orders = stopOrderResponse.result.data;
-
         }
 
         if (positionReponse.ret_code == 0) {
@@ -528,7 +535,6 @@ export class ByBitExchange extends Exchange {
                     Closed: false
                 }
 
-                
                 if (position.side != "None") {
                     accountUpdate.Wallet.Balance = position.wallet_balance;
                     accountUpdate.Wallet.OrderMargin = position.order_margin;

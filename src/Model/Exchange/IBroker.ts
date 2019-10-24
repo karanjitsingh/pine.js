@@ -28,7 +28,7 @@ export interface IBroker {
     readonly requestOrderMap: DualDictionary;
     readonly requestPositionMap: DualDictionary;
 
-    getRequestStatus(requestId: string): boolean; 
+    getRequestStatus(requestId: string): boolean;
 
     marketOrder(): Promise<BrokerOrderResponse>;
     limitOrder(): Promise<BrokerOrderResponse>;
@@ -39,5 +39,5 @@ export interface IBroker {
 
     updateLeverage(leverage: number): Promise<BrokerResponse>;
 
-    exitPosition(): Promise<BrokerResponse>
+    closePosition(): Promise<BrokerResponse>
 }

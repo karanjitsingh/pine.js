@@ -1,7 +1,7 @@
-import { ApiContract, INetwork, NetworkResponse } from "Model/Network";
-import { ExchangeAuth } from "Model/Contracts";
-import { ByBitContracts } from "./ByBitContracts";
 import * as crypto from 'crypto';
+import { ExchangeAuth } from "Model/Contracts";
+import { ApiContract, INetwork, NetworkResponse } from "Model/Network";
+import { ByBitContracts } from "./ByBitContracts";
 
 export interface Response<TResult> {
     ret_code: number,
@@ -45,12 +45,17 @@ export class ByBitApi implements Api {
         return this.apiCall<ByBitContracts['GetWalletFundRecords']>('get', url, params, auth);
     }
 
+    public UserLeverage = (params: ByBitContracts['UserLeverage']['Params'], auth: ExchangeAuth) => {
+        const url = this.testnet ? "https://api-testnet.bybit.com/user/leverage" : "https://api.bybit.com/user/leverage";
+        return this.apiCall<ByBitContracts['UserLeverage']>('get', url, params, auth);
+    }
+
     private apiCall<Contract extends ApiContract<Contract['Params'], Contract['Response']>>(method: keyof INetwork, url: string, params: Contract['Params'], auth?: ExchangeAuth): Promise<Contract['Response']> {
-        
-        if(!params || !(params instanceof Object)) {
+
+        if (!params || !(params instanceof Object)) {
             params = {};
         }
-        
+
         return new Promise<Contract['Response']>((resolve, reject) => {
             this.apiNetworkCall(method, url, params, auth).then((response: NetworkResponse) => {
                 resolve(JSON.parse(response.response) as Contract['Response']);
@@ -83,7 +88,7 @@ export class ByBitApi implements Api {
 
         Object.keys(params).sort().forEach((key: string) => {
             orderedParams[key] = params[key];
-            
+
             if (paramstr) {
                 paramstr += "&";
             }
