@@ -342,9 +342,9 @@ export class ByBitExchange extends Exchange {
                     const position = positionsRaw.filter(position => position.symbol == this.symbol)[0];
 
                     if(position) {
-                        accountUpdate.Positions[position.id] = {
+                        accountUpdate.Positions[this.symbol] = {
                             Symbol: position.symbol,
-                            PositionId: position.id,
+                            PositionId: 0,
                             Side: position.side,
                             Size: position.size,
                             PositionValue: parseFloat(position.position_value),
@@ -360,9 +360,8 @@ export class ByBitExchange extends Exchange {
                             StopLoss: parseFloat(position.stop_loss),
                             TrailingStop: parseFloat(position.trailing_stop),
                             PositionStatus: position.position_status,
-                            CreatedAt: position.created_at,
-                            UpdatedAt: position.updated_at,
-                            Closed: false
+                            UpdatedAt: new Date().getTime().toString(),
+                            Closed: position.side == "None"
                         }
                     }
 
@@ -509,7 +508,7 @@ export class ByBitExchange extends Exchange {
             } else if (position) {
                 accountUpdate.Positions[this.symbol] = {
                     Symbol: position.symbol,
-                    PositionId: position.id,
+                    PositionId: 0,
                     Side: position.side,
                     Size: position.size,
                     PositionValue: position.position_value,
@@ -525,7 +524,6 @@ export class ByBitExchange extends Exchange {
                     StopLoss: position.stop_loss,
                     TrailingStop: position.trailing_stop,
                     PositionStatus: position.position_status,
-                    CreatedAt: position.created_at,
                     UpdatedAt: position.updated_at,
                     Closed: false
                 }
