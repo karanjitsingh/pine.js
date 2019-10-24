@@ -65,21 +65,23 @@ export class PlatformControl {
                     const key = uuid();
 
                     let plotConfigs: Dictionary<PlotConfig>;
-
+                    
+                    
                     if (!instance.platform.isRunning) {
-
-                        instance.platform.subscribe((data: ReporterData) => {
-                            this.updateData(data, instance.key);
-                        }, null);
-
                         plotConfigs = instance.platform.start();
+
+                        this.reporterProtocol.SendReporterInit(plotConfigs, [socket]);
                     } else {
                         plotConfigs = instance.platform.PlotConfig;
 
+                        this.reporterProtocol.SendReporterInit(plotConfigs, [socket]);
                         this.reporterProtocol.SendReporterData(instance.platform.getData(500), [socket]);
                     }
+                    
 
-                    this.reporterProtocol.SendReporterInit(plotConfigs, [socket]);
+                    instance.platform.subscribe((data: ReporterData) => {
+                        this.updateData(data, instance.key);
+                    }, null);
 
                     instance.connections[key] = socket;
 

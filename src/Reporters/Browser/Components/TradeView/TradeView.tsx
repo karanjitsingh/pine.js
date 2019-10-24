@@ -33,10 +33,11 @@ export class TradeView extends React.Component<TradeViewProps> {
         super(props);
         this.ref = React.createRef();
         window['ref'] = this.ref;
-        this.props.tradeStreams.chart.subscribe(this.dataListener.bind(this));
+        
+        this.props.tradeStreams.chart.subscribe(this.chartUpdate.bind(this));
     }
 
-    public dataListener() {
+    public chartUpdate() {
         this.props.tradeStreams.chart.flush().forEach(data => {
             Object.keys(data).forEach((key) => {
                 this.chartMap[key].update(data[key]);

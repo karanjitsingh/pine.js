@@ -91,7 +91,7 @@ class Reporter {
             } else {
                 const connection = res.responseText;
 
-                console.log(connection);
+                console.log("connetion", connection);
                 this.subscribeToSocket(connection);
             }
         }, (why) => {

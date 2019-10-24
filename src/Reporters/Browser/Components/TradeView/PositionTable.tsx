@@ -27,8 +27,8 @@ export class PositionTable extends React.Component<PositionTableProps, PositionT
         }
     }
 
-    // Contract  qty     value       price       liq.price   margin              unrealized p&l          TP/SL
-    // btcusd    1000    0.1210 btc  8237.80     7523.50      0.0122 btc (10x)    0.0004 BTC (3.56%)     -/- (-)
+    // Contract  qty     value       price       liq.price  margin              unrealized p&l          TP/SL
+    // btcusd    1000    0.1210 btc  8237.80     7523.50     0.0122 btc (10x)    0.0004 BTC (3.56%)     -/- (-)
     //                                                      ~101.23 usd         ~3.30 usd
     public render() {
 
@@ -47,11 +47,11 @@ export class PositionTable extends React.Component<PositionTableProps, PositionT
             },
             {
                 title: "Price",
-                render: (position: Position) => position.EntryPrice
+                render: (position: Position) => position.EntryPrice.toFixed(2)
             },
             {
                 title: "Liq.Price",
-                render: (position: Position) => position.LiquidationPrice
+                render: (position: Position) => position.LiquidationPrice.toFixed(2)
             },
             {
                 title: "Margin",
@@ -59,7 +59,7 @@ export class PositionTable extends React.Component<PositionTableProps, PositionT
             },
             {
                 title: "P&L",
-                render: (position: Position) => position.UnrealizedPnl.toFixed(8)
+                render: (position: Position) => "0"
             },
             {
                 title: "TP/SL",
