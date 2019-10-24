@@ -10,14 +10,15 @@ export interface Response<TResult> {
     result: TResult,
     time_now: string
 }
-export type Api = { [id in keyof ByBitContracts]?: (params: ByBitContracts[id]['Params'], auth?: ExchangeAuth) => Promise<ByBitContracts[id]['Response']> };
+export type Api = { [id in keyof ByBitContracts]?: (params: ByBitContracts[id]['Params']) => Promise<ByBitContracts[id]['Response']> };
 
 export class ByBitApi implements Api {
-    constructor(private network: INetwork, private testnet: boolean) { }
+    constructor(private network: INetwork, private testnet: boolean, private auth: ExchangeAuth) { }
 
-    public PlaceActiveOrder = (params: ByBitContracts['PlaceActiveOrder']['Params'], auth: ExchangeAuth) => {
+    public PlaceActiveOrder = (params: ByBitContracts['PlaceActiveOrder']['Params']) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/order/create" : "https://api.bybit.com/open-api/order/create";
-        return this.apiCall<ByBitContracts['PlaceActiveOrder']>('post', url, params, auth);
+        console.log(this.auth)
+        return this.apiCall<ByBitContracts['PlaceActiveOrder']>('post', url, params, this.auth);
     }
 
     public Kline = (params: ByBitContracts['Kline']['Params']) => {
@@ -25,29 +26,29 @@ export class ByBitApi implements Api {
         return this.apiCall<ByBitContracts['Kline']>('get', url, params);
     }
 
-    public GetActiveOrder = (params: ByBitContracts['GetActiveOrder']['Params'], auth: ExchangeAuth) => {
+    public GetActiveOrder = (params: ByBitContracts['GetActiveOrder']['Params']) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/order/list" : "https://api.bybit.com/open-api/order/list";
-        return this.apiCall<ByBitContracts['GetActiveOrder']>('get', url, params, auth);
+        return this.apiCall<ByBitContracts['GetActiveOrder']>('get', url, params, this.auth);
     }
 
-    public GetConditionalOrder = (params: ByBitContracts['GetConditionalOrder']['Params'], auth: ExchangeAuth) => {
+    public GetConditionalOrder = (params: ByBitContracts['GetConditionalOrder']['Params']) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/stop-order/list" : "https://api.bybit.com/open-api/stop-order/list";
-        return this.apiCall<ByBitContracts['GetConditionalOrder']>('get', url, params, auth);
+        return this.apiCall<ByBitContracts['GetConditionalOrder']>('get', url, params, this.auth);
     }
 
-    public MyPosition = (params: ByBitContracts['MyPosition']['Params'], auth: ExchangeAuth) => {
+    public MyPosition = (params: ByBitContracts['MyPosition']['Params']) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/position/list" : "https://api.bybit.com/position/list";
-        return this.apiCall<ByBitContracts['MyPosition']>('get', url, params, auth);
+        return this.apiCall<ByBitContracts['MyPosition']>('get', url, params, this.auth);
     }
 
-    public GetWalletFundRecords = (params: ByBitContracts['GetWalletFundRecords']['Params'], auth: ExchangeAuth) => {
+    public GetWalletFundRecords = (params: ByBitContracts['GetWalletFundRecords']['Params']) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/wallet/fund/records" : "https://api.bybit.com/open-api/wallet/fund/records";
-        return this.apiCall<ByBitContracts['GetWalletFundRecords']>('get', url, params, auth);
+        return this.apiCall<ByBitContracts['GetWalletFundRecords']>('get', url, params, this.auth);
     }
 
-    public UserLeverage = (params: ByBitContracts['UserLeverage']['Params'], auth: ExchangeAuth) => {
+    public UserLeverage = (params: ByBitContracts['UserLeverage']['Params']) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/user/leverage" : "https://api.bybit.com/user/leverage";
-        return this.apiCall<ByBitContracts['UserLeverage']>('get', url, params, auth);
+        return this.apiCall<ByBitContracts['UserLeverage']>('get', url, params, this.auth);
     }
 
     private apiCall<Contract extends ApiContract<Contract['Params'], Contract['Response']>>(method: keyof INetwork, url: string, params: Contract['Params'], auth?: ExchangeAuth): Promise<Contract['Response']> {
@@ -57,7 +58,7 @@ export class ByBitApi implements Api {
         }
 
         return new Promise<Contract['Response']>((resolve, reject) => {
-            this.apiNetworkCall(method, url, params, auth).then((response: NetworkResponse) => {
+            this.apiNetworkCall(method, url, params, this.auth).then((response: NetworkResponse) => {
                 resolve(JSON.parse(response.response) as Contract['Response']);
             }, (reason) => {
                 reject(reason);
@@ -68,7 +69,7 @@ export class ByBitApi implements Api {
     private apiNetworkCall<Contract extends ApiContract<Contract['Params'], Contract['Response']>>(method: keyof INetwork, url: string, params: Contract['Params'], auth?: ExchangeAuth): Promise<NetworkResponse> {
         switch (method) {
             case 'get':
-                return this.network[method](url, auth ? this.getSignedParam(auth, params) : params);
+                return this.network[method](url, this.auth ? this.getSignedParam(auth, params) : params);
             case 'post':
                 return this.network[method](url, {
                     "Content-Type": "application/json"
@@ -96,7 +97,7 @@ export class ByBitApi implements Api {
             paramstr += key + "=" + params[key];
         });
 
-        orderedParams['sign'] = crypto.createHmac('sha256', auth.Secret).update(paramstr).digest('hex');
+        orderedParams['sign'] = crypto.createHmac('sha256', this.auth.Secret).update(paramstr).digest('hex');
 
         return orderedParams;
     }

@@ -13,7 +13,7 @@
             "Platform/*": [ "./Platform/*" ],
             "Server/*": [ "./Server/*" ]
         },
-        "types": ["node", "ws"],
+        "types": ["node", "ws", "./globals"],
         "noImplicitAny": true,
         "noImplicitReturns": true
     },

@@ -1,5 +1,5 @@
 import { ApiContract } from "Model/Network";
-import { Side, OrderType, Timestamp, StringWrapped, UtcTimeStamp, OrderStatus } from "Model/Contracts";
+import { Side, OrderType, Timestamp, StringWrapped, UtcTimeStamp, OrderStatus, Int } from "Model/Contracts";
 
 export type Symbol = 'BTCUSD' | 'ETHUSD' | 'XRPUSD' | 'EOSUSD';
 export type Currency = 'BTC' | 'ETH' | 'EOS' | 'XRP';
@@ -95,7 +95,7 @@ export interface ByBitWebsocketContracts {
         realised_pnl: StringWrapped<number>			    // "-0.00434982"
         risk_id: number			                        // 1
         side: Side | "None"			                    // "None"
-        size: number			                        // 0
+        size: Int			                        // 0
         stop_loss: StringWrapped<number>			    // "0"
         symbol: Symbol			                        // "BTCUSD"
         take_profit: StringWrapped<number>			    // "0"
@@ -170,9 +170,9 @@ export interface ByBitContracts {
             /** Active order type */
             order_type: OrderType,
             /** Order quantity. */
-            qty: BigInt,
+            qty: Int,
             /** Order price. */
-            price: BigInt,
+            price: Int,
             /** Time in force */
             time_in_force: TimeInForce,
             /** take profit price */
@@ -578,7 +578,7 @@ export interface ByBitContracts {
             /** position Side  (None, buy, sell) */
             side: Side | 'None',
             /** position size */
-            size: number,
+            size: Int,
             /** position value */
             position_value: number,
             /** entry price */

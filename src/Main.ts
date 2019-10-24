@@ -19,3 +19,6 @@ if (process.argv.includes("autoinit")) {
     instance.platform.start();
 }
 
+(Number as any).prototype.toInt = function() {
+    return Math.floor(this);
+} 

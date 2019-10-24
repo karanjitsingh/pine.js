@@ -17,6 +17,7 @@ export abstract class Exchange {
     public abstract readonly authSuccess: boolean;
     public abstract readonly lastPrice: number;
     public abstract readonly marketPrice: number;
+    public abstract readonly symbol: string;
     
     public readonly account: Account = new Account();
 

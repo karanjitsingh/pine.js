@@ -32,22 +32,27 @@ export class ByBitExchange extends Exchange {
 
     public get lastPrice(): number { return this._lastPrice; };
     public get marketPrice(): number { return this._marketPrice; };
+    public get symbol(): Symbol { return this._symbol; };
+
+    public get api(): ByBitApi { return this._api; };
+
+    protected isTestnet: boolean = false;
 
     protected websocketEndpoint: string = "wss://stream-testnet.bybit.com/realtime";
-    protected api: ByBitApi;
 
     private _isLive: boolean = false;
     private _broker: ByBitBroker;
     private _authSuccess: boolean;
     private _lastPrice: number;
     private _marketPrice: number;
+    protected _api: ByBitApi;
 
     private subscribedResolutions: Resolution[];
     private candleQueue: CandleQueue;
     private auth: ExchangeAuth;
     private connecting: boolean = false;
     private webSocket: WebSocket;
-    private symbol: Symbol;
+    private _symbol: Symbol;
 
     private symbolToCurrencyMap: Dictionary<string, Symbol> = {
         "BTCUSD": "BTC",
@@ -66,7 +71,6 @@ export class ByBitExchange extends Exchange {
 
     constructor(protected network: INetwork) {
         super(network);
-        this.api = new ByBitApi(this.network, false);
     }
 
     public getSymbolList() {
@@ -75,7 +79,7 @@ export class ByBitExchange extends Exchange {
 
     public async connect(symbol: Symbol, auth?: ExchangeAuth): Promise<ByBitBroker | undefined> {
         this.auth = auth;
-        this.symbol = symbol;
+        this._symbol = symbol;
         let _resolve: (broker?: ByBitBroker) => void;
         let _reject: (reason: any) => void;
         const promise = new Promise<ByBitBroker | undefined>((resolver, rejector) => { _resolve = resolver; _reject = rejector; });
@@ -106,6 +110,8 @@ export class ByBitExchange extends Exchange {
         this.connecting = true;
 
         this.webSocket = new WebSocket(this.websocketEndpoint);
+
+        this._api = new ByBitApi(this.network, this.isTestnet, this.auth || { ApiKey: "", Secret: "" })
 
         this.webSocket.onopen = () => {
             console.log('Bybit: Connection opened');
@@ -140,27 +146,28 @@ export class ByBitExchange extends Exchange {
                                         Promise.all([
                                             this.api.GetActiveOrder({
                                                 order_status: "Created,New,PartiallyFilled",
-                                                symbol: this.symbol,
+                                                symbol: this._symbol,
                                                 // Todo: consolidate if more than 50 open orders present
                                                 limit: 50
-                                            }, this.auth),
+                                            }),
                                             this.api.GetConditionalOrder({
                                                 limit: 50,
-                                                symbol: this.symbol
-                                            }, this.auth),
-                                            this.api.MyPosition({}, this.auth),
-                                            this.api.UserLeverage({}, this.auth),
+                                                symbol: this._symbol
+                                            }),
+                                            this.api.MyPosition({}),
+                                            this.api.UserLeverage({}),
                                             this.api.GetWalletFundRecords({
-                                                currency: this.symbolToCurrencyMap[this.symbol],
+                                                currency: this.symbolToCurrencyMap[this._symbol],
                                                 limit: 1
-                                            }, this.auth)
+                                            })
                                         ]).then((response) => {
                                             // 10002, timestamp was too less
 
                                             const rejectionReason = this.initAccount(response);
 
                                             if (!rejectionReason) {
-                                                resolve(this._broker = new ByBitBroker(this));
+                                                this._broker = (global as any).broker = new ByBitBroker(this)
+                                                resolve(this._broker);
                                             } else {
                                                 reject(rejectionReason);
                                             }
@@ -242,7 +249,7 @@ export class ByBitExchange extends Exchange {
                     } as Candle;
                 });
 
-                // this._lastPrice = candleData[candleData.length - 1].Close;
+                this._lastPrice = candleData[candleData.length - 1].Close;
 
                 return Promise.resolve(candleData);
             } else {
@@ -277,7 +284,7 @@ export class ByBitExchange extends Exchange {
                         Volume: data.data.volume
                     }
 
-                    // this._lastPrice = candle.Close;
+                    this._lastPrice = candle.Close;
 
                     const candleUpdate: ResolutionMapped<Candle> = {};
                     candleUpdate[data.data.interval as Resolution] = candle;
@@ -318,7 +325,7 @@ export class ByBitExchange extends Exchange {
                         Orders: {}
                     }
 
-                    orders.filter((order) => order.symbol == this.symbol).forEach((order) => {
+                    orders.filter((order) => order.symbol == this._symbol).forEach((order) => {
                         accountUpdate.Orders[order.order_id] = {
                             OrderId: order.order_id,
                             Side: order.side,
@@ -341,10 +348,10 @@ export class ByBitExchange extends Exchange {
                         Positions: {}
                     }
 
-                    const position = positionsRaw.filter(position => position.symbol == this.symbol)[0];
+                    const position = positionsRaw.filter(position => position.symbol == this._symbol)[0];
 
                     if (position) {
-                        accountUpdate.Positions[this.symbol] = {
+                        accountUpdate.Positions[this._symbol] = {
                             Symbol: position.symbol,
                             PositionId: 0,
                             Side: position.side,
@@ -368,7 +375,7 @@ export class ByBitExchange extends Exchange {
                     }
 
                 } else if (data && data.topic && data.topic.toLowerCase() == "private.wallet") {
-                    const wallet = (data.data as ByBitWebsocketContracts['Wallet']).filter(wallets => wallets.symbol == this.symbol)[0];
+                    const wallet = (data.data as ByBitWebsocketContracts['Wallet']).filter(wallets => wallets.symbol == this._symbol)[0];
 
                     if (wallet) {
                         this.account.update({
@@ -399,7 +406,7 @@ export class ByBitExchange extends Exchange {
             // retry connecting after some second to not bothering on high load
             setTimeout(() => {
                 console.log('Bybit: Retrying.')
-                this.connect(this.symbol, this.auth).then((success) => { }, (reason) => {
+                this.connect(this._symbol, this.auth).then((success) => { }, (reason) => {
                     console.log('Bybit: Retry rejection, reason: ' + reason);
                     this.distessSignal.set();
                 });
@@ -427,8 +434,8 @@ export class ByBitExchange extends Exchange {
 
         if (userLeverageResponse.ret_code == 0) {
             const leverage = userLeverageResponse.result;
-            if(this.account.Leverage != leverage[this.symbol].leverage) {
-                accountUpdate.Leverage = leverage[this.symbol].leverage;
+            if(this.account.Leverage != leverage[this._symbol].leverage) {
+                accountUpdate.Leverage = leverage[this._symbol].leverage;
             }
         }
 
@@ -442,7 +449,7 @@ export class ByBitExchange extends Exchange {
                 }
 
             } else {
-                apiErrors.push(`GetWalletFundRecords-${this.symbolToCurrencyMap[this.symbol]}: ${walletResponse.ret_msg}.`);
+                apiErrors.push(`GetWalletFundRecords-${this.symbolToCurrencyMap[this._symbol]}: ${walletResponse.ret_msg}.`);
             }
         }
 
@@ -499,21 +506,21 @@ export class ByBitExchange extends Exchange {
         }
 
         if (positionReponse.ret_code == 0) {
-            const positions = positionReponse.result.filter((position) => position.symbol == this.symbol);
+            const positions = positionReponse.result.filter((position) => position.symbol == this._symbol);
             accountUpdate.Positions = {};
 
             const existingPositions = this.account.Positions;
 
-            const position = positions.filter((position) => position.symbol == this.symbol && position.side != "None")[0];
+            const position = positions.filter((position) => position.symbol == this._symbol && position.side != "None")[0];
 
-            if (existingPositions[this.symbol] && existingPositions[this.symbol].Side != "None" && !position) {
+            if (existingPositions[this._symbol] && existingPositions[this._symbol].Side != "None" && !position) {
                 // Position was closed
-                accountUpdate.Positions[this.symbol] = {
-                    ...this.account.Positions[this.symbol],
+                accountUpdate.Positions[this._symbol] = {
+                    ...this.account.Positions[this._symbol],
                     Closed: true
                 }
             } else if (position) {
-                accountUpdate.Positions[this.symbol] = {
+                accountUpdate.Positions[this._symbol] = {
                     Symbol: position.symbol,
                     PositionId: 0,
                     Side: position.side,

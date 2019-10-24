@@ -95,6 +95,8 @@ export type StringWrapped<T> = string;
 /** Timestamp of the format "2018-10-15T04:12:19.000Z" */
 export type Timestamp = string;
 
+export type Int = number & { __int__: void };
+
 // ------------------------------------------------------------------------------------------------
 // Configuration ----------------------------------------------------------------------------------
 
