@@ -122,7 +122,7 @@ export interface ByBitWebsocketContracts {
         symbol: Symbol			                        // "BTCUSD"
         used_margin: number			                    // 0.05168306
         wallet_balance: number			                // 0.28408436
-    }
+    }[]
 }
 
 export interface ByBitContracts {

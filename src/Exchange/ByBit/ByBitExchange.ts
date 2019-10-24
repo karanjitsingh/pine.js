@@ -311,12 +311,12 @@ export class ByBitExchange extends Exchange {
                 } else if (data.data && data.topic && data.topic.toLowerCase() === 'order') {
 
                     const orders = data.data as ByBitWebsocketContracts['Order'];
-                    
+
                     const accountUpdate: Partial<IAccount> = {
                         Orders: {}
                     }
 
-                    orders.forEach((order) => {
+                    orders.filter((order) => order.symbol == this.symbol).forEach((order) => {
                         accountUpdate.Orders[order.order_id] = {
                             OrderId: order.order_id,
                             Side: order.side,
@@ -339,8 +339,9 @@ export class ByBitExchange extends Exchange {
                         Positions: {}
                     }
 
-                    positionsRaw.forEach(position => {
-                        
+                    const position = positionsRaw.filter(position => position.symbol == this.symbol)[0];
+
+                    if(position) {
                         accountUpdate.Positions[position.id] = {
                             Symbol: position.symbol,
                             PositionId: position.id,
@@ -359,27 +360,28 @@ export class ByBitExchange extends Exchange {
                             StopLoss: parseFloat(position.stop_loss),
                             TrailingStop: parseFloat(position.trailing_stop),
                             PositionStatus: position.position_status,
-                            UnrealizedPnl: parseFloat(position.unrealised_pnl),
                             CreatedAt: position.created_at,
                             UpdatedAt: position.updated_at,
                             Closed: false
                         }
-                    });
-                    
-                } else if (data && data.topic && data.topic.toLowerCase() == "private.wallet") {
-                    const wallet = data.data as ByBitWebsocketContracts['Wallet'];
+                    }
 
-                    this.account.update({
-                        Wallet: {
-                            Balance: wallet.wallet_balance,
-                            OrderMargin: wallet.order_margin,
-                            PositionMargin: wallet.position_margin,
-                            AvailableMargin: Decimal.sub(wallet.wallet_balance, wallet.order_margin)
-                                                    .sub(wallet.position_margin)
-                                                    .sub(wallet.occ_closing_fee)
-                                                    .sub(wallet.occ_funding_fee).toNumber()
-                        }
-                    })
+                } else if (data && data.topic && data.topic.toLowerCase() == "private.wallet") {
+                    const wallet = (data.data as ByBitWebsocketContracts['Wallet']).filter(wallets => wallets.symbol == this.symbol)[0];
+
+                    if (wallet) {
+                        this.account.update({
+                            Wallet: {
+                                Balance: wallet.wallet_balance,
+                                OrderMargin: wallet.order_margin,
+                                PositionMargin: wallet.position_margin,
+                                AvailableMargin: Decimal.sub(wallet.wallet_balance, wallet.order_margin || 0)
+                                    .sub(wallet.position_margin || 0)
+                                    .sub(wallet.occ_closing_fee || 0)
+                                    .sub(wallet.occ_funding_fee || 0).toNumber()
+                            }
+                        });
+                    }
                 }
                 else {
                     console.log('unknown', data.data);
@@ -496,64 +498,49 @@ export class ByBitExchange extends Exchange {
 
             const existingPositions = this.account.Positions;
 
-            if (positions) {
-                positions.forEach((position) => {
-                    if (existingPositions[position.id] && existingPositions[position.id].UpdatedAt != position.updated_at && position.side == "None") {
-                        accountUpdate.Positions[position.id] = {
-                            ...this.account.Positions[position.id],
-                            Side: position.side,
-                            PositionStatus: position.position_status,
-                            Leverage: position.leverage,
-                            UnrealizedPnl: position.unrealised_pnl,
-                            RealizedPnl: position.realised_pnl,
-                            CreatedAt: position.created_at,
-                            UpdatedAt: position.updated_at,
-                            Closed: true
-                        }
-                    } else if (
-                        (existingPositions[position.id] && existingPositions[position.id].UpdatedAt != position.updated_at && position.side != "None") ||
-                        (!existingPositions[position.id] && position.side != "None")
-                    ) {
-                        // Position is in account, is open, and has been updated
-                        // or
-                        // Position is not in account and is open
+            const position = positions.filter((position) => position.symbol == this.symbol && position.side != "None")[0];
 
-                        accountUpdate.Positions[position.id] = {
-                            Symbol: position.symbol,
-                            PositionId: position.id,
-                            Side: position.side,
-                            Size: position.size,
-                            PositionValue: position.position_value,
-                            EntryPrice: position.entry_price,
-                            Leverage: position.leverage,
-                            AutoAddMargin: !!position.auto_add_margin,
-                            PositionMargin: position.position_margin,
-                            LiquidationPrice: position.liq_price,
-                            BankrupcyPrice: position.bust_price,
-                            ClosingFee: position.occ_closing_fee,
-                            FundingFee: position.occ_funding_fee,
-                            TakeProfit: position.take_profit,
-                            StopLoss: position.stop_loss,
-                            TrailingStop: position.trailing_stop,
-                            PositionStatus: position.position_status,
-                            UnrealizedPnl: position.unrealised_pnl,
-                            CreatedAt: position.created_at,
-                            UpdatedAt: position.updated_at,
-                            Closed: false
-                        }
-                    }
-                })
-            }
+            if (existingPositions[this.symbol] && existingPositions[this.symbol].Side != "None" && !position) {
+                // Position was closed
+                accountUpdate.Positions[this.symbol] = {
+                    ...this.account.Positions[this.symbol],
+                    Closed: true
+                }
+            } else if (position) {
+                accountUpdate.Positions[this.symbol] = {
+                    Symbol: position.symbol,
+                    PositionId: position.id,
+                    Side: position.side,
+                    Size: position.size,
+                    PositionValue: position.position_value,
+                    EntryPrice: position.entry_price,
+                    Leverage: position.leverage,
+                    AutoAddMargin: !!position.auto_add_margin,
+                    PositionMargin: position.position_margin,
+                    LiquidationPrice: position.liq_price,
+                    BankrupcyPrice: position.bust_price,
+                    ClosingFee: position.occ_closing_fee,
+                    FundingFee: position.occ_funding_fee,
+                    TakeProfit: position.take_profit,
+                    StopLoss: position.stop_loss,
+                    TrailingStop: position.trailing_stop,
+                    PositionStatus: position.position_status,
+                    CreatedAt: position.created_at,
+                    UpdatedAt: position.updated_at,
+                    Closed: false
+                }
 
-            const latestPosition = positions[0];
-            if(latestPosition.side != "None") {
-                accountUpdate.Wallet.Balance = latestPosition.wallet_balance;
-                accountUpdate.Wallet.OrderMargin = latestPosition.order_margin;
-                accountUpdate.Wallet.PositionMargin = latestPosition.position_margin;
-                accountUpdate.Wallet.AvailableMargin = Decimal.sub(latestPosition.wallet_balance, latestPosition.order_margin)
-                                                              .sub(latestPosition.position_margin)
-                                                              .sub(latestPosition.occ_closing_fee)
-                                                              .sub(latestPosition.occ_funding_fee).toNumber();
+                
+                if (position.side != "None") {
+                    accountUpdate.Wallet.Balance = position.wallet_balance;
+                    accountUpdate.Wallet.OrderMargin = position.order_margin;
+                    accountUpdate.Wallet.PositionMargin = position.position_margin;
+                    accountUpdate.Wallet.AvailableMargin = Decimal.sub(position.wallet_balance, position.order_margin)
+                        .sub(position.position_margin)
+                        .sub(position.occ_closing_fee)
+                        .sub(position.occ_funding_fee).toNumber();
+                }
+
             }
 
             // side: None == closed

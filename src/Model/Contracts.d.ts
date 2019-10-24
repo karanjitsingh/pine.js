@@ -61,7 +61,6 @@ export interface Position<T = {}> {
     StopLoss: number,
     TrailingStop: number,
     PositionStatus: string,
-    UnrealizedPnl: number,
     CreatedAt: string,
     UpdatedAt: string,
 
