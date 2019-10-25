@@ -13,7 +13,7 @@ export class Network implements INetwork {
 
         return new Promise((resolve, reject) => {
             let status: number;
-            let headers: IncomingHttpHeaders;
+            let incomingHeaders: IncomingHttpHeaders;
             let data = "";
 
             var req = https.request(new URL(url), {
@@ -21,7 +21,7 @@ export class Network implements INetwork {
                 headers: headers,
             }, resp => {
                 status = resp.statusCode;
-                headers = resp.headers;
+                incomingHeaders = resp.headers;
 
                 console.log(requestId, "STATUS", status);
 
@@ -32,12 +32,12 @@ export class Network implements INetwork {
 
                 resp.on('end', function() {
                     if(status != 200) {
-                        console.log(requestId, "HEADERS", headers)
+                        console.log(requestId, "HEADERS", incomingHeaders)
                         console.log(requestId, "RESPONSE", data);
                         reject({
                             requestId,
                             status,
-                            headers,
+                            headers: incomingHeaders,
                             response: data,
                             error: null
                         } as NetworkResponse);
@@ -46,7 +46,7 @@ export class Network implements INetwork {
                         resolve({
                             requestId,
                             status,
-                            headers,
+                            headers: incomingHeaders,
                             response: data,
                             error: null
                         } as NetworkResponse);
@@ -59,7 +59,7 @@ export class Network implements INetwork {
                 reject({
                     requestId,
                     status,
-                    headers,
+                    headers: incomingHeaders,
                     response: data,
                     error: e
                 });

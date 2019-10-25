@@ -56,8 +56,9 @@ export class ByBitBroker implements IBroker {
             symbol: this.exchange.symbol,
             order_type: 'Market',
             price: this.exchange.lastPrice.toInt(),
-            qty: this.exchange.lastPrice.toInt(),
-            time_in_force: 'ImmediateOrCancel'
+            qty: (position.Size).toInt(),
+            time_in_force: 'ImmediateOrCancel',
+            reduce_only: true
         }).then((x) => {
             console.log("resolve", x)
         }, (x) => {console.log("reject", x)});
