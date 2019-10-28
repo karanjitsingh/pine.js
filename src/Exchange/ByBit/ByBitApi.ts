@@ -56,6 +56,11 @@ export class ByBitApi implements Api {
         return this.apiCall<ByBitContracts['ChangeUserLeverage']>('post', url, params, this.auth);
     }
 
+    public SetTradingStop = (params: ByBitContracts['SetTradingStop']['Params']) => {
+        const url = this.testnet ? "https://api-testnet.bybit.com/open-api/position/trading-stop" : "https://api.bybit.com/open-api/position/trading-stop";
+        return this.apiCall<ByBitContracts['SetTradingStop']>('post', url, params, this.auth);
+    }
+
     private apiCall<Contract extends ApiContract<Contract['Params'], Contract['Response']>>(method: keyof INetwork, url: string, params: Contract['Params'], auth?: ExchangeAuth): Promise<Contract['Response']> {
 
         if (!params || !(params instanceof Object)) {

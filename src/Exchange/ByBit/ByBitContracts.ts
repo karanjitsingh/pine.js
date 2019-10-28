@@ -172,7 +172,7 @@ export interface ByBitContracts {
             /** Order quantity. */
             qty: Int,
             /** Order price. */
-            price: Int,
+            price: number,
             /** Time in force */
             time_in_force: TimeInForce,
             /** take profit price */

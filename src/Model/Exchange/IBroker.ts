@@ -1,4 +1,5 @@
 import { DualDictionary } from "Model/Utils/DualDictionary";
+import { Int, Side } from "Model/Contracts";
 
 export type BrokerResponseSuccess<T> = {
     success: true;
@@ -13,9 +14,9 @@ export type BrokerResponse<T = {}> = BrokerResponseSuccess<T> | BrokerResponseFa
 export type BrokerOrderResponse = BrokerResponse<{ orderId: string }>
 
 export interface TradingStop {
-    TakeProfit: number;
-    StopLoss: number;
-    TrailingStop: number;
+    TakeProfit?: number;
+    StopLoss?: number;
+    TrailingStop?: number;
 }
 
 export interface IBroker {
@@ -26,7 +27,7 @@ export interface IBroker {
 
     getRequestStatus(requestId: string): boolean;
 
-    marketOrder(): Promise<BrokerOrderResponse>;
+    marketOrder(side: Side, quantity: Int): Promise<BrokerOrderResponse>;
     limitOrder(): Promise<BrokerOrderResponse>;
     conditionalOrder(): Promise<BrokerOrderResponse>;
     cancelOrder(orderId: string): Promise<BrokerOrderResponse>;

@@ -14,8 +14,20 @@ export class ByBitBroker implements IBroker {
         throw new Error("Method not implemented.");
     }
 
-    marketOrder(): Promise<BrokerOrderResponse> {
-        throw new Error("Method not implemented.");
+    marketOrder(side: Side, quantity: Int): Promise<BrokerOrderResponse> {
+        const promise = this.exchange.api.PlaceActiveOrder({
+            side,
+            symbol: this.exchange.symbol,
+            order_type: 'Market',
+            price: this.exchange.lastPrice.toInt(),
+            qty: quantity,
+            time_in_force: 'ImmediateOrCancel',
+        });
+        
+        return this.formBrokerResponse(promise, (response) => ({
+            success: true,
+            orderId: response.result.order_id
+        })) as Promise<BrokerOrderResponse>;
     }
 
     limitOrder(): Promise<BrokerOrderResponse> {
@@ -31,9 +43,14 @@ export class ByBitBroker implements IBroker {
     }
 
     setStop(stops: TradingStop): Promise<BrokerResponse> {
-        
+        const promise = this.exchange.api.SetTradingStop({
+            symbol: this.exchange.symbol,
+            take_profit: stops.TakeProfit.toString(),
+            stop_loss: stops.StopLoss.toString(),
+            trailing_stop: stops.TrailingStop.toString()
+        })
 
-        throw new Error("Method not implemented.");
+        return this.formBrokerResponse(promise);
     }
 
     updateLeverage(leverage: Int): Promise<BrokerResponse> {
@@ -63,8 +80,9 @@ export class ByBitBroker implements IBroker {
             symbol: this.exchange.symbol,
             order_type: 'Market',
             price: this.exchange.lastPrice.toInt(),
-            qty: this.exchange.lastPrice.toInt(),
-            time_in_force: 'ImmediateOrCancel'
+            qty: position.Size.toInt(),
+            time_in_force: 'ImmediateOrCancel',
+            reduce_only: true
         })
 
         return this.formBrokerResponse(promise, (response) => ({
