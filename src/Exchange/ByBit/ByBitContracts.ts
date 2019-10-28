@@ -17,7 +17,7 @@ export type LastTickDirection = "PlusTick" | "ZeroPlusTick" | "MinusTick" | "Zer
 export type StopOrderStatus = "Untriggered" | "Triggered" | "Cancelled" | "Active" | "Rejected";
 
 
-export interface Response<TResult> {
+export interface ByBitApiResponse<TResult> {
     ret_code: number,
     ret_msg: string,
     ext_code: string,
@@ -25,7 +25,7 @@ export interface Response<TResult> {
     time_now: string
 }
 
-export type ByBitApiContract<TParams, TResult> = ApiContract<TParams, Response<TResult>>
+export type ByBitApiContract<TParams, TResult> = ApiContract<TParams, ByBitApiResponse<TResult>>
 
 export type IntBoolean = 0 | 1;
 

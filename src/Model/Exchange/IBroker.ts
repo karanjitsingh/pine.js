@@ -1,20 +1,16 @@
 import { DualDictionary } from "Model/Utils/DualDictionary";
 
-export interface BrokerResponseSuccess {
+export type BrokerResponseSuccess<T> = {
     success: true;
-}
+} & T;
 
 export interface BrokerResponseFailure {
     success: false;
     reason: string;
 }
 
-export interface BrokerOrderResponseSuccess extends BrokerResponseSuccess {
-    orderId: string;
-}
-
-export type BrokerResponse = BrokerResponseSuccess | BrokerResponseFailure;
-export type BrokerOrderResponse = BrokerOrderResponseSuccess | BrokerResponseFailure;
+export type BrokerResponse<T = {}> = BrokerResponseSuccess<T> | BrokerResponseFailure;
+export type BrokerOrderResponse = BrokerResponse<{ orderId: string }>
 
 export interface TradingStop {
     TakeProfit: number;

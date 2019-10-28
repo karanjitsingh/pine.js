@@ -1,7 +1,8 @@
-import { BrokerOrderResponse, BrokerResponse, IBroker, TradingStop } from "Model/Exchange/IBroker";
+import { BrokerOrderResponse, BrokerResponse, IBroker, TradingStop, BrokerResponseSuccess, BrokerResponseFailure } from "Model/Exchange/IBroker";
 import { DualDictionary } from "Model/Utils/DualDictionary";
 import { ByBitExchange } from "./ByBitExchange";
-import { Side } from "Model/Contracts";
+import { Side, Int } from "Model/Contracts";
+import { ByBitApiResponse } from "./ByBitContracts";
 
 export class ByBitBroker implements IBroker {
     balance: number;
@@ -30,43 +31,78 @@ export class ByBitBroker implements IBroker {
     }
 
     setStop(stops: TradingStop): Promise<BrokerResponse> {
+        
+
         throw new Error("Method not implemented.");
     }
 
-    updateLeverage(leverage: number): Promise<BrokerResponse> {
-        throw new Error("Method not implemented.");
+    updateLeverage(leverage: Int): Promise<BrokerResponse> {
+        const promise = this.exchange.api.ChangeUserLeverage({
+            symbol: this.exchange.symbol,
+            leverage: leverage.toString()
+        });
+
+        return this.formBrokerResponse(promise);
     }
 
     /**
      * Creates a market order to close the position
      */
-    closePosition(): Promise<BrokerResponse> {
+    closePosition(): Promise<BrokerOrderResponse> {
         const position = this.exchange.account.Positions[this.exchange.symbol];
 
-        if(position.Closed || position.Side == "None") {
+        if (position.Closed || position.Side == "None") {
             return Promise.reject('No open position');
         }
 
         const closeSide: Side = position.Side == "Buy" ? "Sell" : "Buy";
 
-        console.log(this.exchange.lastPrice)
 
-        this.exchange.api.PlaceActiveOrder({
+        const promise = this.exchange.api.PlaceActiveOrder({
             side: closeSide,
             symbol: this.exchange.symbol,
             order_type: 'Market',
             price: this.exchange.lastPrice.toInt(),
-            qty: (position.Size).toInt(),
-            time_in_force: 'ImmediateOrCancel',
-            reduce_only: true
-        }).then((x) => {
-            console.log("resolve", x)
-        }, (x) => {console.log("reject", x)});
+            qty: this.exchange.lastPrice.toInt(),
+            time_in_force: 'ImmediateOrCancel'
+        })
+
+        return this.formBrokerResponse(promise, (response) => ({
+            success: true,
+            orderId: response.result.order_id
+        })) as Promise<BrokerOrderResponse>;
+    }
+
+    private formBrokerResponse<S extends ByBitApiResponse<any>, T = {}>(call: Promise<S>, getSuccessResponse?: (response: S) => BrokerResponse<T>): Promise<BrokerResponse<T>> {
+        // TODO log failures
+        
+        return new Promise((resolve) => {
+
+            call.then((response) => {
+                if (response.ret_code == 0) {
+                    if(getSuccessResponse) {
+                        resolve(getSuccessResponse(response));
+                    } else {
+                        resolve({
+                            success: true,
+                        } as BrokerResponseSuccess<T>);
+                    }
+                } else {
+                    resolve({
+                        success: false,
+                        reason: response.ret_msg
+                    } as BrokerResponseFailure)
+                }
+            }, (reason) => {
+                resolve({
+                    success: false,
+                    reason
+                } as BrokerResponseFailure);
+            });
+        })
 
     }
 
-    constructor(private exchange: ByBitExchange) {
-
-    }
+    constructor(private exchange: ByBitExchange) { }
 
 }
