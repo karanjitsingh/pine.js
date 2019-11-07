@@ -1,14 +1,29 @@
 import { BrokerOrderResponse, BrokerResponse, IBroker, TradingStop, BrokerResponseSuccess, BrokerResponseFailure } from "Model/Exchange/IBroker";
 import { DualDictionary } from "Model/Utils/DualDictionary";
 import { ByBitExchange } from "./ByBitExchange";
-import { Side, Int } from "Model/Contracts";
+import { Side, Int, IAccount, Position } from "Model/Contracts";
 import { ByBitApiResponse } from "./ByBitContracts";
 
 export class ByBitBroker implements IBroker {
-    balance: number;
-    leverage: number;
-    requestOrderMap: DualDictionary;
-    requestPositionMap: DualDictionary;
+    public get Account(): IAccount {
+        return this.exchange.account;
+    }
+
+    public get OpenPosition(): Position | undefined {
+        const position = this.exchange.account.Positions[this.exchange.symbol]
+        if(position && !position.Closed) {
+            return position;
+        }
+        return undefined
+    };
+
+    public get PositionPnL(): number | undefined {
+        const position = this.OpenPosition;
+        
+        if(position) {
+            return position.Size / position.EntryPrice * this.exchange.lastPrice;
+        } else return undefined;
+    }
 
     getRequestStatus(requestId: string): boolean {
         throw new Error("Method not implemented.");

@@ -1,5 +1,5 @@
 import { DualDictionary } from "Model/Utils/DualDictionary";
-import { Int, Side } from "Model/Contracts";
+import { Int, Side, IAccount, Position } from "Model/Contracts";
 
 export type BrokerResponseSuccess<T> = {
     success: true;
@@ -20,10 +20,9 @@ export interface TradingStop {
 }
 
 export interface IBroker {
-    readonly balance: number;
-    readonly leverage: number;
-    readonly requestOrderMap: DualDictionary;
-    readonly requestPositionMap: DualDictionary;
+    readonly Account: IAccount;
+    readonly OpenPosition: Position | undefined;
+    readonly PositionPnL: number | undefined;
 
     getRequestStatus(requestId: string): boolean;
 
