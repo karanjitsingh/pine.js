@@ -4,7 +4,7 @@ import { ExchangeStore } from "Model/Exchange/Exchange";
 import { StrategyStore } from "Model/Strategy/Strategy";
 import { Utils } from "Model/Utils/Utils";
 import { Server } from "Server/Server";
-import { StochasticStrategy } from "Strategy/StochasticStrategy";
+import { StochasticStrategy } from "Strategy/StochasticStrategy/StochasticStrategy";
 
 StrategyStore.register("Stochastic Strategy", StochasticStrategy);
 ExchangeStore.register("ByBit", ByBitExchange);

@@ -13,7 +13,7 @@ export type RawPlot = {
     Indicators: Indicator[]
 }
 
-export type StrategyCtor = new (broker: IBroker, messageLogger: MessageLogger) => Strategy;
+export type StrategyCtor = new (messageLogger: MessageLogger) => Strategy;
 
 export interface StrategyConfig {
     resolutionSet: Resolution[];
@@ -24,6 +24,8 @@ export interface StrategyConfig {
 export const StrategyStore = new CtorStore<StrategyCtor>();
 
 export abstract class Strategy {
+    protected broker: IBroker;
+
     public abstract readonly StrategyConfig: StrategyConfig;
 
     public abstract init(input: ResolutionMapped<MarketData>): RawPlot[];  
@@ -32,5 +34,9 @@ export abstract class Strategy {
 
     public abstract trade(update: Partial<IAccount>): void;
 
-    public constructor(protected readonly broker: IBroker, protected readonly messageLogger: MessageLogger) {}
+    public setBroker(broker: IBroker) {
+        this.broker = broker;
+    }
+
+    public constructor(protected readonly messageLogger: MessageLogger) {}
 }

@@ -42,7 +42,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         super();
         this.MessageLogger = new MessageLogger();
         this.Network = new Network();
-        this.strategy = new (StrategyStore.get(this.config.Strategy))(null, this.MessageLogger);
+        this.strategy = new (StrategyStore.get(this.config.Strategy))(this.MessageLogger);
     }
 
     public get isRunning(): boolean {
@@ -60,6 +60,8 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
             this._isRunning = true;
             this.marketSink.subscribe(this.dataUpdate, this);
             this.marketSink.startStream(strategyConfig.initCandleCount);
+            this.strategy.setBroker(this.exchange.broker);
+
         }, (reason) => {
             console.log("Platform: Connection rejected, " + (reason instanceof String ? reason : JSON.stringify(reason)));
         });
@@ -146,11 +148,26 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
         if(update.AccountUpdate) {
             const flushedUpdate = this.exchange.account.flushUpdate();
-            this.strategy.trade(flushedUpdate);
+
+            try {
+                this.strategy.trade(flushedUpdate);
+            } catch(ex) {
+                // todo send error updates to logger
+                console.error("Strategy error: " + ex);
+            }
+
             reporterData.Account = flushedUpdate;
         }
 
         if(update.CandleUpdate) {
+            
+            try {
+
+            } catch(ex) {
+                // todo send error updates to logger
+                console.error("Strategy error: " + ex);
+            }
+
             this.strategy.update(update.CandleUpdate);
             reporterData.ChartData = this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update.CandleUpdate);
         }

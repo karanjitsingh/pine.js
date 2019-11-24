@@ -8,19 +8,19 @@ import { MessageLogger } from "Platform/MessageLogger";
 
 const symbol = 'BTCUSD';
 
-export class StochasticStrategy extends Strategy {
+export abstract class StochasticStrategyBase extends Strategy {
     public readonly StrategyConfig: StrategyConfig;
 
-    private heikenashi30m: MarketData;
-    private currentPosition: Position;
+    protected heikenashi30m: MarketData;
+    protected currentPosition: Position;
 
-    private leading: ISeries;
-    private lagging: ISeries;
-    private diff: ISeries;
-    private shape: ISeries;
+    protected leading: ISeries;
+    protected lagging: ISeries;
+    protected diff: ISeries;
+    protected shape: ISeries;
 
-    constructor(protected broker: IBroker, protected messageLogger: MessageLogger) {
-        super(broker, messageLogger);
+    constructor(protected messageLogger: MessageLogger) {
+        super(messageLogger);
         this.StrategyConfig = {
             resolutionSet: [
                 '1d',
@@ -30,29 +30,6 @@ export class StochasticStrategy extends Strategy {
             initCandleCount: 150,
             symbol
         };
-    }
-
-    public update(updateOffset: ResolutionMapped<number>) {
-        /**
-         * if lagging wave d goes into k from below, then long
-         * if lagging wave d goes into k from above, then short
-         * 
-         * close position if opposite happens
-         * 
-         * keep a stop loss 
-         * 
-         * consolidation mode?
-         */
-
-        if(updateOffset['30m']) {
-
-        }
-
-
-    }
-
-    public trade(update: Partial<IAccount>) {
-
     }
 
     public init(input: ResolutionMapped<MarketData>): RawPlot[] {
