@@ -1,10 +1,10 @@
-import { IAccount, ResolutionMapped, Side, Position } from "Model/Contracts";
-import { IBroker } from "Model/Exchange/IBroker";
+import { Position, ResolutionMapped } from "Model/Contracts";
 import { MarketData } from "Model/InternalContracts";
 import { ema, Expression, HeikinAshi, sma, Stoch } from "Model/Series/Expressions";
 import { ISeries } from "Model/Series/Series";
 import { RawPlot, Strategy, StrategyConfig } from "Model/Strategy/Strategy";
 import { MessageLogger } from "Platform/MessageLogger";
+import { IBroker } from "Model/Exchange/IBroker";
 
 const symbol = 'BTCUSD';
 
@@ -32,7 +32,9 @@ export abstract class StochasticStrategyBase extends Strategy {
         };
     }
 
-    public init(input: ResolutionMapped<MarketData>): RawPlot[] {
+    public init(input: ResolutionMapped<MarketData>, broker: IBroker): RawPlot[] {
+        this.broker = broker;
+        
         this.heikenashi30m = HeikinAshi(input['30m'].Candles);
         sma(this.heikenashi30m.Open, 3);
 

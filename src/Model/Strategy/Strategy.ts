@@ -28,8 +28,8 @@ export abstract class Strategy {
 
     public abstract readonly StrategyConfig: StrategyConfig;
 
-    public abstract init(input: ResolutionMapped<MarketData>): RawPlot[];  
-
+    public abstract init(input: ResolutionMapped<MarketData>, broker: IBroker): RawPlot[];  
+    
     public abstract update(update: ResolutionMapped<number>): void;
 
     public abstract trade(update: Partial<IAccount>): void;

@@ -8,6 +8,7 @@ import { Subscribable } from "Model/Utils/Events";
 import { MessageLogger } from "Platform/MessageLogger";
 import { Network } from "Platform/Network";
 import * as uuid from 'uuid/v4';
+import { IBroker } from "Model/Exchange/IBroker";
 
 type Plot = {
     Resolution: Resolution;
@@ -58,15 +59,15 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
         this.exchange.connect(strategyConfig.symbol, this.config.ExchangeAuth).then(() => {
             this._isRunning = true;
+            
+            this.initStrategy(this.exchange.broker, strategyConfig, this.marketSink.MarketDataMap);
+
             this.marketSink.subscribe(this.dataUpdate, this);
             this.marketSink.startStream(strategyConfig.initCandleCount);
-            this.strategy.setBroker(this.exchange.broker);
-
         }, (reason) => {
             console.log("Platform: Connection rejected, " + (reason instanceof String ? reason : JSON.stringify(reason)));
         });
 
-        this.initStrategy(strategyConfig, this.marketSink.MarketDataMap);
         return this.plotConfigMap;
     }
 
@@ -85,14 +86,14 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         }
     }
 
-    private initStrategy(config: StrategyConfig, dataSeries: ResolutionMapped<MarketData>) {
+    private initStrategy(broker: IBroker, config: StrategyConfig, dataSeries: ResolutionMapped<MarketData>) {
         const stratData: ResolutionMapped<MarketData> = {}
 
         config.resolutionSet.forEach((res) => {
             stratData[res] = dataSeries[res];
         })
 
-        const rawPlots = this.strategy.init(stratData);
+        const rawPlots = this.strategy.init(stratData, broker);
 
         this.plotMap = {};
         this.plotConfigMap = {};
