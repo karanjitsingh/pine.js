@@ -56,7 +56,7 @@ export abstract class StochasticStrategyBase extends Strategy {
 
         return [
             {
-                MarketData: input['30m'],
+                MarketData: this.heikenashi30m,
                 Indicators: [
                     {
                         PlotType: 'Area',

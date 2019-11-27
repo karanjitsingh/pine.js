@@ -43,7 +43,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         super();
         this.MessageLogger = new MessageLogger();
         this.Network = new Network();
-        this.strategy = new (StrategyStore.get(this.config.Strategy))(this.MessageLogger);
+        this.strategy = this.createStrategy(this.config.Strategy);
     }
 
     public get isRunning(): boolean {
@@ -51,12 +51,12 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
     }
 
     public start(): Dictionary<PlotConfig> {
-        const exchangeCtor = ExchangeStore.get(this.config.Exchange);
+
         const strategyConfig = this.strategy.StrategyConfig;
 
-        this.exchange = new exchangeCtor(this.Network, this.config.ExchangeAuth);
-        this.marketSink = new ExchangeSink(this.exchange, strategyConfig.resolutionSet);
+        this.exchange = this.createExchange(this.config.Exchange);
 
+        this.marketSink = new ExchangeSink(this.exchange, strategyConfig.resolutionSet);
         this.exchange.connect(strategyConfig.symbol, this.config.ExchangeAuth).then(() => {
             this._isRunning = true;
             
@@ -176,5 +176,25 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         if (this.subscriberCount) {
             this.notifyAll(reporterData);
         }
+    }
+
+    private createStrategy(strategy: string): Strategy {
+        var ctor = (StrategyStore.get(strategy));
+
+        if(!ctor) {
+            throw `Strategy "${strategy}" doesn't exist`;
+        }
+
+        return new (ctor)(this.MessageLogger);
+    }
+
+    private createExchange(exchange: string) {
+        var ctor = (ExchangeStore.get(exchange));
+
+        if(!ctor) {
+            throw `Exchange "${exchange}" doesn't exist`;
+        }
+
+        return new (ctor)(this.Network, this.config.ExchangeAuth);
     }
 }
