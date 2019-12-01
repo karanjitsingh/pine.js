@@ -11,7 +11,7 @@ import * as uuid from 'uuid/v4';
 import { IBroker } from "Model/Exchange/IBroker";
 
 type Plot = {
-    Resolution: Resolution;
+    MarketData: MarketData;
     Indicators: Indicator[];
 };
 
@@ -104,7 +104,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
             const resolution = rawPlot.MarketData.Candles.Resolution;
 
             this.plotMap[id] = {
-                Resolution: resolution,
+                MarketData: rawPlot.MarketData,
                 Indicators: rawPlot.Indicators
             };
 
@@ -121,19 +121,14 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
     }
 
     private getChartData(plot: Dictionary<Plot>, rawData: ResolutionMapped<MarketData>, length: ResolutionMapped<number>): Dictionary<ChartData> {
-        const rawDataUpdate = Object.keys(length).reduce<ResolutionMapped<Candle[]>>((map, res: Resolution) => {
-            map[res] = rawData[res].Candles.getData(length[res]);
-            return map;
-        }, {});
-
         return Object.keys(plot).reduce<Dictionary<ChartData>>((map, id) => {
-            const res = plot[id].Resolution;
+            const res = plot[id].MarketData.Candles.Resolution;
             const indicators = plot[id].Indicators;
             const updateLength = length[res];
 
             if (updateLength) {
                 map[id] = {
-                    Data: rawDataUpdate[res],
+                    Data: plot[id].MarketData.Candles.getData(length[res]),
                     IndicatorData: indicators.map<number[]>((i) => (
                         i.Series.getData(updateLength)
                     ))

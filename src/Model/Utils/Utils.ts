@@ -25,6 +25,8 @@ export namespace Utils {
         switch(match[2]) {
             case "m":
                 return Tick.Minute * quantum;
+            case "h":
+                return Tick.Hour * quantum;
             case "d":
                 return Tick.Day * quantum;
             case "w":

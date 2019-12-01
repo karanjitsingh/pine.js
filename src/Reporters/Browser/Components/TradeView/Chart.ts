@@ -93,7 +93,6 @@ export class Chart {
             timeScale: {
                 timeVisible: true
             }
-            
         });
 
         chart.series = {
@@ -101,6 +100,8 @@ export class Chart {
             volume: null,
             indicators: []
         };
+
+        window['chartObj'] = chartObj; 
 
         chart.series.candles = chartObj.addCandlestickSeries();
 
