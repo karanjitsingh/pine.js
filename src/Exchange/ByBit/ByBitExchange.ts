@@ -240,7 +240,7 @@ export class ByBitExchange extends Exchange {
 
                     return {
                         StartTick: startTick * 1000,
-                        EndTick: (startTick + res[1]) * 1000,
+                        EndTick: (startTick) * 1000 + res[1],
                         High: parseFloat(result.high),
                         Open: parseFloat(result.open),
                         Close: parseFloat(result.close),
@@ -249,6 +249,8 @@ export class ByBitExchange extends Exchange {
                     } as Candle;
                 });
 
+                // TODO: this is fucked, it gets set everytime, for every resolution
+                // or maybe not since it's setting the last close price
                 this._lastPrice = candleData[candleData.length - 1].Close;
 
                 return Promise.resolve(candleData);

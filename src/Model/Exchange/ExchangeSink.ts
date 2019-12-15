@@ -71,7 +71,13 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
         this.resolutionSet.forEach(res => {
             const promise = this.exchange.getData(currentTick, Utils.GetResolutionTick(res) * candleCount, res);
             promise.then((candleData: Candle[]) => {
-                resolutionDataMap[res] = candleData
+
+                // Sometimes ByBit-Testnet fucks up and sends "Future" candles
+                // This is not to be expected from actual exchanges
+                // Todo: log warnings here
+                candleData = this.FilterFutureCandles(currentTick, candleData);
+
+                resolutionDataMap[res] = candleData;
             }, () => {
                 // todo handle rejections
             }).catch(() => {
@@ -138,6 +144,7 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
                     } else if (candles[last].StartTick < currCandle.StartTick) {
                         candles.push(currCandle);
                     } else {
+                        // TODO: log last candle and new candle data
                         throw new Error("Backfill error.");
                     }
                 }
@@ -197,5 +204,21 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
             Low: new SimpleSeries(series, (candle: Candle) => candle.Low),
             Volume: new SimpleSeries(series, (candle: Candle) => candle.Volume),
         }
+    }
+
+    private FilterFutureCandles(currentTick: number, candleData: Candle[]): Candle[] {
+        if(candleData[candleData.length - 1].StartTick > currentTick) {
+            // Start time of the candle was greater than current time, need to fix this
+            let i;
+            for(i = candleData.length - 2; i >= 0; i--) {
+                if(candleData[i].StartTick < currentTick) {
+                    break;
+                }
+            }
+
+            const extra = candleData.splice(i + 1);
+        }
+        
+        return candleData;
     }
 }
