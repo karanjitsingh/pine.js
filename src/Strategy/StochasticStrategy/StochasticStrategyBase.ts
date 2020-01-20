@@ -4,7 +4,7 @@ import { MarketData } from "Model/InternalContracts";
 import { ema, Expression, HeikinAshi, sma, Stoch } from "Model/Series/Expressions";
 import { ISeries } from "Model/Series/Series";
 import { RawPlot, Strategy, StrategyConfig } from "Model/Strategy/Strategy";
-import { MessageLogger } from "Platform/MessageLogger";
+import { Logger } from "Platform/Logger";
 
 const symbol = 'BTCUSD';
 
@@ -20,7 +20,7 @@ export abstract class StochasticStrategyBase extends Strategy {
     protected diff: ISeries;
     protected shape: ISeries;
 
-    constructor(protected messageLogger: MessageLogger) {
+    constructor(protected messageLogger: Logger) {
         super(messageLogger);
         this.StrategyConfig = {
             resolutionSet: [

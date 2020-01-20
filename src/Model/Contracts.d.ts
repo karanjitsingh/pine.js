@@ -150,13 +150,13 @@ export interface Glyph {
 }
 
 export interface CandleGlyph {
-    Candle: Candle;
+    Timestamp: Timestamp
     Glyphs: Glyph[];
 }
 
 export interface LogMessage {
-    message: string;
-    timestamp: UtcTimeStamp;
+    Message: string;
+    Timestamp: UtcTimeStamp;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -165,13 +165,13 @@ export interface LogMessage {
 export interface ChartData {
     Data: Candle[];
     IndicatorData: number[][];
-    CandleGlyphs: CandleGlyph[];
 }
 
 export interface ReporterData {
     ChartData: Dictionary<ChartData>,
     Account: Partial<IAccount>,
     Logs: LogMessage[];
+    CandleGlyphs: CandleGlyph[];
 }
 
 // ------------------------------------------------------------------------------------------------

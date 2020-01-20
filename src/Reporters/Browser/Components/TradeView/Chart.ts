@@ -180,7 +180,8 @@ export class Chart {
                 close: candle.Close,
                 high: candle.High,
                 low: candle.Low,
-                time
+                time,
+                glyphs: []
             });
 
             volumeUpdate({

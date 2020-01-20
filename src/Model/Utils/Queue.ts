@@ -1,26 +1,26 @@
 import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
 
-export class UpdateQueue<T> {
-    protected updateQueue: T[] = [];
+export class Queue<T> {
+    protected queue: T[] = [];
 
     public push(value: T) {
-        this.updateQueue.push(value);
+        this.queue.push(value);
     }
 
     public flush(): T[] {
-        if (this.updateQueue.length > 0) {
-            return this.updateQueue.splice(0, this.updateQueue.length);
+        if (this.queue.length > 0) {
+            return this.queue.splice(0, this.queue.length);
         }
 
         return [];
     }
 
     public reset() {
-        this.updateQueue = [];
+        this.queue = [];
     }
 }
 
-export class CandleQueue extends UpdateQueue<ResolutionMapped<Candle>> {
+export class CandleQueue extends Queue<ResolutionMapped<Candle>> {
     private lastUpdate: ResolutionMapped<Candle> = {};
 
     constructor(private resolutionSet: Resolution[]) {
@@ -31,7 +31,7 @@ export class CandleQueue extends UpdateQueue<ResolutionMapped<Candle>> {
         Object.assign(this.lastUpdate, candle);
 
         if(Object.keys(this.lastUpdate).length == this.resolutionSet.length) {
-            this.updateQueue.push(this.lastUpdate);
+            this.queue.push(this.lastUpdate);
             this.lastUpdate = {};
         }
     }
