@@ -1,6 +1,6 @@
 /*!
  * @license
- * TradingView Lightweight Charts v1.1.0-dev+201912011532
+ * TradingView Lightweight Charts v1.1.0-dev+202001201135
  * Copyright (c) 2019 TradingView, Inc.
  * Licensed under Apache License 2.0 https://www.apache.org/licenses/LICENSE-2.0
  */
@@ -2108,7 +2108,7 @@
             var newItems = [];
             var colorer = this._series.barColorer();
             this._series.bars().each(function (index, bar) {
-                var value = barValueGetter(bar.value);
+                var value = barValueGetter(bar.plot);
                 var item = _this._createRawItem(index, value, colorer);
                 newItems.push(item);
                 return false;
@@ -2208,10 +2208,10 @@
         BarsPaneViewBase.prototype._createDefaultItem = function (time, bar, colorer) {
             return {
                 time: time,
-                open: bar.value[0 /* Open */],
-                high: bar.value[1 /* High */],
-                low: bar.value[2 /* Low */],
-                close: bar.value[3 /* Close */],
+                open: bar.plot.value[0 /* Open */],
+                high: bar.plot.value[1 /* High */],
+                low: bar.plot.value[2 /* Low */],
+                close: bar.plot.value[3 /* Close */],
                 x: NaN,
                 openY: NaN,
                 highY: NaN,
@@ -2254,7 +2254,7 @@
             return this._private__renderer;
         };
         SeriesBarsPaneView.prototype._createRawItem = function (time, bar, colorer) {
-            return __assign({}, this._createDefaultItem(time, bar, colorer), { color: colorer.barStyle(time).barColor });
+            return __assign({}, this._createDefaultItem(time, bar, colorer), { color: colorer.barStyle(time).barColor, glyphs: bar.plot.glyphs });
         };
         return SeriesBarsPaneView;
     }(BarsPaneViewBase));
@@ -2412,7 +2412,7 @@
         };
         SeriesCandlesticksPaneView.prototype._createRawItem = function (time, bar, colorer) {
             var style = colorer.barStyle(time);
-            return __assign({}, this._createDefaultItem(time, bar, colorer), { color: style.barColor, wickColor: style.barWickColor, borderColor: style.barBorderColor });
+            return __assign({}, this._createDefaultItem(time, bar, colorer), { color: style.barColor, wickColor: style.barWickColor, borderColor: style.barBorderColor, glyphs: bar.plot.glyphs });
         };
         return SeriesCandlesticksPaneView;
     }(BarsPaneViewBase));
@@ -2496,8 +2496,8 @@
             var itemIndex = 0;
             var defaultColor = this._series.options().color;
             this._series.bars().each(function (index, bar) {
-                var value = barValueGetter(bar.value);
-                var paletteColorIndex = bar.value[4 /* Color */];
+                var value = barValueGetter(bar.plot);
+                var paletteColorIndex = bar.plot.value[4 /* Color */];
                 var item = createRawItem(index, value);
                 var color = paletteColorIndex != null ? palette.colorByIndex(paletteColorIndex) : defaultColor;
                 // colorIndex is the paneview's internal palette index
@@ -3233,7 +3233,7 @@
             var borderUpColor = upColor;
             var borderDownColor = downColor;
             var currentBar = ensureNotNull(this._private__findBar(barIndex, precomputedBars));
-            var isUp = ensure(currentBar.value[0 /* Open */]) <= ensure(currentBar.value[3 /* Close */]);
+            var isUp = ensure(currentBar.plot.value[0 /* Open */]) <= ensure(currentBar.plot.value[3 /* Close */]);
             result.barColor = isUp ? upColor : downColor;
             result.barBorderColor = isUp ? borderUpColor : borderDownColor;
             return result;
@@ -3247,7 +3247,7 @@
             var wickUpColor = candlestickStyle.wickUpColor;
             var wickDownColor = candlestickStyle.wickDownColor;
             var currentBar = ensureNotNull(this._private__findBar(barIndex, precomputedBars));
-            var isUp = ensure(currentBar.value[0 /* Open */]) <= ensure(currentBar.value[3 /* Close */]);
+            var isUp = ensure(currentBar.plot.value[0 /* Open */]) <= ensure(currentBar.plot.value[3 /* Close */]);
             result.barColor = isUp ? upColor : downColor;
             result.barBorderColor = isUp ? borderUpColor : borderDownColor;
             result.barWickColor = isUp ? wickUpColor : wickDownColor;
@@ -3262,7 +3262,7 @@
         SeriesBarColorer.prototype._private__histogramStyle = function (histogramStyle, barIndex, precomputedBars) {
             var result = __assign({}, emptyResult);
             var currentBar = ensureNotNull(this._private__findBar(barIndex, precomputedBars));
-            var colorValue = currentBar.value[4 /* Color */];
+            var colorValue = currentBar.plot.value[4 /* Color */];
             if (colorValue != null) {
                 var palette = ensureNotNull(this._private__series.palette());
                 result.barColor = palette.colorByIndex(colorValue);
@@ -3348,11 +3348,11 @@
         /**
          * @returns true if new index is added or false if existing index is updated
          */
-        PlotList.prototype.add = function (index, time, value) {
+        PlotList.prototype.add = function (index, time, plot) {
             if (this._private__shareRead) {
                 return false;
             }
-            var row = { index: index, value: value, time: time };
+            var row = { index: index, plot: plot, time: time };
             var pos = this._private__search(index, 0 /* Exact */);
             this._private__rowSearchCache.clear();
             this._private__rowSearchCacheWithoutEmptyValues.clear();
@@ -3377,7 +3377,7 @@
             return {
                 index: this._private__indexAt(pos),
                 time: item.time,
-                value: item.value,
+                plot: item.plot,
             };
         };
         /**
@@ -3491,14 +3491,14 @@
         };
         PlotList.prototype._private__nonEmptyNearestRight = function (index) {
             var predicate = ensureNotNull(this._private__emptyValuePredicate);
-            while (index < this._private__end && predicate(this._private__valueAt(index).value)) {
+            while (index < this._private__end && predicate(this._private__valueAt(index).plot)) {
                 index = index + 1;
             }
             return index === this._private__end ? null : index;
         };
         PlotList.prototype._private__nonEmptyNearestLeft = function (index) {
             var predicate = ensureNotNull(this._private__emptyValuePredicate);
-            while (index >= this._private__start && predicate(this._private__valueAt(index).value)) {
+            while (index >= this._private__start && predicate(this._private__valueAt(index).plot)) {
                 index = index - 1;
             }
             return index < this._private__start ? null : index;
@@ -3542,7 +3542,7 @@
                 throw new Error("Plot \"" + plot.name + "\" is not registered");
             }
             for (var i = startIndex; i < endIndex; i++) {
-                var values = this._private__items[i].value;
+                var values = this._private__items[i].plot;
                 var v = func(values);
                 if (v === undefined || v === null || Number.isNaN(v)) {
                     continue;
@@ -3755,24 +3755,24 @@
         SeriesPlotIndex[SeriesPlotIndex["Color"] = 4] = "Color";
     })(SeriesPlotIndex || (SeriesPlotIndex = {}));
     var barFunctions = {
-        open: function (bar) { return bar[0 /* Open */]; },
-        high: function (bar) { return bar[1 /* High */]; },
-        low: function (bar) { return bar[2 /* Low */]; },
-        close: function (bar) { return bar[3 /* Close */]; },
+        open: function (bar) { return bar.value[0 /* Open */]; },
+        high: function (bar) { return bar.value[1 /* High */]; },
+        low: function (bar) { return bar.value[2 /* Low */]; },
+        close: function (bar) { return bar.value[3 /* Close */]; },
         hl2: function (bar) {
-            return (bar[1 /* High */] +
-                bar[2 /* Low */]) / 2;
+            return (bar.value[1 /* High */] +
+                bar.value[2 /* Low */]) / 2;
         },
         hlc3: function (bar) {
-            return (bar[1 /* High */] +
-                bar[2 /* Low */] +
-                bar[3 /* Close */]) / 3;
+            return (bar.value[1 /* High */] +
+                bar.value[2 /* Low */] +
+                bar.value[3 /* Close */]) / 3;
         },
         ohlc4: function (bar) {
-            return (bar[0 /* Open */] +
-                bar[1 /* High */] +
-                bar[2 /* Low */] +
-                bar[3 /* Close */]) / 4;
+            return (bar.value[0 /* Open */] +
+                bar.value[1 /* High */] +
+                bar.value[2 /* Low */] +
+                bar.value[3 /* Close */]) / 4;
         },
     };
     var seriesSource = ['open', 'high', 'low', 'close', 'hl2', 'hlc3', 'ohlc4'];
@@ -3894,7 +3894,7 @@
                 }
                 lastIndex = endBar.index;
             }
-            var price = plot !== undefined ? bar.value[plot] : this._private__barFunction(bar.value);
+            var price = plot !== undefined ? bar.plot.value[plot] : this._private__barFunction(bar.plot);
             var barColorer = this.barColorer();
             var style = barColorer.barStyle(lastIndex, { value: bar });
             var floatCoordinate = priceScale.priceToCoordinate(price, firstValue.value, true);
@@ -4018,7 +4018,7 @@
                 return null;
             }
             return {
-                value: this._private__barFunction(bar.value),
+                value: this._private__barFunction(bar.plot),
                 timePoint: bar.time,
             };
         };
@@ -4050,14 +4050,14 @@
             }
             if (this._private__seriesType === 'Bar' || this._private__seriesType === 'Candlestick') {
                 return {
-                    open: prices.value[0 /* Open */],
-                    high: prices.value[1 /* High */],
-                    low: prices.value[2 /* Low */],
-                    close: prices.value[3 /* Close */],
+                    open: prices.plot.value[0 /* Open */],
+                    high: prices.plot.value[1 /* High */],
+                    low: prices.plot.value[2 /* Low */],
+                    close: prices.plot.value[3 /* Close */],
                 };
             }
             else {
-                return this.barFunction()(prices.value);
+                return this.barFunction()(prices.plot);
             }
         };
         Series.prototype.paneViews = function () {
@@ -4140,7 +4140,7 @@
             if (bar === null) {
                 return null;
             }
-            var price = this._private__barFunction(bar.value);
+            var price = this._private__barFunction(bar.plot);
             var radius = this._private__markerRadius();
             return { price: price, radius: radius };
         };
@@ -5642,7 +5642,7 @@
                     return acc;
                 }
                 var prices = [
-                    bar.value[3 /* Close */],
+                    bar.plot.value[3 /* Close */],
                 ];
                 // convert bar to pixels
                 var firstPrice = ensure(series.firstValue());
@@ -10239,10 +10239,16 @@
                 color = palette.addColor(item.color);
             }
         }
-        return [val, val, val, val, color];
+        return {
+            value: [val, val, val, val, color],
+            glyphs: [],
+        };
     }
     function getOHLCBasedSeriesItemValue(bar, palette) {
-        return [bar.open, bar.high, bar.low, bar.close, null];
+        return {
+            value: [bar.open, bar.high, bar.low, bar.close, null],
+            glyphs: bar.glyphs && bar.glyphs.length ? JSON.parse(JSON.stringify(bar.glyphs)) : [],
+        };
     }
     var seriesItemValueFnMap = {
         Candlestick: getOHLCBasedSeriesItemValue,
@@ -10251,7 +10257,7 @@
         Histogram: getLineBasedSeriesItemValue,
         Line: getLineBasedSeriesItemValue,
     };
-    function seriesItemValueFn(seriesType) {
+    function seriesItemPlotFn(seriesType) {
         return seriesItemValueFnMap[seriesType];
     }
     function hours(count) {
@@ -10436,12 +10442,12 @@
                     if (!updateAllSeries && currentSeries !== series) {
                         return;
                     }
-                    var getItemValues = seriesItemValueFn(currentSeries.seriesType());
+                    var getItemPlots = seriesItemPlotFn(currentSeries.seriesType());
                     var packet = seriesUpdates.get(currentSeries) || newSeriesUpdatePacket();
                     var seriesUpdate = {
                         index: index,
                         time: timePoint,
-                        value: getItemValues(currentData, currentSeries.palette()),
+                        plot: getItemPlots(currentData, currentSeries.palette()),
                     };
                     packet.update.push(seriesUpdate);
                     seriesUpdates.set(currentSeries, packet);
@@ -10474,12 +10480,12 @@
                 pointData.index = index;
                 pointData.mapping.forEach(function (targetData, targetSeries) {
                     // add point to series
-                    var getItemValues = seriesItemValueFn(targetSeries.seriesType());
+                    var getItemPlots = seriesItemPlotFn(targetSeries.seriesType());
                     var packet = seriesUpdates.get(targetSeries) || newSeriesUpdatePacket();
                     var seriesUpdate = {
                         index: index,
                         time: time,
-                        value: getItemValues(targetData, targetSeries.palette()),
+                        plot: getItemPlots(targetData, targetSeries.palette()),
                     };
                     packet.update.push(seriesUpdate);
                     seriesUpdates.set(targetSeries, packet);
@@ -11057,7 +11063,7 @@
 
     /// <reference types="_build-time-constants" />
     function version() {
-        return "1.1.0-dev+201912011532";
+        return "1.1.0-dev+202001201135";
     }
 
     var LightweightChartsModule = /*#__PURE__*/Object.freeze({

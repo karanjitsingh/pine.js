@@ -7,6 +7,16 @@ export declare const enum CrosshairMode {
 	Normal = 0,
 	Magnet = 1
 }
+export declare const enum GlyphPosition {
+	Above = 0,
+	Below = 1
+}
+export declare const enum GlyphStyle {
+	UpTriangle = 0,
+	DownTriangle = 1,
+	Circle = 2,
+	Square = 3
+}
 export declare const enum LineStyle {
 	Solid = 0,
 	Dotted = 1,
@@ -119,6 +129,7 @@ export interface BarData {
 	high: number;
 	low: number;
 	close: number;
+	glyphs: Glyph[];
 }
 export interface BarPrices {
 	open: BarPrice;
@@ -216,6 +227,11 @@ export interface CrosshairOptions {
 	vertLine: CrosshairLineOptions;
 	/** Options of the crosshair horizontal line */
 	horzLine: CrosshairLineOptions;
+}
+export interface Glyph {
+	color: string;
+	style: GlyphStyle;
+	position: GlyphPosition;
 }
 /** Structure describing horizontal or vertical grid line options */
 export interface GridLineOptions {

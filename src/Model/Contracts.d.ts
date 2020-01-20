@@ -145,17 +145,33 @@ export interface Candle {
     Volume: number;
 }
 
+export interface Glyph {
+    
+}
+
+export interface CandleGlyph {
+    Candle: Candle;
+    Glyphs: Glyph[];
+}
+
+export interface LogMessage {
+    message: string;
+    timestamp: UtcTimeStamp;
+}
+
 // ------------------------------------------------------------------------------------------------
 // Reporter ---------------------------------------------------------------------------------------
 
 export interface ChartData {
     Data: Candle[];
     IndicatorData: number[][];
+    CandleGlyphs: CandleGlyph[];
 }
 
 export interface ReporterData {
     ChartData: Dictionary<ChartData>,
-    Account: Partial<IAccount>
+    Account: Partial<IAccount>,
+    Logs: LogMessage[];
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -174,7 +190,6 @@ export interface MessageContract {
         PlotConfig: Dictionary<PlotConfig>
     };
 }
-
 
 export interface ReporterInit {
     availableExchanges: string[];
