@@ -32,9 +32,6 @@ export class StochasticStrategy extends StochasticStrategyBase {
 
         if(updateOffset['30m']) {
             this.heikenashi30m.Candles.getData(10);
-
-
-
         }
     }
 
@@ -51,7 +48,6 @@ export class StochasticStrategy extends StochasticStrategyBase {
         for(let i = 9; i >= 0; i--) {
             // if(d[i] > k[i])ms
         }
-
     }
 
     private exit(updateOffset: ResolutionMapped<number>) {
