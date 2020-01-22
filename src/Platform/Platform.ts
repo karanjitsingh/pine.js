@@ -1,14 +1,14 @@
-import { Candle, ChartData, Dictionary, IndicatorConfig, PlatformConfiguration, PlotConfig, ReporterData, Resolution, ResolutionMapped } from "Model/Contracts";
+import { ChartData, Dictionary, IndicatorConfig, PlatformConfiguration, PlotConfig, ReporterData, ResolutionMapped } from "Model/Contracts";
 import { Exchange, ExchangeStore } from "Model/Exchange/Exchange";
 import { ExchangeSink, ExchangeUpdate } from "Model/Exchange/ExchangeSink";
+import { IBroker } from "Model/Exchange/IBroker";
 import { MarketData } from "Model/InternalContracts";
 import { INetwork } from "Model/Network";
 import { Indicator, Strategy, StrategyConfig, StrategyStore } from "Model/Strategy/Strategy";
 import { Subscribable } from "Model/Utils/Events";
-import { MessageLogger } from "Platform/MessageLogger";
 import { Network } from "Platform/Network";
 import * as uuid from 'uuid/v4';
-import { IBroker } from "Model/Exchange/IBroker";
+import { ReportingInterface } from "Platform/ReportingInterface";
 
 type Plot = {
     MarketData: MarketData;
@@ -29,8 +29,8 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         return undefined;
     }
 
-    protected readonly Network: INetwork;
-    protected readonly MessageLogger: MessageLogger;
+    protected readonly network: INetwork;
+    protected readonly logger: ReportingInterface;
 
     private strategy: Strategy;
     private exchange: Exchange;
@@ -41,8 +41,8 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
     public constructor(private config: PlatformConfiguration) {
         super();
-        this.MessageLogger = new MessageLogger();
-        this.Network = new Network();
+        this.logger = new ReportingInterface();
+        this.network = new Network();
         this.strategy = this.createStrategy(this.config.Strategy);
     }
 
@@ -59,7 +59,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         this.marketSink = new ExchangeSink(this.exchange, strategyConfig.resolutionSet);
         this.exchange.connect(strategyConfig.symbol, this.config.ExchangeAuth).then(() => {
             this._isRunning = true;
-            
+
             this.initStrategy(this.exchange.broker, strategyConfig, this.marketSink.MarketDataMap);
 
             this.marketSink.subscribe(this.dataUpdate, this);
@@ -131,7 +131,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
                     Data: plot[id].MarketData.Candles.getData(length[res]),
                     IndicatorData: indicators.map<number[]>((i) => (
                         i.Series.getData(updateLength)
-                    ))
+                    )),
                 };
             }
 
@@ -142,12 +142,12 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
     private dataUpdate(update: ExchangeUpdate) {
         let reporterData: Partial<ReporterData> = {};
 
-        if(update.AccountUpdate) {
+        if (update.AccountUpdate) {
             const flushedUpdate = this.exchange.account.flushUpdate();
 
             try {
                 this.strategy.trade(flushedUpdate);
-            } catch(ex) {
+            } catch (ex) {
                 // todo send error updates to logger
                 console.error("Strategy error: " + ex);
             }
@@ -155,17 +155,23 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
             reporterData.Account = flushedUpdate;
         }
 
-        if(update.CandleUpdate) {
-            
+        if (update.CandleUpdate) {
+
             try {
 
-            } catch(ex) {
+            } catch (ex) {
                 // todo send error updates to logger
                 console.error("Strategy error: " + ex);
             }
 
             this.strategy.update(update.CandleUpdate);
             reporterData.ChartData = this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update.CandleUpdate);
+        }
+
+        var logMessages = this.logger.flush();
+
+        if (logMessages.length > 0) {
+            reporterData.Logs = logMessages;
         }
 
         if (this.subscriberCount) {
@@ -176,20 +182,20 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
     private createStrategy(strategy: string): Strategy {
         var ctor = (StrategyStore.get(strategy));
 
-        if(!ctor) {
+        if (!ctor) {
             throw `Strategy "${strategy}" doesn't exist`;
         }
 
-        return new (ctor)(this.MessageLogger);
+        return new (ctor)(this.logger);
     }
 
     private createExchange(exchange: string) {
         var ctor = (ExchangeStore.get(exchange));
 
-        if(!ctor) {
+        if (!ctor) {
             throw `Exchange "${exchange}" doesn't exist`;
         }
 
-        return new (ctor)(this.Network, this.config.ExchangeAuth);
+        return new (ctor)(this.network, this.config.ExchangeAuth);
     }
 }
