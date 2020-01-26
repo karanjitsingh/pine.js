@@ -1,6 +1,6 @@
 /*!
  * @license
- * TradingView Lightweight Charts v1.1.0-dev+202001201135
+ * TradingView Lightweight Charts v1.1.0-dev+202001261559
  * Copyright (c) 2019 TradingView, Inc.
  * Licensed under Apache License 2.0 https://www.apache.org/licenses/LICENSE-2.0
  */
@@ -2284,6 +2284,7 @@
                 var bars = this._private__data.bars;
                 ctx.translate(-0.5, -0.5);
                 ctx.lineWidth = 1 /* BarBorderWidth */;
+                this._private__drawGlyphs(ctx, bars, this._private__data.visibleRange);
                 if (this._private__data.wickVisible) {
                     this._private__drawWicks(ctx, bars, this._private__data.visibleRange);
                 }
@@ -2291,6 +2292,59 @@
                     this._private__drawBorder(ctx, bars, this._private__data.visibleRange);
                 }
                 this._private__drawCandles(ctx, bars, this._private__data.visibleRange);
+            }
+        };
+        PaneRendererCandlesticks.prototype._private__drawGlyphs = function (ctx, bars, visibleRange) {
+            var _this = this;
+            var _loop_1 = function (i) {
+                var bar = bars[i];
+                var aboveCount = 0;
+                var belowCount = 0;
+                if (bar.glyphs && bar.glyphs.length) {
+                    bar.glyphs.forEach(function (glyph) {
+                        ctx.fillStyle = glyph.color;
+                        var width = _this._private__barWidth * 2;
+                        var height = width;
+                        var posX = bar.x - width / 2 + 1;
+                        var posY;
+                        // let offset = 0;
+                        if (glyph.position === 0 /* Above */) {
+                            aboveCount++;
+                            posY = bar.highY - aboveCount * height * 1.5 - height / 2;
+                        }
+                        else {
+                            belowCount++;
+                            posY = bar.lowY + (belowCount - 1) * height * 1.5 + height;
+                        }
+                        switch (glyph.style) {
+                            case 2 /* Circle */:
+                                ctx.beginPath();
+                                ctx.arc(posX + width / 2, posY + width / 2, width / 2, 0, 2 * Math.PI);
+                                ctx.fill();
+                                break;
+                            case 0 /* UpTriangle */:
+                                ctx.beginPath();
+                                ctx.moveTo(posX + width / 2, posY);
+                                ctx.lineTo(posX, posY + height);
+                                ctx.lineTo(posX + width, posY + height);
+                                ctx.fill();
+                                break;
+                            case 1 /* DownTriangle */:
+                                ctx.beginPath();
+                                ctx.moveTo(posX + width / 2, posY + height);
+                                ctx.lineTo(posX + width, posY);
+                                ctx.lineTo(posX, posY);
+                                ctx.fill();
+                                break;
+                            case 3 /* Square */:
+                                ctx.fillRect(posX, posY, width, height);
+                                break;
+                        }
+                    });
+                }
+            };
+            for (var i = visibleRange.from; i < visibleRange.to; i++) {
+                _loop_1(i);
             }
         };
         PaneRendererCandlesticks.prototype._private__drawWicks = function (ctx, bars, visibleRange) {
@@ -3456,6 +3510,9 @@
             this._private__rowSearchCache.clear();
             this._private__rowSearchCacheWithoutEmptyValues.clear();
             return removedPlotRows.length > 0 ? removedPlotRows[0] : null;
+        };
+        PlotList.prototype.raw = function () {
+            return this._private__items;
         };
         PlotList.prototype._private__indexAt = function (offset) {
             return this._private__items[offset].index;
@@ -10569,6 +10626,38 @@
             }
             return this._series.priceScale().priceToCoordinate(price, firstValue.value);
         };
+        SeriesApi.prototype.getNearestItem = function (timestamp) {
+            var list = this._series.bars().raw();
+            if (list && list.length) {
+                var seriesType = this._series.seriesType();
+                // tslint:disable-next-line: typedef
+                var plot = list[this._private_bsearch(list, function (item) { return item.time.timestamp; }, timestamp)];
+                if (seriesType === 'Area' || seriesType === 'Histogram' || seriesType === 'Bar') {
+                    if (seriesType === 'Histogram') {
+                        return {
+                            time: plot.time.timestamp,
+                            color: plot.plot.value[4] ? this._series.palette().colorByIndex(plot.plot.value[4]) : undefined,
+                            value: plot.plot.value[0],
+                        };
+                    }
+                    return {
+                        time: plot.time.timestamp,
+                        value: plot.plot.value[0],
+                    };
+                }
+                else {
+                    return {
+                        open: plot.plot.value[0],
+                        high: plot.plot.value[1],
+                        low: plot.plot.value[2],
+                        close: plot.plot.value[3],
+                        time: plot.time.timestamp,
+                        glyphs: plot.plot.glyphs,
+                    };
+                }
+            }
+            return null;
+        };
         SeriesApi.prototype.setData = function (data) {
             this._dataUpdatesConsumer.applyNewData(this._series, data);
         };
@@ -10584,6 +10673,36 @@
         };
         SeriesApi.prototype.options = function () {
             return clone(this._series.options());
+        };
+        SeriesApi.prototype._private_bsearch = function (list, predicate, t) {
+            if (!list.length) {
+                return -1;
+            }
+            var left = 0;
+            var right = list.length - 1;
+            var middle = Math.floor((left + right) / 2);
+            if (predicate(list[left]) >= t) {
+                return left;
+            }
+            if (predicate(list[right]) <= t) {
+                return right;
+            }
+            while (left !== right && left + 1 !== right) {
+                if (predicate(list[middle]) < t) {
+                    left = middle;
+                }
+                else if (predicate(list[middle]) > t) {
+                    right = middle;
+                }
+                else {
+                    return middle;
+                }
+                middle = Math.floor((left + right) / 2);
+            }
+            if (predicate(list[right]) <= t) {
+                return right;
+            }
+            return left;
         };
         return SeriesApi;
     }());
@@ -11063,7 +11182,7 @@
 
     /// <reference types="_build-time-constants" />
     function version() {
-        return "1.1.0-dev+202001201135";
+        return "1.1.0-dev+202001261559";
     }
 
     var LightweightChartsModule = /*#__PURE__*/Object.freeze({

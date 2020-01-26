@@ -22,13 +22,13 @@ export class ReporterInterface {
 
     public logGlyph(glyph: Glyph, timestamp?: number) {
         this.glyphQueue.push({
-            Glyphs: glyph,
+            Glyph: glyph,
             Timestamp: timestamp || this.getTimestamp()
         })
     }
 
     public flushMessages(): LogMessage[] {
-        if(this.messageQueue.length) {
+        if (this.messageQueue.length) {
             const messages = this.messageQueue.flush();
             this.messageHistory = this.messageHistory.concat(messages);
             return messages;
@@ -37,7 +37,7 @@ export class ReporterInterface {
     }
 
     public flushGlyphs(): LogGlyph[] {
-        if(this.glyphQueue.length) {
+        if (this.glyphQueue.length) {
             const glpyhs = this.glyphQueue.flush();
             this.glyphHistory = this.glyphHistory.concat(glpyhs);
             return glpyhs;
@@ -49,13 +49,13 @@ export class ReporterInterface {
         let messageIndex = this.findClosest(this.messageHistory, timestamp);
         let glyphIndex = this.findClosest(this.glyphHistory, timestamp);
 
-        if(messageIndex < this.messageHistory.length) {
+        if (messageIndex < this.messageHistory.length) {
             if (this.messageHistory[messageIndex].Timestamp < timestamp) {
                 messageIndex += 1;
             }
         }
 
-        if(glyphIndex < this.glyphHistory.length) {
+        if (glyphIndex < this.glyphHistory.length) {
             if (this.glyphHistory[glyphIndex].Timestamp < timestamp) {
                 glyphIndex += 1;
             }

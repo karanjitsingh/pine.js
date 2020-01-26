@@ -1,5 +1,5 @@
 import * as LightweightCharts from "lightweight-charts";
-import { ChartData, PlotConfig } from "Model/Contracts";
+import { ChartData, Dictionary, LogGlyph, PlotConfig } from "Model/Contracts";
 
 type TimeStamp = LightweightCharts.Nominal<number, 'UTCTimestamp'>;
 
@@ -31,6 +31,7 @@ export class Chart {
     }
     private container: HTMLDivElement;
     private dataInit: boolean = false;
+    private candleTimestampGlyphMap: Dictionary<LightweightCharts.Glyph[]> = {};
 
     public static Create(container: HTMLDivElement, plotConfig: PlotConfig): Chart {
 
@@ -101,7 +102,7 @@ export class Chart {
             indicators: []
         };
 
-        window['chartObj'] = chartObj; 
+        window['chartObj'] = chartObj;
 
         chart.series.candles = chartObj.addCandlestickSeries();
 
@@ -147,7 +148,7 @@ export class Chart {
         return chart;
     }
 
-    public update(chartData: ChartData) {
+    public updateChartData(chartData: ChartData) {
         // It's given that length of candle update is same as length of indicator update
 
         const chartUpdate: ChartUpdate = {
@@ -173,7 +174,9 @@ export class Chart {
         for (let i = 0; i < chartData.Data.length; i++) {
 
             const candle = chartData.Data[chartData.Data.length - i - 1];
-            const time = candle.StartTick / 1000 as TimeStamp;
+            const time = Math.floor(candle.StartTick / 1000) as TimeStamp;
+
+            const glyphs = this.candleTimestampGlyphMap[time] || [];
 
             candleUpdate({
                 open: candle.Open,
@@ -181,7 +184,7 @@ export class Chart {
                 high: candle.High,
                 low: candle.Low,
                 time,
-                glyphs: []
+                glyphs: glyphs
             });
 
             volumeUpdate({
@@ -211,7 +214,27 @@ export class Chart {
 
             this.dataInit = true;
         }
+    }
+    a
+    public updateGlyphData(logGlyph: LogGlyph) {
+        const candle = this.series.candles.getNearestItem(Math.floor(logGlyph.Timestamp / 1000) as number as LightweightCharts.UTCTimestamp) as LightweightCharts.BarData
+        const glyph: LightweightCharts.Glyph = {
+            color: logGlyph.Glyph.color,
+            style: logGlyph.Glyph.style as any,
+            position: logGlyph.Glyph.position as any
+        };
 
+        candle.glyphs.push(glyph);
+
+        const glyphs = this.candleTimestampGlyphMap[candle.time as number];
+
+        if (glyphs) {
+            glyphs.push(glyph);
+        } else {
+            this.candleTimestampGlyphMap[candle.time as number] = [glyph];
+        }
+
+        this.series.candles.update(candle);
     }
 
     public resize() {

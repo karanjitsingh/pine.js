@@ -1,8 +1,8 @@
+import { ListSelector, Orientation } from 'Components/Fabric/ListSelector';
 import { PlatformConfiguration, ReporterInit } from 'Model/Contracts';
 import * as React from 'react';
 import { Button, Carousel, CarouselItem, CarouselProps, Form } from 'react-bootstrap';
 import { ConfigPane } from './ConfigPane';
-import { ListSelector, Orientation } from './ListSelector';
 
 export interface ConfigDialogProps extends ReporterInit {
     submitNewConfig: (config: PlatformConfiguration) => void;

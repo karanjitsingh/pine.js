@@ -146,26 +146,26 @@ export interface Candle {
 }
 
 export interface Glyph {
-	color: string;
-	style: GlyphStyle;
-	position: GlyphPosition;
+    color: string;
+    style: GlyphStyle;
+    position: GlyphPosition;
 }
 
 export const enum GlyphPosition {
-	Above,
-	Below,
+    Above,
+    Below,
 }
 
 export const enum GlyphStyle {
-	UpTriangle,
-	DownTriangle,
-	Circle,
-	Square,
+    UpTriangle,
+    DownTriangle,
+    Circle,
+    Square,
 }
 
 export interface LogGlyph {
     Timestamp: number;
-    Glyphs: Glyph;
+    Glyph: Glyph;
 }
 
 export interface LogMessage {

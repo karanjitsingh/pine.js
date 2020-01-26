@@ -421,6 +421,11 @@ export interface ISeriesApi<TSeriesType extends SeriesType> {
 	 */
 	setData(data: SeriesDataItemTypeMap[TSeriesType][]): void;
 	/**
+	 * Get the item closes to timestamp
+	 * @param timestamp - timestamp
+	 */
+	getNearestItem(timestamp: UTCTimestamp): BarData | LineData | HistogramData | null;
+	/**
 	 * Adds or replaces a new bar
 	 * @param bar - a single data item to be added. Time of the new item must be greater or equal to the latest existing time point.
 	 * If the new item's time is equal to the last existing item's time, then the existing item is replaced with the new one.

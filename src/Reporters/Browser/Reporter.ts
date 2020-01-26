@@ -1,7 +1,8 @@
 import { Page, PageMode } from "Components/Page";
 import { TradeViewProps } from "Components/TradeView/TradeView";
 import { DataStream } from "DataStream";
-import { ChartData, Dictionary, MessageType, Order, PlatformConfiguration, Position, ProtocolMessage, ReporterInit, Wallet } from "Model/Contracts";
+import { ChartData, Dictionary, LogGlyph, LogMessage, MessageType, Order,
+         PlatformConfiguration, Position, ProtocolMessage, ReporterInit, Wallet } from "Model/Contracts";
 import { Network } from "Network";
 import React = require("react");
 import ReactDOM = require("react-dom");
@@ -10,19 +11,16 @@ class Reporter {
 
     private readonly page: Page;
     private socket: WebSocket;
-    private network: Network;
-    private chartDataStream: DataStream<Dictionary<ChartData>>;
-    private orderStream: DataStream<Dictionary<Order>>;
-    private positionStream: DataStream<Dictionary<Position>>;
-    private walletStream: DataStream<Wallet>;
+    private network: Network = new Network();
+    private chartDataStream: DataStream<Dictionary<ChartData>> = new DataStream();
+    private orderStream: DataStream<Dictionary<Order>> = new DataStream();
+    private positionStream: DataStream<Dictionary<Position>> = new DataStream();
+    private walletStream: DataStream<Wallet> = new DataStream();
+    private logStream: DataStream<LogMessage> = new DataStream();
+    private glyphStream: DataStream<LogGlyph> = new DataStream();
 
     constructor() {
         this.page = ReactDOM.render(React.createElement(Page), document.querySelector("#platform-content"));
-        this.network = new Network();
-        this.chartDataStream = new DataStream();
-        this.orderStream = new DataStream();
-        this.positionStream = new DataStream();
-        this.walletStream = new DataStream();
     }
 
     public init() {
@@ -146,6 +144,15 @@ class Reporter {
                     }
                 }
 
+                if (reporterData.MessageLogs) {
+                    this.logStream.push(reporterData.MessageLogs)
+                }
+
+                if (reporterData.GlyphLogs) {
+                    // always update chart data before glyphdata
+                    this.glyphStream.push(reporterData.GlyphLogs)
+                }
+
                 break;
 
             case 'ReporterConfig':
@@ -157,7 +164,9 @@ class Reporter {
                         chart: this.chartDataStream,
                         order: this.orderStream,
                         position: this.positionStream,
-                        wallet: this.walletStream
+                        wallet: this.walletStream,
+                        logs: this.logStream,
+                        glyphs: this.glyphStream
                     },
                     plotConfigMap: plotConfigs
                 });

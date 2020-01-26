@@ -11,7 +11,8 @@ export interface TableProps<T> {
     columns: TableColumn<T>[];
     comparer?: (a: T, b: T) => number;
     data: T[];
-    className?: string
+    className?: string,
+    hideColumns?: boolean
 }
 
 export class Table<T> extends React.Component<TableProps<T>> {
@@ -23,9 +24,7 @@ export class Table<T> extends React.Component<TableProps<T>> {
     public render() {
         return (
             <BootstrapTable className={this.props.className}>
-                <tr>
-                    {this.getColumns()}
-                </tr>
+                {this.props.hideColumns ? null : <tr>{this.getColumns()}</tr>}
                 {this.getRows()}
             </BootstrapTable>
         )
@@ -38,7 +37,6 @@ export class Table<T> extends React.Component<TableProps<T>> {
     }
 
     private getRows(): JSX.Element[] {
-
         const cols = this.props.columns;
 
         return this.props.data.map((row) => (

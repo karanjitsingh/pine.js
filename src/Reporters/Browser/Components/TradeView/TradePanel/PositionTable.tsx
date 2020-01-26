@@ -67,7 +67,7 @@ export class PositionTable extends React.Component<PositionTableProps, PositionT
             }
         ];
 
-        return <Table className={"orderbook-table"} columns={columns} data={Object.values(this.state.positions).filter((position) => !position.Closed)} ></Table>
+        return <Table className={"trade-table"} columns={columns} data={Object.values(this.state.positions).filter((position) => !position.Closed)} ></Table>
     }
 
     private dataListener() {

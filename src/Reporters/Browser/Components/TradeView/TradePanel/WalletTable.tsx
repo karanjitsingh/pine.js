@@ -56,7 +56,7 @@ export class WalletTable extends React.Component<WalletTableProps, WalletTableSt
             },
         ];
 
-        return <Table className={"orderbook-table"} columns={columns} data={[this.state.wallet]} ></Table>
+        return <Table className={"trade-table"} columns={columns} data={[this.state.wallet]} ></Table>
     }
 
     private dataListener() {

@@ -1,17 +1,7 @@
+import { GlyphPosition, GlyphStyle, IAccount, ResolutionMapped } from "Model/Contracts";
 import { StochasticStrategyBase } from "./StochasticStrategyBase";
-import { ResolutionMapped, IAccount, Resolution, GlyphPosition, GlyphStyle } from "Model/Contracts";
 
 export class StochasticStrategy extends StochasticStrategyBase {
-    
-
-    // protected heikenashi30m: MarketData;
-    // protected currentPosition: Position;
-
-    // protected leading: ISeries;
-    // protected lagging: ISeries;
-    // protected diff: ISeries;
-    // protected shape: ISeries;
-
     private logged: boolean = false;
 
     public update(updateOffset: ResolutionMapped<number>) {
@@ -26,23 +16,23 @@ export class StochasticStrategy extends StochasticStrategyBase {
          * consolidation mode?
          */
 
-         if(!this.logged) {
-             this.logged = true;
-             this.reporter.logGlyph({
-                 color: "#ff0000",
-                 position: GlyphPosition.Above,
-                 style: GlyphStyle.Circle
-             });
-             this.reporter.logMessage("message")
-         }
+        if (!this.logged) {
+            this.logged = true;
+            this.reporter.logGlyph({
+                color: "#ff0000",
+                position: GlyphPosition.Above,
+                style: GlyphStyle.Circle
+            }, 1579940006725);
+            this.reporter.logMessage("very very very very very very very very very very very very very long message")
+        }
 
-        if(this.currentPosition) {
+        if (this.currentPosition) {
             this.exit(updateOffset);
         } else {
             this.entry(updateOffset);
         }
 
-        if(updateOffset['30m']) {
+        if (updateOffset['30m']) {
             this.heikenashi30m.Candles.getData(10);
         }
     }
@@ -57,7 +47,7 @@ export class StochasticStrategy extends StochasticStrategyBase {
         const d = this.lagging.getData(lookback);
         const k = this.leading.getData(lookback);
 
-        for(let i = 9; i >= 0; i--) {
+        for (let i = 9; i >= 0; i--) {
             // if(d[i] > k[i])ms
         }
     }

@@ -64,7 +64,7 @@ export class OrderTable extends React.Component<OrderTableProps, OrderTableState
             }
         ];
 
-        return <Table className={"orderbook-table"} columns={columns} data={Object.values(this.state.orders).filter((order) => !order.Closed)} ></Table>
+        return <Table className={"trade-table"} columns={columns} data={Object.values(this.state.orders).filter((order) => !order.Closed)} ></Table>
     }
 
     private dataListener() {
