@@ -3,6 +3,10 @@ import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
 export class Queue<T> {
     protected queue: T[] = [];
 
+    public get length(): number {
+        return this.queue.length;
+    }
+
     public push(value: T) {
         this.queue.push(value);
     }

@@ -1,4 +1,4 @@
-import { Candle } from "./Contracts";
+import { Candle, Glyph } from "./Contracts";
 import { ISeries } from "./Series/Series";
 
 export interface MarketData {
@@ -17,4 +17,9 @@ export enum Tick
     Hour = Minute * 60,
     Day = Hour * 24,
     Week = Day * 7
+}
+
+export interface IReportingInterface {
+    logMessage(message: string): void;
+    logGlyph(glyph: Glyph): void;
 }

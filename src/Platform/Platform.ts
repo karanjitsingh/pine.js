@@ -8,7 +8,7 @@ import { Indicator, Strategy, StrategyConfig, StrategyStore } from "Model/Strate
 import { Subscribable } from "Model/Utils/Events";
 import { Network } from "Platform/Network";
 import * as uuid from 'uuid/v4';
-import { Logger } from "./Logger";
+import { ReporterInterface } from "Platform/ReporterInterface";
 
 type Plot = {
     MarketData: MarketData;
@@ -30,7 +30,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
     }
 
     protected readonly network: INetwork;
-    protected readonly logger: Logger;
+    protected readonly reportingInterface: ReporterInterface;
 
     private strategy: Strategy;
     private exchange: Exchange;
@@ -41,7 +41,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
     public constructor(private config: PlatformConfiguration) {
         super();
-        this.logger = new Logger();
+        this.reportingInterface = new ReporterInterface();
         this.network = new Network();
         this.strategy = this.createStrategy(this.config.Strategy);
     }
@@ -77,9 +77,16 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
                 acc[res] = lookback;
                 return acc;
             }, {});
+
+            const [chartData, startTick] = this.getChartData(update);
+
+            const reporterLogs = this.reportingInterface.getLogsSince(startTick);
+
             return {
-                ChartData: this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update),
-                Account: this.exchange.account.getAccountObject()
+                ChartData: chartData,
+                Account: this.exchange.account.getAccountObject(),
+                GlyphLogs: reporterLogs.GlyphLogs,
+                MessageLogs: reporterLogs.MessageLogs
             }
         } else {
             return {};
@@ -120,15 +127,21 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         })
     }
 
-    private getChartData(plot: Dictionary<Plot>, rawData: ResolutionMapped<MarketData>, length: ResolutionMapped<number>): Dictionary<ChartData> {
-        return Object.keys(plot).reduce<Dictionary<ChartData>>((map, id) => {
-            const res = plot[id].MarketData.Candles.Resolution;
-            const indicators = plot[id].Indicators;
+    private getChartData(length: ResolutionMapped<number>): [Dictionary<ChartData>, number] {
+        let startTick = 0;
+        const chartData = Object.keys(this.plotMap).reduce<Dictionary<ChartData>>((map, id) => {
+            const res = this.plotMap[id].MarketData.Candles.Resolution;
+            const indicators = this.plotMap[id].Indicators;
             const updateLength = length[res];
 
             if (updateLength) {
+                const data = this.plotMap[id].MarketData.Candles.getData(length[res]);
+
+                if (!startTick || data[0].StartTick < startTick)
+                    startTick = data[0].StartTick;
+
                 map[id] = {
-                    Data: plot[id].MarketData.Candles.getData(length[res]),
+                    Data: data,
                     IndicatorData: indicators.map<number[]>((i) => (
                         i.Series.getData(updateLength)
                     )),
@@ -137,6 +150,8 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
             return map;
         }, {});
+
+        return [chartData, startTick];
     }
 
     private dataUpdate(update: ExchangeUpdate) {
@@ -156,25 +171,27 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         }
 
         if (update.CandleUpdate) {
-
-            try {
-
-            } catch (ex) {
-                // todo send error updates to logger
-                console.error("Strategy error: " + ex);
-            }
-
             this.strategy.update(update.CandleUpdate);
-            reporterData.ChartData = this.getChartData(this.plotMap, this.marketSink.MarketDataMap, update.CandleUpdate);
-        }
-
-        var logMessages = this.logger.flush();
-
-        if (logMessages.length > 0) {
-            reporterData.Logs = logMessages;
         }
 
         if (this.subscriberCount) {
+                    
+            if(update.CandleUpdate) {
+                const [chartData, _] = this.getChartData(update.CandleUpdate);
+                reporterData.ChartData = chartData;
+            }
+
+            const messageLogs = this.reportingInterface.flushMessages();
+            const glyphLogs = this.reportingInterface.flushGlyphs();
+
+            if (messageLogs && messageLogs.length) {
+                reporterData.MessageLogs = messageLogs;
+            }
+
+            if (glyphLogs && glyphLogs.length) {
+                reporterData.GlyphLogs = glyphLogs;
+            }
+
             this.notifyAll(reporterData);
         }
     }
@@ -186,7 +203,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
             throw `Strategy "${strategy}" doesn't exist`;
         }
 
-        return new (ctor)(this.logger);
+        return new (ctor)(this.reportingInterface);
     }
 
     private createExchange(exchange: string) {

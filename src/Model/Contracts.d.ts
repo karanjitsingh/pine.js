@@ -146,17 +146,31 @@ export interface Candle {
 }
 
 export interface Glyph {
-    
+	color: string;
+	style: GlyphStyle;
+	position: GlyphPosition;
 }
 
-export interface CandleGlyph {
-    Timestamp: Timestamp
-    Glyphs: Glyph[];
+export const enum GlyphPosition {
+	Above,
+	Below,
+}
+
+export const enum GlyphStyle {
+	UpTriangle,
+	DownTriangle,
+	Circle,
+	Square,
+}
+
+export interface LogGlyph {
+    Timestamp: number;
+    Glyphs: Glyph;
 }
 
 export interface LogMessage {
     Message: string;
-    Timestamp: UtcTimeStamp;
+    Timestamp: number;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -170,8 +184,8 @@ export interface ChartData {
 export interface ReporterData {
     ChartData: Dictionary<ChartData>,
     Account: Partial<IAccount>,
-    Logs: LogMessage[];
-    CandleGlyphs: CandleGlyph[];
+    MessageLogs: LogMessage[],
+    GlyphLogs: LogGlyph[]
 }
 
 // ------------------------------------------------------------------------------------------------

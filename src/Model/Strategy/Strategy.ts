@@ -3,8 +3,7 @@ import { IBroker } from "Model/Exchange/IBroker";
 import { MarketData } from "Model/InternalContracts";
 import { ISeries } from "Model/Series/Series";
 import { CtorStore } from "Model/Utils/CtorStore";
-import { ILogger } from "Model/ILogger";
-import { Logger } from "Platform/Logger";
+import { ReporterInterface } from "Platform/ReporterInterface";
 
 export type Indicator = IndicatorConfig & { Series: ISeries<number> };
 
@@ -14,7 +13,7 @@ export type RawPlot = {
     Indicators: Indicator[]
 }
 
-export type StrategyCtor = new (messageLogger: Logger) => Strategy;
+export type StrategyCtor = new (reporter: ReporterInterface) => Strategy;
 
 export interface StrategyConfig {
     resolutionSet: Resolution[];
@@ -39,5 +38,5 @@ export abstract class Strategy {
         this.broker = broker;
     }
 
-    public constructor(protected readonly logger: ILogger) {}
+    public constructor(protected readonly reporter: ReporterInterface) {}
 }

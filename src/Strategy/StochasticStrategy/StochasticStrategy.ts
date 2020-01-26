@@ -1,5 +1,5 @@
 import { StochasticStrategyBase } from "./StochasticStrategyBase";
-import { ResolutionMapped, IAccount, Resolution } from "Model/Contracts";
+import { ResolutionMapped, IAccount, Resolution, GlyphPosition, GlyphStyle } from "Model/Contracts";
 
 export class StochasticStrategy extends StochasticStrategyBase {
     
@@ -12,6 +12,8 @@ export class StochasticStrategy extends StochasticStrategyBase {
     // protected diff: ISeries;
     // protected shape: ISeries;
 
+    private logged: boolean = false;
+
     public update(updateOffset: ResolutionMapped<number>) {
         /**
          * if lagging wave d goes into k from below, then long
@@ -23,6 +25,16 @@ export class StochasticStrategy extends StochasticStrategyBase {
          * 
          * consolidation mode?
          */
+
+         if(!this.logged) {
+             this.logged = true;
+             this.reporter.logGlyph({
+                 color: "#ff0000",
+                 position: GlyphPosition.Above,
+                 style: GlyphStyle.Circle
+             });
+             this.reporter.logMessage("message")
+         }
 
         if(this.currentPosition) {
             this.exit(updateOffset);
