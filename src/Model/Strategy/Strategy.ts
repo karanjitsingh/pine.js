@@ -11,7 +11,7 @@ export type RawPlot = {
     Title?: string;
     MarketData: MarketData;
     Indicators: Indicator[]
-}
+};
 
 export type StrategyCtor = new (reporter: ReporterInterface) => Strategy;
 
@@ -26,10 +26,10 @@ export const StrategyStore = new CtorStore<StrategyCtor>();
 export abstract class Strategy {
     protected broker: IBroker;
 
-    public abstract readonly StrategyConfig: StrategyConfig;
+    public abstract readonly strategyConfig: StrategyConfig;
 
-    public abstract init(input: ResolutionMapped<MarketData>, broker: IBroker): RawPlot[];  
-    
+    public abstract init(input: ResolutionMapped<MarketData>, broker: IBroker): RawPlot[];
+
     public abstract update(update: ResolutionMapped<number>): void;
 
     public abstract trade(update: Partial<IAccount>): void;

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 export class ConfigPane extends React.Component<{ heading?: string }> {
 
@@ -10,6 +10,6 @@ export class ConfigPane extends React.Component<{ heading?: string }> {
                     {this.props.children}
                 </div>
             </div>
-        )
+        );
     }
 }

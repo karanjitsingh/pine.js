@@ -6,15 +6,14 @@ export interface INetwork {
 }
 
 export interface NetworkResponse {
-    requestId: number,
-    status: number,
-    headers: IncomingHttpHeaders,
-    response: string,
-    error: any
+    requestId: number;
+    status: number;
+    headers: IncomingHttpHeaders;
+    response: string;
+    error: any;
 }
 
 export interface ApiContract<TParams extends Object, TResponse extends Object> {
     Params: TParams;
     Response: TResponse;
 }
-

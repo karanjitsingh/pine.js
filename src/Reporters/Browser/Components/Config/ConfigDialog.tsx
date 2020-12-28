@@ -1,8 +1,8 @@
-import { ListSelector, Orientation } from 'Components/Fabric/ListSelector';
-import { PlatformConfiguration, ReporterInit } from 'Model/Contracts';
-import * as React from 'react';
-import { Button, Carousel, CarouselItem, CarouselProps, Form } from 'react-bootstrap';
-import { ConfigPane } from './ConfigPane';
+import { ListSelector, Orientation } from "Components/Fabric/ListSelector";
+import { PlatformConfiguration, ReporterInit } from "Model/Contracts";
+import * as React from "react";
+import { Button, Carousel, CarouselItem, CarouselProps, Form } from "react-bootstrap";
+import { ConfigPane } from "./ConfigPane";
 
 export interface ConfigDialogProps extends ReporterInit {
     submitNewConfig: (config: PlatformConfiguration) => void;
@@ -10,30 +10,28 @@ export interface ConfigDialogProps extends ReporterInit {
 }
 
 interface ConfigDialogState {
-    activeIndex: number;
+    activeIndex?: number;
     isSliding: boolean;
     selectedExec: string;
     selectedExchange?: string;
     selectedStrategy?: string;
 }
 
-
 export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialogState> {
 
     private pages: JSX.Element[];
 
-    public constructor(props) {
+    public constructor(props: ConfigDialogProps) {
         super(props);
         this.state = {
-            activeIndex: undefined,
             isSliding: false,
             selectedExec: "Trade"
-        }
+        };
     }
 
-    public shouldComponentUpdate(_, nextState: ConfigDialogState) {
-        return this.state.activeIndex != nextState.activeIndex
-            || this.state.selectedExec != nextState.selectedExec;
+    public shouldComponentUpdate(_: any, nextState: ConfigDialogState) {
+        return this.state.activeIndex !== nextState.activeIndex
+            || this.state.selectedExec !== nextState.selectedExec;
     }
 
     public render() {
@@ -44,17 +42,16 @@ export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialo
             wrap: false,
             touch: false,
             interval: null
-        }
+        };
 
         this.pages = this.getPages();
-        const done = this.pages.length - 1 == this.state.activeIndex;
+        const done = this.pages.length - 1 === this.state.activeIndex;
         const proceedText = this.state.activeIndex ? (done ? "Done" : "Next") : "Skip";
 
-
-        return (
+      return (
             <div className="config-selector-container">
                 <div className="config-selector">
-                    <Carousel onSlideEnd={() => this.setState({ activeIndex: this.state.activeIndex, isSliding: false })} activeIndex={this.state.activeIndex | 0} {...carouselProps} className="config-carousel">
+                    <Carousel onSlideEnd={() => this.setState({ activeIndex: this.state.activeIndex, isSliding: false })} activeIndex={this.state.activeIndex || 0} {...carouselProps} className="config-carousel">
                         {this.pages}
                     </Carousel>
                     <div className="carousel-buttons">
@@ -63,7 +60,7 @@ export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialo
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 
     private getPages(): JSX.Element[] {
@@ -71,7 +68,7 @@ export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialo
 
             <CarouselItem className="config-pane">
                 <ConfigPane>
-                    <Button variant={'primary'} onClick={() => { this.setDefaultConfiguration(); }}>Default Config</Button>
+                    <Button variant={"primary"} onClick={() => { this.setDefaultConfiguration(); }}>Default Config</Button>
 
                     <Form.Group>
                         {
@@ -84,7 +81,7 @@ export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialo
                                             <div>{item.exchange}</div>
                                             <div>{item.backtest ? "Backtest" : "Live"}</div>
                                         </div>
-                                    )
+                                    );
                                 }}></ListSelector>] : null
                         }
                     </Form.Group>
@@ -116,7 +113,7 @@ export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialo
                         selectedExec: execution
                     })} default={0} sticky={true} direction={Orientation.Horizontal} list={["Trade", "Backtest"]}></ListSelector>
                     {
-                        this.state.selectedExec == "Trade" ?
+                        this.state.selectedExec === "Trade" ?
                             <Form.Group controlId="trade-form">
                                 <Form.Label>Api Key</Form.Label>
                                 <Form.Control type="password" placeholder="Api Key" id="apikey"></Form.Control>
@@ -144,15 +141,15 @@ export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialo
         const config = {
             Strategy: this.state.selectedStrategy,
             Exchange: this.state.selectedExchange
-        } as PlatformConfiguration
+        } as PlatformConfiguration;
 
         if (this.state.selectedExec === "Trade") {
             config.ExchangeAuth = {
                 ApiKey: (document.querySelector("#apikey") as HTMLInputElement).value,
                 Secret: (document.querySelector("#authsecret") as HTMLInputElement).value
-            }
+            };
         } else {
-            config.BacktestSettings = {}
+            config.BacktestSettings = {};
         }
 
         console.log(config);
@@ -164,13 +161,13 @@ export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialo
 
     private configButton_OnClick(next: boolean) {
         if (!this.state.isSliding) {
-            const index = this.state.activeIndex | 0;
+            const index = this.state.activeIndex || 0;
             if (next) {
                 if (index + 1 < this.pages.length) {
                     this.setState({
                         activeIndex: index + 1,
                         isSliding: true
-                    })
+                    });
                 } else {
                     this.submit();
                 }
@@ -179,10 +176,9 @@ export class ConfigDialog extends React.Component<ConfigDialogProps, ConfigDialo
                     this.setState({
                         activeIndex: index - 1,
                         isSliding: true
-                    })
+                    });
                 }
             }
         }
     }
 }
-

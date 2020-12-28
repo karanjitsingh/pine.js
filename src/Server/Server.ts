@@ -1,7 +1,7 @@
-import * as http from 'http';
-import { PlatformControl } from 'Platform/PlatformControl';
-import { URL } from 'url';
-import { rest } from './Rest';
+import * as http from "http";
+import { PlatformControl } from "Platform/PlatformControl";
+import { URL } from "url";
+import { rest } from "./Rest";
 
 export class Server {
 
@@ -24,38 +24,40 @@ export class Server {
 
     public start() {
 
-        this.methodPatternMap['post'] = Object.keys(rest.post);
-        this.methodPatternMap['get'] = Object.keys(rest.get);
+        this.methodPatternMap.post = Object.keys(rest.post);
+        this.methodPatternMap.get = Object.keys(rest.get);
 
-        var server = http.createServer(this.listener.bind(this));
+        const server = http.createServer(this.listener.bind(this));
         server.listen(3000);
     }
 
     private listener(req: http.IncomingMessage, res: http.ServerResponse) {
-        const url = new URL(req.url, "protocol://host");
+        const url = new URL(req.url!, "protocol://host");
+
+        if (!req.method) {
+            req.method = "get";
+        }
 
         const resolver = this.getResolver(req.method.toLowerCase(), url.pathname, this.methodPatternMap);
         if (!resolver) {
             console.log(req.method, req, url, 404);
 
-
             res.writeHead(404);
             res.end();
-        }
-        else {
+        } else {
             console.log(req.method, req, url, req.method.toLowerCase(), resolver);
 
             switch (req.method.toLowerCase()) {
-                case 'get':
+                case "get":
                     rest.get[resolver](url, res);
                     break;
-                case 'post':
+                case "post":
                     let body: any = [];
-                    req.on('error', (err) => {
+                    req.on("error", (err) => {
                         console.error(err);
-                    }).on('data', (chunk) => {
+                    }).on("data", (chunk) => {
                         body.push(chunk);
-                    }).on('end', () => {
+                    }).on("end", () => {
                         body = Buffer.concat(body).toString();
 
                         let data = null;
@@ -82,7 +84,7 @@ export class Server {
 
     private getResolver(method: string, pathname: string, map: { [key: string]: string[] }) {
         const paths = map[method];
-    
+
         if (paths) {
             for (let i = 0; i < paths.length; i++) {
                 if (pathname.startsWith(paths[i])) {
@@ -90,7 +92,7 @@ export class Server {
                 }
             }
         }
-    
+
         return null;
     }
 }

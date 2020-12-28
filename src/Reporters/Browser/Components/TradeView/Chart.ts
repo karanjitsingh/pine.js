@@ -1,7 +1,7 @@
 import * as LightweightCharts from "lightweight-charts";
-import { ChartData, Dictionary, LogGlyph, PlotConfig } from "Model/Contracts";
+import { ChartData, DeepPartial, Dictionary, LogGlyph, PlotConfig } from "Model/Contracts";
 
-type TimeStamp = LightweightCharts.Nominal<number, 'UTCTimestamp'>;
+type TimeStamp = LightweightCharts.Nominal<number, "UTCTimestamp">;
 
 enum Color {
     GreenCandle = "rgba(0, 150, 136, 0.3)",
@@ -11,7 +11,7 @@ enum Color {
 interface ChartSeries {
     candles: LightweightCharts.ISeriesApi<"Candlestick">;
     volume: LightweightCharts.ISeriesApi<"Histogram">;
-    indicators: LightweightCharts.ISeriesApi<"Line" | "Area">[]
+    indicators: LightweightCharts.ISeriesApi<"Line" | "Area">[];
 }
 
 interface ChartUpdate {
@@ -28,7 +28,7 @@ export class Chart {
     private size: {
         height: number,
         width: number
-    }
+    };
     private container: HTMLDivElement;
     private dataInit: boolean = false;
     private candleTimestampGlyphMap: Dictionary<LightweightCharts.Glyph[]> = {};
@@ -41,27 +41,26 @@ export class Chart {
         const indicatorScale = {
             top: 0.775,
             bottom: 0.025
-        }
+        };
 
         if (plotConfig.IndicatorConfigs.length) {
             chartScale = {
                 top: 0.05,
-                bottom: 0.30,
+                bottom: 0.30
             };
             volumeScale = {
                 top: 0.55,
                 bottom: 0.25
             };
-        }
-        else {
+        } else {
             chartScale = {
                 top: 0.05,
-                bottom: 0.05,
-            }
+                bottom: 0.05
+            };
             volumeScale = {
                 top: 0.8,
                 bottom: 0
-            }
+            };
         }
 
         const chart = new Chart();
@@ -70,26 +69,26 @@ export class Chart {
 
         chart.size = {
             width: container.offsetWidth,
-            height: container.offsetHeight,
+            height: container.offsetHeight
         };
 
         const chartObj = chart.obj = LightweightCharts.createChart(container, {
             ...chart.size,
             priceScale: {
                 scaleMargins: chartScale,
-                borderVisible: false,
+                borderVisible: false
             },
             layout: {
-                backgroundColor: '#131722',
-                textColor: '#d1d4dc',
+                backgroundColor: "#131722",
+                textColor: "#d1d4dc"
             },
             grid: {
                 vertLines: {
-                    color: 'rgba(42, 46, 57, 0)',
+                    color: "rgba(42, 46, 57, 0)"
                 },
                 horzLines: {
-                    color: 'rgba(42, 46, 57, 0.6)',
-                },
+                    color: "rgba(42, 46, 57, 0.6)"
+                }
             },
             timeScale: {
                 timeVisible: true
@@ -102,26 +101,26 @@ export class Chart {
             indicators: []
         };
 
-        window['chartObj'] = chartObj;
+        window.chartObj = chartObj;
 
         chart.series.candles = chartObj.addCandlestickSeries();
 
         chart.series.volume = chartObj.addHistogramSeries({
-            color: '#26a69a',
+            color: "#26a69a",
             lineWidth: 2,
             priceFormat: {
-                type: 'volume',
+                type: "volume"
 
             },
             overlay: true,
-            scaleMargins: volumeScale,
+            scaleMargins: volumeScale
         });
 
         plotConfig.IndicatorConfigs.forEach((config) => {
 
-            const color = config.Color || "rgba(38,198,218, 0.5)"
+            const color = config.Color || "rgba(38,198,218, 0.5)";
 
-            if (config.PlotType == 'Area') {
+            if (config.PlotType === "Area") {
                 chart.series.indicators.push(chartObj.addAreaSeries({
                     topColor: color,
                     bottomColor: color,
@@ -133,7 +132,7 @@ export class Chart {
                     lastValueVisible: false,
                     scaleGroup: "indicator"
                 }));
-            } else if (config.PlotType == 'Line') {
+            } else if (config.PlotType === "Line") {
                 chart.series.indicators.push(chartObj.addLineSeries({
                     color: color,
                     lineWidth: 2,
@@ -148,14 +147,14 @@ export class Chart {
         return chart;
     }
 
-    public updateChartData(chartData: ChartData) {
+    public updateChartData(chartData: DeepPartial<ChartData>) {
         // It's given that length of candle update is same as length of indicator update
 
         const chartUpdate: ChartUpdate = {
             candles: [],
             volume: [],
             indicators: new Array(chartData.IndicatorData.length).fill(0).map(() => new Array())
-        }
+        };
 
         let candleUpdate: (data: LightweightCharts.BarData) => void;
         let volumeUpdate: (data: LightweightCharts.HistogramData) => void;
@@ -164,7 +163,7 @@ export class Chart {
         if (!this.dataInit) {
             candleUpdate = chartUpdate.candles.unshift.bind(chartUpdate.candles);
             volumeUpdate = chartUpdate.volume.unshift.bind(chartUpdate.volume);
-            indicatorUpdates = chartUpdate.indicators.map<(data: LightweightCharts.LineData) => void>((indicator) => indicator.unshift.bind(indicator) as any)
+            indicatorUpdates = chartUpdate.indicators.map<(data: LightweightCharts.LineData) => void>((indicator) => indicator.unshift.bind(indicator) as any);
         } else {
             candleUpdate = this.series.candles.update.bind(this.series.candles);
             volumeUpdate = this.series.volume.update.bind(this.series.volume);
@@ -195,7 +194,7 @@ export class Chart {
 
             chartData.IndicatorData.forEach((indicator, index) => {
                 const value = indicator[indicator.length - i - 1];
-                if (value !== undefined && value !== NaN && value !== null) {
+                if (value !== undefined && !isNaN(value) && value !== null) {
                     indicatorUpdates[index]({
                         time,
                         value
@@ -215,9 +214,9 @@ export class Chart {
             this.dataInit = true;
         }
     }
-    a
+
     public updateGlyphData(logGlyph: LogGlyph) {
-        const candle = this.series.candles.getNearestItem(Math.floor(logGlyph.Timestamp / 1000) as number as LightweightCharts.UTCTimestamp) as LightweightCharts.BarData
+        const candle = this.series.candles.getNearestItem(Math.floor(logGlyph.Timestamp / 1000) as number as LightweightCharts.UTCTimestamp) as LightweightCharts.BarData;
         const glyph: LightweightCharts.Glyph = {
             color: logGlyph.Glyph.color,
             style: logGlyph.Glyph.style as any,
@@ -240,10 +239,10 @@ export class Chart {
     public resize() {
         const newSize = {
             width: this.container.offsetWidth,
-            height: this.container.offsetHeight,
+            height: this.container.offsetHeight
         };
 
-        if (newSize.width != this.size.width || newSize.height != this.size.height) {
+        if (newSize.width !== this.size.width || newSize.height !== this.size.height) {
             this.obj.applyOptions({
                 ...newSize
             });

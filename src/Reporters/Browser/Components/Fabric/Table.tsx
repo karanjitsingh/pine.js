@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Table as BootstrapTable } from 'react-bootstrap';
+import * as React from "react";
+import { Table as BootstrapTable } from "react-bootstrap";
 
 export interface TableColumn<T> {
-    title: string,
-    cssClass?: string,
+    title: string;
+    cssClass?: string;
     render: (item: T) => JSX.Element | string | number;
 }
 
@@ -11,8 +11,8 @@ export interface TableProps<T> {
     columns: TableColumn<T>[];
     comparer?: (a: T, b: T) => number;
     data: T[];
-    className?: string,
-    hideColumns?: boolean
+    className?: string;
+    hideColumns?: boolean;
 }
 
 export class Table<T> extends React.Component<TableProps<T>> {
@@ -27,12 +27,12 @@ export class Table<T> extends React.Component<TableProps<T>> {
                 {this.props.hideColumns ? null : <tr>{this.getColumns()}</tr>}
                 {this.getRows()}
             </BootstrapTable>
-        )
+        );
     }
 
     private getColumns(): JSX.Element[] {
         return this.props.columns.map((col) => {
-            return <th className={col.cssClass}>{col.title}</th>
+            return <th className={col.cssClass}>{col.title}</th>;
         });
     }
 

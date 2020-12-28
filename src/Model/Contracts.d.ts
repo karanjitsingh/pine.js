@@ -137,7 +137,7 @@ export type ResolutionMapped<T> = { [resolution in Resolution]?: T };
 
 export interface Candle {
     StartTick: number;
-    EndTick: number;
+    EndTick: number | null;
     High: number;
     Open: number;
     Close: number;
@@ -168,7 +168,14 @@ export interface LogGlyph {
     Glyph: Glyph;
 }
 
+export const enum LogType {
+    Info,
+    Warning,
+    Error,
+}
+
 export interface LogMessage {
+    LogType:  LogType;
     Message: string;
     Timestamp: number;
 }

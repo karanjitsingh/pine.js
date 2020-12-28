@@ -1,18 +1,18 @@
-import * as fs from 'fs';
-import * as http from 'http';
+import * as fs from "fs";
+import * as http from "http";
 import { PlatformConfiguration, ReporterInit } from "Model/Contracts";
 import { ExchangeStore } from "Model/Exchange/Exchange";
 import { StrategyStore } from "Model/Strategy/Strategy";
-import { Utils } from 'Model/Utils/Utils';
-import * as path from 'path';
+import { Utils } from "Model/Utils/Utils";
+import * as path from "path";
 import { Server } from "Server/Server";
 import { Constants, GetReply, PostReply, RestMethods } from "Server/ServerContracts";
-import * as ServerUtils from 'Server/ServerUtils';
+import * as ServerUtils from "Server/ServerUtils";
 import { URL } from "url";
 
 export const rest: RestMethods = {
-    'post': {
-        '/api/create': (url: URL, config: PlatformConfiguration, res: http.ServerResponse): PostReply => {
+    "post": {
+        "/api/create": (url: URL, config: PlatformConfiguration, res: http.ServerResponse): PostReply => {
             // todo: better way of handling default configs
             if ((config as any).default) {
                 config = Utils.GetTestConfig();
@@ -23,7 +23,6 @@ export const rest: RestMethods = {
                 res.end();
                 return Promise.resolve(400);
             }
-
 
             const key = Server.platformControl.addPlatform(config);
             const platform = Server.platformControl.getPlatformInstance(key).platform;
@@ -36,18 +35,18 @@ export const rest: RestMethods = {
             return Promise.resolve(200);
         }
     },
-    'get': {
-        '/api/init': (url: URL, res: http.ServerResponse): GetReply => {
+    "get": {
+        "/api/init": (url: URL, res: http.ServerResponse): GetReply => {
             res.writeHead(200);
             res.end(JSON.stringify({
                 availableStrategies: StrategyStore.entries(),
                 availableExchanges: ExchangeStore.entries(),
                 runningInstances: Server.platformControl.getRunningInstances()
-            } as ReporterInit))
+            } as ReporterInit));
 
             return Promise.resolve(200);
         },
-        '/pine': (url: URL, res: http.ServerResponse): GetReply => {
+        "/pine": (url: URL, res: http.ServerResponse): GetReply => {
             const file = path.join(Constants.pineBin, url.pathname.replace("/pine", ""));
             let resolver: (code: number) => void;
             const promise = new Promise<number>((resolve) => resolver = resolve);
@@ -61,8 +60,7 @@ export const rest: RestMethods = {
 
                         res.end(err.toString());
                         resolver(500);
-                    }
-                    else {
+                    } else {
                         res.writeHead(200, {
                             "Content-Type": ServerUtils.getContentType(file)
                         });
@@ -71,17 +69,22 @@ export const rest: RestMethods = {
                         resolver(200);
                     }
                 });
-            }
-            else {
-                res.writeHead(404)
+            } else {
+                res.writeHead(404);
                 res.end();
-                resolver(404);
+                resolver!(404);
             }
 
             return promise;
         },
-        '/api/connect': (url: URL, res: http.ServerResponse): GetReply => {
-            const id = url.searchParams.get('id');
+        "/api/connect": (url: URL, res: http.ServerResponse): GetReply => {
+            const id = url.searchParams.get("id");
+
+            if (!id) {
+                res.writeHead(400);
+                res.end("Param id not provided.");
+                return Promise.resolve(400);
+            }
 
             if (!Server.platformControl.getPlatformInstance(id)) {
                 res.writeHead(400);
@@ -102,7 +105,7 @@ export const rest: RestMethods = {
             }
         },
 
-        '/': ServerUtils.browserGet,
-        '/scripts': ServerUtils.browserGet
+        "/": ServerUtils.browserGet,
+        "/scripts": ServerUtils.browserGet
     }
-}
+};

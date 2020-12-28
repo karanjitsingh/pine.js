@@ -1,7 +1,7 @@
-import { Table, TableColumn } from 'Components/Fabric/Table';
-import { DataStream } from 'DataStream';
-import { Dictionary, Order } from 'Model/Contracts';
-import * as React from 'react';
+import { Table, TableColumn } from "Components/Fabric/Table";
+import { DataStream } from "DataStream";
+import { Dictionary, Order } from "Model/Contracts";
+import * as React from "react";
 
 export interface OrderTableProps {
     stream: DataStream<Dictionary<Order>>;
@@ -17,7 +17,7 @@ export class OrderTable extends React.Component<OrderTableProps, OrderTableState
         super(props);
 
         this.state = {
-            orders: {},
+            orders: {}
         };
 
         this.props.stream.subscribe(this.dataListener.bind(this));
@@ -64,7 +64,7 @@ export class OrderTable extends React.Component<OrderTableProps, OrderTableState
             }
         ];
 
-        return <Table className={"trade-table"} columns={columns} data={Object.values(this.state.orders).filter((order) => !order.Closed)} ></Table>
+        return <Table className={"trade-table"} columns={columns} data={Object.values(this.state.orders).filter((order) => !order.Closed)} ></Table>;
     }
 
     private dataListener() {
@@ -75,7 +75,7 @@ export class OrderTable extends React.Component<OrderTableProps, OrderTableState
 
         const newState: OrderTableState = {
             orders: {}
-        }
+        };
 
         this.props.stream.flush().forEach(orders => {
             Object.assign(newState.orders, orders, this.state.orders);

@@ -1,9 +1,9 @@
 
-import * as fs from 'fs';
-import * as http from 'http';
-import * as path from 'path';
-import { URL } from 'url';
-import { Constants, GetReply } from 'Server/ServerContracts';
+import * as fs from "fs";
+import * as http from "http";
+import * as path from "path";
+import { URL } from "url";
+import { Constants, GetReply } from "Server/ServerContracts";
 
 export function getContentType(file: string) {
     const ext = path.extname(file);
@@ -17,9 +17,9 @@ export function getContentType(file: string) {
         case ".html":
             return "text/html";
         case ".css":
-            return "text/stylesheet"
+            return "text/stylesheet";
         default:
-            return "text"
+            return "text";
     }
 }
 
@@ -28,16 +28,15 @@ export function browserGet(url: URL, res: http.ServerResponse): GetReply {
     let content;
     let file;
 
-    if (url.pathname == '/') {
+    if (url.pathname == "/") {
         file = path.join(Constants.browserBin, "index.html");
     } else {
-        file = path.join(Constants.browserBin, url.pathname)
+        file = path.join(Constants.browserBin, url.pathname);
     }
 
     try {
-        content = fs.readFileSync(file).toString()
-    }
-    catch (ex) {
+        content = fs.readFileSync(file).toString();
+    } catch (ex) {
         res.writeHead(404);
         res.end();
         return Promise.resolve(404);
@@ -46,4 +45,4 @@ export function browserGet(url: URL, res: http.ServerResponse): GetReply {
     res.writeHead(200);
     res.end(content);
     return Promise.resolve(200);
-};
+}

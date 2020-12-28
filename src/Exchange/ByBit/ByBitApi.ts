@@ -1,86 +1,86 @@
-import * as crypto from 'crypto';
+import * as crypto from "crypto";
 import { ExchangeAuth } from "Model/Contracts";
 import { ApiContract, INetwork, NetworkResponse } from "Model/Network";
 import { ByBitContracts } from "./ByBitContracts";
 
 export interface Response<TResult> {
-    ret_code: number,
-    ret_msg: string,
-    ext_code: string,
-    result: TResult,
-    time_now: string
+    ret_code: number;
+    ret_msg: string;
+    ext_code: string;
+    result: TResult;
+    time_now: string;
 }
-export type Api = { [id in keyof ByBitContracts]?: (params: ByBitContracts[id]['Params']) => Promise<ByBitContracts[id]['Response']> };
+export type Api = { [id in keyof ByBitContracts]?: (params: ByBitContracts[id]["Params"]) => Promise<ByBitContracts[id]["Response"]> };
 
 export class ByBitApi implements Api {
     constructor(private network: INetwork, private testnet: boolean, private auth: ExchangeAuth) { }
 
-    public PlaceActiveOrder = (params: ByBitContracts['PlaceActiveOrder']['Params']) => {
+    public PlaceActiveOrder = (params: ByBitContracts["PlaceActiveOrder"]["Params"]) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/order/create" : "https://api.bybit.com/open-api/order/create";
-        console.log(this.auth)
-        return this.apiCall<ByBitContracts['PlaceActiveOrder']>('post', url, params, this.auth);
+        console.log(this.auth);
+        return this.apiCall<ByBitContracts["PlaceActiveOrder"]>("post", url, params, this.auth);
     }
 
-    public Kline = (params: ByBitContracts['Kline']['Params']) => {
+    public Kline = (params: ByBitContracts["Kline"]["Params"]) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/v2/public/kline/list" : "https://api.bybit.com/v2/public/kline/list";
-        return this.apiCall<ByBitContracts['Kline']>('get', url, params);
+        return this.apiCall<ByBitContracts["Kline"]>("get", url, params);
     }
 
-    public GetActiveOrder = (params: ByBitContracts['GetActiveOrder']['Params']) => {
+    public GetActiveOrder = (params: ByBitContracts["GetActiveOrder"]["Params"]) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/order/list" : "https://api.bybit.com/open-api/order/list";
-        return this.apiCall<ByBitContracts['GetActiveOrder']>('get', url, params, this.auth);
+        return this.apiCall<ByBitContracts["GetActiveOrder"]>("get", url, params, this.auth);
     }
 
-    public GetConditionalOrder = (params: ByBitContracts['GetConditionalOrder']['Params']) => {
+    public GetConditionalOrder = (params: ByBitContracts["GetConditionalOrder"]["Params"]) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/stop-order/list" : "https://api.bybit.com/open-api/stop-order/list";
-        return this.apiCall<ByBitContracts['GetConditionalOrder']>('get', url, params, this.auth);
+        return this.apiCall<ByBitContracts["GetConditionalOrder"]>("get", url, params, this.auth);
     }
 
-    public MyPosition = (params: ByBitContracts['MyPosition']['Params']) => {
+    public MyPosition = (params: ByBitContracts["MyPosition"]["Params"]) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/position/list" : "https://api.bybit.com/position/list";
-        return this.apiCall<ByBitContracts['MyPosition']>('get', url, params, this.auth);
+        return this.apiCall<ByBitContracts["MyPosition"]>("get", url, params, this.auth);
     }
 
-    public GetWalletFundRecords = (params: ByBitContracts['GetWalletFundRecords']['Params']) => {
+    public GetWalletFundRecords = (params: ByBitContracts["GetWalletFundRecords"]["Params"]) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/wallet/fund/records" : "https://api.bybit.com/open-api/wallet/fund/records";
-        return this.apiCall<ByBitContracts['GetWalletFundRecords']>('get', url, params, this.auth);
+        return this.apiCall<ByBitContracts["GetWalletFundRecords"]>("get", url, params, this.auth);
     }
 
-    public UserLeverage = (params: ByBitContracts['UserLeverage']['Params']) => {
+    public UserLeverage = (params: ByBitContracts["UserLeverage"]["Params"]) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/user/leverage" : "https://api.bybit.com/user/leverage";
-        return this.apiCall<ByBitContracts['UserLeverage']>('get', url, params, this.auth);
+        return this.apiCall<ByBitContracts["UserLeverage"]>("get", url, params, this.auth);
     }
 
-    public ChangeUserLeverage = (params: ByBitContracts['ChangeUserLeverage']['Params']) => {
+    public ChangeUserLeverage = (params: ByBitContracts["ChangeUserLeverage"]["Params"]) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/user/leverage/save" : "https://api.bybit.com/user/leverage/save";
-        return this.apiCall<ByBitContracts['ChangeUserLeverage']>('post', url, params, this.auth);
+        return this.apiCall<ByBitContracts["ChangeUserLeverage"]>("post", url, params, this.auth);
     }
 
-    public SetTradingStop = (params: ByBitContracts['SetTradingStop']['Params']) => {
+    public SetTradingStop = (params: ByBitContracts["SetTradingStop"]["Params"]) => {
         const url = this.testnet ? "https://api-testnet.bybit.com/open-api/position/trading-stop" : "https://api.bybit.com/open-api/position/trading-stop";
-        return this.apiCall<ByBitContracts['SetTradingStop']>('post', url, params, this.auth);
+        return this.apiCall<ByBitContracts["SetTradingStop"]>("post", url, params, this.auth);
     }
 
-    private apiCall<Contract extends ApiContract<Contract['Params'], Contract['Response']>>(method: keyof INetwork, url: string, params: Contract['Params'], auth?: ExchangeAuth): Promise<Contract['Response']> {
+    private apiCall<Contract extends ApiContract<Contract["Params"], Contract["Response"]>>(method: keyof INetwork, url: string, params: Contract["Params"], auth?: ExchangeAuth): Promise<Contract["Response"]> {
 
         if (!params || !(params instanceof Object)) {
             params = {};
         }
 
-        return new Promise<Contract['Response']>((resolve, reject) => {
+        return new Promise<Contract["Response"]>((resolve, reject) => {
             this.apiNetworkCall(method, url, params, this.auth).then((response: NetworkResponse) => {
-                resolve(JSON.parse(response.response) as Contract['Response']);
+                resolve(JSON.parse(response.response) as Contract["Response"]);
             }, (reason) => {
                 reject(reason);
-            });;
+            });
         });
     }
 
-    private apiNetworkCall<Contract extends ApiContract<Contract['Params'], Contract['Response']>>(method: keyof INetwork, url: string, params: Contract['Params'], auth?: ExchangeAuth): Promise<NetworkResponse> {
+    private apiNetworkCall<Contract extends ApiContract<Contract["Params"], Contract["Response"]>>(method: keyof INetwork, url: string, params: Contract["Params"], auth?: ExchangeAuth): Promise<NetworkResponse> {
         switch (method) {
-            case 'get':
-                return this.network[method](url, this.auth ? this.getSignedParam(auth, params) : params);
-            case 'post':
+            case "get":
+                return this.network[method](url, this.auth ? this.getSignedParam(auth!, params) : params);
+            case "post":
                 return this.network[method](url, {
                     "Content-Type": "application/json"
                 }, JSON.stringify(auth ? this.getSignedParam(auth, params) : params));
@@ -90,10 +90,13 @@ export class ByBitApi implements Api {
     }
 
     private getSignedParam(auth: ExchangeAuth, params: any): Object {
-        params['timestamp'] = new Date().getTime() + 2000;
-        params['api_key'] = auth.ApiKey;
 
-        const orderedParams: any = {}
+        // tslint:disable-next-line: no-string-literal
+        params["timestamp"] = new Date().getTime() + 2000;
+        // tslint:disable-next-line: no-string-literal
+        params["api_key"] = auth.ApiKey;
+
+        const orderedParams: any = {};
 
         let paramstr = "";
 
@@ -107,7 +110,8 @@ export class ByBitApi implements Api {
             paramstr += key + "=" + params[key];
         });
 
-        orderedParams['sign'] = crypto.createHmac('sha256', this.auth.Secret).update(paramstr).digest('hex');
+        // tslint:disable-next-line: no-string-literal
+        orderedParams["sign"] = crypto.createHmac("sha256", this.auth.Secret).update(paramstr).digest("hex");
 
         return orderedParams;
     }

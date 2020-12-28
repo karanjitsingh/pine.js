@@ -1,6 +1,5 @@
-import * as React from 'react';
-import { Spinner as BootstrapSpinner } from 'react-bootstrap';
-
+import * as React from "react";
+import { Spinner as BootstrapSpinner } from "react-bootstrap";
 
 export class Spinner extends React.Component {
     public render() {
@@ -8,6 +7,6 @@ export class Spinner extends React.Component {
             <div className="spinner-container">
                 <BootstrapSpinner animation="border" variant="light"></BootstrapSpinner>
             </div>
-        )
+        );
     }
 }

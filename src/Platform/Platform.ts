@@ -7,7 +7,7 @@ import { INetwork } from "Model/Network";
 import { Indicator, Strategy, StrategyConfig, StrategyStore } from "Model/Strategy/Strategy";
 import { Subscribable } from "Model/Utils/Events";
 import { Network } from "Platform/Network";
-import * as uuid from 'uuid/v4';
+import * as uuid from "uuid/v4";
 import { ReporterInterface } from "Platform/ReporterInterface";
 
 type Plot = {
@@ -23,7 +23,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
     public get StrategyConfig(): StrategyConfig | undefined {
         if (this.strategy) {
-            return this.strategy.StrategyConfig;
+            return this.strategy.strategyConfig;
         }
 
         return undefined;
@@ -52,7 +52,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
     public start(): Dictionary<PlotConfig> {
 
-        const strategyConfig = this.strategy.StrategyConfig;
+        const strategyConfig = this.strategy.strategyConfig;
 
         this.exchange = this.createExchange(this.config.Exchange);
 
@@ -65,7 +65,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
             this.marketSink.subscribe(this.dataUpdate, this);
             this.marketSink.startStream(strategyConfig.initCandleCount);
         }, (reason) => {
-            console.log("Platform: Connection rejected, " + (reason instanceof String ? reason : JSON.stringify(reason)));
+            console.error("Platform: Connection rejected, " + (reason instanceof String ? reason : JSON.stringify(reason)));
         });
 
         return this.plotConfigMap;
@@ -73,7 +73,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
 
     public getData(lookback: number): Partial<ReporterData> {
         if (this.isRunning) {
-            const update = this.StrategyConfig.resolutionSet.reduce<Dictionary<number>>((acc, res) => {
+            const update = this.StrategyConfig!.resolutionSet.reduce<Dictionary<number>>((acc, res) => {
                 acc[res] = lookback;
                 return acc;
             }, {});
@@ -87,18 +87,18 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
                 Account: this.exchange.account.getAccountObject(),
                 GlyphLogs: reporterLogs.GlyphLogs,
                 MessageLogs: reporterLogs.MessageLogs
-            }
+            };
         } else {
             return {};
         }
     }
 
     private initStrategy(broker: IBroker, config: StrategyConfig, dataSeries: ResolutionMapped<MarketData>) {
-        const stratData: ResolutionMapped<MarketData> = {}
+        const stratData: ResolutionMapped<MarketData> = {};
 
         config.resolutionSet.forEach((res) => {
             stratData[res] = dataSeries[res];
-        })
+        });
 
         const rawPlots = this.strategy.init(stratData, broker);
 
@@ -108,6 +108,11 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         // set plot and plotconfig
         rawPlots.forEach((rawPlot) => {
             const id = uuid();
+
+            if (!rawPlot.MarketData) {
+                return;
+            }
+
             const resolution = rawPlot.MarketData.Candles.Resolution;
 
             this.plotMap[id] = {
@@ -123,8 +128,8 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
                     PlotType: indicator.PlotType,
                     Color: indicator.Color
                 }))
-            }
-        })
+            };
+        });
     }
 
     private getChartData(length: ResolutionMapped<number>): [Dictionary<ChartData>, number] {
@@ -137,14 +142,15 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
             if (updateLength) {
                 const data = this.plotMap[id].MarketData.Candles.getData(length[res]);
 
-                if (!startTick || data[0].StartTick < startTick)
+                if (!startTick || data[0].StartTick < startTick) {
                     startTick = data[0].StartTick;
+                }
 
                 map[id] = {
                     Data: data,
                     IndicatorData: indicators.map<number[]>((i) => (
                         i.Series.getData(updateLength)
-                    )),
+                    ))
                 };
             }
 
@@ -155,10 +161,10 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
     }
 
     private dataUpdate(update: ExchangeUpdate) {
-        let reporterData: Partial<ReporterData> = {};
+        const reporterData: Partial<ReporterData> = {};
 
         if (update.AccountUpdate) {
-            const flushedUpdate = this.exchange.account.flushUpdate();
+            const flushedUpdate = this.exchange.account.flushUpdate()!;
 
             try {
                 this.strategy.trade(flushedUpdate);
@@ -175,8 +181,8 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
         }
 
         if (this.subscriberCount) {
-                    
-            if(update.CandleUpdate) {
+
+            if (update.CandleUpdate) {
                 const [chartData, _] = this.getChartData(update.CandleUpdate);
                 reporterData.ChartData = chartData;
             }
@@ -197,7 +203,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
     }
 
     private createStrategy(strategy: string): Strategy {
-        var ctor = (StrategyStore.get(strategy));
+        const ctor = (StrategyStore.get(strategy));
 
         if (!ctor) {
             throw `Strategy "${strategy}" doesn't exist`;
@@ -207,7 +213,7 @@ export class Platform extends Subscribable<Partial<ReporterData>> {
     }
 
     private createExchange(exchange: string) {
-        var ctor = (ExchangeStore.get(exchange));
+        const ctor = (ExchangeStore.get(exchange));
 
         if (!ctor) {
             throw `Exchange "${exchange}" doesn't exist`;

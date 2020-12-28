@@ -1,28 +1,28 @@
-import { Section } from 'Components/Fabric/Section';
-import { SectionContainer } from 'Components/Fabric/SectionContainer';
-import { Spinner } from 'Components/Fabric/Spinner';
-import { Chart } from 'Components/TradeView/Chart';
-import { LogTable } from 'Components/TradeView/TradePanel/LogTable';
-import { OrderTable } from 'Components/TradeView/TradePanel/OrderTable';
-import { PositionTable } from 'Components/TradeView/TradePanel/PositionTable';
-import { WalletTable } from 'Components/TradeView/TradePanel/WalletTable';
-import { DataStream } from 'DataStream';
-import SplitWrapper from 'lib/react-split';
+import { Section } from "Components/Fabric/Section";
+import { SectionContainer } from "Components/Fabric/SectionContainer";
+import { Spinner } from "Components/Fabric/Spinner";
+import { Chart } from "Components/TradeView/Chart";
+import { LogTable } from "Components/TradeView/TradePanel/LogTable";
+import { OrderTable } from "Components/TradeView/TradePanel/OrderTable";
+import { PositionTable } from "Components/TradeView/TradePanel/PositionTable";
+import { WalletTable } from "Components/TradeView/TradePanel/WalletTable";
+import { DataStream } from "DataStream";
+import SplitWrapper from "lib/react-split";
 import { ChartData, Dictionary, LogGlyph, LogMessage, Order, PlotConfig, Position, Wallet } from "Model/Contracts";
-import * as React from 'react';
+import * as React from "react";
 
 export interface TradeStreams {
-    chart: DataStream<Dictionary<ChartData>>,
-    wallet: DataStream<Wallet>,
-    position: DataStream<Dictionary<Position>>,
-    order: DataStream<Dictionary<Order>>,
-    logs: DataStream<LogMessage>,
-    glyphs: DataStream<LogGlyph>,
+    chart: DataStream<Dictionary<ChartData>>;
+    wallet: DataStream<Wallet>;
+    position: DataStream<Dictionary<Position>>;
+    order: DataStream<Dictionary<Order>>;
+    logs: DataStream<LogMessage>;
+    glyphs: DataStream<LogGlyph>;
 }
 
 export interface TradeViewProps {
     tradeStreams: TradeStreams;
-    plotConfigMap: Dictionary<PlotConfig>
+    plotConfigMap: Dictionary<PlotConfig>;
 }
 
 export class TradeView extends React.Component<TradeViewProps> {
@@ -33,10 +33,12 @@ export class TradeView extends React.Component<TradeViewProps> {
     private chartLoaded: boolean;
     private ref: React.RefObject<any>;
 
-    constructor(props) {
+    constructor(props: TradeViewProps) {
         super(props);
         this.ref = React.createRef();
-        window['ref'] = this.ref;
+
+        // tslint:disable-next-line: no-string-literal
+        window["ref"] = this.ref;
 
         this.props.tradeStreams.chart.subscribe(this.chartUpdate.bind(this));
         this.props.tradeStreams.glyphs.subscribe(this.glyphUpdate.bind(this));
@@ -97,7 +99,7 @@ export class TradeView extends React.Component<TradeViewProps> {
             this.chartLoaded = true;
         }
 
-        window.addEventListener('resize', this.triggerResize.bind(this));
+        window.addEventListener("resize", this.triggerResize.bind(this));
     }
 
     private getChartSplit(plotConfig: Dictionary<PlotConfig>): JSX.Element {
@@ -126,6 +128,6 @@ export class TradeView extends React.Component<TradeViewProps> {
     private triggerResize() {
         Object.values(this.chartMap).forEach((chart) => {
             chart.resize();
-        })
+        });
     }
 }

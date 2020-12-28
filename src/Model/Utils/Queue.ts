@@ -34,7 +34,7 @@ export class CandleQueue extends Queue<ResolutionMapped<Candle>> {
     public push(candle: ResolutionMapped<Candle>) {
         Object.assign(this.lastUpdate, candle);
 
-        if(Object.keys(this.lastUpdate).length == this.resolutionSet.length) {
+        if (Object.keys(this.lastUpdate).length === this.resolutionSet.length) {
             this.queue.push(this.lastUpdate);
             this.lastUpdate = {};
         }

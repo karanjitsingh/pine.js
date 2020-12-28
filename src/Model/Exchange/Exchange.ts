@@ -10,7 +10,6 @@ export type ExchangeCtor = new (network: INetwork, auth?: ExchangeAuth) => Excha
 
 export const ExchangeStore = new CtorStore<ExchangeCtor>();
 
-
 export abstract class Exchange {
     public abstract readonly isLive: boolean;
     public abstract readonly broker: IBroker;
@@ -18,7 +17,7 @@ export abstract class Exchange {
     public abstract readonly lastPrice: number;
     public abstract readonly marketPrice: number;
     public abstract readonly symbol: string;
-    
+
     public readonly account: Account = new Account();
 
     public distessSignal: Signal = new Signal();
@@ -29,6 +28,6 @@ export abstract class Exchange {
     public abstract getSymbolList(): string[];
 
     constructor(protected network: INetwork) {
-
+        //
     }
 }

@@ -1,6 +1,6 @@
 export class DataStream<T> {
     private data: T[] = [];
-    private onDataPushEvent: Event = new Event('data');
+    private onDataPushEvent: Event = new Event("data");
     private eventTarget: EventTarget = new EventTarget();
 
     public length(): number {
@@ -8,11 +8,11 @@ export class DataStream<T> {
     }
 
     public subscribe(listener: EventListenerOrEventListenerObject) {
-        this.eventTarget.addEventListener('data', listener);
+        this.eventTarget.addEventListener("data", listener);
     }
 
     public unsubscribe(listener: EventListenerOrEventListenerObject) {
-        this.eventTarget.removeEventListener('data', listener);
+        this.eventTarget.removeEventListener("data", listener);
     }
 
     public hasUpdate(): boolean {
@@ -21,20 +21,20 @@ export class DataStream<T> {
 
     public push(data: T | T[]) {
 
-        if(data instanceof Array) {
-            if(!data.length) {
+        if (data instanceof Array) {
+            if (!data.length) {
                 return;
             }
-            this.data.push(...data)
+            this.data.push(...data);
         } else {
             this.data.push(data);
         }
 
-        this.eventTarget.dispatchEvent(this.onDataPushEvent)
+        this.eventTarget.dispatchEvent(this.onDataPushEvent);
     }
 
     public flush(): T[] {
-        if(this.data.length > 0) {
+        if (this.data.length > 0) {
             return this.data.splice(0, this.data.length);
         } else {
             return [];
@@ -42,8 +42,8 @@ export class DataStream<T> {
     }
 
     public pop(): T {
-        if(this.data.length > 0) {
-            return this.data.pop()
+        if (this.data.length > 0) {
+            return this.data.pop();
         } else {
             return null;
         }

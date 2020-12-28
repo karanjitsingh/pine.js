@@ -1,31 +1,30 @@
 import { ApiContract } from "Model/Network";
 import { Side, OrderType, Timestamp, StringWrapped, UtcTimeStamp, OrderStatus, Int } from "Model/Contracts";
 
-export type Symbol = 'BTCUSD' | 'ETHUSD' | 'XRPUSD' | 'EOSUSD';
-export type Currency = 'BTC' | 'ETH' | 'EOS' | 'XRP';
+export type Symbol = "BTCUSD" | "ETHUSD" | "XRPUSD" | "EOSUSD";
+export type Currency = "BTC" | "ETH" | "EOS" | "XRP";
 export type WalletFundType = "Deposit" | "Withdraw" | "RealisedPNL" | "Commission" | "Refund" | "Prize" | "ExchangeOrderWithdraw" | "ExchangeOrderDeposit";
 
 // TimeInForce = "" If and only if the user is placing a market order
 export type TimeInForce = "GoodTillCancel" | "ImmediateOrCancel" | "FillOrKill" | "PostOnly" | "";
 
-export type PositionStatus = 'Normal' | 'Liq' | 'Adl';
+export type PositionStatus = "Normal" | "Liq" | "Adl";
 
-export type SortOrder = 'desc' /* default */ | 'asc';
+export type SortOrder = "desc" /* default */ | "asc";
 
 export type LastTickDirection = "PlusTick" | "ZeroPlusTick" | "MinusTick" | "ZeroMinusTick";
 
 export type StopOrderStatus = "Untriggered" | "Triggered" | "Cancelled" | "Active" | "Rejected";
 
-
 export interface ByBitApiResponse<TResult> {
-    ret_code: number,
-    ret_msg: string,
-    ext_code: string,
-    result: TResult,
-    time_now: string
+    ret_code: number;
+    ret_msg: string;
+    ext_code: string;
+    result: TResult;
+    time_now: string;
 }
 
-export type ByBitApiContract<TParams, TResult> = ApiContract<TParams, ByBitApiResponse<TResult>>
+export type ByBitApiContract<TParams, TResult> = ApiContract<TParams, ByBitApiResponse<TResult>>;
 
 export type IntBoolean = 0 | 1;
 
@@ -48,7 +47,7 @@ export interface ByBitWebsocketContracts {
         side: Side			                            // "Sell"
         symbol:	Symbol		                            // "BTCUSD"
         trade_time:	string		                        // "2019-10-23T03:34:57.901Z"
-    }[]
+    }[];
 
     /**
      * Websocket topic: order
@@ -72,7 +71,7 @@ export interface ByBitWebsocketContracts {
         time_in_force: TimeInForce			            // "ImmediateOrCancel"
         trailing_stop: StringWrapped<number>		    // "0"
         timestamp: string			                    // "2019-10-23T03:34:57.901Z"
-    }[]
+    }[];
 
     /**
      * Websocket topic: position
@@ -102,7 +101,7 @@ export interface ByBitWebsocketContracts {
         trailing_stop: StringWrapped<number>		    // "0"
         user_id: number			                        // 105455
         wallet_balance:	StringWrapped<number>		    // "0.28291595"
-    }[]
+    }[];
 
     /**
      * Websocket topic: private.wallet
@@ -122,35 +121,35 @@ export interface ByBitWebsocketContracts {
         symbol: Symbol			                        // "BTCUSD"
         used_margin: number			                    // 0.05168306
         wallet_balance: number			                // 0.28408436
-    }[]
+    }[];
 }
 
 export interface ByBitContracts {
 
     /**
      * Get bybit server time。
-    
+
      * GET /v2/public/time
      * Testnet: https://api-testnet.bybit.com/v2/public/time
      * Mainnet: https://api.bybit.com/v2/public/time
      */
-    ServerTime: ByBitApiContract<{}, {}>
+    ServerTime: ByBitApiContract<{}, {}>;
 
     /**
      * Parameters of 'side', 'symbol', 'order_type', 'qty', 'price', 'time_in_force' are required for all active orders. Other parameters are optional unless specified.
-     * 
+     *
      * Market price active order: A traditional market price order, will be filled at the best available price. 'price' and 'time_in_force' can set to be "" if and only if you are placing market price order.
-     * 
+     *
      * Limit price active order: You can set an execution price for your order. Only when last traded price reaches the order price, the system will fill your order.
-     * 
+     *
      * Take profit/Stop loss: You may only set a take-profit/stop-loss conditional order upon opening the position. Once you hold a position, the take profit and stop loss information u sent when placing an order will no longer be valid.
-     * 
+     *
      * Order quantity: This parameter indicates the quantity of perpetual contracts you want to buy or sell, currently Bybit only support order quantity in an integer.
-     * 
+     *
      * Order price: This parameter indicates the price of perpetual contracts you want to buy or sell, currently Bybit only support price increment of every 0.5.
-     * 
+     *
      * Customize conditional order ID: You may customize order IDs for active orders. We will link it to the system order ID , and return the unique system order ID to you after the active order is created successfully. You may use this order ID to cancel your active order. The customized order ID is asked to be unique, with a maximum length of 36 characters.
-     * 
+     *
      * Notes:
      * Each account can hold up to 200 active orders yet to be filled entirely simultaneously.
      * 'order_status' values explained:
@@ -222,13 +221,13 @@ export interface ByBitContracts {
             /** Agency customized order ID */
             order_link_id: string,
             created_at: Timestamp,
-            updated_at: Timestamp,
+            updated_at: Timestamp
         }
-    >
+    >;
 
     /**
      * Get my active order list
-     * 
+     *
      * GET /open-api/order/list
      * Testnet: https://api-testnet.bybit.com/open-api/order/list
      * Mainnet: https://api.bybit.com/open-api/order/list
@@ -287,18 +286,18 @@ export interface ByBitContracts {
                 /** Agency customized order ID */
                 order_link_id: string,
                 created_at: Timestamp,
-                updated_at: Timestamp,
+                updated_at: Timestamp
             }>,
             current_page: 1,
             total: 1
         }
-    >
+    >;
 
     /**
      * 'order_id' is required for cancelling active order. The unique 36 characters order ID was returned to you when the active order was created successfully. 'symbol' is recommend filled, Otherwise, there will be a small probability of failure.
-     * 
+     *
      * You may cancel active order that are unfilled and partially filled. Fully filled order cannot be cancelled.
-     * 
+     *
      * POST /open-api/order/cancel
      * Testnet https://api-testnet.bybit.com/open-api/order/cancel
      * Mainnet https://api.bybit.com/open-api/order/cancel
@@ -346,29 +345,29 @@ export interface ByBitContracts {
             /** Agency customized order ID */
             order_link_id: string,
             created_at: Timestamp,
-            updated_at: Timestamp,
+            updated_at: Timestamp
         }
-    >
+    >;
 
     /**
      * Parameters of 'side', 'symbol', 'order_type', 'qty', 'price', 'base_price', 'stop_px', 'time_in_force' are required for all active orders. Other parameters are optional unless specified.
-     * 
+     *
      * Market price conditional order: A traditional market price order, will be filled at the best available price. 'price' and 'time_in_force' can set to be "" if and only if you are placing market price order.
-     * 
+     *
      * Limit price conditional order: You can set an execution price for your order. Only when last traded price reaches the order price, the system will fill your order.
-     * 
+     *
      * Take profit/Stop loss: You may only set a take-profit/stop-loss conditional order upon opening the position. Once you hold a position, the take profit and stop loss information u sent when placing an order will no longer be valid.
-     * 
+     *
      * Order quantity: This parameter indicates the quantity of perpetual contracts you want to buy or sell, currently Bybit only support order quantity in an integer.
-     * 
+     *
      * Order price: This parameter indicates the price of perpetual contracts you want to buy or sell, currently Bybit only support price increment of every 0.5.
-     * 
+     *
      * Conditional order trigger price: You may set a trigger price for your conditional order. conditional order will not enter the order book until the last price hits the trigger price. When last price hits trigger price: 1) your limit conditional order will enter order book, and wait to be executed; 2) your market conditional order will be executed immediately at the best available market price.
-     * 
+     *
      * Customize conditional order ID: You may customize order IDs for active orders. We will link it to the system order ID , and return the unique system order ID to you after the active order is created successfully. You may use this order ID to cancel your active order. The customized order ID is asked to be unique, with a maximum length of 36 characters.
-     * 
+     *
      * Note: Take profit/Stop loss is not supported in placing conditional orders. One can only use these 2 functions when placing active orders. Moreover, each account can hold up to 10 conditional orders yet to be filled entirely simultaneously.
-     * 
+     *
      * POST /open-api/stop-order/create
      * Testnet https://api-testnet.bybit.com/open-api/stop-order/create
      * Mainnet https://api.bybit.com/open-api/stop-order/create
@@ -424,13 +423,13 @@ export interface ByBitContracts {
             /** Agency customized order ID */
             order_link_id: string,
             created_at: Timestamp,
-            updated_at: Timestamp,
+            updated_at: Timestamp
         }
-    >
+    >;
 
     /**
      * Get my conditional order list。
-     * 
+     *
      * GET /open-api/stop-order/list
      * Testnet https://api-testnet.bybit.com/open-api/stop-order/list
      * Mainnet https://api.bybit.com/open-api/stop-order/list
@@ -479,18 +478,18 @@ export interface ByBitContracts {
                 /** Agency customized order ID */
                 order_link_id: string,
                 created_at: Timestamp,
-                updated_at: Timestamp,
+                updated_at: Timestamp
             }>,
             current_page: 1,
             total: 1
         }
-    >
+    >;
 
     /**
      * 'stop_order_id' is required for cancelling conditional order. The unique 36 characters order ID was returned to you when the condional order was created successfully.
-     * 
+     *
      * You may cancel all untriggered conditional orders. Essentially, after a conditional order is triggered, it will become an active order. So, when a conditional order is triggered, cancellation has to be done through the active order port for all unfilled or partial filled active order. Similarly, order that has been fully filled cannot be cancelled.
-     * 
+     *
      * POST /open-api/stop-order/cancel
      * Testnet https://api-testnet.bybit.com/open-api/stop-order/cancel
      * Mainnet https://api.bybit.com/open-api/stop-order/cancel
@@ -528,22 +527,22 @@ export interface ByBitContracts {
             /** Agency customized order ID */
             order_link_id: string,
             created_at: Timestamp,
-            updated_at: Timestamp,
+            updated_at: Timestamp
         }
-    >
+    >;
 
     /**
      * Get user leverage
-     * 
+     *
      * GET /user/leverage
      * Testnet https://api-testnet.bybit.com/user/leverage
      * Mainnet https://api.bybit.com/user/leverage
      */
-    UserLeverage: ByBitApiContract<{}, { [key in Symbol]: { leverage: number } }>
+    UserLeverage: ByBitApiContract<{}, { [key in Symbol]: { leverage: number } }>;
 
     /**
      * Change user leverage
-     * 
+     *
      * POST /user/leverage/save
      * Testnet https://api-testnet.bybit.com/user/leverage/save
      * Mainnet https://api.bybit.com/user/leverage/save
@@ -556,11 +555,11 @@ export interface ByBitContracts {
             leverage: string
         },
         null
-    >
+    >;
 
     /**
      * Get my position list
-     * 
+     *
      * GET /position/list
      * Testnet https://api-testnet.bybit.com/position/list
      * Mainnet https://api.bybit.com/position/list
@@ -576,7 +575,7 @@ export interface ByBitContracts {
             /** Contract type */
             symbol: Symbol,
             /** position Side  (None, buy, sell) */
-            side: Side | 'None',
+            side: Side | "None",
             /** position size */
             size: Int,
             /** position value */
@@ -627,11 +626,11 @@ export interface ByBitContracts {
             updated_at: Timestamp
 
         }>
-    >
+    >;
 
     /**
      * Update margin
-     * 
+     *
      * POST /position/change-position-margin
      * Testnet https://api-testnet.bybit.com/position/change-position-margin
      * Mainnet https://api.bybit.com/position/change-position-margin
@@ -644,11 +643,11 @@ export interface ByBitContracts {
             margin: string
         },
         null
-    >
+    >;
 
     /**
      * Set Trading-Stop Condition
-     * 
+     *
      * POST /open-api/position/trading-stop
      * Testnet https://api-testnet.bybit.com/open-api/position/trading-stop
      * Mainnet https://api.bybit.com/open-api/position/trading-stop
@@ -696,11 +695,11 @@ export interface ByBitContracts {
             created_at: Timestamp,
             updated_at: Timestamp
         }
-    >
+    >;
 
     /**
      * Get wallet fund records
-     * 
+     *
      * GET /open-api/wallet/fund/records
      * Testnet https://api-testnet.bybit.com/open-api/wallet/fund/records
      * Mainnet https://api.bybit.com/open-api/wallet/fund/records
@@ -735,11 +734,11 @@ export interface ByBitContracts {
                 cross_seq: number
             }>
         }
-    >
+    >;
 
     /**
      * Funding rate is generated every 8 hours at 00:00 UTC, 08:00 UTC and 16:00 UTC. If it's 12:00 UTC now, what you will get is the funding rate generated at 08:00 UTC.
-     * 
+     *
      * GET /open-api/funding/prev-funding-rate
      * Testnet https://api-testnet.bybit.com/open-api/funding/prev-funding-rate
      * Mainnet https://api.bybit.com/open-api/funding/prev-funding-rate
@@ -756,11 +755,11 @@ export interface ByBitContracts {
             /**  The time of funding rate generation, UTC timestamp */
             funding_rate_timestamp: 1539950401
         }
-    >
+    >;
 
     /**
      * Funding settlement occurs every 8 hours at 00:00 UTC, 08:00 UTC and 16:00 UTC. The current interval's fund fee settlement is based on the previous interval's fund rate. For example, at 16:00, the settlement is based on the fund rate generated at 8:00. The fund rate generated at 16:00 will be used at 0:00 on the next day.
-     * 
+     *
      * GET /open-api/funding/prev-funding
      * Testnet https://api-testnet.bybit.com/open-api/funding/prev-funding
      * Mainnet https://api.bybit.com/open-api/funding/prev-funding
@@ -781,13 +780,13 @@ export interface ByBitContracts {
             /**  Funding fee. */
             exec_fee: number,
             /**  The time of funding settlement occurred, UTC timestamp */
-            exec_timestamp: UtcTimeStamp,
+            exec_timestamp: UtcTimeStamp
         }
-    >
+    >;
 
     /**
      * Get predicted funding rate and funding fee
-     * 
+     *
      * GET /open-api/funding/predicted-funding
      * Testnet: https://api-testnet.bybit.com/open-api/funding/predicted-funding
      * Mainnet: https://api.bybit.com/open-api/funding/predicted-funding
@@ -803,11 +802,11 @@ export interface ByBitContracts {
             /**  predicted funding fee */
             predicted_funding_fee: number
         }
-    >
+    >;
 
     /**
      * Get the trade records of a order
-     * 
+     *
      * GET /v2/private/execution/list
      * Testnet: https://api-testnet.bybit.com/v2/private/execution/list
      * Mainnet: https://api.bybit.com/v2/private/execution/list
@@ -842,7 +841,7 @@ export interface ByBitContracts {
                 /**  Fee rate */
                 fee_rate: StringWrapped<number>,
                 /**  AddedLiquidity/RemovedLiquidity */
-                last_liquidity_ind: 'AddedLiquidity' | 'RemovedLiquidity',
+                last_liquidity_ind: "AddedLiquidity" | "RemovedLiquidity",
                 /**  Leave Qty */
                 leaves_qty: number,
                 /**  Nth Fill */
@@ -863,12 +862,12 @@ export interface ByBitContracts {
                 user_id: number
             }>
         }
-    >
+    >;
 
     /**
      * Get the orderbook
      * Response is in the snapshot format
-     * 
+     *
      * GET /v2/public/orderBook/L2
      * Testnet: https://api-testnet.bybit.com/v2/public/orderBook/L2
      * Mainnet: https://api.bybit.com/v2/public/orderBook/L2
@@ -888,11 +887,11 @@ export interface ByBitContracts {
             /** side */
             side: Side
         }>
-    >
+    >;
 
     /**
      * Get the latest information for symbol
-     * 
+     *
      * GET /v2/public/tickers
      * Testnet: https://api-testnet.bybit.com/v2/public/tickers
      * Mainnet: https://api.bybit.com/v2/public/tickers
@@ -947,11 +946,11 @@ export interface ByBitContracts {
             /** the rest time to settle funding fee */
             countdown_hour: number
         }>
-    >
+    >;
 
     /**
      * Get kline objects
-     * 
+     *
      * GET /v2/public/kline/list
      * Testnet: https://api-testnet.bybit.com/v2/public/kline/list
      * Mainnet: https://api.bybit.com/v2/public/kline/list
@@ -961,7 +960,7 @@ export interface ByBitContracts {
             from: number,
             to: number,
             symbol: Symbol,
-            interval: string,
+            interval: string
         },
         Array<{
             symbol: Symbol,
@@ -974,6 +973,6 @@ export interface ByBitContracts {
             volume: StringWrapped<number>,
             turnover: StringWrapped<number>
         }>
-    >
+    >;
 
 }

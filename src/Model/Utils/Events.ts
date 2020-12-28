@@ -1,49 +1,47 @@
 export type Delegate<TArgs> = (EventArgs: TArgs) => void;
 
-export class PlatformEventEmitter<TEvent extends string> {    
+export class PlatformEventEmitter<TEvent extends string> {
 
     private events: { [id: string]: Array<[Delegate<any>, Object]>; } = {};
     private once: { [id: string]: Array<any>; } = {};
 
     public subsribeOnce(event: TEvent): Promise<any> {
         let resolution: (value: any) => void;
-        const promise = new Promise((resolve) => { resolution = resolution});
+        const promise = new Promise((resolve) => { resolution = resolve; });
 
-        if(!this.once[event]) {
-            this.once[event] = [resolution];
+        if (!this.once[event]) {
+            this.once[event] = [resolution!];
         } else {
-            this.once[event].push(resolution);
+            this.once[event].push(resolution!);
         }
 
         return promise;
     }
 
     public subscribe(event: TEvent, listener: Delegate<any>, scope: object) {
-        if(!this.events[event]) {
+        if (!this.events[event]) {
             this.events[event] = [];
         }
 
-        const eventExists = this.events[event].filter((value) => {
-            value[0] == listener && value[1] == scope;
-        }).length > 0;
+        const eventExists = this.events[event].filter((value) => ( value[0] === listener && value[1] === scope )).length > 0;
 
-        if(!eventExists) {
+        if (!eventExists) {
             this.events[event].push([listener, scope]);
         }
     }
 
     public unsubscribe(event: TEvent, listener: Delegate<any>, scope: object) {
-        if(this.events[event]) {
+        if (this.events[event]) {
             this.events[event] = this.events[event].filter((handle) => {
-                return handle[0] != listener || handle[1] != scope;
+                return handle[0] !== listener || handle[1] !== scope;
             });
         }
     }
 
     public emit(event: TEvent, args: any) {
         // subscribe once events
-        if(this.once[event]) {
-            for(let i=0;i<this.once[event].length; i++) {
+        if (this.once[event]) {
+            for (let i = 0; i < this.once[event].length; i++) {
                 const resolution = this.once[event].pop();
                 resolution(args);
             }
@@ -51,8 +49,8 @@ export class PlatformEventEmitter<TEvent extends string> {
 
         // persistance events
         const handles = this.events[event];
-        if(handles) {
-            for(var i = 0; i < handles.length; i++) {
+        if (handles) {
+            for (let i = 0; i < handles.length; i++) {
                 handles[i][0].call(handles[i][1], args);
             }
         }
@@ -60,11 +58,11 @@ export class PlatformEventEmitter<TEvent extends string> {
 
     public subscriberCount(event: string) {
         let count = 0;
-        if(this.once[event]) {
+        if (this.once[event]) {
             count += this.once[event].length;
         }
 
-        if(this.events[event]) {
+        if (this.events[event]) {
             count += this.events[event].length;
         }
 
@@ -79,7 +77,7 @@ export abstract class Subscribable<TArgs> {
     constructor() {
         this.emitter = new PlatformEventEmitter();
     }
-    
+
     public get subscriberCount(): number {
         return this.emitter.subscriberCount("event");
     }
@@ -104,8 +102,8 @@ export abstract class Subscribable<TArgs> {
 export class SubscribableValue<TValue> extends Subscribable<TValue> {
     private _value: TValue;
 
-    public get value(): TValue | undefined { return this._value; }
-    
+    public get value(): TValue { return this._value; }
+
     public set value(newValue: TValue) {
         this._value = newValue;
         this.notifyAll(newValue);
@@ -113,12 +111,14 @@ export class SubscribableValue<TValue> extends Subscribable<TValue> {
 
     constructor(private initValue?: TValue) {
         super();
-        this._value = initValue;
+        if (initValue) {
+            this._value = initValue;
+        }
     }
 }
 
 export class Signal extends Subscribable<void> {
-    
+
     private signalSet: boolean = false;
 
     public get isSet(): boolean { return this.signalSet; }
@@ -126,7 +126,7 @@ export class Signal extends Subscribable<void> {
     public reset() {
         this.signalSet = false;
     }
-    
+
     public set() {
         this.signalSet = true;
         this.notifyAll();

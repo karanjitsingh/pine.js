@@ -8,11 +8,11 @@ export class StochasticStrategy extends StochasticStrategyBase {
         /**
          * if lagging wave d goes into k from below, then long
          * if lagging wave d goes into k from above, then short
-         * 
+         *
          * close position if opposite happens
-         * 
-         * keep a stop loss 
-         * 
+         *
+         * keep a stop loss
+         *
          * consolidation mode?
          */
 
@@ -23,7 +23,7 @@ export class StochasticStrategy extends StochasticStrategyBase {
                 position: GlyphPosition.Above,
                 style: GlyphStyle.Circle
             }, 1579940006725);
-            this.reporter.logMessage("very very very very very very very very very very very very very long message")
+            this.reporter.logMessage("very very very very very very very very very very very very very long message");
         }
 
         if (this.currentPosition) {
@@ -32,17 +32,17 @@ export class StochasticStrategy extends StochasticStrategyBase {
             this.entry(updateOffset);
         }
 
-        if (updateOffset['30m']) {
+        if (updateOffset["30m"]) {
             this.heikenashi30m.Candles.getData(10);
         }
     }
 
     public trade(update: Partial<IAccount>) {
-
+        //
     }
 
     private entry(updateOffset: ResolutionMapped<number>) {
-        const lookback = Math.max(10, updateOffset['30m']);
+        const lookback = Math.max(10, updateOffset["30m"]!);
 
         const d = this.lagging.getData(lookback);
         const k = this.leading.getData(lookback);
@@ -53,7 +53,7 @@ export class StochasticStrategy extends StochasticStrategyBase {
     }
 
     private exit(updateOffset: ResolutionMapped<number>) {
-
+        //
     }
 
 }

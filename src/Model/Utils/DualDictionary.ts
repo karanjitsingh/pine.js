@@ -19,10 +19,10 @@ export class DualDictionary {
     }
 
     public removeByKey(key: string) : { key: string, value: string } | undefined {
-        if(!this.map.hasOwnProperty(key)) {
+        if (!this.map.hasOwnProperty(key)) {
             return undefined;
         }
-        
+
         const value = this.map[key];
 
         this.remove(key, value);
@@ -30,11 +30,11 @@ export class DualDictionary {
         return {
             key: key,
             value: value
-        }
+        };
     }
-    
+
     public removeByValue(value: string) : { key: string, value: string } | undefined {
-        if(!this.inverseMap.hasOwnProperty(value)) {
+        if (!this.inverseMap.hasOwnProperty(value)) {
             return undefined;
         }
 
@@ -50,6 +50,6 @@ export class DualDictionary {
 
     private remove(key: string, value: string) {
         delete this.map[key];
-        delete this.inverseMap[value]
+        delete this.inverseMap[value];
     }
 }

@@ -20,5 +20,6 @@ if (process.argv.includes("autoinit")) {
 }
 
 (Number as any).prototype.toInt = function() {
+    // tslint:disable-next-line: no-invalid-this
     return Math.floor(this);
-} 
+};

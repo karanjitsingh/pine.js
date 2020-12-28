@@ -15,7 +15,8 @@
         },
         "types": ["node", "ws", "./globals"],
         "noImplicitAny": true,
-        "noImplicitReturns": true
+        "noImplicitReturns": true,
+        "strictNullChecks": true,
     },
     "include": [
         "**/*.ts"
@@ -23,5 +24,5 @@
     "exclude": [
         "./Reporters/**/*"
     ],
-    "compileOnSave": true
+    "compileOnSave": true,
 }

@@ -4,8 +4,8 @@ import { DataStream } from "DataStream";
 import { ChartData, Dictionary, LogGlyph, LogMessage, MessageType, Order,
          PlatformConfiguration, Position, ProtocolMessage, ReporterInit, Wallet } from "Model/Contracts";
 import { Network } from "Network";
-import React = require("react");
-import ReactDOM = require("react-dom");
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 class Reporter {
 
@@ -24,23 +24,22 @@ class Reporter {
     }
 
     public init() {
-        this.network.get('/api/init', {}).then((res: XMLHttpRequest) => {
-            if (res.status != 200) {
-                console.error('/api/init', res.status);
+        this.network.get("/api/init", {}).then((res: XMLHttpRequest) => {
+            if (res.status !== 200) {
+                console.error("/api/init", res.status);
             } else {
                 try {
                     const info = JSON.parse(res.responseText);
                     this.loadConfigForm(info as ReporterInit);
                     console.log(info);
-                }
-                catch (ex) {
-                    console.error('failed', '/api/init', ex);
+                } catch (ex) {
+                    console.error("failed", "/api/init", ex);
                 }
 
             }
         }, (why) => {
-            console.error('failed', '/api/init', why);
-        })
+            console.error("failed", "/api/init", why);
+        });
     }
 
     private loadConfigForm(info: ReporterInit) {
@@ -51,13 +50,13 @@ class Reporter {
                 reporterInit: info
             },
             pageMode: PageMode.Configuration
-        })
+        });
     }
 
     private configSelected(config: PlatformConfiguration) {
-        this.network.post('/api/create', JSON.stringify(config)).then((res: XMLHttpRequest) => {
-            if (res.status != 200) {
-                console.error('/api/create', res.status);
+        this.network.post("/api/create", JSON.stringify(config)).then((res: XMLHttpRequest) => {
+            if (res.status !== 200) {
+                console.error("/api/create", res.status);
             } else {
                 const { key, config } = JSON.parse(res.responseText);
 
@@ -66,7 +65,7 @@ class Reporter {
                 });
 
                 if (!key) {
-                    console.error('platform id was empty');
+                    console.error("platform id was empty");
                 }
 
                 console.log(key, config);
@@ -74,7 +73,7 @@ class Reporter {
                 this.subscribeWebSocket(key);
             }
         }, (why) => {
-            console.error('failed', 'api/config', why);
+            console.error("failed", "api/config", why);
         });
     }
 
@@ -83,9 +82,9 @@ class Reporter {
     }
 
     private subscribeWebSocket(platformId: string) {
-        this.network.get('/api/connect', { id: platformId }).then((res: XMLHttpRequest) => {
-            if (res.status != 200) {
-                console.error('/api/connect?id=' + platformId, res.status);
+        this.network.get("/api/connect", { id: platformId }).then((res: XMLHttpRequest) => {
+            if (res.status !== 200) {
+                console.error("/api/connect?id=" + platformId, res.status);
             } else {
                 const connection = res.responseText;
 
@@ -93,7 +92,7 @@ class Reporter {
                 this.subscribeToSocket(connection);
             }
         }, (why) => {
-            console.error('failed', 'api/connect', why);
+            console.error("failed", "api/connect", why);
         });
     }
 
@@ -103,9 +102,9 @@ class Reporter {
         this.socket.onmessage = (ev) => {
             // JSON.parse(ev.data);
             this.processMessage(ev.data);
-        }
+        };
 
-        this.socket.onerror = function (ev) {
+        this.socket.onerror = function (ev: Event) {
             console.log(ev);
         };
         this.socket.onopen = function () {
@@ -121,8 +120,8 @@ class Reporter {
         const message: ProtocolMessage<MessageType> = JSON.parse(rawMessage);
 
         switch (message.Type) {
-            case 'ReporterData':
-                const reporterData = (message as ProtocolMessage<'ReporterData'>).Data;
+            case "ReporterData":
+                const reporterData = (message as ProtocolMessage<"ReporterData">).Data;
 
                 console.log(new Date().getTime(), reporterData);
 
@@ -140,23 +139,23 @@ class Reporter {
                     }
 
                     if (reporterData.Account.Positions) {
-                        this.positionStream.push(reporterData.Account.Positions)
+                        this.positionStream.push(reporterData.Account.Positions);
                     }
                 }
 
                 if (reporterData.MessageLogs) {
-                    this.logStream.push(reporterData.MessageLogs)
+                    this.logStream.push(reporterData.MessageLogs);
                 }
 
                 if (reporterData.GlyphLogs) {
                     // always update chart data before glyphdata
-                    this.glyphStream.push(reporterData.GlyphLogs)
+                    this.glyphStream.push(reporterData.GlyphLogs);
                 }
 
                 break;
 
-            case 'ReporterConfig':
-                const plotConfigs = (message as ProtocolMessage<'ReporterConfig'>).PlotConfig;
+            case "ReporterConfig":
+                const plotConfigs = (message as ProtocolMessage<"ReporterConfig">).PlotConfig;
                 console.log(plotConfigs);
 
                 this.updatePage({

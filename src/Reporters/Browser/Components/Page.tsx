@@ -1,8 +1,8 @@
-import { PlatformConfiguration, ReporterInit } from 'Model/Contracts';
-import * as React from 'react';
-import { ConfigDialog, ConfigDialogProps } from './Config/ConfigDialog';
-import { Spinner } from './Fabric/Spinner';
-import { TradeView, TradeViewProps } from './TradeView/TradeView';
+import { PlatformConfiguration, ReporterInit } from "Model/Contracts";
+import * as React from "react";
+import { ConfigDialog, ConfigDialogProps } from "./Config/ConfigDialog";
+import { Spinner } from "./Fabric/Spinner";
+import { TradeView, TradeViewProps } from "./TradeView/TradeView";
 
 export interface PageState {
     configProps?: {
@@ -24,9 +24,13 @@ export enum PageActions {
     RenderCharts = "render-charts"
 }
 
+export interface Actions {
+    RenderCharts: (props: TradeViewProps) => void;
+}
+
 export class Page extends React.Component<{}, PageState> {
 
-    public constructor(props) {
+    public constructor(props: {}) {
         super(props);
 
         this.state = {
@@ -34,14 +38,14 @@ export class Page extends React.Component<{}, PageState> {
         };
     }
 
-    public Actions = {
+    public Actions: Actions = {
         RenderCharts: (props: TradeViewProps) => {
             this.setState({
                 tradeViewProps: props,
                 pageMode: PageMode.TradeView
             });
         }
-    }
+    };
 
     public render() {
         switch (this.state.pageMode) {
@@ -51,13 +55,13 @@ export class Page extends React.Component<{}, PageState> {
                     submitNewConfig: this.submitNewConfig.bind(this),
                     selectRunningInstance: this.selectRunningInstance.bind(this),
                     ...this.state.configProps.reporterInit
-                }
+                };
 
-                return <ConfigDialog {...configSelectorProps} />
+                return <ConfigDialog {...configSelectorProps} />;
             case PageMode.Loading:
-                return <Spinner />
+                return <Spinner />;
             case PageMode.TradeView:
-                return <TradeView {...this.state.tradeViewProps} />
+                return <TradeView {...this.state.tradeViewProps} />;
         }
     }
 

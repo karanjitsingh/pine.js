@@ -1,11 +1,11 @@
-import { Dictionary, PlotConfig, ProtocolMessage, ReporterData } from 'Model/Contracts';
-import * as WebSocket from 'ws';
+import { Dictionary, PlotConfig, ProtocolMessage, ReporterData } from "Model/Contracts";
+import * as WebSocket from "ws";
 
 export class MessageSender {
 
     public SendReporterData(reporterData: Partial<ReporterData>, sockets: WebSocket[]) {
-        const message: ProtocolMessage<'ReporterData'> = {
-            Type: 'ReporterData',
+        const message: ProtocolMessage<"ReporterData"> = {
+            Type: "ReporterData",
             Data: reporterData
         };
 
@@ -13,10 +13,10 @@ export class MessageSender {
     }
 
     public SendReporterInit(plotConfigs: Dictionary<PlotConfig>, sockets: WebSocket[]) {
-        const message: ProtocolMessage<'ReporterConfig'> = {
-            Type: 'ReporterConfig',
+        const message: ProtocolMessage<"ReporterConfig"> = {
+            Type: "ReporterConfig",
             PlotConfig: plotConfigs
-        }
+        };
 
         this.send(message, sockets);
     }

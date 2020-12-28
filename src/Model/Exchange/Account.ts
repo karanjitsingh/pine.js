@@ -8,7 +8,7 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
     public Positions: Dictionary<Position<TPositionFields>> = {};
     public Orders: Dictionary<Order<TOrderFields>> = {};
 
-    private accountUpdate: Partial<IAccount> = null;
+    private accountUpdate: Partial<IAccount> | null = null;
     private _didUpdate: boolean = false;
 
     public flushUpdate(): Partial<IAccount> | null {
@@ -26,7 +26,7 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
             Wallet: this.Wallet,
             Positions: this.Positions,
             Orders: this.Orders
-        }
+        };
     }
 
     public didUpdate(): boolean {
@@ -35,7 +35,7 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
 
     public update(update: Partial<IAccount>) {
 
-        if(!this.accountUpdate) {
+        if (!this.accountUpdate) {
             this.accountUpdate = {};
         }
 
@@ -56,7 +56,7 @@ export class Account<TOrderFields = {}, TPositionFields = {}> implements IAccoun
         if (update.Orders) {
             this.accountUpdate.Orders = {};
 
-            Object.assign(this.Orders, update.Orders)
+            Object.assign(this.Orders, update.Orders);
             Object.assign(this.accountUpdate.Orders, update.Orders);
         }
 

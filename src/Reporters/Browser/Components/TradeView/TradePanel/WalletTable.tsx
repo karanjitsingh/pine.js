@@ -1,7 +1,7 @@
-import { Table, TableColumn } from 'Components/Fabric/Table';
-import { DataStream } from 'DataStream';
-import { Wallet } from 'Model/Contracts';
-import * as React from 'react';
+import { Table, TableColumn } from "Components/Fabric/Table";
+import { DataStream } from "DataStream";
+import { Wallet } from "Model/Contracts";
+import * as React from "react";
 
 export interface WalletTableProps {
     stream: DataStream<Wallet>;
@@ -31,7 +31,7 @@ export class WalletTable extends React.Component<WalletTableProps, WalletTableSt
             const update = this.props.stream.flush();
             this.state = {
                 wallet: update[update.length - 1]
-            }
+            };
         }
     }
 
@@ -53,10 +53,10 @@ export class WalletTable extends React.Component<WalletTableProps, WalletTableSt
             {
                 title: "Position",
                 render: (wallet: Wallet) => wallet.PositionMargin
-            },
+            }
         ];
 
-        return <Table className={"trade-table"} columns={columns} data={[this.state.wallet]} ></Table>
+        return <Table className={"trade-table"} columns={columns} data={[this.state.wallet]} ></Table>;
     }
 
     private dataListener() {

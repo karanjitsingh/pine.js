@@ -1,8 +1,7 @@
 
-
-const Module = require('module');
+const Module = require("module");
 const originalRequire = Module.prototype.require;
-const Path = require('path');
+const Path = require("path");
 
 const roots = [
    "Model/",
@@ -16,19 +15,23 @@ const roots = [
 
 Module.prototype.require = function (path: string) {
 
-   if(aliasPath(path))
-      path = Path.join(__dirname,path);
+   if (aliasPath(path)) {
+      path = Path.join(__dirname, path);
+   }
 
+   // tslint:disable-next-line: no-invalid-this
    return originalRequire.apply(this, [path]);
 };
 
 function aliasPath(path: string) {
-   for(let i =0;i<roots.length;i++) {
-      if(path.startsWith(roots[i]))
+   for (let i = 0; i < roots.length; i++) {
+      if (path.startsWith(roots[i])) {
          return true;
+      }
    }
 
    return false;
 }
 
-require('Main');
+// tslint:disable-next-line: no-var-requires
+require("Main");

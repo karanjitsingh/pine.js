@@ -1,8 +1,8 @@
-import * as https from 'https';
-import { URL } from 'url';
-import { INetwork, NetworkResponse } from 'Model/Network';
-import { IncomingHttpHeaders } from 'http';
-import { Dictionary } from 'Model/Contracts';
+import * as https from "https";
+import { URL } from "url";
+import { INetwork, NetworkResponse } from "Model/Network";
+import { IncomingHttpHeaders } from "http";
+import { Dictionary } from "Model/Contracts";
 
 export class Network implements INetwork {
     private static requestId: number = 0;
@@ -16,23 +16,23 @@ export class Network implements INetwork {
             let incomingHeaders: IncomingHttpHeaders;
             let data = "";
 
-            var req = https.request(new URL(url), {
-                method: 'POST',
-                headers: headers,
+            const req = https.request(new URL(url), {
+                method: "POST",
+                headers: headers
             }, resp => {
-                status = resp.statusCode;
+                status = resp.statusCode!;
                 incomingHeaders = resp.headers;
 
                 console.log(requestId, "STATUS", status);
 
-                resp.setEncoding('utf8');
-                resp.on('data', function (chunk) {
+                resp.setEncoding("utf8");
+                resp.on("data", function (chunk: string) {
                     data += chunk;
                 });
 
-                resp.on('end', function() {
-                    if(status != 200) {
-                        console.log(requestId, "HEADERS", incomingHeaders)
+                resp.on("end", function() {
+                    if (status !== 200) {
+                        console.log(requestId, "HEADERS", incomingHeaders);
                         console.log(requestId, "RESPONSE", data);
                         reject({
                             requestId,
@@ -41,8 +41,7 @@ export class Network implements INetwork {
                             response: data,
                             error: null
                         } as NetworkResponse);
-                    }
-                    else {
+                    } else {
                         resolve({
                             requestId,
                             status,
@@ -53,8 +52,8 @@ export class Network implements INetwork {
                     }
                 });
             });
-            
-            req.on('error', function(e) {
+
+            req.on("error", function(e: Error) {
                 console.log(requestId, "ERROR", e);
                 reject({
                     requestId,
@@ -78,29 +77,29 @@ export class Network implements INetwork {
             let status: number;
             let headers: IncomingHttpHeaders;
             let data = "";
-                     
+
             let search = "";
 
-            if(params && Object.keys(params).length > 0) {
+            if (params && Object.keys(params).length > 0) {
                 search = "?" + Object.keys(params).map((key, index, arr) => {
-                    return `${key}=${encodeURIComponent(params[key])}${ index + 1 == arr.length ? '' : '&'}`;
-                }).join('');
+                    return `${key}=${encodeURIComponent(params[key])}${ index + 1 === arr.length ? "" : "&"}`;
+                }).join("");
             }
 
-            var req = https.get(new URL(search, url), resp => {
-                status = resp.statusCode;
+            const req = https.get(new URL(search, url), resp => {
+                status = resp.statusCode!;
                 headers = resp.headers;
 
                 console.log(requestId, "STATUS", status);
 
-                resp.setEncoding('utf8');
-                resp.on('data', function (chunk) {
+                resp.setEncoding("utf8");
+                resp.on("data", function (chunk: string) {
                     data += chunk;
                 });
 
-                resp.on('end', function() {
-                    if(status != 200) {
-                        console.log(requestId, "HEADERS", headers)
+                resp.on("end", function() {
+                    if (status !== 200) {
+                        console.log(requestId, "HEADERS", headers);
                         console.log(requestId, "RESPONSE", data);
                         reject({
                             requestId,
@@ -109,8 +108,7 @@ export class Network implements INetwork {
                             response: data,
                             error: null
                         } as NetworkResponse);
-                    }
-                    else {
+                    } else {
                         resolve({
                             requestId,
                             status,
@@ -121,8 +119,8 @@ export class Network implements INetwork {
                     }
                 });
             });
-            
-            req.on('error', function(e) {
+
+            req.on("error", function(e: Error) {
                 console.log(requestId, "ERROR", e);
                 reject({
                     requestId,

@@ -1,7 +1,7 @@
 import { Candle, Resolution, ResolutionMapped } from "Model/Contracts";
 import { Subscribable } from "Model/Utils/Events";
 
-export type SeriesData<T = number> = (lookback: number) => T;
+export type SeriesData<T = number> = (lookback: number) => T | undefined;
 
 export interface UpdateIndex {
     offset: number;
@@ -10,7 +10,7 @@ export interface UpdateIndex {
 
 export interface ISeries<T = number> extends Subscribable<UpdateIndex> {
     readonly Resolution: Resolution;
-    lookBack(offset: number): SeriesData<T>
+    lookBack(offset: number): SeriesData<T>;
     getLength(): number;
     getData(offset?: number): T[];
     readonly Depth: number;
@@ -31,11 +31,10 @@ abstract class Series<T> extends Subscribable<UpdateIndex> implements ISeries<T>
             const index = this.data.length - 1 - x - offset;
             if (index >= 0) {
                 return this.data[index];
-            }
-            else {
+            } else {
                 return undefined;
             }
-        }
+        };
     }
 
     public getLength(): number {
@@ -68,7 +67,7 @@ export class RawSeries<T> extends Series<T> {
     }
 
     public updateData(offset: number, array: T[]) {
-        if (offset == 0) {
+        if (offset === 0) {
             this.append(array);
         }
 
@@ -92,7 +91,7 @@ export class EvaluatedSeries<T> extends Series<T> {
         super([]);
 
         const homogenousResolution: boolean = deps.reduce<boolean>((value, curr) => {
-            return value && curr.Resolution == deps[0].Resolution;
+            return value && curr.Resolution === deps[0].Resolution;
         }, true);
 
         if (!homogenousResolution) {
@@ -105,7 +104,7 @@ export class EvaluatedSeries<T> extends Series<T> {
 
         deps.forEach((dep: Series<T>) => {
             maxDepth = maxDepth < dep.Depth ? dep.Depth : maxDepth;
-        })
+        });
 
         this.Depth = maxDepth + 1;
 
@@ -126,13 +125,13 @@ export class EvaluatedSeries<T> extends Series<T> {
             const resolutionGraph = this.evaluationGraph[res];
 
             if (resolutionGraph) {
-                const index = resolutionMappedUpdate[res];
+                const index = resolutionMappedUpdate[res]!;
 
                 resolutionGraph.forEach(seriesList => {
                     if (seriesList) {
                         seriesList.forEach(series => {
                             series.update(index);
-                        })
+                        });
                     }
                 });
             }
@@ -142,19 +141,18 @@ export class EvaluatedSeries<T> extends Series<T> {
     protected static addSeriesToEvaluationGraph(series: EvaluatedSeries<any>, resolution: Resolution) {
 
         if (!resolution) {
-            throw new Error('Resolution for evaluated series was not defined.');
+            throw new Error("Resolution for evaluated series was not defined.");
         }
 
         if (!this.evaluationGraph[resolution]) {
-            this.evaluationGraph[resolution] = []
+            this.evaluationGraph[resolution] = [];
         }
 
-        const resolutionGraph = this.evaluationGraph[resolution];
+        const resolutionGraph = this.evaluationGraph[resolution]!;
 
         if (resolutionGraph[series.Depth]) {
             resolutionGraph[series.Depth].push(series);
-        }
-        else {
+        } else {
             resolutionGraph[series.Depth] = [series];
         }
     }
@@ -172,12 +170,12 @@ export class EvaluatedSeries<T> extends Series<T> {
     }
 }
 
-export class OffsettedSeries<T> extends Series<T> {
+export class OffsettedSeries<T> extends Subscribable<UpdateIndex> implements ISeries<T> {
     public readonly Resolution: Resolution;
     public readonly Depth: number;
 
     public constructor(private parentSeries: ISeries<T>, private seriesOffset: number) {
-        super(null);
+        super();
         this.parentSeries.subscribe(this.notifyAll, this);
         this.Resolution = this.parentSeries.Resolution;
         this.Depth = this.parentSeries.Depth;
@@ -200,19 +198,18 @@ export class OffsettedSeries<T> extends Series<T> {
         const length = data.length - this.seriesOffset;
         if (!offset || offset < 0) {
             return data.slice(0, length);
-        }
-        else {
-            return this.data.slice(length - offset, length);
+        } else {
+            return data.slice(length - offset, length);
         }
     }
 }
 
-export class SimpleSeries<T = Candle> extends Series<number> {
+export class SimpleSeries<T = Candle> extends Subscribable<UpdateIndex> implements ISeries<number> {
     public readonly Resolution: Resolution;
     public readonly Depth: number;
 
     public constructor(private parentSeries: ISeries<T>, private resolver: (data: T) => number) {
-        super(null);
+        super();
 
         this.Resolution = parentSeries.Resolution;
 
@@ -232,7 +229,7 @@ export class SimpleSeries<T = Candle> extends Series<number> {
             }
 
             return this.resolver(lookback);
-        }
+        };
     }
 
     public getLength(): number {

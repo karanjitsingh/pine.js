@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 export interface SectionProps {
     header: string;
@@ -13,7 +13,7 @@ export interface SectionState {
 
 export class Section extends React.Component<SectionProps, SectionState> {
     private contentRef: React.RefObject<HTMLDivElement>;
-    private monitorTimer: number;
+    private monitorTimer?: number;
 
     constructor(props: SectionProps) {
         super(props);
@@ -28,16 +28,18 @@ export class Section extends React.Component<SectionProps, SectionState> {
 
     public componentDidMount() {
         if (this.state.contentHeight === undefined) {
-            this.contentRef.current.style.maxHeight = this.contentRef.current.scrollHeight + "px";
+            if (this.contentRef.current) {
+                this.contentRef.current.style.maxHeight = this.contentRef.current.scrollHeight + "px";
+            }
         }
     }
 
     public render() {
-        if(this.props.dynamicHeight) {
-            if(!this.monitorTimer) {
+        if (this.props.dynamicHeight) {
+            if (!this.monitorTimer) {
                 this.monitorTimer = setInterval(this.monitor.bind(this), 100);
             }
-        } else if(this.monitorTimer) {
+        } else if (this.monitorTimer) {
             this.clearMonitor();
         }
 
@@ -47,8 +49,8 @@ export class Section extends React.Component<SectionProps, SectionState> {
                 <div className={"content" + (this.props.scrollBar ? " custom-scroll" : "")}
                     style={{
                         maxHeight: this.state.contentHeight === undefined
-                            ? 'initial'
-                            : this.state.contentHeight + 'px'
+                            ? "initial"
+                            : this.state.contentHeight + "px"
                     }}
                     ref={this.contentRef}>
                     {this.props.children}
@@ -59,21 +61,21 @@ export class Section extends React.Component<SectionProps, SectionState> {
 
     private clearMonitor() {
         clearInterval(this.monitorTimer);
-        this.monitorTimer = null;
+        this.monitorTimer = undefined;
     }
 
     private monitor() {
-        if(!this.props.dynamicHeight) {
+        if (!this.props.dynamicHeight) {
             this.clearMonitor();
             return;
         }
 
-        if(!this.state.collapsed) {
-            if(this.contentRef && this.contentRef.current && (this.contentRef.current.scrollHeight + 1 != this.state.contentHeight || !this.state.contentHeight)) {
+        if (!this.state.collapsed) {
+            if (this.contentRef && this.contentRef.current && (this.contentRef.current.scrollHeight + 1 !== this.state.contentHeight || !this.state.contentHeight)) {
                 this.setState({
                     collapsed: false,
                     contentHeight: this.contentRef.current.scrollHeight + 1
-                })
+                });
             }
         }
     }
@@ -83,7 +85,7 @@ export class Section extends React.Component<SectionProps, SectionState> {
 
         this.setState({
             collapsed: !this.state.collapsed,
-            contentHeight: !this.state.collapsed ? 0 : (this.contentRef.current.scrollHeight + 1)
+            contentHeight: !this.state.collapsed ? 0 : (this.contentRef.current!.scrollHeight + 1)
         });
     }
 }

@@ -1,7 +1,7 @@
-import { Table, TableColumn } from 'Components/Fabric/Table';
-import { DataStream } from 'DataStream';
-import { LogMessage } from 'Model/Contracts';
-import * as React from 'react';
+import { Table, TableColumn } from "Components/Fabric/Table";
+import { DataStream } from "DataStream";
+import { LogMessage } from "Model/Contracts";
+import * as React from "react";
 
 export interface LogTableProps {
     stream: DataStream<LogMessage>;
@@ -21,7 +21,7 @@ export class LogTable extends React.Component<LogTableProps, LogTableState> {
         super(props);
 
         this.state = {
-            logs: [],
+            logs: []
         };
 
         this.props.stream.subscribe(this.dataListener.bind(this));
@@ -29,7 +29,7 @@ export class LogTable extends React.Component<LogTableProps, LogTableState> {
         if (this.props.stream.hasUpdate()) {
             this.state = {
                 logs: this.props.stream.flush()
-            }
+            };
         }
     }
 
@@ -58,7 +58,7 @@ export class LogTable extends React.Component<LogTableProps, LogTableState> {
             }
         ];
 
-        return <Table hideColumns className={"trade-table log-table"} columns={columns} data={this.state.logs}></Table>
+        return <Table hideColumns className={"trade-table log-table"} columns={columns} data={this.state.logs}></Table>;
     }
 
     private dataListener() {

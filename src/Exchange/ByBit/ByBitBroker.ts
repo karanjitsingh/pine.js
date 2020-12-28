@@ -10,65 +10,66 @@ export class ByBitBroker implements IBroker {
     }
 
     public get OpenPosition(): Position | undefined {
-        const position = this.exchange.account.Positions[this.exchange.symbol]
-        if(position && !position.Closed) {
+        const position = this.exchange.account.Positions[this.exchange.symbol];
+        if (position && !position.Closed) {
             return position;
         }
-        return undefined
-    };
+
+        return undefined;
+    }
 
     public get PositionPnL(): number | undefined {
         const position = this.OpenPosition;
-        
-        if(position) {
+
+        if (position) {
             return position.Size / position.EntryPrice * this.exchange.lastPrice;
-        } else return undefined;
+        } else { return undefined; }
     }
 
-    getRequestStatus(requestId: string): boolean {
+    public getRequestStatus(requestId: string): boolean {
         throw new Error("Method not implemented.");
     }
 
-    marketOrder(side: Side, quantity: Int): Promise<BrokerOrderResponse> {
+    public marketOrder(side: Side, quantity: Int): Promise<BrokerOrderResponse> {
         const promise = this.exchange.api.PlaceActiveOrder({
             side,
             symbol: this.exchange.symbol,
-            order_type: 'Market',
+            order_type: "Market",
             price: this.exchange.lastPrice.toInt(),
             qty: quantity,
-            time_in_force: 'ImmediateOrCancel',
+            time_in_force: "ImmediateOrCancel"
         });
-        
+
         return this.formBrokerResponse(promise, (response) => ({
             success: true,
             orderId: response.result.order_id
         })) as Promise<BrokerOrderResponse>;
     }
 
-    limitOrder(): Promise<BrokerOrderResponse> {
+    public limitOrder(): Promise<BrokerOrderResponse> {
         throw new Error("Method not implemented.");
     }
 
-    conditionalOrder(): Promise<BrokerOrderResponse> {
+    public conditionalOrder(): Promise<BrokerOrderResponse> {
         throw new Error("Method not implemented.");
     }
 
-    cancelOrder(orderId: string): Promise<BrokerOrderResponse> {
+    public cancelOrder(orderId: string): Promise<BrokerOrderResponse> {
         throw new Error("Method not implemented.");
     }
 
-    setStop(stops: TradingStop): Promise<BrokerResponse> {
+    public setStop(stops: TradingStop): Promise<BrokerResponse> {
         const promise = this.exchange.api.SetTradingStop({
             symbol: this.exchange.symbol,
-            take_profit: stops.TakeProfit.toString(),
-            stop_loss: stops.StopLoss.toString(),
-            trailing_stop: stops.TrailingStop.toString()
-        })
+            take_profit: stops && stops.TakeProfit ? stops.TakeProfit.toString() : "",
+            stop_loss: stops && stops.StopLoss ? stops.StopLoss.toString() : "",
+            trailing_stop: stops && stops.TrailingStop ? stops.TrailingStop.toString() : ""
+        });
 
         return this.formBrokerResponse(promise);
     }
 
-    updateLeverage(leverage: Int): Promise<BrokerResponse> {
+    public updateLeverage(leverage: Int): Promise<BrokerResponse> {
         const promise = this.exchange.api.ChangeUserLeverage({
             symbol: this.exchange.symbol,
             leverage: leverage.toString()
@@ -80,25 +81,24 @@ export class ByBitBroker implements IBroker {
     /**
      * Creates a market order to close the position
      */
-    closePosition(): Promise<BrokerOrderResponse> {
+    public closePosition(): Promise<BrokerOrderResponse> {
         const position = this.exchange.account.Positions[this.exchange.symbol];
 
-        if (position.Closed || position.Side == "None") {
-            return Promise.reject('No open position');
+        if (position.Closed || position.Side === "None") {
+            return Promise.reject("No open position");
         }
 
-        const closeSide: Side = position.Side == "Buy" ? "Sell" : "Buy";
-
+        const closeSide: Side = position.Side === "Buy" ? "Sell" : "Buy";
 
         const promise = this.exchange.api.PlaceActiveOrder({
             side: closeSide,
             symbol: this.exchange.symbol,
-            order_type: 'Market',
+            order_type: "Market",
             price: this.exchange.lastPrice.toInt(),
             qty: position.Size.toInt(),
-            time_in_force: 'ImmediateOrCancel',
+            time_in_force: "ImmediateOrCancel",
             reduce_only: true
-        })
+        });
 
         return this.formBrokerResponse(promise, (response) => ({
             success: true,
@@ -108,23 +108,23 @@ export class ByBitBroker implements IBroker {
 
     private formBrokerResponse<S extends ByBitApiResponse<any>, T = {}>(call: Promise<S>, getSuccessResponse?: (response: S) => BrokerResponse<T>): Promise<BrokerResponse<T>> {
         // TODO log failures
-        
+
         return new Promise((resolve) => {
 
             call.then((response) => {
-                if (response.ret_code == 0) {
-                    if(getSuccessResponse) {
+                if (response.ret_code === 0) {
+                    if (getSuccessResponse) {
                         resolve(getSuccessResponse(response));
                     } else {
                         resolve({
-                            success: true,
+                            success: true
                         } as BrokerResponseSuccess<T>);
                     }
                 } else {
                     resolve({
                         success: false,
                         reason: response.ret_msg
-                    } as BrokerResponseFailure)
+                    } as BrokerResponseFailure);
                 }
             }, (reason) => {
                 resolve({
@@ -132,7 +132,7 @@ export class ByBitBroker implements IBroker {
                     reason
                 } as BrokerResponseFailure);
             });
-        })
+        });
 
     }
 

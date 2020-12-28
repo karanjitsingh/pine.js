@@ -11,7 +11,7 @@ export interface BrokerResponseFailure {
 }
 
 export type BrokerResponse<T = {}> = BrokerResponseSuccess<T> | BrokerResponseFailure;
-export type BrokerOrderResponse = BrokerResponse<{ orderId: string }>
+export type BrokerOrderResponse = BrokerResponse<{ orderId: string }>;
 
 export interface TradingStop {
     TakeProfit?: number;
@@ -35,5 +35,5 @@ export interface IBroker {
 
     updateLeverage(leverage: number): Promise<BrokerResponse>;
 
-    closePosition(): Promise<BrokerResponse>
+    closePosition(): Promise<BrokerResponse>;
 }

@@ -32,32 +32,33 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
             this.dataQueue = this.exchange.subscribeCandle(this.resolutionSet);
             this.isRunning = true;
             this.fetchUpdates();
-        })
+        });
     }
 
     private fetchUpdates() {
         const data = this.dataQueue.flush();
 
-        let candleUpdate: ResolutionMapped<number>;
-        let accountUpdate = this.exchange.account.didUpdate();
+        let candleUpdate: ResolutionMapped<number> | undefined;
 
-        if(data.length > 0) {
+        const accountUpdate = this.exchange.account.didUpdate();
+
+        if (data.length > 0) {
             candleUpdate = this.updateData(data);
         }
 
-        if(candleUpdate || accountUpdate) {
+        if (candleUpdate || accountUpdate) {
             const update: ExchangeUpdate = {
                 AccountUpdate: accountUpdate
             };
 
-            if(candleUpdate) {
-                update.CandleUpdate = candleUpdate
+            if (candleUpdate) {
+                update.CandleUpdate = candleUpdate;
             }
 
             this.notifyAll(update);
         }
 
-        if(this.isRunning) {
+        if (this.isRunning) {
             setTimeout(this.fetchUpdates.bind(this), 1);
         }
     }
@@ -67,7 +68,7 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
         const currentTick = new Date().getTime();
 
         const promiseList: Promise<Candle[]>[] = [];
-        
+
         this.resolutionSet.forEach(res => {
             const promise = this.exchange.getData(currentTick, Utils.GetResolutionTick(res) * candleCount, res);
             promise.then((candleData: Candle[]) => {
@@ -81,8 +82,8 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
             }, () => {
                 // todo handle rejections
             }).catch(() => {
-                
-            })
+                //
+            });
 
             promiseList.push(promise);
         });
@@ -91,28 +92,31 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
             Promise.all(promiseList).then(() => {
                 resolve(resolutionDataMap);
             }, () => {
-                
+                //
             });
         });
     }
 
     private initData(resolutionDataMap: ResolutionMapped<Candle[]>) {
         const resolutions = Object.keys(resolutionDataMap);
-        
+
         const updateIndex: ResolutionMapped<UpdateIndex> = {};
         const lengthMap: ResolutionMapped<number> = {};
 
-        if(resolutions.length) {
+        if (resolutions.length) {
             resolutions.forEach((res: Resolution) => {
                 const update = resolutionDataMap[res];
-                (this.MarketDataMap[res].Candles as RawSeries<Candle>).append(update);
 
-                updateIndex[res] = {
-                    offset: 0,
-                    length: update.length
+                if (update) {
+                    (this.MarketDataMap[res]!.Candles as RawSeries<Candle>).append(update);
+
+                    updateIndex[res] = {
+                        offset: 0,
+                        length: update.length
+                    };
+
+                    lengthMap[res] = update.length;
                 }
-
-                lengthMap[res] = update.length
             });
         }
 
@@ -132,14 +136,14 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
 
         this.resolutionSet.forEach(resolution => {
             const update = fetchedUpdated.reduce<Candle[]>((candles, curr) => {
-                const currCandle = curr[resolution];
-                
-                if(candles.length == 0) {
+                const currCandle = curr[resolution]!;
+
+                if (candles.length === 0) {
                     candles.push(currCandle);
                 } else {
                     const last = candles.length - 1;
 
-                    if(candles[last].StartTick == currCandle.StartTick) {
+                    if (candles[last].StartTick === currCandle.StartTick) {
                         candles[last] = currCandle;
                     } else if (candles[last].StartTick < currCandle.StartTick) {
                         candles.push(currCandle);
@@ -151,41 +155,41 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
 
                 return candles;
             }, []);
-            
-            const marketCandles = this.MarketDataMap[resolution].Candles as RawSeries<Candle>;
+
+            const marketCandles = this.MarketDataMap[resolution]!.Candles as RawSeries<Candle>;
             const lastCandle = marketCandles.getData(1)[0];
 
             lengthMap[resolution] = update.length;
 
-            if(!lastCandle) {
+            if (!lastCandle) {
 
                 marketCandles.updateData(0, update);
 
                 updateIndex[resolution] = {
                     offset: 0,
                     length: update.length
-                }
+                };
 
-            } else if (lastCandle.StartTick == update[0].StartTick) {
-                
+            } else if (lastCandle.StartTick === update[0].StartTick) {
+
                 marketCandles.updateData(1, update);
-        
+
                 updateIndex[resolution] = {
                     offset: 1,
                     length: update.length
-                }
+                };
 
-            } else if (lastCandle.StartTick + Utils.GetResolutionTick(resolution) == update[0].StartTick) {
-                
+            } else if (lastCandle.StartTick + Utils.GetResolutionTick(resolution) === update[0].StartTick) {
+
                 marketCandles.updateData(0, update);
-            
+
                 updateIndex[resolution] = {
                     offset: 0,
                     length: update.length
-                }
-            
+                };
+
             } else {
-                throw new Error("Backfill error.")
+                throw new Error("Backfill error.");
             }
         });
 
@@ -202,23 +206,23 @@ export class ExchangeSink extends Subscribable<ExchangeUpdate> {
             Close: new SimpleSeries(series, (candle: Candle) => candle.Close),
             High: new SimpleSeries(series, (candle: Candle) => candle.High),
             Low: new SimpleSeries(series, (candle: Candle) => candle.Low),
-            Volume: new SimpleSeries(series, (candle: Candle) => candle.Volume),
-        }
+            Volume: new SimpleSeries(series, (candle: Candle) => candle.Volume)
+        };
     }
 
     private FilterFutureCandles(currentTick: number, candleData: Candle[]): Candle[] {
-        if(candleData[candleData.length - 1].StartTick > currentTick) {
+        if (candleData[candleData.length - 1].StartTick > currentTick) {
             // Start time of the candle was greater than current time, need to fix this
             let i;
-            for(i = candleData.length - 2; i >= 0; i--) {
-                if(candleData[i].StartTick < currentTick) {
+            for (i = candleData.length - 2; i >= 0; i--) {
+                if (candleData[i].StartTick < currentTick) {
                     break;
                 }
             }
 
             const extra = candleData.splice(i + 1);
         }
-        
+
         return candleData;
     }
 }
