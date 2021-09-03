@@ -7,5 +7,3 @@ Built to overcome the language limitations of TradingView's Pine scripting langu
 ### High Level Design Goal
 
 ![Design](https://github.com/karanjitsingh/pine/blob/master/docs/design.png)
-
-### Build & Run
