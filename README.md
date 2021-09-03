@@ -6,4 +6,4 @@ Built to overcome the language limitations of TradingView's Pine scripting langu
 
 ### High Level Design Goal
 
-![Design](https://github.com/karanjitsingh/pine/blob/master/docs/design.png)
+![Design](https://i.imgur.com/Yr5X9Yb.png)
